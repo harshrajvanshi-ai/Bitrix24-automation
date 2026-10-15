@@ -202,10 +202,18 @@
       }
     }
 
-    if (window.BX24) {
-      window.BX24.init(runInstallation);
+    let hasRun = false;
+    function safeRunInstallation() {
+      if (hasRun) return;
+      hasRun = true;
+      runInstallation();
+    }
+
+    if (window.BX24 && typeof window.BX24.init === 'function') {
+      window.BX24.init(safeRunInstallation);
+      setTimeout(safeRunInstallation, 2000);
     } else {
-      document.addEventListener('DOMContentLoaded', runInstallation);
+      document.addEventListener('DOMContentLoaded', safeRunInstallation);
     }
   </script>
 </body>

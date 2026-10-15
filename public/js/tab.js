@@ -917,9 +917,17 @@
     }
   });
 
-  if (window.BX24) {
-    window.BX24.init(init);
+  let initialized = false;
+  function safeInit() {
+    if (initialized) return;
+    initialized = true;
+    init();
+  }
+
+  if (window.BX24 && typeof window.BX24.init === 'function') {
+    window.BX24.init(safeInit);
+    setTimeout(safeInit, 2000);
   } else {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', safeInit);
   }
 })();
