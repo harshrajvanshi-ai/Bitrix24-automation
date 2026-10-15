@@ -27,7 +27,11 @@ function loadFieldsConfig() {
 }
 
 function saveFieldsConfig(newConfig) {
-  fs.writeFileSync(FIELDS_CONFIG_PATH, JSON.stringify(newConfig, null, 2), 'utf-8');
+  try {
+    fs.writeFileSync(FIELDS_CONFIG_PATH, JSON.stringify(newConfig, null, 2), 'utf-8');
+  } catch (err) {
+    console.warn('[CONFIG] Unable to persist config/fields.json to disk (read-only filesystem):', err.message);
+  }
 }
 
 module.exports = {

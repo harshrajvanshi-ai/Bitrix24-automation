@@ -7,12 +7,17 @@
 const fs = require('fs');
 const path = require('path');
 
-const STORAGE_DIR = path.resolve(__dirname, '../storage');
+const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const STORAGE_DIR = process.env.STORAGE_DIR || (isVercel ? path.join('/tmp', 'storage') : path.resolve(__dirname, '../storage'));
 const STORAGE_FILE = path.join(STORAGE_DIR, 'tokens.json');
 
-// Ensure storage directory exists
-if (!fs.existsSync(STORAGE_DIR)) {
-  fs.mkdirSync(STORAGE_DIR, { recursive: true });
+// Ensure storage directory exists safely
+try {
+  if (!fs.existsSync(STORAGE_DIR)) {
+    fs.mkdirSync(STORAGE_DIR, { recursive: true });
+  }
+} catch (err) {
+  console.warn('[STORAGE] Warning creating storage directory:', err.message);
 }
 
 // Initial state template
@@ -36,7 +41,14 @@ const DEFAULT_STATE = {
 function readStorage() {
   try {
     if (!fs.existsSync(STORAGE_FILE)) {
-      fs.writeFileSync(STORAGE_FILE, JSON.stringify(DEFAULT_STATE, null, 2), 'utf-8');
+      try {
+        if (!fs.existsSync(STORAGE_DIR)) {
+          fs.mkdirSync(STORAGE_DIR, { recursive: true });
+        }
+        fs.writeFileSync(STORAGE_FILE, JSON.stringify(DEFAULT_STATE, null, 2), 'utf-8');
+      } catch (writeErr) {
+        // Read-only filesystem fallback
+      }
       return DEFAULT_STATE;
     }
     const raw = fs.readFileSync(STORAGE_FILE, 'utf-8');
@@ -50,12 +62,14 @@ function readStorage() {
 function writeStorage(data) {
   try {
     data.lastUpdated = new Date().toISOString();
+    if (!fs.existsSync(STORAGE_DIR)) {
+      fs.mkdirSync(STORAGE_DIR, { recursive: true });
+    }
     const tempFile = `${STORAGE_FILE}.tmp.${Date.now()}`;
     fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
     fs.renameSync(tempFile, STORAGE_FILE);
   } catch (err) {
     console.error('[STORAGE] Error writing storage file:', err.message);
-    throw err;
   }
 }
 
