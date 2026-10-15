@@ -354,12 +354,11 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
 
   console.log(`[API] Updating Lead #${leadId} fields:`, Object.keys(fields));
 
-  // Mirror custom name fields to native TITLE
-  if (fields.UF_CRM_ENQUIRY_NAME && !fields.TITLE) {
-    fields.TITLE = fields.UF_CRM_ENQUIRY_NAME;
-  }
-  if (fields.UF_CRM_1791952409183 && !fields.TITLE) {
-    fields.TITLE = fields.UF_CRM_1791952409183;
+  // Handle dedicated Listing Name & Enquiry Name fields (completely separate from native Lead Name TITLE)
+  if (fields.UF_CRM_LISTING_NAME && !fields.UF_CRM_1791952409183) {
+    fields.UF_CRM_1791952409183 = fields.UF_CRM_LISTING_NAME;
+  } else if (fields.UF_CRM_1791952409183 && !fields.UF_CRM_LISTING_NAME) {
+    fields.UF_CRM_LISTING_NAME = fields.UF_CRM_1791952409183;
   }
 
   try {
@@ -379,12 +378,11 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
   try {
     const lead = await BitrixClient.crmLeadGet(req.params.id);
     if (lead) {
-      if (!lead.UF_CRM_ENQUIRY_NAME && lead.TITLE) {
-        lead.UF_CRM_ENQUIRY_NAME = lead.TITLE;
+      // Resolve Listing Name from UF_CRM_LISTING_NAME or legacy UF_CRM_1791952409183
+      if (!lead.UF_CRM_LISTING_NAME && lead.UF_CRM_1791952409183) {
+        lead.UF_CRM_LISTING_NAME = lead.UF_CRM_1791952409183;
       }
-      if (!lead.UF_CRM_1791952409183 && lead.TITLE) {
-        lead.UF_CRM_1791952409183 = lead.TITLE;
-      }
+      // Note: Enquiry Name and Listing Name are kept separate from native Lead Name (lead.TITLE)
     }
     res.json({ success: true, result: lead });
   } catch (err) {

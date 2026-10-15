@@ -102,6 +102,16 @@ class BitrixClient {
           return retryRes.data?.result;
         } catch (refreshErr) {
           console.error('[API] Retry after refresh failed:', refreshErr.message);
+          if (config.INBOUND_WEBHOOK_URL) {
+            console.log(`[API] Falling back to INBOUND_WEBHOOK_URL for method ${method}...`);
+            const fallbackEndpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+            const fallbackRes = await axios.post(
+              fallbackEndpoint,
+              params,
+              { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
+            );
+            return fallbackRes.data?.result;
+          }
           throw refreshErr;
         }
       }

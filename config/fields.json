@@ -23,10 +23,10 @@
         "description": "Listing name, operation, property types, exclusive terms, and status",
         "fields": [
           {
-            "code": "UF_CRM_1791952409183",
-            "label": "Name",
+            "code": "UF_CRM_LISTING_NAME",
+            "label": "Listing Name",
             "type": "string",
-            "placeholder": "",
+            "placeholder": "Enter listing name...",
             "fullWidth": true
           },
           {
@@ -1048,7 +1048,7 @@
             "code": "UF_CRM_ENQUIRY_NAME",
             "label": "Enquiry Name",
             "type": "string",
-            "placeholder": "",
+            "placeholder": "Enter enquiry name...",
             "fullWidth": true
           },
           {
@@ -2360,10 +2360,10 @@
   },
   "listingFields": [
     {
-      "code": "UF_CRM_1791952409183",
-      "label": "Name",
+      "code": "UF_CRM_LISTING_NAME",
+      "label": "Listing Name",
       "type": "string",
-      "placeholder": "",
+      "placeholder": "Enter listing name...",
       "fullWidth": true
     },
     {
@@ -3304,7 +3304,7 @@
       "code": "UF_CRM_ENQUIRY_NAME",
       "label": "Enquiry Name",
       "type": "string",
-      "placeholder": "",
+      "placeholder": "Enter enquiry name...",
       "fullWidth": true
     },
     {

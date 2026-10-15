@@ -613,6 +613,9 @@
 
       (sec.fields || []).forEach(f => {
         let currentVal = lead[f.code];
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_LISTING_NAME') {
+          currentVal = lead['UF_CRM_1791952409183'] || '';
+        }
         if (currentVal === undefined || currentVal === null) currentVal = '';
         gridEl.appendChild(createFormGroup(f, currentVal));
       });
@@ -828,6 +831,10 @@
         payload[f.code] = input.value.trim();
       }
     });
+
+    if (payload.UF_CRM_LISTING_NAME && !payload.UF_CRM_1791952409183) {
+      payload.UF_CRM_1791952409183 = payload.UF_CRM_LISTING_NAME;
+    }
 
     await Promise.all(filePromises);
 
