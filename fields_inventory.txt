@@ -1,0 +1,560 @@
+1. UF_CRM_1791354310417 | Lead Type | enumeration | options: 2 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+2. UF_CRM_1791542918927 | Enquiry Type | enumeration | options: 4 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+3. UF_CRM_1791543453592 | Junk Reason | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+4. UF_CRM_1791794196 | Project of Interest | crm | settings: {"DYNAMIC_1044":"Y","LEAD":null}
+5. UF_CRM_1791952050535 | Property Type | enumeration | options: 9 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+6. UF_CRM_1791952409183 | Listing Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+7. UF_CRM_1791952650167 | Listing type | enumeration | options: 5 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+8. UF_CRM_1791962134 | Amount | money | settings: {"DEFAULT_VALUE":""}
+9. UF_CRM_1791962499457 | Priority | enumeration | options: 3 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+10. UF_CRM_1791963299133 | Listing Price | money | settings: {"DEFAULT_VALUE":""}
+11. UF_CRM_1791966366775 | Bedrooms | double | settings: {"PRECISION":2,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+12. UF_CRM_1791966408374 | Bathrooms | double | settings: {"PRECISION":2,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+13. UF_CRM_1791969030353 | Purchase Timeline | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+14. UF_CRM_1791969936048 | Furnished | enumeration | options: 3 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+15. UF_CRM_1791970130059 | View | enumeration | options: 12 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+16. UF_CRM_1791970241624 | Pets Allowed | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":{"en":"Pets Allowed","de":"Pets Allowed","ru":"Pets Allowed","th":"Pets Allowed","kz":"Pets Allowed","ua":"Pets Allowed","tc":"Pets Allowed","la":"Pets Allowed","sc":"Pets Allowed","br":"Pets Allowed","fr":"Pets Allowed","ar":"Pets Allowed","vn":"Pets Allowed","pl":"Pets Allowed","tr":"Pets Allowed","ja":"Pets Allowed","it":"Pets Allowed","ms":"Pets Allowed","id":"Pets Allowed"}}
+17. UF_CRM_1791970638065 | Property Address | address | settings: {"SHOW_MAP":"Y"}
+18. UF_CRM_1791970718307 | Building Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+19. UF_CRM_1791970770635 | Size In sq.ft | double | settings: {"PRECISION":2,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+20. UF_CRM_1791970832589 | Occupancy | enumeration | options: 5 | settings: {"DISPLAY":"UI","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+21. UF_CRM_1791970864836 | RERA Permit Number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+22. UF_CRM_1791970897872 | Exclusive | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":{"en":"Exclusive","de":"Exclusive","ru":"Exclusive","th":"Exclusive","kz":"Exclusive","ua":"Exclusive","tc":"Exclusive","la":"Exclusive","sc":"Exclusive","br":"Exclusive","fr":"Exclusive","ar":"Exclusive","vn":"Exclusive","pl":"Exclusive","tr":"Exclusive","ja":"Exclusive","it":"Exclusive","ms":"Exclusive","id":"Exclusive"}}
+23. UF_CRM_BEDROOMS | Bedrooms | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+24. UF_CRM_BATHROOMS | Bathrooms | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+25. UF_CRM_RERA_PERMIT | RERA / Trakheesi Permit No. | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+26. UF_CRM_CHEQUES | Number of Cheques | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+27. UF_CRM_PARKING | Parking Spaces | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+28. UF_CRM_DEVELOPER | Developer / Master Project | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+29. UF_CRM_LISTING_PRICE | Listing Price (AED) | money | settings: {"DEFAULT_VALUE":""}
+30. UF_CRM_BUA | Built-up Area (Sq. Ft.) | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+31. UF_CRM_PLOT_AREA | Plot Area (Sq. Ft.) | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+32. UF_CRM_PROJECT | Master Project | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+33. UF_CRM_BUILDING | Building / Tower Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+34. UF_CRM_UNIT_NO | Unit Number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+35. UF_CRM_COMMUNITY | Community / Area | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+36. UF_CRM_CITY | City (Emirate) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+37. UF_CRM_BAYUT_ID | Bayut Listing ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+38. UF_CRM_PF_ID | Propertyfinder Listing ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+39. UF_CRM_AVAIL_DATE | Available From Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+40. UF_CRM_DESCRIPTION | Property Description / Amenities | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+41. UF_CRM_BUDGET_MIN | Budget Min (AED) | money | settings: {"DEFAULT_VALUE":""}
+42. UF_CRM_BUDGET_MAX | Budget Max (AED) | money | settings: {"DEFAULT_VALUE":""}
+43. UF_CRM_BEDS_MIN | Bedrooms Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+44. UF_CRM_BEDS_MAX | Bedrooms Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+45. UF_CRM_BATHS_MIN | Bathrooms Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+46. UF_CRM_SIZE_MIN | Size Min (Sq. Ft.) | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+47. UF_CRM_SIZE_MAX | Size Max (Sq. Ft.) | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+48. UF_CRM_PREFERRED_COMMUNITY | Preferred Communities | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+49. UF_CRM_PREFERRED_CITY | Preferred City | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+50. UF_CRM_TIMEFRAME | Buying / Renting Timeframe | enumeration | options: 4 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+51. UF_CRM_FINANCE_NEEDED | Mortgage / Financing Required | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+52. UF_CRM_LEAD_SOURCE | Portal / Lead Source | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+53. UF_CRM_LISTING_TYPE | Listing Type | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+54. UF_CRM_AVAILABLE_TO | Available To Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+55. UF_CRM_BANK_OWNED | Bank Owned / Distressed | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+56. UF_CRM_BASEMENT | Basement Area | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+57. UF_CRM_CITY_BAYUT | City (Bayut) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+58. UF_CRM_CITY_PF | City (Propertyfinder) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+59. UF_CRM_COUNTRY | Country | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+60. UF_CRM_DATE_OFFLINE | Date Made Offline | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+61. UF_CRM_DATE_ONLINE | Date Made Online | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+62. UF_CRM_NEIGHBORHOOD | Neighborhood | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+63. UF_CRM_PHASE | Project Phase | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+64. UF_CRM_FORM_A_DATE | Form A Signed Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+65. UF_CRM_TRAKHEESI_EXPIRY | Trakheesi Permit Expiry | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+66. UF_CRM_PRIMARY_IMAGE | Primary Listing Image | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+67. UF_CRM_DOCS | Property Title / Deed Docs | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+68. UF_CRM_FORM_A_DOC | Form A Signed Document | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+69. UF_CRM_DEAL_VALUE | Expected Deal Value (AED) | money | settings: {"DEFAULT_VALUE":""}
+70. UF_CRM_BATHS_MAX | Bathrooms Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+71. UF_CRM_BEACHFRONT | Beachfront / Waterfront Preferred | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+72. UF_CRM_WATER_BODY | Body of Water / View | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+73. UF_CRM_HOUSEHOLD | Household Members / Family Size | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+74. UF_CRM_PARKING_REQ | Parking Spaces Required | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+75. UF_CRM_SCHOOL | Nearby Schools Preference | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+76. UF_CRM_STORIES | Floors / Stories Preferred | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+77. UF_CRM_STYLE | Architectural Style | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+78. UF_CRM_WHATSAPP_RESP | WhatsApp Response Received | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+79. UF_CRM_ENQUIRY_LOCKED | Enquiry Locked / Assigned | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+80. UF_CRM_ACTIVE_EXPOSE | Active Expose Images | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+81. UF_CRM_ACTIVE_WEBSITE | Active Website Images | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+82. UF_CRM_AREA_NAME | Area / Sub-locality | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+83. UF_CRM_COMMENTS | Client Comments & Feedback | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+84. UF_CRM_MP_LOOKUP | Master Project (Lookup) | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+85. UF_CRM_LISTING | Listing | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+86. UF_CRM_EXTERNAL_ID | External ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+87. UF_CRM_STARTED_ON | Started on | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+88. UF_CRM_FINISHED_ON | Finished on | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+89. UF_CRM_CONTACTS | Contacts | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"N","DEAL":"N"}
+90. UF_CRM_YOUR_COMPANY_DETAILS | Your company details | crm | settings: {"LEAD":"N","CONTACT":"N","COMPANY":"Y","DEAL":"N"}
+91. UF_CRM_LAST_TIMELINE_ACTIVITY_ADDED_BY | Last timeline activity added by | employee | settings: {"DEFAULT_VALUE":[]}
+92. UF_CRM_LAST_UPDATED_ON | Last updated on | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+93. UF_CRM_RECURRING_ITEM | Recurring item | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+94. UF_CRM_PROPERTY | Property | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+95. UF_CRM_OWNERID | Owner | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"Y","DEAL":"N"}
+96. UF_CRM_LISTINGAGENT | Listing Agent | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+97. UF_CRM_AVAILABLE_FROM | Available From | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+98. UF_CRM_AVAILABLE_TO_1 | Available To | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+99. UF_CRM_AREA | Area | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+100. UF_CRM_AVAILABILITY_DATE | Availability Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+101. UF_CRM_BANKOWNED | Bank Owned | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+102. UF_CRM_BASEMENT_1 | Basement | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+103. UF_CRM_DATE_AVAILABLE | Date Available | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+104. UF_CRM_DEVELOPER_1 | Developer | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"Y","DEAL":"N"}
+105. UF_CRM_DOCS_1 | Docs | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+106. UF_CRM_OWNER_LISTING | Owner - Listing | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"N","DEAL":"N"}
+107. UF_CRM_PHASE_1 | Phase | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+108. UF_CRM_PRICE_UNIT | Price Unit | money | settings: {"DEFAULT_VALUE":""}
+109. UF_CRM_PRIMARY_IMAGE_1 | Primary Image | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+110. UF_CRM_PROJECT_1 | Project | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+111. UF_CRM_X30_DAYS_NO_LISTING_FORM | 30 days no listing form | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+112. UF_CRM_ACRES | Acres | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+113. UF_CRM_ADDRESS2 | Address2 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+114. UF_CRM_ADULTCOMMUNITY | Adult Community | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+115. UF_CRM_ALLOWEDFORAUTOPUBLISH | Allowed for Auto Publish | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+116. UF_CRM_AM_I_THE_RECORD_OWNER | Am I the record owner | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+117. UF_CRM_ANNUAL_COMMUNITY_FEE | Annual Community Fee | money | settings: {"DEFAULT_VALUE":""}
+118. UF_CRM_APPLICATIONFEE | Application Fee | money | settings: {"DEFAULT_VALUE":""}
+119. UF_CRM_AUTO_UNPUBLISH_DATE | Auto Unpublish Date | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+120. UF_CRM_BACKAGENTMLS | Back Office MLS | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+121. UF_CRM_BASEMENTDETAILS | Basement Details | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+122. UF_CRM_BAYUT_ERROR_LOG | Bayut Error Log | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+123. UF_CRM_BAYUT_IN_PROCESS | Bayut In Process | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+124. UF_CRM_BAYUT_LOCATION_ID | Bayut Location Id | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+125. UF_CRM_PORTALS_ENABLED | BayutDubizzle Feed | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+126. UF_CRM_BEACHFRONT_1 | Beachfront | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+127. UF_CRM_BROKER_REGISTRATION | Broker Registration/License | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+128. UF_CRM_BROKER_S_LISTING_ID | Broker's Listing ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+129. UF_CRM_YEAR_BUILD_TEXT | Build Year | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+130. UF_CRM_BUILDING_DUBIZZLE | Building - Bayut | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+131. UF_CRM_BUYERAGENTCOMMISSION | Buyers Agent Commission % | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+132. UF_CRM_COLISTINGAGENT | Co-Listing Agent | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+133. UF_CRM_COLISTINGAGENTEMAIL | CoListing Agent Email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+134. UF_CRM_COLISTINGAGENTMLSID | CoListing Agent MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+135. UF_CRM_COLISTINGAGENTNAME | CoListing Agent Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+136. UF_CRM_COLISTINGOFFICEMLSID | Colisting Office MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+137. UF_CRM_COLISTINGOFFICENAME | Colisting Office Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+138. UF_CRM_COMBINEDTITLE | CombinedTitle | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+139. UF_CRM_COMMENTS_1 | Comments | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+140. UF_CRM_COMMERCIAL_AMENITIES | Commercial Amenities | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+141. UF_CRM_COMMUNITY_PROPERTYFINDER | Community - Propertyfinder | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+142. UF_CRM_COMPLETIONDATE | Completion Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+143. UF_CRM_CONTINGENTDATE | Contingent | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+144. UF_CRM_CONTRACTDATE | Contract | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+145. UF_CRM_COUNTY | County | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+146. UF_CRM_DAYSOFFMARKET | Days Off Market | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+147. UF_CRM_DAYSONMARKET | Days On Market | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+148. UF_CRM_DAYS_SINCE_LAST_CONTACTED | Days since last contacted | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+149. UF_CRM_DEFERRAL_DATE | Deferral Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+150. UF_CRM_DESCRIPTION_1 | Description | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+151. UF_CRM_DESCRIPTION_ARABIC | Description (Arabic) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+152. UF_CRM_DESCRIPTION_AUTO | Description - Auto | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+153. UF_CRM_DESCRIPTION_INTRO | Description - Intro (non editable) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+154. UF_CRM_DESCRIPTION_INTRO_TEXT | Description - Intro Text | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+155. UF_CRM_DESCRIPTION_OUTRO | Description - Outro (non editable) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+156. UF_CRM_DESCRIPTION_OUTRO_TEXT | Description - Outro Text | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+157. UF_CRM_DESCRIPTION_CHARACTER_COUNT | Description Character Count | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+158. UF_CRM_DEVELOPER_NAME | Developer Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+159. UF_CRM_DISPLAYADDRESS | Display Address | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+160. UF_CRM_DISPLAYEDADDRESS | Displayed Address | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+161. UF_CRM_DOCK | Dock | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+162. UF_CRM_DOWN_PAYMENT_PRICE | Down-Payment | money | settings: {"DEFAULT_VALUE":""}
+163. UF_CRM_DTCM_PERMIT | DTCM Permit Number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+164. UF_CRM_DUBIZZLE_REGION | Dubizzle Region | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+165. UF_CRM_ESTIMATEDONMARKETDATE | Estimated On Market Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+166. UF_CRM_EXPIRATION_DATE | Expiration Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+167. UF_CRM_EXT_ID | Ext Id | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+168. UF_CRM_EXTERNALLISTING | External Listing | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+169. UF_CRM_EXTERNAL_LISTING_BROKER | External Listing Broker | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+170. UF_CRM_EXTERNAL_LISTING_STOCK | External Listing Stock | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+171. UF_CRM_UK_FEATURE_1 | Feature 1 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+172. UF_CRM_UK_FEATURE | Feature 10 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+173. UF_CRM_UK_FEATURE_2 | Feature 2 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+174. UF_CRM_UK_FEATURE_3 | Feature 3 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+175. UF_CRM_UK_FEATURE_4 | Feature 4 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+176. UF_CRM_UK_FEATURE_5 | Feature 5 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+177. UF_CRM_UK_FEATURE_6 | Feature 6 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+178. UF_CRM_UK_FEATURE_7 | Feature 7 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+179. UF_CRM_UK_FEATURE_8 | Feature 8 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+180. UF_CRM_UK_FEATURE_9 | Feature 9 | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+181. UF_CRM_FIREPLACE | Fireplace | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+182. UF_CRM_FLOOR | Floor | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+183. UF_CRM_FORM_A_EXPIRY_DATE | Form A expiry date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+184. UF_CRM_FORM_A_PASSWORD | Form A Password | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+185. UF_CRM_GLD_DESCRIPTION | Gld Description | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+186. UF_CRM_GLD_DESCRIPTION_CHARACTERS_REMAINING | Gld Description Characters Remaining | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+187. UF_CRM_GLD_DESCRIPTION_LENGTH | Gld Description Length | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+188. UF_CRM_GOOGLE_DRIVE_FILE_LISTING_FORM | Google Drive File - Listing Form | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+189. UF_CRM_GOOGLE_DRIVE_ID | Google Drive ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+190. UF_CRM_GOOGLE_DRIVE_ID_CONTACT | Google Drive ID - Contact | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+191. UF_CRM_GOOGLE_DRIVE_ID_MEDIA | Google Drive ID - Media | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+192. UF_CRM_GOOGLE_DRIVE_ID_PROPERTY | Google Drive ID - Property | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+193. UF_CRM_GOOGLE_DRIVE_OTHER_FILE_LIST | Google Drive Other File List | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+194. UF_CRM_GRADESCHOOL | Grade School | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+195. UF_CRM_HALFBATHROOMS | Half Bathrooms | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+196. UF_CRM_HANDED_OVER | Handed Over | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+197. UF_CRM_HIGHSCHOOL | High School | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+198. UF_CRM_HISTORIC_PROPSPACE_NOTES | Historic Propspace Notes | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+199. UF_CRM_HISTORICAL | Historical | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+200. UF_CRM_HOAFEES | HOA Fees | money | settings: {"DEFAULT_VALUE":""}
+201. UF_CRM_HOT_STOCK | Hot Stock | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+202. UF_CRM_IN_PF_PROCESS | In PF Process | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+203. UF_CRM_IS_CLAIMABLE | Is Claimable | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+204. UF_CRM_ISMLSLISTING | Is MLS Listing | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+205. UF_CRM_LAST_CONTACTED_DATE | Last Contacted Date | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+206. UF_CRM_LAST_REFRESH_DATE | Last Refresh Date | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+207. UF_CRM_LATITUDE | Latitude | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+208. UF_CRM_LATITUDE_PROPERTY | Latitude Property | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+209. UF_CRM_LAYOUT | Layout | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+210. UF_CRM_LAYOUT_INFO | Layout Info | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+211. UF_CRM_LEGACY_OWNER | Legacy Owner | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+212. UF_CRM_LISTOFFICEMLSID | List Office MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+213. UF_CRM_LISTOFFICENAME | List Office Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+214. UF_CRM_LISTINGPRICEPERSQFT | List Price Per Sq./Ft. | money | settings: {"DEFAULT_VALUE":""}
+215. UF_CRM_LISTINGTOORIGINALLISTPRICERATIO | List Price/Original List Price | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+216. UF_CRM_LISTINGTOSOLDPRICERATIO | List Price/Sold Price | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+217. UF_CRM_LISTEDDATE | Listed Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+218. UF_CRM_LISTING_AGENT_CITY | Listing Agent City | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+219. UF_CRM_LISTING_AGENT_COUNTRY | Listing Agent Country | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+220. UF_CRM_LISTING_AGENT_EMAIL | Listing Agent Email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+221. UF_CRM_LISTING_AGENT_FAX | Listing Agent Fax | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+222. UF_CRM_LISTING_AGENT_FIRSTNAME | Listing Agent Firstname | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+223. UF_CRM_LISTING_AGENT_LASTNAME | Listing Agent Lastname | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+224. UF_CRM_LISTING_AGENT_LICENCE | Listing Agent Licence | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+225. UF_CRM_LISTINGAGENTMLSID | Listing Agent MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+226. UF_CRM_LISTING_AGENT_MOBIL_PHONE | Listing Agent Mobile Phone | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+227. UF_CRM_LISTINGAGENTNAME | Listing Agent Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+228. UF_CRM_LISTING_AGENT_PHONE | Listing Agent Phone | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+229. UF_CRM_LISTING_AGENT_PHOTO | Listing Agent Photo | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+230. UF_CRM_LISTING_AGENT_STREET | Listing Agent Street | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+231. UF_CRM_LISTING_AGENT_STREET_NUMBER | Listing Agent Street Number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+232. UF_CRM_LISTING_AGENT_WEBSITE | Listing Agent Website | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+233. UF_CRM_LISTING_AGENT_ZIP | Listing Agent Zip | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+234. UF_CRM_LISTING_AUTONUMBER | Listing Autonumber | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+235. UF_CRM_LISTING_LINK | Listing Link | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+236. UF_CRM_LISTING_LOCKED | Listing Locked | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+237. UF_CRM_LISTING_OWNER_EMAIL | Listing Owner email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+238. UF_CRM_LISTING_OWNER_LASTNAME | Listing Owner Lastname | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+239. UF_CRM_LISTING_OWNER_MOBILE | Listing Owner Mobile | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+240. UF_CRM_LISTING_OWNER_NAME | Listing Owner Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+241. UF_CRM_LISTING_WEBSITE | Listing Website | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+242. UF_CRM_LOCATIONTEXT_DUBIZZLE | LocationText - Bayut | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+243. UF_CRM_LONGITUDE | Longitude | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+244. UF_CRM_LONGITUDE_PROPERTY | Longitude Property | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+245. UF_CRM_LOTSIZE | Lot Size | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+246. UF_CRM_MASTER_PROJECT_INFO | Master Project Info | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+247. UF_CRM_MASTERPROPERTY | Master Property | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+248. UF_CRM_MIDDLESCHOOL | Middle School | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+249. UF_CRM_MLSCREATEDAT | MLS Created At | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+250. UF_CRM_MLSID | MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+251. UF_CRM_MLSNAME | MLS Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+252. UF_CRM_MLSRESOOUID | MLS RESO OUID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+253. UF_CRM_MLSUPDATEDAT | MLS Updated At | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+254. UF_CRM_MONTHLYRENT | Monthly Rent | money | settings: {"DEFAULT_VALUE":""}
+255. UF_CRM_MONTHLYRENTPERSQFT | Monthly Rent per Sq./Ft. | money | settings: {"DEFAULT_VALUE":""}
+256. UF_CRM_NET_RENTAL_YIELD | Net Rental Yield | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+257. UF_CRM_NEWCONSTRUCTION | New Construction | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+258. UF_CRM_NOTAVAILABLEONWEBSITE | Not Available On Website | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+259. UF_CRM_SYSTEMIDXEXTERNALIMAGES | Number of external Images | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+260. UF_CRM_NUMBEROFFIREPLACES | Number of Fireplaces | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+261. UF_CRM_NUMBEROFFLOORS | Number Of Floors | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+262. UF_CRM_NUMBEROFGARAGESPACES | Number Of Garage Spaces | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+263. UF_CRM_NUMBEROFPARKINGSPACES | Number of Parking Spaces | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+264. UF_CRM_OFFMARKETDATE | Off Market | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+265. UF_CRM_ONMARKETDATE | On Market Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+266. UF_CRM_ORIGINALLISTPRICE | Original List Price | money | settings: {"DEFAULT_VALUE":""}
+267. UF_CRM_OVERALLDAYSONMARKET | Overall Days On Market | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+268. UF_CRM_PARCEL_NUMBER | Parcel Number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+269. UF_CRM_PARKINGAVAILABLE | Parking Available | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+270. UF_CRM_PENDINGDATE | Pending | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+271. UF_CRM_PETDEPOSIT | Pet Deposit | money | settings: {"DEFAULT_VALUE":""}
+272. UF_CRM_PF_ERROR_LOG | PF Error Log | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+273. UF_CRM_PICTURECOUNT | Picture Count | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+274. UF_CRM_PLOT_SIZE | Plot Size | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+275. UF_CRM_POOL | Pool | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+276. UF_CRM_PORTAL_LISTING_AGENT | Portal Listing Agent | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+277. UF_CRM_PREVIOUS_LISTING_ID | Previous Listing ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+278. UF_CRM_PREVIOUSPRICE | Previous Price | money | settings: {"DEFAULT_VALUE":""}
+279. UF_CRM_LISTINGPRICE | Price | money | settings: {"DEFAULT_VALUE":""}
+280. UF_CRM_PRICECHANGEDAT | Price Changed At | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+281. UF_CRM_PRICE_ON_REQUEST | Price on Request | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+282. UF_CRM_PRICE_PER_SQUARE_FOOT | Price Per Square Foot | money | settings: {"DEFAULT_VALUE":""}
+283. UF_CRM_PRIMARY_IMAGE_LINK | Primary Image Link | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+284. UF_CRM_PRIVATE_AMENITIES | Private Amenities | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+285. UF_CRM_PROJECT_INFO | Project Info | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+286. UF_CRM_PROJECT_NAME | Project Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+287. UF_CRM_PROPERTY_PROPERTYFINDER | Property - Propertyfinder | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+288. UF_CRM_PROPERTY_FINDER_LOCATION_ID | Property Finder Location Id | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+289. UF_CRM_PROPERTY_LAYOUT | Property Layout | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+290. UF_CRM_PROPERTYOWNERCONTACT | Property Owner | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"Y","DEAL":"N"}
+291. UF_CRM_PROPERTY_OWNER_2 | Property Owner 2 | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"Y","DEAL":"N"}
+292. UF_CRM_PROPERTY_OWNER_EMAIL | Property Owner Email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+293. UF_CRM_PROPERTY_OWNER_NAME | Property Owner Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+294. UF_CRM_PROPERTY_OWNER_PHONE | Property Owner Phone | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+295. UF_CRM_PROPERTYFINDER_REGION | Propertyfinder Region | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+296. UF_CRM_PROPSPACE_PF_LISTING | Propspace PF Listing | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+297. UF_CRM_PROPSPACE_PF_PUBLISHED | Propspace PF Published | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+298. UF_CRM_PROPSPACE_REMIND | Propspace Remind | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+299. UF_CRM_QR_CODE | QR Code | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+300. UF_CRM_QR_CODE_LINK | QR Code Link | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+301. UF_CRM_QUARTERBATHROOMS | Quarter Bathrooms | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+302. UF_CRM_REFERRAL_AGENT_LANDLORD | Referral agent - Landlord | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+303. UF_CRM_REFERRAL_AGENT_SELLER | Referral Agent - Seller | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+304. UF_CRM_REFERRED_BY | Referred by | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"N","DEAL":"N"}
+305. UF_CRM_REFERRED_BY_LOGGED_IN_USER | Referred by logged in user | employee | settings: {"DEFAULT_VALUE":[]}
+306. UF_CRM_SALEAGENTEMAIL | Sale Agent Email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+307. UF_CRM_SALEAGENTMLSID | Sale Agent MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+308. UF_CRM_SALEAGENTNAME | Sale Agent Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+309. UF_CRM_SALEDATE | Sale Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+310. UF_CRM_SALEOFFICEMLSID | Sale Office MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+311. UF_CRM_SALEOFFICENAME | Sale Office Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+312. UF_CRM_SERVICE_CHARGE | Service Charge | money | settings: {"DEFAULT_VALUE":""}
+313. UF_CRM_TOTALAREA | Size | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+314. UF_CRM_SOLDDATE | Sold Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+315. UF_CRM_SOLDPRICE | Sold Price | money | settings: {"DEFAULT_VALUE":""}
+316. UF_CRM_SOLDPRICEPERSQFT | Sold Price per Sq./Ft. | money | settings: {"DEFAULT_VALUE":""}
+317. UF_CRM_SQFT | Sq./Ft. | double | settings: {"PRECISION":0,"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+318. UF_CRM_STATE | State | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+319. UF_CRM_STATECODE | State Code | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+320. UF_CRM_STATUSCHANGEDAT | Status Changed At | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+321. UF_CRM_STORIES_1 | Stories | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+322. UF_CRM_STREET | Street | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+323. UF_CRM_STREET_NUMBER | Street Number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+324. UF_CRM_SUBAREA | Sub Area | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+325. UF_CRM_SUB_COMMUNITY_PROPERTYFINDER | Sub Community - Propertyfinder | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+326. UF_CRM_SUBDIVISION | Subdivision | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+327. UF_CRM_SUMMARY | Summary | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+328. UF_CRM_UK_SUMMARY_DESCRIPTION | Summary Description | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+329. UF_CRM_SYSTEMALLOWEDFORPORTALS | System Allowed for Portals | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+330. UF_CRM_SYSTEMEXTERNALID | SystemExternalId | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+331. UF_CRM_SYSTEMHASACCEPTEDOFFER | SystemHasAcceptedOffer | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+332. UF_CRM_SYSTEMHASCLOSEDCLOSING | SystemHasClosedClosing | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+333. UF_CRM_SYSTEMHASEXCLUSIVEOFFER | SystemHasExclusiveOffer | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+334. UF_CRM_SYSTEMIDXPOOL | SystemIdxPool | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+335. UF_CRM_SYSTEMISARCHIVED | SystemIsArchived | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+336. UF_CRM_SYSTEMISIDX | SystemIsIdx | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+337. UF_CRM_SYSTEMISIDXFULLIMPORT | SystemIsIdxFullImport | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+338. UF_CRM_SYSTEMPOOLID | SystemPoolId | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+339. UF_CRM_TAXES | Taxes | money | settings: {"DEFAULT_VALUE":""}
+340. UF_CRM_TDLINK | TD Link | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+341. UF_CRM_TDURL | TD URL | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+342. UF_CRM_TECHNICALSOURCESYSTEM | Technical Source | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+343. UF_CRM_TENANT | Tenant | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"N","DEAL":"N"}
+344. UF_CRM_THREEQUARTERBATHROOMS | Three Quarter Bathrooms | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+345. UF_CRM_TITLE_DEED | Title Deed | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+346. UF_CRM_TOTALBATHROOMS | Total Bathrooms | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+347. UF_CRM_TOTAL_CLOSING_FEE | Total Closing Fee | money | settings: {"DEFAULT_VALUE":""}
+348. UF_CRM_UK_LISTING_SALES_FOR_FEED | UK Listing Sales for Feed | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+349. UF_CRM_UNITCOUNT | Unit Count | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+350. UF_CRM_UNITLEVEL | Unit Level | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+351. UF_CRM_VACANT_ON_TRANSFER | Vacant on Transfer | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+352. UF_CRM_VIEWABLE | Viewable | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+353. UF_CRM_WATERVIEW | Water View | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+354. UF_CRM_WATERFRONT | Waterfront | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+355. UF_CRM_WEBSITECREATEDAT | Website Created At | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+356. UF_CRM_WEBSITEID | Website ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+357. UF_CRM_WEBSITEUPDATEDAT | Website Updated At | datetime | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""},"USE_SECOND":"Y","USE_TIMEZONE":"N"}
+358. UF_CRM_WEBSITE_URL | Website URL | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+359. UF_CRM_WITHDRAW_DATE | Withdraw Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+360. UF_CRM_WITHDRAW_REASON_OTHER | Withdraw Reason Other | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+361. UF_CRM_YARD | Yard | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+362. UF_CRM_YEARBUILTTEXT | Year Built | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+363. UF_CRM_YEAR_BUILT_TEXT | Year Built (Text) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+364. UF_CRM_YEARLY_RENTAL | Yearly Rental | money | settings: {"DEFAULT_VALUE":""}
+365. UF_CRM_ZIPFORMLINK | Zip Form Link | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+366. UF_CRM_ZIPFORMURL | Zip Form URL | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+367. UF_CRM_POSTALCODE | Zip/Postal Code | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+368. UF_CRM_COSELLINGAGENTMLSID | Coselling Agent MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+369. UF_CRM_COSELLINGAGENTNAME | Coselling Agent Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+370. UF_CRM_COSELLINGOFFICEMLSID | Coselling Office MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+371. UF_CRM_COSELLINGOFFICENAME | Coselling Office Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+372. UF_CRM_LASTMODIFIEDBYID | Last Modified By | employee | settings: {"DEFAULT_VALUE":[]}
+373. UF_CRM_REFER_TO | Refer to | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+374. UF_CRM_TITLE_ARABIC | Title (Arabic) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+375. UF_CRM_TITLE_CHARACTER_COUNTER | Title Character Counter | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+376. UF_CRM_EXPOSE_IMAGES | Expose Images | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+377. UF_CRM_WEBSITE_IMAGES | Website Images | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+378. UF_CRM_AUTO_UNPUBLISH_LISTING_STATUS | Auto Unpublish Listing Status | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+379. UF_CRM_BAYUT_PROPERTY_TYPE | Bayut Property Type | enumeration | options: 15 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+380. UF_CRM_BUILDINGSTYLE | Building Style | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+381. UF_CRM_COMPLETION_STATUS | Completion Status | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+382. UF_CRM_CONSTRUCTIONTYPE | Construction Type | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+383. UF_CRM_FLOORTYPE | Floor Type | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+384. UF_CRM_GEOCODEACCURACY | Geocode Accuracy | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+385. UF_CRM_HEATINGTYPE | Heating Type | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+386. UF_CRM_HOAFREQUENCY | HOA Frequency | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+387. UF_CRM_LANGUAGE_LOCALE | Language Locale | enumeration | options: 10 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+388. UF_CRM_LISTING_AGENT_SALUTATION | Listing Agent Salutation | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+389. UF_CRM_LISTING_SOURCE | Listing Source | enumeration | options: 9 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+390. UF_CRM_LOCATION_SOURCE | Location Source | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+391. UF_CRM_MEASUREMENT | Measurement | enumeration | options: 2 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+392. UF_CRM_PAYMENT_METHOD | Payment Method | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+393. UF_CRM_PREVIOUSSTATUS | Previous Status | enumeration | options: 8 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+394. UF_CRM_PROPERTY_SUB_TYPE | Property Sub Type | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+395. UF_CRM_PUBLISH_STATUS | Publish Status | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+396. UF_CRM_SQFTSOURCE | Sq./Ft. Source | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+397. UF_CRM_STATUS | Status | enumeration | options: 8 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+398. UF_CRM_UK_PRICE_QUALIFIER | UK_Price_Qualifier | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+399. UF_CRM_UK_TENURE | UK_Tenure | enumeration | options: 4 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+400. UF_CRM_VIEWING_STATUS | Viewing Status | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+401. UF_CRM_WATERBODY | Water Body | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+402. UF_CRM_WITHDRAW_REASON | Withdraw Reason | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+403. UF_CRM_PROPERTYFINDER_PROPERTY_TYPE | PropertyFinder Property Type | enumeration | options: 14 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+404. UF_CRM_RECORDTYPEID | Record Type | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+405. UF_CRM_PHOTOS_AND_DOCUMENTS | Photos and Documents | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+406. UF_CRM_FORM_A_DOCUMENT | Form A Document | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+407. UF_CRM_TRAKHEESI_PERMIT_NO | Trakheesi Permit No | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+408. UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE | Trakheesi Permit Expiry Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+409. UF_CRM_PHOTOS | Photos | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+410. UF_CRM_DOCUMENTS | Documents | file | settings: {"SIZE":20,"LIST_WIDTH":0,"LIST_HEIGHT":0,"MAX_SHOW_SIZE":0,"MAX_ALLOWED_SIZE":0,"EXTENSIONS":[],"TARGET_BLANK":"Y","DEFAULT_VIEW":null}
+411. UF_CRM_ENQUIRY | Enquiry | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+412. UF_CRM_ACCOUNT | Account | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"Y","DEAL":"N"}
+413. UF_CRM_BODYOFWATER | Body of Water | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+414. UF_CRM_HOUSEHOLDMEMBERS | Household Members | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+415. UF_CRM_INCLUDESALLCHANGES | Includes All Changes | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+416. UF_CRM_SCHOOL_1 | School | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+417. UF_CRM_STYLE_1 | Style | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+418. UF_CRM_ACREMAX | Acre Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+419. UF_CRM_ACREMIN | Acre Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+420. UF_CRM_AD_ID | Ad ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+421. UF_CRM_ADDITIONALCITIES | Additional Cities | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+422. UF_CRM_ADDITIONALPOSTALCODES | Additional Postal Codes | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+423. UF_CRM_AGENT_REFERRAL | Agent Referral | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+424. UF_CRM_AS_SET_ID | As Set ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+425. UF_CRM_ASSIGNED_TO_BROKER | Assigned to Broker | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+426. UF_CRM_BUILDINGANDDEVELOPMENTS | Buildings and Developments | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+427. UF_CRM_BUYINGTIMEFRAME | Buying Time Frame | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+428. UF_CRM_CAMPAIGN_NAME | Campaign Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+429. UF_CRM_CHEQUES_1 | Cheques | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+430. UF_CRM_CONTACT_NAME | Contact Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+431. UF_CRM_CONTACTED_CONVERSION_DAYS | Contacted conversion days | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+432. UF_CRM_COUNTIES | Counties | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+433. UF_CRM_DATE_ASSIGNED_TO_BROKER | Date Assigned to Broker | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+434. UF_CRM_DAYSONMARKETMAX | Days On Market Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+435. UF_CRM_DAYSONMARKETMIN | Days On Market Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+436. UF_CRM_DAYS_SINCE_LAST_ACTIVITY | Days since last activity | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+437. UF_CRM_DEVELOPMENTNAME | Development Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+438. UF_CRM_DISQUALIFY_DATE | Disqualify Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+439. UF_CRM_DISQUALIFY_REASON | Disqualify Reason | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+440. UF_CRM_DISQUALIFY_REASON_OTHER | Disqualify Reason Other | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+441. UF_CRM_EMAILFREQUENCY | Email Frequency | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+442. UF_CRM_EMORTGAGE_AUTO_REFERRAL | eMortgage Auto Referral | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+443. UF_CRM_EMORTGAGE_BROKER | eMortgage Broker | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+444. UF_CRM_EMORTGAGE_BROKER_EMAIL | eMortgage Broker email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+445. UF_CRM_EMORTGAGE_BROKER_NUMBER | eMortgage Broker number | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+446. UF_CRM_EMORTGAGE_REFERRAL_DATE | eMortgage Referral Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+447. UF_CRM_EMORTGAGE_REFERRED_BY | eMortgage Referred By | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+448. UF_CRM_EMORTGAGE_SKIP_SEND | eMortgage Skip Send | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+449. UF_CRM_NAME | Enquiry ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+450. UF_CRM_ENQUIRY_LOCKED_1 | Enquiry Locked | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+451. UF_CRM_LEGACY_ENQUIRY_OWNER | Enquiry Owner | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+452. UF_CRM_ENQUIRY_OWNER_NAME | Enquiry Owner Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+453. UF_CRM_EPPRAISALVALUATION | Eppraisal Valuation | money | settings: {"DEFAULT_VALUE":""}
+454. UF_CRM_ESTATEDVALUATION | Estated Valuation | money | settings: {"DEFAULT_VALUE":""}
+455. UF_CRM_ESTIMATEDHOMEVALUE | Estimated Home Value | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+456. UF_CRM_FINANCE | Finance | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+457. UF_CRM_FIRST_CONTACTED_DATE | First Contacted Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+458. UF_CRM_FIRST_VIEWING_DATE | First Viewing Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+459. UF_CRM_FLOOR_MAX | Floor - max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+460. UF_CRM_FLOOR_MIN | Floor - min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+461. UF_CRM_FLOORINGTYPE | Flooring Type | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+462. UF_CRM_FRONT_DESK_EMAIL | Front Desk Email | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+463. UF_CRM_FUTURE_TASK_DATE | Future Task Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+464. UF_CRM_GARAGESPACEMAX | Garage Space Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+465. UF_CRM_GARAGESPACEMIN | Garage Space Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+466. UF_CRM_GLD_ENQUIRY_NAME | Gld Enquiry Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+467. UF_CRM_HISTORIC | Historic | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+468. UF_CRM_HOAFEESMAX | HOA Fees Max | money | settings: {"DEFAULT_VALUE":""}
+469. UF_CRM_HOAFEESMIN | HOA Fees Min | money | settings: {"DEFAULT_VALUE":""}
+470. UF_CRM_HOMEOWNERCONFIRMED | Homeowner Confirmed | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+471. UF_CRM_INCLUDESNEWLISTINGS | Includes New Listings | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+472. UF_CRM_INCLUDESOPENHOUSECHANGES | Includes Open House Changes | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+473. UF_CRM_INCLUDESPRICECHANGES | Includes Price Changes | money | settings: {"DEFAULT_VALUE":""}
+474. UF_CRM_INCLUDESSTATUSCHANGES | Includes Status Changes | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+475. UF_CRM_IS_A_REAL_ESTATE_BROKER | Is a Real Estate Broker | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+476. UF_CRM_IS_CONTACT_VIEWABLE | Is Contact Viewable | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+477. UF_CRM_ISWEBSITESAVEDSEARCH | Is Website Saved Search | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+478. UF_CRM_KEYWORDS | Keywords | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+479. UF_CRM_LEAD_RESPONSE | Lead Response | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+480. UF_CRM_LENGTHOFRESIDENCEINHOME | Length of Residence in Home (months) | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+481. UF_CRM_LISTINGOFFICE | Listing Office | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+482. UF_CRM_LOCATIONKEYWORDS | Location Keywords | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+483. UF_CRM_LOTSIZE_MAX | Lot Size - max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+484. UF_CRM_LOTSIZE_MIN | Lot Size - min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+485. UF_CRM_MANUALLY_SET_CRITERIA | Manually Set Criteria | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+486. UF_CRM_MESSAGECONTENT | Message | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+487. UF_CRM_META_RESPONSE | META Response | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+488. UF_CRM_MONTHLYRENTMAX | Monthly Rent - max | money | settings: {"DEFAULT_VALUE":""}
+489. UF_CRM_MONTHLYRENTMIN | Monthly Rent - min | money | settings: {"DEFAULT_VALUE":""}
+490. UF_CRM_MORTGAGEDATE | Mortgage Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+491. UF_CRM_MOVE_DATE | Move Date | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+492. UF_CRM_NEIGHBORHOODS | Neighborhoods | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+493. UF_CRM_OWNER_ENQUIRY | Owner - Enquiry | crm | settings: {"LEAD":"N","CONTACT":"Y","COMPANY":"Y","DEAL":"N"}
+494. UF_CRM_PARKINGMIN | Parking Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+495. UF_CRM_PARKING_SPACES_MAX | Parking Spaces - max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+496. UF_CRM_PARKING_SPACES_MIN | Parking Spaces - min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+497. UF_CRM_PORTAL_LISTING_ID | Portal Listing Id | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+498. UF_CRM_LISTINGPRICE_MAX | Price - max | money | settings: {"DEFAULT_VALUE":""}
+499. UF_CRM_LISTINGPRICE_MIN | Price - min | money | settings: {"DEFAULT_VALUE":""}
+500. UF_CRM_PROPSPACE_AGENT | Propspace Agent | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+501. UF_CRM_PURCHASEAMOUNTOFHOME | Purchase Amount of Home | money | settings: {"DEFAULT_VALUE":""}
+502. UF_CRM_RECOMMENDED_LISTINGS | Recommended_Listings | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+503. UF_CRM_REFERRAL_AGENT_BUYER | Referral agent - Buyer | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+504. UF_CRM_REFERRAL_AGENT_TENANT | Referral agent - Tenant | crm | settings: {"LEAD":"Y","CONTACT":"N","COMPANY":"N","DEAL":"N"}
+505. UF_CRM_RESPOND_LINK | Respond Link | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+506. UF_CRM_ROTATION_NAME | Rotation Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+507. UF_CRM_SATURDAYOPENHOUSE | Saturday Open House | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+508. UF_CRM_DESCRIPTION_2 | Saved Search Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+509. UF_CRM_SCHOOLATTENDANCEZONES | School Attendance Zones | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+510. UF_CRM_SCHOOLDISTRICTS | School Districts | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+511. UF_CRM_SECONDARY_REFERENCE | Secondary Reference | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+512. UF_CRM_SELLINGTIMEFRAME | Selling Time Frame | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+513. UF_CRM_TOTALAREA_MAX | Size - max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+514. UF_CRM_TOTALAREA_MIN | Size - min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+515. UF_CRM_SPAM_ENQUIRY | Spam Enquiry | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+516. UF_CRM_SPAM_REASON | Spam Reason | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+517. UF_CRM_STORIES_MAX | Stories - max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+518. UF_CRM_STORIES_MIN | Stories - min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+519. UF_CRM_STORIESMAX | Stories Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+520. UF_CRM_STORIESMIN | Stories Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+521. UF_CRM_STREETNAME | Street Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+522. UF_CRM_SUBDIVISIONNAME | Subdivision Name | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+523. UF_CRM_SUBDIVISIONS | Subdivisions | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+524. UF_CRM_SUNDAYOPENHOUSE | Sunday Open House | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+525. UF_CRM_SYSTEMISEXTERNALUPDATE | System Is External Update | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+526. UF_CRM_SYSTEM_SKIPS_ROTATION | System Skips Rotation | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+527. UF_CRM_SYSTEMCONTROL | SystemControl | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+528. UF_CRM_SYSTEMISACTIVE | SystemIsActive | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+529. UF_CRM_TAXMAX | Tax Max | money | settings: {"DEFAULT_VALUE":""}
+530. UF_CRM_TAXMIN | Tax Min | money | settings: {"DEFAULT_VALUE":""}
+531. UF_CRM_THISWEEKOPENHOUSE | This Week Open House | date | settings: {"DEFAULT_VALUE":{"TYPE":"NONE","VALUE":""}}
+532. UF_CRM_UNITSMIN | Units Min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+533. UF_CRM_VOT_REQUIRED | VOT required? | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+534. UF_CRM_WEBSITEMLSID | Website MLS ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+535. UF_CRM_WEBSITESEARCHID | Website Search ID | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+536. UF_CRM_WEBSITESEARCHTYPE | Website Search Type | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+537. UF_CRM_WEBSITESEARCHURL | Website Search URL | url | settings: {"POPUP":"Y","SIZE":20,"MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":"","ROWS":1}
+538. UF_CRM_WHATSAPP_RESPONSE | Whatsapp Response | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+539. UF_CRM_YEARBUILT_MAX | Year Built - max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+540. UF_CRM_YEARBUILT_MIN | Year Built - min | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+541. UF_CRM_UNITSMAX | Units Max | integer | settings: {"SIZE":20,"MIN_VALUE":0,"MAX_VALUE":0,"DEFAULT_VALUE":null}
+542. UF_CRM_LISTING_REF | Listing Ref | string | settings: {"SIZE":20,"ROWS":1,"REGEXP":"","MIN_LENGTH":0,"MAX_LENGTH":0,"DEFAULT_VALUE":""}
+543. UF_CRM_BUYING_TIMEFRAME | Buying Timeframe | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+544. UF_CRM_BASEMENTTYPE | Basement Type | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+545. UF_CRM_CONSTRUCTION | Construction | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+546. UF_CRM_COOLINGTYPE | Cooling Type | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+547. UF_CRM_ENQUIRY_SOURCE | Enquiry Source | enumeration | options: 9 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+548. UF_CRM_FUTURE_VIEWINGS_BOOKED | Future Viewings Booked | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+549. UF_CRM_HEATTYPE | Heat Type | enumeration | options: 5 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+550. UF_CRM_LEAD_SOURCE_TYPE | Lead source Type | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+551. UF_CRM_NATIONALITY | Nationality | enumeration | options: 17 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+552. UF_CRM_NORMAL_LOW_HIGH_URGENT | Normal Low High Urgent | enumeration | options: 4 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+553. UF_CRM_PROPERTYSTATUS | Property Status | enumeration | options: 6 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+554. UF_CRM_PROPERTY_SUB_TYPE_MULTI | Property Sub Type (multi) | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+555. UF_CRM_SUB_STATUS | Sub Status | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+556. UF_CRM_SUBTYPE | Sub Type | enumeration | options: 7 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+557. UF_CRM_FINANCE_1 | Finance | enumeration | options: 0 | settings: {"DISPLAY":"LIST","LIST_HEIGHT":1,"CAPTION_NO_VALUE":"","SHOW_NO_VALUE":"Y"}
+558. UF_CRM_WHATSAPP_RESPONSE_1 | Whatsapp Response | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+559. UF_CRM_ENQUIRY_LOCKED_2 | Enquiry Locked | boolean | settings: {"DEFAULT_VALUE":0,"DISPLAY":"CHECKBOX","LABEL":["",""],"LABEL_CHECKBOX":""}
+560. UF_CRM_DEAL_VALUE_1 | Deal Value | money | settings: {"DEFAULT_VALUE":""}

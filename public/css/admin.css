@@ -1,0 +1,124 @@
+/**
+ * public/css/admin.css
+ * Admin Setup Portal styling
+ */
+
+:root {
+  --b24-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --b24-primary: #2fc6f6;
+  --b24-success: #9dcf00;
+  --b24-danger: #ff5752;
+  --b24-bg: #f5f7f8;
+  --b24-card: #ffffff;
+  --b24-border: #dbe0e4;
+  --b24-text: #333333;
+}
+
+body {
+  font-family: var(--b24-font);
+  background-color: var(--b24-bg);
+  color: var(--b24-text);
+  margin: 0;
+  padding: 24px;
+}
+
+.admin-header {
+  background: var(--b24-card);
+  padding: 20px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--b24-border);
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #202428;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.panel {
+  background: var(--b24-card);
+  border: 1px solid var(--b24-border);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.panel-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--b24-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.tag-success { background: #e8f5e9; color: #2e7d32; }
+.tag-warning { background: #fff3e0; color: #e65100; }
+.tag-danger { background: #ffebee; color: #c62828; }
+.tag-info { background: #e3f2fd; color: #1565c0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #edf0f2;
+}
+
+th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #535c69;
+}
+
+.badge {
+  font-family: monospace;
+  background: #edf0f2;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}

@@ -1,0 +1,30 @@
+{
+  "name": "bitrix24-realestate-lead-app",
+  "version": "1.0.0",
+  "description": "Private Bitrix24 Local Application for Real Estate CRM: Dynamic Lead Details Tab & Stage Routing",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node test-suite.js"
+  },
+  "keywords": [
+    "bitrix24",
+    "local-app",
+    "crm",
+    "real-estate",
+    "lead-tab",
+    "stage-routing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "ngrok": "^5.0.0-beta.2"
+  }
+}

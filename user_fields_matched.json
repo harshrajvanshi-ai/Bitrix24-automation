@@ -1,0 +1,527 @@
+{
+  "matched": [
+    {
+      "requested": "Name",
+      "foundCode": "UF_CRM_1791952409183",
+      "foundLabel": "Listing Name",
+      "type": "string"
+    },
+    {
+      "requested": "Owner - Listing",
+      "foundCode": "UF_CRM_OWNER_LISTING",
+      "foundLabel": "Owner - Listing",
+      "type": "crm"
+    },
+    {
+      "requested": "Property Owner",
+      "foundCode": "UF_CRM_PROPERTYOWNERCONTACT",
+      "foundLabel": "Property Owner",
+      "type": "crm"
+    },
+    {
+      "requested": "Referral Agent - Seller",
+      "foundCode": "UF_CRM_REFERRAL_AGENT_SELLER",
+      "foundLabel": "Referral Agent - Seller",
+      "type": "crm"
+    },
+    {
+      "requested": "Property Owner 2",
+      "foundCode": "UF_CRM_PROPERTY_OWNER_2",
+      "foundLabel": "Property Owner 2",
+      "type": "crm"
+    },
+    {
+      "requested": "Property Type",
+      "foundCode": "UF_CRM_1791952050535",
+      "foundLabel": "Property Type",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Website URL",
+      "foundCode": "UF_CRM_WEBSITE_URL",
+      "foundLabel": "Website URL",
+      "type": "url"
+    },
+    {
+      "requested": "Bayut Property Type",
+      "foundCode": "UF_CRM_BAYUT_PROPERTY_TYPE",
+      "foundLabel": "Bayut Property Type",
+      "type": "enumeration"
+    },
+    {
+      "requested": "PropertyFinder Property Type",
+      "foundCode": "UF_CRM_PROPERTYFINDER_PROPERTY_TYPE",
+      "foundLabel": "PropertyFinder Property Type",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Project",
+      "foundCode": "UF_CRM_PROJECT_1",
+      "foundLabel": "Project",
+      "type": "crm"
+    },
+    {
+      "requested": "Layout",
+      "foundCode": "UF_CRM_LAYOUT",
+      "foundLabel": "Layout",
+      "type": "crm"
+    },
+    {
+      "requested": "Property",
+      "foundCode": "UF_CRM_PROPERTY",
+      "foundLabel": "Property",
+      "type": "crm"
+    },
+    {
+      "requested": "Listing Source",
+      "foundCode": "UF_CRM_LISTING_SOURCE",
+      "foundLabel": "Listing Source",
+      "type": "enumeration"
+    },
+    {
+      "requested": "View",
+      "foundCode": "UF_CRM_1791970130059",
+      "foundLabel": "View",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Address",
+      "foundCode": "UF_CRM_1791970638065",
+      "foundLabel": "Property Address",
+      "type": "address"
+    },
+    {
+      "requested": "Price Per Square Foot",
+      "foundCode": "UF_CRM_PRICE_PER_SQUARE_FOOT",
+      "foundLabel": "Price Per Square Foot",
+      "type": "money"
+    },
+    {
+      "requested": "Price",
+      "foundCode": "UF_CRM_LISTINGPRICE",
+      "foundLabel": "Price",
+      "type": "money"
+    },
+    {
+      "requested": "Exclusive",
+      "foundCode": "UF_CRM_1791970897872",
+      "foundLabel": "Exclusive",
+      "type": "boolean"
+    },
+    {
+      "requested": "Price on Request",
+      "foundCode": "UF_CRM_PRICE_ON_REQUEST",
+      "foundLabel": "Price on Request",
+      "type": "boolean"
+    },
+    {
+      "requested": "Occupancy",
+      "foundCode": "UF_CRM_1791970832589",
+      "foundLabel": "Occupancy",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Date Available",
+      "foundCode": "UF_CRM_DATE_AVAILABLE",
+      "foundLabel": "Date Available",
+      "type": "date"
+    },
+    {
+      "requested": "Viewing Status",
+      "foundCode": "UF_CRM_VIEWING_STATUS",
+      "foundLabel": "Viewing Status",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Listed Date",
+      "foundCode": "UF_CRM_LISTEDDATE",
+      "foundLabel": "Listed Date",
+      "type": "date"
+    },
+    {
+      "requested": "Comments",
+      "foundCode": "UF_CRM_COMMENTS_1",
+      "foundLabel": "Comments",
+      "type": "string"
+    },
+    {
+      "requested": "Previous Listing ID",
+      "foundCode": "UF_CRM_PREVIOUS_LISTING_ID",
+      "foundLabel": "Previous Listing ID",
+      "type": "string"
+    },
+    {
+      "requested": "Hot Stock",
+      "foundCode": "UF_CRM_HOT_STOCK",
+      "foundLabel": "Hot Stock",
+      "type": "boolean"
+    },
+    {
+      "requested": "Days since last contacted",
+      "foundCode": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
+      "foundLabel": "Days since last contacted",
+      "type": "integer"
+    },
+    {
+      "requested": "Listing Locked",
+      "foundCode": "UF_CRM_LISTING_LOCKED",
+      "foundLabel": "Listing Locked",
+      "type": "boolean"
+    },
+    {
+      "requested": "Portal Listing Agent",
+      "foundCode": "UF_CRM_PORTAL_LISTING_AGENT",
+      "foundLabel": "Portal Listing Agent",
+      "type": "crm"
+    },
+    {
+      "requested": "Broker's Listing ID",
+      "foundCode": "UF_CRM_BROKER_S_LISTING_ID",
+      "foundLabel": "Broker's Listing ID",
+      "type": "string"
+    },
+    {
+      "requested": "Form A Signed Date",
+      "foundCode": "UF_CRM_FORM_A_DATE",
+      "foundLabel": "Form A Signed Date",
+      "type": "date"
+    },
+    {
+      "requested": "Form A expiry date",
+      "foundCode": "UF_CRM_FORM_A_EXPIRY_DATE",
+      "foundLabel": "Form A expiry date",
+      "type": "date"
+    },
+    {
+      "requested": "Form A Password",
+      "foundCode": "UF_CRM_FORM_A_PASSWORD",
+      "foundLabel": "Form A Password",
+      "type": "string"
+    },
+    {
+      "requested": "Last Refresh Date",
+      "foundCode": "UF_CRM_LAST_REFRESH_DATE",
+      "foundLabel": "Last Refresh Date",
+      "type": "datetime"
+    },
+    {
+      "requested": "RERA Permit Number",
+      "foundCode": "UF_CRM_1791970864836",
+      "foundLabel": "RERA Permit Number",
+      "type": "string"
+    },
+    {
+      "requested": "QR Code",
+      "foundCode": "UF_CRM_QR_CODE",
+      "foundLabel": "QR Code",
+      "type": "file"
+    },
+    {
+      "requested": "Number of Cheques",
+      "foundCode": "UF_CRM_CHEQUES",
+      "foundLabel": "Number of Cheques",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Listing Type",
+      "foundCode": "UF_CRM_1791952650167",
+      "foundLabel": "Listing type",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Is Claimable",
+      "foundCode": "UF_CRM_IS_CLAIMABLE",
+      "foundLabel": "Is Claimable",
+      "type": "boolean"
+    },
+    {
+      "requested": "Description - Intro Text",
+      "foundCode": "UF_CRM_DESCRIPTION_INTRO_TEXT",
+      "foundLabel": "Description - Intro Text",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 1",
+      "foundCode": "UF_CRM_UK_FEATURE_1",
+      "foundLabel": "Feature 1",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 2",
+      "foundCode": "UF_CRM_UK_FEATURE_2",
+      "foundLabel": "Feature 2",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 3",
+      "foundCode": "UF_CRM_UK_FEATURE_3",
+      "foundLabel": "Feature 3",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 4",
+      "foundCode": "UF_CRM_UK_FEATURE_4",
+      "foundLabel": "Feature 4",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 5",
+      "foundCode": "UF_CRM_UK_FEATURE_5",
+      "foundLabel": "Feature 5",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 6",
+      "foundCode": "UF_CRM_UK_FEATURE_6",
+      "foundLabel": "Feature 6",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 7",
+      "foundCode": "UF_CRM_UK_FEATURE_7",
+      "foundLabel": "Feature 7",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 8",
+      "foundCode": "UF_CRM_UK_FEATURE_8",
+      "foundLabel": "Feature 8",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 9",
+      "foundCode": "UF_CRM_UK_FEATURE_9",
+      "foundLabel": "Feature 9",
+      "type": "string"
+    },
+    {
+      "requested": "Feature 10",
+      "foundCode": "UF_CRM_UK_FEATURE",
+      "foundLabel": "Feature 10",
+      "type": "string"
+    },
+    {
+      "requested": "Description - Outro Text",
+      "foundCode": "UF_CRM_DESCRIPTION_OUTRO_TEXT",
+      "foundLabel": "Description - Outro Text",
+      "type": "string"
+    },
+    {
+      "requested": "Property Sub Type",
+      "foundCode": "UF_CRM_PROPERTY_SUB_TYPE",
+      "foundLabel": "Property Sub Type",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Bathrooms",
+      "foundCode": "UF_CRM_1791966408374",
+      "foundLabel": "Bathrooms",
+      "type": "double"
+    },
+    {
+      "requested": "Bedrooms",
+      "foundCode": "UF_CRM_1791966366775",
+      "foundLabel": "Bedrooms",
+      "type": "double"
+    },
+    {
+      "requested": "Lot Size",
+      "foundCode": "UF_CRM_LOTSIZE",
+      "foundLabel": "Lot Size",
+      "type": "double"
+    },
+    {
+      "requested": "Size",
+      "foundCode": "UF_CRM_TOTALAREA",
+      "foundLabel": "Size",
+      "type": "double"
+    },
+    {
+      "requested": "Net Rental Yield",
+      "foundCode": "UF_CRM_NET_RENTAL_YIELD",
+      "foundLabel": "Net Rental Yield",
+      "type": "double"
+    },
+    {
+      "requested": "Service Charge",
+      "foundCode": "UF_CRM_SERVICE_CHARGE",
+      "foundLabel": "Service Charge",
+      "type": "money"
+    },
+    {
+      "requested": "Tenant",
+      "foundCode": "UF_CRM_TENANT",
+      "foundLabel": "Tenant",
+      "type": "crm"
+    },
+    {
+      "requested": "Yearly Rental",
+      "foundCode": "UF_CRM_YEARLY_RENTAL",
+      "foundLabel": "Yearly Rental",
+      "type": "money"
+    },
+    {
+      "requested": "Commercial Amenities",
+      "foundCode": "UF_CRM_COMMERCIAL_AMENITIES",
+      "foundLabel": "Commercial Amenities",
+      "type": "string"
+    },
+    {
+      "requested": "Parking Spaces",
+      "foundCode": "UF_CRM_PARKING",
+      "foundLabel": "Parking Spaces",
+      "type": "integer"
+    },
+    {
+      "requested": "Private Amenities",
+      "foundCode": "UF_CRM_PRIVATE_AMENITIES",
+      "foundLabel": "Private Amenities",
+      "type": "string"
+    },
+    {
+      "requested": "Furnished",
+      "foundCode": "UF_CRM_1791969936048",
+      "foundLabel": "Furnished",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Listing Agent Email",
+      "foundCode": "UF_CRM_LISTING_AGENT_EMAIL",
+      "foundLabel": "Listing Agent Email",
+      "type": "string"
+    },
+    {
+      "requested": "Listing Agent Name",
+      "foundCode": "UF_CRM_LISTINGAGENTNAME",
+      "foundLabel": "Listing Agent Name",
+      "type": "string"
+    },
+    {
+      "requested": "Listing Agent Phone",
+      "foundCode": "UF_CRM_LISTING_AGENT_PHONE",
+      "foundLabel": "Listing Agent Phone",
+      "type": "string"
+    },
+    {
+      "requested": "Listing Owner Name",
+      "foundCode": "UF_CRM_LISTING_OWNER_NAME",
+      "foundLabel": "Listing Owner Name",
+      "type": "string"
+    },
+    {
+      "requested": "Listing Owner Mobile",
+      "foundCode": "UF_CRM_LISTING_OWNER_MOBILE",
+      "foundLabel": "Listing Owner Mobile",
+      "type": "string"
+    },
+    {
+      "requested": "Listing Owner email",
+      "foundCode": "UF_CRM_LISTING_OWNER_EMAIL",
+      "foundLabel": "Listing Owner email",
+      "type": "string"
+    },
+    {
+      "requested": "Bayut Listing ID",
+      "foundCode": "UF_CRM_BAYUT_ID",
+      "foundLabel": "Bayut Listing ID",
+      "type": "string"
+    },
+    {
+      "requested": "Building - Bayut",
+      "foundCode": "UF_CRM_BUILDING_DUBIZZLE",
+      "foundLabel": "Building - Bayut",
+      "type": "string"
+    },
+    {
+      "requested": "City - Propertyfinder",
+      "foundCode": "UF_CRM_CITY_PF",
+      "foundLabel": "City (Propertyfinder)",
+      "type": "string"
+    },
+    {
+      "requested": "Community - Propertyfinder",
+      "foundCode": "UF_CRM_COMMUNITY_PROPERTYFINDER",
+      "foundLabel": "Community - Propertyfinder",
+      "type": "string"
+    },
+    {
+      "requested": "Property - Propertyfinder",
+      "foundCode": "UF_CRM_PROPERTY_PROPERTYFINDER",
+      "foundLabel": "Property - Propertyfinder",
+      "type": "crm"
+    },
+    {
+      "requested": "Propertyfinder Region",
+      "foundCode": "UF_CRM_PROPERTYFINDER_REGION",
+      "foundLabel": "Propertyfinder Region",
+      "type": "string"
+    },
+    {
+      "requested": "Sub Community - Propertyfinder",
+      "foundCode": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
+      "foundLabel": "Sub Community - Propertyfinder",
+      "type": "string"
+    },
+    {
+      "requested": "PF Error Log",
+      "foundCode": "UF_CRM_PF_ERROR_LOG",
+      "foundLabel": "PF Error Log",
+      "type": "string"
+    },
+    {
+      "requested": "City - Bayut",
+      "foundCode": "UF_CRM_CITY_BAYUT",
+      "foundLabel": "City (Bayut)",
+      "type": "string"
+    },
+    {
+      "requested": "BayutDubizzle Feed",
+      "foundCode": "UF_CRM_PORTALS_ENABLED",
+      "foundLabel": "BayutDubizzle Feed",
+      "type": "boolean"
+    },
+    {
+      "requested": "Latitude",
+      "foundCode": "UF_CRM_LATITUDE",
+      "foundLabel": "Latitude",
+      "type": "double"
+    },
+    {
+      "requested": "LocationText - Bayut",
+      "foundCode": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
+      "foundLabel": "LocationText - Bayut",
+      "type": "string"
+    },
+    {
+      "requested": "Longitude",
+      "foundCode": "UF_CRM_LONGITUDE",
+      "foundLabel": "Longitude",
+      "type": "double"
+    },
+    {
+      "requested": "Location Source",
+      "foundCode": "UF_CRM_LOCATION_SOURCE",
+      "foundLabel": "Location Source",
+      "type": "enumeration"
+    },
+    {
+      "requested": "Bayut Error Log",
+      "foundCode": "UF_CRM_BAYUT_ERROR_LOG",
+      "foundLabel": "Bayut Error Log",
+      "type": "string"
+    },
+    {
+      "requested": "Property Finder Listing Id",
+      "foundCode": "UF_CRM_PF_ID",
+      "foundLabel": "Propertyfinder Listing ID",
+      "type": "string"
+    },
+    {
+      "requested": "Photos and Documents",
+      "foundCode": "UF_CRM_PHOTOS_AND_DOCUMENTS",
+      "foundLabel": "Photos and Documents",
+      "type": "file"
+    }
+  ],
+  "missing": []
+}

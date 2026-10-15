@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Real Estate App Admin & Field Manager</title>
+  <link rel="stylesheet" href="/css/tab.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <!-- Secret Authentication Modal (if unauthenticated) -->
+  <div id="auth-overlay" style="display: flex; position: fixed; inset: 0; background: #f5f7f8; align-items: center; justify-content: center; z-index: 10000;">
+    <div style="background: white; border: 1px solid var(--b24-border); border-radius: 8px; padding: 32px; max-width: 400px; width: 100%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); text-align: center;">
+      <h3 style="margin-bottom: 12px; font-size: 18px;">Admin Authorization</h3>
+      <p style="color: var(--b24-text-muted); font-size: 13px; margin-bottom: 20px;">
+        Please enter your <code>ADMIN_SECRET</code> to manage fields, stages, and Bitrix24 schema.
+      </p>
+      <input type="password" id="admin-secret-input" class="form-control" placeholder="Enter ADMIN_SECRET" style="margin-bottom: 16px;">
+      <button type="button" id="btn-unlock-admin" class="btn btn-primary" style="width: 100%;">Unlock Admin Dashboard</button>
+      <div id="auth-error" style="color: var(--b24-danger); font-size: 12px; margin-top: 10px; display: none;"></div>
+    </div>
+  </div>
+
+  <!-- Main Admin Interface -->
+  <div id="admin-main" style="max-width: 1200px; margin: 0 auto; display: none;">
+    <header class="admin-header">
+      <div>
+        <h1 class="admin-title">Real Estate CRM — Lead Setup & Field Manager</h1>
+        <p style="color: var(--b24-text-muted); font-size: 13px; margin-top: 4px;">
+          Configure dynamic Lead Details tab fields, manage pipeline stages, and sync custom fields with Bitrix24.
+        </p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button id="btn-refresh-discovery" class="btn btn-secondary">↻ Run Schema Discovery</button>
+        <button id="btn-open-create-field" class="btn btn-primary">+ Create New Custom Field</button>
+      </div>
+    </header>
+
+    <!-- Row 1: Discovery Status Cards -->
+    <div class="grid-2">
+      <!-- Lead Type Field Discovery Card -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>1. Lead Type Picklist Discovery</span>
+          <span id="lead-type-status-tag" class="status-tag tag-warning">Checking...</span>
+        </div>
+        <div id="lead-type-details" style="font-size: 13px; line-height: 1.8;">
+          Loading...
+        </div>
+      </div>
+
+      <!-- Pipeline Stages Discovery Card -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>2. Pipeline Stages (Routing)</span>
+          <button id="btn-create-missing-stages" class="btn btn-secondary" style="font-size: 11px; padding: 3px 8px; display: none;">
+            + Auto-create Missing Stages
+          </button>
+        </div>
+        <div id="stages-details" style="font-size: 13px; line-height: 1.8;">
+          Loading...
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 2: Schema Sync Status -->
+    <div class="panel" style="margin-bottom: 24px;">
+      <div class="panel-title">
+        <span>3. Custom Field Presence in Bitrix24</span>
+        <button id="btn-create-missing-fields" class="btn btn-primary" style="font-size: 12px; padding: 4px 12px; display: none;">
+          ⚡ Auto-Create All Missing Fields in Bitrix24
+        </button>
+      </div>
+      <div id="missing-fields-summary" style="margin-bottom: 12px; font-size: 13px;"></div>
+      <div style="overflow-x: auto;">
+        <table id="schema-table">
+          <thead>
+            <tr>
+              <th>Field Code</th>
+              <th>Label</th>
+              <th>Type</th>
+              <th>Status in Bitrix24</th>
+              <th>Configured Tab</th>
+            </tr>
+          </thead>
+          <tbody id="schema-table-body">
+            <tr><td colspan="5" style="text-align: center;">Loading schema details...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Row 3: Tab Fields Configuration (Listing vs Enquiry) -->
+    <div class="grid-2">
+      <!-- Enquiry Fields Config -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>Enquiry Tab Fields</span>
+          <span class="status-tag tag-info" id="enquiry-count">0 fields</span>
+        </div>
+        <div style="max-height: 380px; overflow-y: auto; margin-bottom: 12px;">
+          <table id="enquiry-fields-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Label</th>
+                <th>Type</th>
+                <th>Required</th>
+              </tr>
+            </thead>
+            <tbody id="enquiry-fields-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Listing Fields Config -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>Listing Tab Fields</span>
+          <span class="status-tag tag-success" id="listing-count">0 fields</span>
+        </div>
+        <div style="max-height: 380px; overflow-y: auto; margin-bottom: 12px;">
+          <table id="listing-fields-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Label</th>
+                <th>Type</th>
+                <th>Required</th>
+              </tr>
+            </thead>
+            <tbody id="listing-fields-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Create New Custom Field on Lead -->
+  <div id="modal-create-field" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 16px; font-size: 16px;">Create Custom Field on Lead</h3>
+      <form id="form-create-field">
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label">Field Label (e.g., Trakheesi Permit)</label>
+          <input type="text" id="new-field-label" class="form-control" required placeholder="e.g., Building Name">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label">Field Code (Must start with UF_CRM_)</label>
+          <input type="text" id="new-field-code" class="form-control" required placeholder="UF_CRM_BUILDING_NAME">
+        </div>
+        <div class="form-group" style="margin-bottom: 12px;">
+          <label class="form-label">Data Type</label>
+          <select id="new-field-type" class="form-control">
+            <option value="string">String (Text Line)</option>
+            <option value="text">Multiline Text</option>
+            <option value="number">Number</option>
+            <option value="money">Money / Amount</option>
+            <option value="date">Date</option>
+            <option value="boolean">Yes/No (Boolean)</option>
+            <option value="enumeration">Dropdown List (Enumeration)</option>
+          </select>
+        </div>
+        <div class="form-group" id="enum-options-group" style="margin-bottom: 12px; display: none;">
+          <label class="form-label">Dropdown Options (Comma-separated)</label>
+          <input type="text" id="new-field-options" class="form-control" placeholder="Option 1, Option 2, Option 3">
+        </div>
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-label">Assign to Tab</label>
+          <select id="new-field-tab" class="form-control">
+            <option value="both">Both Enquiry & Listing</option>
+            <option value="enquiry">Enquiry Only</option>
+            <option value="listing">Listing Only</option>
+            <option value="none">Do not add to tab (CRM field only)</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button type="button" id="btn-cancel-modal" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="btn-submit-create-field" class="btn btn-primary">Create in Bitrix24</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

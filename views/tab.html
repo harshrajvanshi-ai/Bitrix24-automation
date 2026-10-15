@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lead Details — Real Estate CRM</title>
+  <!-- Inter Font from Google Fonts (preconnect for speed) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bitrix24 Official JavaScript SDK -->
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/tab.css">
+</head>
+<body>
+  <div class="tab-container">
+
+    <!-- ── Loading Spinner ──────────────────────────────────────── -->
+    <div id="loading" class="spinner-wrap">
+      <div class="spinner-ring">
+        <div class="spinner"></div>
+      </div>
+      <div class="spinner-text">
+        <span class="spinner-title">Loading Lead Details</span>
+        <span class="spinner-sub">Fetching fields from Bitrix24...</span>
+      </div>
+    </div>
+
+    <!-- ── Active Content ─────────────────────────────────────────── -->
+    <div id="content" style="display: none;">
+
+      <!-- Top Command Bar -->
+      <div class="b24-toolbar-bar">
+        <div class="toolbar-left-group">
+          <span id="stage-badge" class="type-badge badge-empty">Detecting type…</span>
+          <span id="fields-count-badge" class="b24-count-pill">— fields</span>
+        </div>
+
+        <div class="b24-search-wrap">
+          <span class="b24-search-icon">🔍</span>
+          <input
+            type="text"
+            id="field-filter-input"
+            class="b24-search-input"
+            placeholder="Search fields — Price, RERA, Bedrooms, Bayut, Mortgage…"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button type="button" id="btn-clear-search" class="b24-search-clear" style="display:none" aria-label="Clear search">&times;</button>
+        </div>
+        <div id="search-results-pill" class="b24-search-pill" style="display:none">0 matches</div>
+
+        <div class="toolbar-right-actions">
+          <button type="button" id="btn-toggle-all" class="btn btn-secondary btn-compact" title="Expand or collapse all sections">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4l4-3 4 3M2 8l4 3 4-3"/></svg>
+            Collapse All
+          </button>
+          <button type="button" id="btn-refresh" class="btn btn-secondary btn-compact" title="Reload from Bitrix24">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2A5 5 0 1 1 6 1"/><polyline points="10 1 10 4 7 4"/></svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- Section Navigation Pills -->
+      <nav id="section-nav-pills" class="b24-section-nav" aria-label="Jump to section">
+        <!-- Populated by tab.js -->
+      </nav>
+
+      <!-- Main Form -->
+      <form id="lead-tab-form" novalidate>
+        <div id="fields-container" class="sections-wrapper">
+          <!-- Populated by tab.js -->
+        </div>
+
+        <!-- Sticky Save Bar -->
+        <div class="form-actions-bar">
+          <div class="action-bar-left">
+            <div id="dirty-indicator" class="dirty-badge" style="display:none">
+              <span class="dirty-dot">●</span>
+              Unsaved changes
+            </div>
+          </div>
+          <div class="action-bar-right">
+            <button type="button" id="btn-cancel" class="btn btn-secondary" style="display:none">
+              Cancel
+            </button>
+            <button type="submit" id="btn-save" class="btn btn-save-b24">
+              ✓ &nbsp;SAVE CHANGES
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" aria-live="polite"></div>
+
+  </div>
+
+  <!-- Injected Lead ID (server-side) -->
+  <script>
+    window.__INITIAL_LEAD_ID__ = null;
+  </script>
+  <script src="/js/tab.js"></script>
+</body>
+</html>

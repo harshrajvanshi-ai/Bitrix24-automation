@@ -1,0 +1,9337 @@
+[
+  {
+    "code": "UF_CRM_1791354310417",
+    "label": "Lead Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1594",
+        "VALUE": "Enqiry"
+      },
+      {
+        "ID": "1596",
+        "VALUE": "Listing"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791542918927",
+    "label": "Enquiry Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1722",
+        "VALUE": "Buy"
+      },
+      {
+        "ID": "1724",
+        "VALUE": "Invest"
+      },
+      {
+        "ID": "1726",
+        "VALUE": "Sell"
+      },
+      {
+        "ID": "1728",
+        "VALUE": "Rent"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791543453592",
+    "label": "Junk Reason",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_1791794196",
+    "label": "Project of Interest",
+    "type": "crm",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "DYNAMIC_1044": "Y",
+      "LEAD": null
+    }
+  },
+  {
+    "code": "UF_CRM_1791952050535",
+    "label": "Property Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1754",
+        "VALUE": "Apartment"
+      },
+      {
+        "ID": "1756",
+        "VALUE": "Villa"
+      },
+      {
+        "ID": "1758",
+        "VALUE": "Townhouse"
+      },
+      {
+        "ID": "1760",
+        "VALUE": "Penthouse"
+      },
+      {
+        "ID": "1762",
+        "VALUE": "Duplex"
+      },
+      {
+        "ID": "1764",
+        "VALUE": "Land"
+      },
+      {
+        "ID": "1766",
+        "VALUE": "Commercial"
+      },
+      {
+        "ID": "1768",
+        "VALUE": "Office"
+      },
+      {
+        "ID": "1770",
+        "VALUE": "Retail"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791952409183",
+    "label": "Listing Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_1791952650167",
+    "label": "Listing type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1772",
+        "VALUE": "Rent"
+      },
+      {
+        "ID": "1774",
+        "VALUE": "Sale"
+      },
+      {
+        "ID": "1776",
+        "VALUE": "Off-Plan"
+      },
+      {
+        "ID": "1778",
+        "VALUE": "Commercial Sale"
+      },
+      {
+        "ID": "1780",
+        "VALUE": "Commercial Rent"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791962134",
+    "label": "Amount",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_1791962499457",
+    "label": "Priority",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1788",
+        "VALUE": "HIGH"
+      },
+      {
+        "ID": "1790",
+        "VALUE": "MEDIUM"
+      },
+      {
+        "ID": "1792",
+        "VALUE": "LOW"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791963299133",
+    "label": "Listing Price",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_1791966366775",
+    "label": "Bedrooms",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 2,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_1791966408374",
+    "label": "Bathrooms",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 2,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_1791969030353",
+    "label": "Purchase Timeline",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_1791969936048",
+    "label": "Furnished",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1794",
+        "VALUE": "Fully-Furnished"
+      },
+      {
+        "ID": "1796",
+        "VALUE": "Semi-Furnished"
+      },
+      {
+        "ID": "1798",
+        "VALUE": "Unfurnished"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791970130059",
+    "label": "View",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1800",
+        "VALUE": "Sea View"
+      },
+      {
+        "ID": "1802",
+        "VALUE": "Burj Khalifa View"
+      },
+      {
+        "ID": "1804",
+        "VALUE": "Marina View"
+      },
+      {
+        "ID": "1806",
+        "VALUE": "Palm View"
+      },
+      {
+        "ID": "1808",
+        "VALUE": "Golf Course View"
+      },
+      {
+        "ID": "1810",
+        "VALUE": "Pool View"
+      },
+      {
+        "ID": "1812",
+        "VALUE": "Garden View"
+      },
+      {
+        "ID": "1814",
+        "VALUE": "Park View"
+      },
+      {
+        "ID": "1816",
+        "VALUE": "City View"
+      },
+      {
+        "ID": "1818",
+        "VALUE": "Community View"
+      },
+      {
+        "ID": "1820",
+        "VALUE": "Street View"
+      },
+      {
+        "ID": "1822",
+        "VALUE": "Canal View"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791970241624",
+    "label": "Pets Allowed",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": {
+        "en": "Pets Allowed",
+        "de": "Pets Allowed",
+        "ru": "Pets Allowed",
+        "th": "Pets Allowed",
+        "kz": "Pets Allowed",
+        "ua": "Pets Allowed",
+        "tc": "Pets Allowed",
+        "la": "Pets Allowed",
+        "sc": "Pets Allowed",
+        "br": "Pets Allowed",
+        "fr": "Pets Allowed",
+        "ar": "Pets Allowed",
+        "vn": "Pets Allowed",
+        "pl": "Pets Allowed",
+        "tr": "Pets Allowed",
+        "ja": "Pets Allowed",
+        "it": "Pets Allowed",
+        "ms": "Pets Allowed",
+        "id": "Pets Allowed"
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_1791970638065",
+    "label": "Property Address",
+    "type": "address",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SHOW_MAP": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791970718307",
+    "label": "Building Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_1791970770635",
+    "label": "Size In sq.ft",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 2,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_1791970832589",
+    "label": "Occupancy",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1824",
+        "VALUE": "Vacant on Transfer"
+      },
+      {
+        "ID": "1826",
+        "VALUE": "Owner Occupied"
+      },
+      {
+        "ID": "1828",
+        "VALUE": "Rented"
+      },
+      {
+        "ID": "1830",
+        "VALUE": "Under Notice"
+      },
+      {
+        "ID": "1832",
+        "VALUE": "Vacant"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "UI",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_1791970864836",
+    "label": "RERA Permit Number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_1791970897872",
+    "label": "Exclusive",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": {
+        "en": "Exclusive",
+        "de": "Exclusive",
+        "ru": "Exclusive",
+        "th": "Exclusive",
+        "kz": "Exclusive",
+        "ua": "Exclusive",
+        "tc": "Exclusive",
+        "la": "Exclusive",
+        "sc": "Exclusive",
+        "br": "Exclusive",
+        "fr": "Exclusive",
+        "ar": "Exclusive",
+        "vn": "Exclusive",
+        "pl": "Exclusive",
+        "tr": "Exclusive",
+        "ja": "Exclusive",
+        "it": "Exclusive",
+        "ms": "Exclusive",
+        "id": "Exclusive"
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_BEDROOMS",
+    "label": "Bedrooms",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1834",
+        "VALUE": "Studio"
+      },
+      {
+        "ID": "1836",
+        "VALUE": "1 BR"
+      },
+      {
+        "ID": "1838",
+        "VALUE": "2 BR"
+      },
+      {
+        "ID": "1840",
+        "VALUE": "3 BR"
+      },
+      {
+        "ID": "1842",
+        "VALUE": "4 BR"
+      },
+      {
+        "ID": "1844",
+        "VALUE": "5+ BR"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_BATHROOMS",
+    "label": "Bathrooms",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_RERA_PERMIT",
+    "label": "RERA / Trakheesi Permit No.",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_CHEQUES",
+    "label": "Number of Cheques",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1846",
+        "VALUE": "1 Cheque"
+      },
+      {
+        "ID": "1848",
+        "VALUE": "2 Cheques"
+      },
+      {
+        "ID": "1850",
+        "VALUE": "4 Cheques"
+      },
+      {
+        "ID": "1852",
+        "VALUE": "6 Cheques"
+      },
+      {
+        "ID": "1854",
+        "VALUE": "12 Cheques"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PARKING",
+    "label": "Parking Spaces",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DEVELOPER",
+    "label": "Developer / Master Project",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_PRICE",
+    "label": "Listing Price (AED)",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUA",
+    "label": "Built-up Area (Sq. Ft.)",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PLOT_AREA",
+    "label": "Plot Area (Sq. Ft.)",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PROJECT",
+    "label": "Master Project",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUILDING",
+    "label": "Building / Tower Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UNIT_NO",
+    "label": "Unit Number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMMUNITY",
+    "label": "Community / Area",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_CITY",
+    "label": "City (Emirate)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BAYUT_ID",
+    "label": "Bayut Listing ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PF_ID",
+    "label": "Propertyfinder Listing ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AVAIL_DATE",
+    "label": "Available From Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION",
+    "label": "Property Description / Amenities",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUDGET_MIN",
+    "label": "Budget Min (AED)",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUDGET_MAX",
+    "label": "Budget Max (AED)",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BEDS_MIN",
+    "label": "Bedrooms Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_BEDS_MAX",
+    "label": "Bedrooms Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_BATHS_MIN",
+    "label": "Bathrooms Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_SIZE_MIN",
+    "label": "Size Min (Sq. Ft.)",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_SIZE_MAX",
+    "label": "Size Max (Sq. Ft.)",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PREFERRED_COMMUNITY",
+    "label": "Preferred Communities",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PREFERRED_CITY",
+    "label": "Preferred City",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TIMEFRAME",
+    "label": "Buying / Renting Timeframe",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1856",
+        "VALUE": "Immediate (< 1 month)"
+      },
+      {
+        "ID": "1858",
+        "VALUE": "1 - 3 months"
+      },
+      {
+        "ID": "1860",
+        "VALUE": "3 - 6 months"
+      },
+      {
+        "ID": "1862",
+        "VALUE": "> 6 months / Investing"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_FINANCE_NEEDED",
+    "label": "Mortgage / Financing Required",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LEAD_SOURCE",
+    "label": "Portal / Lead Source",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1864",
+        "VALUE": "Propertyfinder"
+      },
+      {
+        "ID": "1866",
+        "VALUE": "Bayut / Dubizzle"
+      },
+      {
+        "ID": "1868",
+        "VALUE": "Direct Website"
+      },
+      {
+        "ID": "1870",
+        "VALUE": "Referral / Agent"
+      },
+      {
+        "ID": "1872",
+        "VALUE": "Walk-in / Cold Call"
+      },
+      {
+        "ID": "1874",
+        "VALUE": "Social Media / Meta Ads"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_TYPE",
+    "label": "Listing Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1876",
+        "VALUE": "Exclusive"
+      },
+      {
+        "ID": "1878",
+        "VALUE": "Non-Exclusive"
+      },
+      {
+        "ID": "1880",
+        "VALUE": "Sole Agency"
+      },
+      {
+        "ID": "1882",
+        "VALUE": "Open"
+      },
+      {
+        "ID": "1884",
+        "VALUE": "Pocket"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_AVAILABLE_TO",
+    "label": "Available To Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_BANK_OWNED",
+    "label": "Bank Owned / Distressed",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BASEMENT",
+    "label": "Basement Area",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_CITY_BAYUT",
+    "label": "City (Bayut)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_CITY_PF",
+    "label": "City (Propertyfinder)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COUNTRY",
+    "label": "Country",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DATE_OFFLINE",
+    "label": "Date Made Offline",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DATE_ONLINE",
+    "label": "Date Made Online",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_NEIGHBORHOOD",
+    "label": "Neighborhood",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PHASE",
+    "label": "Project Phase",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_FORM_A_DATE",
+    "label": "Form A Signed Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_TRAKHEESI_EXPIRY",
+    "label": "Trakheesi Permit Expiry",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_PRIMARY_IMAGE",
+    "label": "Primary Listing Image",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_DOCS",
+    "label": "Property Title / Deed Docs",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_FORM_A_DOC",
+    "label": "Form A Signed Document",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_DEAL_VALUE",
+    "label": "Expected Deal Value (AED)",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BATHS_MAX",
+    "label": "Bathrooms Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_BEACHFRONT",
+    "label": "Beachfront / Waterfront Preferred",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WATER_BODY",
+    "label": "Body of Water / View",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOUSEHOLD",
+    "label": "Household Members / Family Size",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PARKING_REQ",
+    "label": "Parking Spaces Required",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SCHOOL",
+    "label": "Nearby Schools Preference",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STORIES",
+    "label": "Floors / Stories Preferred",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STYLE",
+    "label": "Architectural Style",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WHATSAPP_RESP",
+    "label": "WhatsApp Response Received",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ENQUIRY_LOCKED",
+    "label": "Enquiry Locked / Assigned",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ACTIVE_EXPOSE",
+    "label": "Active Expose Images",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ACTIVE_WEBSITE",
+    "label": "Active Website Images",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AREA_NAME",
+    "label": "Area / Sub-locality",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMMENTS",
+    "label": "Client Comments & Feedback",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MP_LOOKUP",
+    "label": "Master Project (Lookup)",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING",
+    "label": "Listing",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_EXTERNAL_ID",
+    "label": "External ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STARTED_ON",
+    "label": "Started on",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_FINISHED_ON",
+    "label": "Finished on",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_CONTACTS",
+    "label": "Contacts",
+    "type": "crm",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_YOUR_COMPANY_DETAILS",
+    "label": "Your company details",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "N",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LAST_TIMELINE_ACTIVITY_ADDED_BY",
+    "label": "Last timeline activity added by",
+    "type": "employee",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": []
+    }
+  },
+  {
+    "code": "UF_CRM_LAST_UPDATED_ON",
+    "label": "Last updated on",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_RECURRING_ITEM",
+    "label": "Recurring item",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY",
+    "label": "Property",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_OWNERID",
+    "label": "Owner",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGAGENT",
+    "label": "Listing Agent",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_AVAILABLE_FROM",
+    "label": "Available From",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_AVAILABLE_TO_1",
+    "label": "Available To",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_AREA",
+    "label": "Area",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AVAILABILITY_DATE",
+    "label": "Availability Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_BANKOWNED",
+    "label": "Bank Owned",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BASEMENT_1",
+    "label": "Basement",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DATE_AVAILABLE",
+    "label": "Date Available",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DEVELOPER_1",
+    "label": "Developer",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_DOCS_1",
+    "label": "Docs",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_OWNER_LISTING",
+    "label": "Owner - Listing",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PHASE_1",
+    "label": "Phase",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PRICE_UNIT",
+    "label": "Price Unit",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PRIMARY_IMAGE_1",
+    "label": "Primary Image",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_PROJECT_1",
+    "label": "Project",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_X30_DAYS_NO_LISTING_FORM",
+    "label": "30 days no listing form",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ACRES",
+    "label": "Acres",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_ADDRESS2",
+    "label": "Address2",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ADULTCOMMUNITY",
+    "label": "Adult Community",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ALLOWEDFORAUTOPUBLISH",
+    "label": "Allowed for Auto Publish",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AM_I_THE_RECORD_OWNER",
+    "label": "Am I the record owner",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ANNUAL_COMMUNITY_FEE",
+    "label": "Annual Community Fee",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_APPLICATIONFEE",
+    "label": "Application Fee",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AUTO_UNPUBLISH_DATE",
+    "label": "Auto Unpublish Date",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_BACKAGENTMLS",
+    "label": "Back Office MLS",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BASEMENTDETAILS",
+    "label": "Basement Details",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BAYUT_ERROR_LOG",
+    "label": "Bayut Error Log",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BAYUT_IN_PROCESS",
+    "label": "Bayut In Process",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BAYUT_LOCATION_ID",
+    "label": "Bayut Location Id",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PORTALS_ENABLED",
+    "label": "BayutDubizzle Feed",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BEACHFRONT_1",
+    "label": "Beachfront",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BROKER_REGISTRATION",
+    "label": "Broker Registration/License",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BROKER_S_LISTING_ID",
+    "label": "Broker's Listing ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_YEAR_BUILD_TEXT",
+    "label": "Build Year",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_BUILDING_DUBIZZLE",
+    "label": "Building - Bayut",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUYERAGENTCOMMISSION",
+    "label": "Buyers Agent Commission %",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_COLISTINGAGENT",
+    "label": "Co-Listing Agent",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_COLISTINGAGENTEMAIL",
+    "label": "CoListing Agent Email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COLISTINGAGENTMLSID",
+    "label": "CoListing Agent MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COLISTINGAGENTNAME",
+    "label": "CoListing Agent Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COLISTINGOFFICEMLSID",
+    "label": "Colisting Office MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COLISTINGOFFICENAME",
+    "label": "Colisting Office Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMBINEDTITLE",
+    "label": "CombinedTitle",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMMENTS_1",
+    "label": "Comments",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMMERCIAL_AMENITIES",
+    "label": "Commercial Amenities",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
+    "label": "Community - Propertyfinder",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COMPLETIONDATE",
+    "label": "Completion Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_CONTINGENTDATE",
+    "label": "Contingent",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_CONTRACTDATE",
+    "label": "Contract",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_COUNTY",
+    "label": "County",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DAYSOFFMARKET",
+    "label": "Days Off Market",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DAYSONMARKET",
+    "label": "Days On Market",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
+    "label": "Days since last contacted",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DEFERRAL_DATE",
+    "label": "Deferral Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_1",
+    "label": "Description",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_ARABIC",
+    "label": "Description (Arabic)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_AUTO",
+    "label": "Description - Auto",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_INTRO",
+    "label": "Description - Intro (non editable)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_INTRO_TEXT",
+    "label": "Description - Intro Text",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_OUTRO",
+    "label": "Description - Outro (non editable)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_OUTRO_TEXT",
+    "label": "Description - Outro Text",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_CHARACTER_COUNT",
+    "label": "Description Character Count",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DEVELOPER_NAME",
+    "label": "Developer Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DISPLAYADDRESS",
+    "label": "Display Address",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DISPLAYEDADDRESS",
+    "label": "Displayed Address",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DOCK",
+    "label": "Dock",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DOWN_PAYMENT_PRICE",
+    "label": "Down-Payment",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DTCM_PERMIT",
+    "label": "DTCM Permit Number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DUBIZZLE_REGION",
+    "label": "Dubizzle Region",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ESTIMATEDONMARKETDATE",
+    "label": "Estimated On Market Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_EXPIRATION_DATE",
+    "label": "Expiration Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_EXT_ID",
+    "label": "Ext Id",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EXTERNALLISTING",
+    "label": "External Listing",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EXTERNAL_LISTING_BROKER",
+    "label": "External Listing Broker",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_EXTERNAL_LISTING_STOCK",
+    "label": "External Listing Stock",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_1",
+    "label": "Feature 1",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE",
+    "label": "Feature 10",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_2",
+    "label": "Feature 2",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_3",
+    "label": "Feature 3",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_4",
+    "label": "Feature 4",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_5",
+    "label": "Feature 5",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_6",
+    "label": "Feature 6",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_7",
+    "label": "Feature 7",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_8",
+    "label": "Feature 8",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_FEATURE_9",
+    "label": "Feature 9",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_FIREPLACE",
+    "label": "Fireplace",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_FLOOR",
+    "label": "Floor",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_FORM_A_EXPIRY_DATE",
+    "label": "Form A expiry date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_FORM_A_PASSWORD",
+    "label": "Form A Password",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GLD_DESCRIPTION",
+    "label": "Gld Description",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GLD_DESCRIPTION_CHARACTERS_REMAINING",
+    "label": "Gld Description Characters Remaining",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_GLD_DESCRIPTION_LENGTH",
+    "label": "Gld Description Length",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_GOOGLE_DRIVE_FILE_LISTING_FORM",
+    "label": "Google Drive File - Listing Form",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_GOOGLE_DRIVE_ID",
+    "label": "Google Drive ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GOOGLE_DRIVE_ID_CONTACT",
+    "label": "Google Drive ID - Contact",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GOOGLE_DRIVE_ID_MEDIA",
+    "label": "Google Drive ID - Media",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GOOGLE_DRIVE_ID_PROPERTY",
+    "label": "Google Drive ID - Property",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GOOGLE_DRIVE_OTHER_FILE_LIST",
+    "label": "Google Drive Other File List",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_GRADESCHOOL",
+    "label": "Grade School",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HALFBATHROOMS",
+    "label": "Half Bathrooms",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_HANDED_OVER",
+    "label": "Handed Over",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HIGHSCHOOL",
+    "label": "High School",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HISTORIC_PROPSPACE_NOTES",
+    "label": "Historic Propspace Notes",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HISTORICAL",
+    "label": "Historical",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOAFEES",
+    "label": "HOA Fees",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOT_STOCK",
+    "label": "Hot Stock",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_IN_PF_PROCESS",
+    "label": "In PF Process",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_IS_CLAIMABLE",
+    "label": "Is Claimable",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ISMLSLISTING",
+    "label": "Is MLS Listing",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LAST_CONTACTED_DATE",
+    "label": "Last Contacted Date",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LAST_REFRESH_DATE",
+    "label": "Last Refresh Date",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LATITUDE",
+    "label": "Latitude",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LATITUDE_PROPERTY",
+    "label": "Latitude Property",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LAYOUT",
+    "label": "Layout",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LAYOUT_INFO",
+    "label": "Layout Info",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LEGACY_OWNER",
+    "label": "Legacy Owner",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTOFFICEMLSID",
+    "label": "List Office MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTOFFICENAME",
+    "label": "List Office Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGPRICEPERSQFT",
+    "label": "List Price Per Sq./Ft.",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGTOORIGINALLISTPRICERATIO",
+    "label": "List Price/Original List Price",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGTOSOLDPRICERATIO",
+    "label": "List Price/Sold Price",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LISTEDDATE",
+    "label": "Listed Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_CITY",
+    "label": "Listing Agent City",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_COUNTRY",
+    "label": "Listing Agent Country",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_EMAIL",
+    "label": "Listing Agent Email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_FAX",
+    "label": "Listing Agent Fax",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_FIRSTNAME",
+    "label": "Listing Agent Firstname",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_LASTNAME",
+    "label": "Listing Agent Lastname",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_LICENCE",
+    "label": "Listing Agent Licence",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGAGENTMLSID",
+    "label": "Listing Agent MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_MOBIL_PHONE",
+    "label": "Listing Agent Mobile Phone",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGAGENTNAME",
+    "label": "Listing Agent Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_PHONE",
+    "label": "Listing Agent Phone",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_PHOTO",
+    "label": "Listing Agent Photo",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_STREET",
+    "label": "Listing Agent Street",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_STREET_NUMBER",
+    "label": "Listing Agent Street Number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_WEBSITE",
+    "label": "Listing Agent Website",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_ZIP",
+    "label": "Listing Agent Zip",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AUTONUMBER",
+    "label": "Listing Autonumber",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_LINK",
+    "label": "Listing Link",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_LOCKED",
+    "label": "Listing Locked",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_OWNER_EMAIL",
+    "label": "Listing Owner email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_OWNER_LASTNAME",
+    "label": "Listing Owner Lastname",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_OWNER_MOBILE",
+    "label": "Listing Owner Mobile",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_OWNER_NAME",
+    "label": "Listing Owner Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_WEBSITE",
+    "label": "Listing Website",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
+    "label": "LocationText - Bayut",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LONGITUDE",
+    "label": "Longitude",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LONGITUDE_PROPERTY",
+    "label": "Longitude Property",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LOTSIZE",
+    "label": "Lot Size",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_MASTER_PROJECT_INFO",
+    "label": "Master Project Info",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MASTERPROPERTY",
+    "label": "Master Property",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_MIDDLESCHOOL",
+    "label": "Middle School",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MLSCREATEDAT",
+    "label": "MLS Created At",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_MLSID",
+    "label": "MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MLSNAME",
+    "label": "MLS Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MLSRESOOUID",
+    "label": "MLS RESO OUID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MLSUPDATEDAT",
+    "label": "MLS Updated At",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_MONTHLYRENT",
+    "label": "Monthly Rent",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MONTHLYRENTPERSQFT",
+    "label": "Monthly Rent per Sq./Ft.",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_NET_RENTAL_YIELD",
+    "label": "Net Rental Yield",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_NEWCONSTRUCTION",
+    "label": "New Construction",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_NOTAVAILABLEONWEBSITE",
+    "label": "Not Available On Website",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMIDXEXTERNALIMAGES",
+    "label": "Number of external Images",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_NUMBEROFFIREPLACES",
+    "label": "Number of Fireplaces",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_NUMBEROFFLOORS",
+    "label": "Number Of Floors",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_NUMBEROFGARAGESPACES",
+    "label": "Number Of Garage Spaces",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_NUMBEROFPARKINGSPACES",
+    "label": "Number of Parking Spaces",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_OFFMARKETDATE",
+    "label": "Off Market",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_ONMARKETDATE",
+    "label": "On Market Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_ORIGINALLISTPRICE",
+    "label": "Original List Price",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_OVERALLDAYSONMARKET",
+    "label": "Overall Days On Market",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PARCEL_NUMBER",
+    "label": "Parcel Number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PARKINGAVAILABLE",
+    "label": "Parking Available",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PENDINGDATE",
+    "label": "Pending",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_PETDEPOSIT",
+    "label": "Pet Deposit",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PF_ERROR_LOG",
+    "label": "PF Error Log",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PICTURECOUNT",
+    "label": "Picture Count",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PLOT_SIZE",
+    "label": "Plot Size",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_POOL",
+    "label": "Pool",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PORTAL_LISTING_AGENT",
+    "label": "Portal Listing Agent",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PREVIOUS_LISTING_ID",
+    "label": "Previous Listing ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PREVIOUSPRICE",
+    "label": "Previous Price",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGPRICE",
+    "label": "Price",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PRICECHANGEDAT",
+    "label": "Price Changed At",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PRICE_ON_REQUEST",
+    "label": "Price on Request",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
+    "label": "Price Per Square Foot",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PRIMARY_IMAGE_LINK",
+    "label": "Primary Image Link",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_PRIVATE_AMENITIES",
+    "label": "Private Amenities",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROJECT_INFO",
+    "label": "Project Info",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROJECT_NAME",
+    "label": "Project Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
+    "label": "Property - Propertyfinder",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_FINDER_LOCATION_ID",
+    "label": "Property Finder Location Id",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_LAYOUT",
+    "label": "Property Layout",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTYOWNERCONTACT",
+    "label": "Property Owner",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_OWNER_2",
+    "label": "Property Owner 2",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_OWNER_EMAIL",
+    "label": "Property Owner Email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_OWNER_NAME",
+    "label": "Property Owner Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_OWNER_PHONE",
+    "label": "Property Owner Phone",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTYFINDER_REGION",
+    "label": "Propertyfinder Region",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPSPACE_PF_LISTING",
+    "label": "Propspace PF Listing",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPSPACE_PF_PUBLISHED",
+    "label": "Propspace PF Published",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPSPACE_REMIND",
+    "label": "Propspace Remind",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_QR_CODE",
+    "label": "QR Code",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_QR_CODE_LINK",
+    "label": "QR Code Link",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_QUARTERBATHROOMS",
+    "label": "Quarter Bathrooms",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_REFERRAL_AGENT_LANDLORD",
+    "label": "Referral agent - Landlord",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_REFERRAL_AGENT_SELLER",
+    "label": "Referral Agent - Seller",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_REFERRED_BY",
+    "label": "Referred by",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_REFERRED_BY_LOGGED_IN_USER",
+    "label": "Referred by logged in user",
+    "type": "employee",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": []
+    }
+  },
+  {
+    "code": "UF_CRM_SALEAGENTEMAIL",
+    "label": "Sale Agent Email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SALEAGENTMLSID",
+    "label": "Sale Agent MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SALEAGENTNAME",
+    "label": "Sale Agent Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SALEDATE",
+    "label": "Sale Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_SALEOFFICEMLSID",
+    "label": "Sale Office MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SALEOFFICENAME",
+    "label": "Sale Office Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SERVICE_CHARGE",
+    "label": "Service Charge",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TOTALAREA",
+    "label": "Size",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_SOLDDATE",
+    "label": "Sold Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_SOLDPRICE",
+    "label": "Sold Price",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SOLDPRICEPERSQFT",
+    "label": "Sold Price per Sq./Ft.",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SQFT",
+    "label": "Sq./Ft.",
+    "type": "double",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "PRECISION": 0,
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STATE",
+    "label": "State",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STATECODE",
+    "label": "State Code",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STATUSCHANGEDAT",
+    "label": "Status Changed At",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_STORIES_1",
+    "label": "Stories",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STREET",
+    "label": "Street",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STREET_NUMBER",
+    "label": "Street Number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUBAREA",
+    "label": "Sub Area",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
+    "label": "Sub Community - Propertyfinder",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUBDIVISION",
+    "label": "Subdivision",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUMMARY",
+    "label": "Summary",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_SUMMARY_DESCRIPTION",
+    "label": "Summary Description",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
+    "label": "System Allowed for Portals",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMEXTERNALID",
+    "label": "SystemExternalId",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMHASACCEPTEDOFFER",
+    "label": "SystemHasAcceptedOffer",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMHASCLOSEDCLOSING",
+    "label": "SystemHasClosedClosing",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMHASEXCLUSIVEOFFER",
+    "label": "SystemHasExclusiveOffer",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMIDXPOOL",
+    "label": "SystemIdxPool",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMISARCHIVED",
+    "label": "SystemIsArchived",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMISIDX",
+    "label": "SystemIsIdx",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMISIDXFULLIMPORT",
+    "label": "SystemIsIdxFullImport",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMPOOLID",
+    "label": "SystemPoolId",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TAXES",
+    "label": "Taxes",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TDLINK",
+    "label": "TD Link",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_TDURL",
+    "label": "TD URL",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_TECHNICALSOURCESYSTEM",
+    "label": "Technical Source",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TENANT",
+    "label": "Tenant",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_THREEQUARTERBATHROOMS",
+    "label": "Three Quarter Bathrooms",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_TITLE_DEED",
+    "label": "Title Deed",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_TOTALBATHROOMS",
+    "label": "Total Bathrooms",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_TOTAL_CLOSING_FEE",
+    "label": "Total Closing Fee",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UK_LISTING_SALES_FOR_FEED",
+    "label": "UK Listing Sales for Feed",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_UNITCOUNT",
+    "label": "Unit Count",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_UNITLEVEL",
+    "label": "Unit Level",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_VACANT_ON_TRANSFER",
+    "label": "Vacant on Transfer",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_VIEWABLE",
+    "label": "Viewable",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WATERVIEW",
+    "label": "Water View",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WATERFRONT",
+    "label": "Waterfront",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITECREATEDAT",
+    "label": "Website Created At",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITEID",
+    "label": "Website ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITEUPDATEDAT",
+    "label": "Website Updated At",
+    "type": "datetime",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      },
+      "USE_SECOND": "Y",
+      "USE_TIMEZONE": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITE_URL",
+    "label": "Website URL",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_WITHDRAW_DATE",
+    "label": "Withdraw Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_WITHDRAW_REASON_OTHER",
+    "label": "Withdraw Reason Other",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_YARD",
+    "label": "Yard",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_YEARBUILTTEXT",
+    "label": "Year Built",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_YEAR_BUILT_TEXT",
+    "label": "Year Built (Text)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_YEARLY_RENTAL",
+    "label": "Yearly Rental",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ZIPFORMLINK",
+    "label": "Zip Form Link",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_ZIPFORMURL",
+    "label": "Zip Form URL",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_POSTALCODE",
+    "label": "Zip/Postal Code",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COSELLINGAGENTMLSID",
+    "label": "Coselling Agent MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COSELLINGAGENTNAME",
+    "label": "Coselling Agent Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COSELLINGOFFICEMLSID",
+    "label": "Coselling Office MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COSELLINGOFFICENAME",
+    "label": "Coselling Office Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LASTMODIFIEDBYID",
+    "label": "Last Modified By",
+    "type": "employee",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": []
+    }
+  },
+  {
+    "code": "UF_CRM_REFER_TO",
+    "label": "Refer to",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_TITLE_ARABIC",
+    "label": "Title (Arabic)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TITLE_CHARACTER_COUNTER",
+    "label": "Title Character Counter",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_EXPOSE_IMAGES",
+    "label": "Expose Images",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITE_IMAGES",
+    "label": "Website Images",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_AUTO_UNPUBLISH_LISTING_STATUS",
+    "label": "Auto Unpublish Listing Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1890",
+        "VALUE": "Active"
+      },
+      {
+        "ID": "1892",
+        "VALUE": "Unpublished"
+      },
+      {
+        "ID": "1894",
+        "VALUE": "Pending Unpublish"
+      },
+      {
+        "ID": "1896",
+        "VALUE": "Expired"
+      },
+      {
+        "ID": "1898",
+        "VALUE": "Disabled"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_BAYUT_PROPERTY_TYPE",
+    "label": "Bayut Property Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1900",
+        "VALUE": "Apartment"
+      },
+      {
+        "ID": "1902",
+        "VALUE": "Villa"
+      },
+      {
+        "ID": "1904",
+        "VALUE": "Townhouse"
+      },
+      {
+        "ID": "1906",
+        "VALUE": "Penthouse"
+      },
+      {
+        "ID": "1908",
+        "VALUE": "Hotel Apartment"
+      },
+      {
+        "ID": "1910",
+        "VALUE": "Duplex"
+      },
+      {
+        "ID": "1912",
+        "VALUE": "Residential Plot"
+      },
+      {
+        "ID": "1914",
+        "VALUE": "Residential Floor"
+      },
+      {
+        "ID": "1916",
+        "VALUE": "Residential Building"
+      },
+      {
+        "ID": "1918",
+        "VALUE": "Office"
+      },
+      {
+        "ID": "1920",
+        "VALUE": "Retail"
+      },
+      {
+        "ID": "1922",
+        "VALUE": "Shop"
+      },
+      {
+        "ID": "1924",
+        "VALUE": "Warehouse"
+      },
+      {
+        "ID": "1926",
+        "VALUE": "Commercial Building"
+      },
+      {
+        "ID": "1928",
+        "VALUE": "Commercial Plot"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_BUILDINGSTYLE",
+    "label": "Building Style",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1930",
+        "VALUE": "Modern / Contemporary"
+      },
+      {
+        "ID": "1932",
+        "VALUE": "Mediterranean"
+      },
+      {
+        "ID": "1934",
+        "VALUE": "Classic / Traditional"
+      },
+      {
+        "ID": "1936",
+        "VALUE": "Arabic / Moroccan"
+      },
+      {
+        "ID": "1938",
+        "VALUE": "Minimalist"
+      },
+      {
+        "ID": "1940",
+        "VALUE": "Art Deco"
+      },
+      {
+        "ID": "1942",
+        "VALUE": "High-Tech"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_COMPLETION_STATUS",
+    "label": "Completion Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1944",
+        "VALUE": "Off-Plan"
+      },
+      {
+        "ID": "1946",
+        "VALUE": "Under Construction"
+      },
+      {
+        "ID": "1948",
+        "VALUE": "Completed"
+      },
+      {
+        "ID": "1950",
+        "VALUE": "Handover"
+      },
+      {
+        "ID": "1952",
+        "VALUE": "Ready"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_CONSTRUCTIONTYPE",
+    "label": "Construction Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1954",
+        "VALUE": "Concrete Frame"
+      },
+      {
+        "ID": "1956",
+        "VALUE": "Steel Structure"
+      },
+      {
+        "ID": "1958",
+        "VALUE": "Pre-Cast Concrete"
+      },
+      {
+        "ID": "1960",
+        "VALUE": "Brick / Masonry"
+      },
+      {
+        "ID": "1962",
+        "VALUE": "Timber / Wood Frame"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_FLOORTYPE",
+    "label": "Floor Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1964",
+        "VALUE": "Marble"
+      },
+      {
+        "ID": "1966",
+        "VALUE": "Parquet / Hardwood"
+      },
+      {
+        "ID": "1968",
+        "VALUE": "Porcelain Tiles"
+      },
+      {
+        "ID": "1970",
+        "VALUE": "Ceramic Tiles"
+      },
+      {
+        "ID": "1972",
+        "VALUE": "Carpet"
+      },
+      {
+        "ID": "1974",
+        "VALUE": "Polished Concrete"
+      },
+      {
+        "ID": "1976",
+        "VALUE": "Laminate"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_GEOCODEACCURACY",
+    "label": "Geocode Accuracy",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1978",
+        "VALUE": "Exact Rooftop"
+      },
+      {
+        "ID": "1980",
+        "VALUE": "Street / Interpolated"
+      },
+      {
+        "ID": "1982",
+        "VALUE": "Community / Neighborhood"
+      },
+      {
+        "ID": "1984",
+        "VALUE": "Sub-locality"
+      },
+      {
+        "ID": "1986",
+        "VALUE": "City / Approximate"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_HEATINGTYPE",
+    "label": "Heating Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1988",
+        "VALUE": "Central Heating"
+      },
+      {
+        "ID": "1990",
+        "VALUE": "Split Unit Heating"
+      },
+      {
+        "ID": "1992",
+        "VALUE": "Electric Heating"
+      },
+      {
+        "ID": "1994",
+        "VALUE": "Solar Heating"
+      },
+      {
+        "ID": "1996",
+        "VALUE": "None / Not Applicable"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_HOAFREQUENCY",
+    "label": "HOA Frequency",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "1998",
+        "VALUE": "Monthly"
+      },
+      {
+        "ID": "2000",
+        "VALUE": "Quarterly"
+      },
+      {
+        "ID": "2002",
+        "VALUE": "Semi-Annually"
+      },
+      {
+        "ID": "2004",
+        "VALUE": "Annually"
+      },
+      {
+        "ID": "2006",
+        "VALUE": "Included in Rent"
+      },
+      {
+        "ID": "2008",
+        "VALUE": "None"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_LANGUAGE_LOCALE",
+    "label": "Language Locale",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2010",
+        "VALUE": "English"
+      },
+      {
+        "ID": "2012",
+        "VALUE": "Arabic"
+      },
+      {
+        "ID": "2014",
+        "VALUE": "Russian"
+      },
+      {
+        "ID": "2016",
+        "VALUE": "French"
+      },
+      {
+        "ID": "2018",
+        "VALUE": "German"
+      },
+      {
+        "ID": "2020",
+        "VALUE": "Hindi"
+      },
+      {
+        "ID": "2022",
+        "VALUE": "Urdu"
+      },
+      {
+        "ID": "2024",
+        "VALUE": "Mandarin"
+      },
+      {
+        "ID": "2026",
+        "VALUE": "Spanish"
+      },
+      {
+        "ID": "2028",
+        "VALUE": "Italian"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_AGENT_SALUTATION",
+    "label": "Listing Agent Salutation",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2030",
+        "VALUE": "Mr."
+      },
+      {
+        "ID": "2032",
+        "VALUE": "Mrs."
+      },
+      {
+        "ID": "2034",
+        "VALUE": "Ms."
+      },
+      {
+        "ID": "2036",
+        "VALUE": "Dr."
+      },
+      {
+        "ID": "2038",
+        "VALUE": "Eng."
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_SOURCE",
+    "label": "Listing Source",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2040",
+        "VALUE": "Developer Direct"
+      },
+      {
+        "ID": "2042",
+        "VALUE": "Landlord / Owner"
+      },
+      {
+        "ID": "2044",
+        "VALUE": "Broker Network"
+      },
+      {
+        "ID": "2046",
+        "VALUE": "Bayut / Dubizzle"
+      },
+      {
+        "ID": "2048",
+        "VALUE": "Property Finder"
+      },
+      {
+        "ID": "2050",
+        "VALUE": "Company Website"
+      },
+      {
+        "ID": "2052",
+        "VALUE": "Referral"
+      },
+      {
+        "ID": "2054",
+        "VALUE": "Cold Outreach"
+      },
+      {
+        "ID": "2056",
+        "VALUE": "Social Media"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_LOCATION_SOURCE",
+    "label": "Location Source",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2058",
+        "VALUE": "Google Maps GPS"
+      },
+      {
+        "ID": "2060",
+        "VALUE": "Makani Number"
+      },
+      {
+        "ID": "2062",
+        "VALUE": "Title Deed"
+      },
+      {
+        "ID": "2064",
+        "VALUE": "Developer Brochure"
+      },
+      {
+        "ID": "2066",
+        "VALUE": "Manual Pinpoint"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_MEASUREMENT",
+    "label": "Measurement",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2068",
+        "VALUE": "Sq.Ft."
+      },
+      {
+        "ID": "2070",
+        "VALUE": "Sq.M."
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PAYMENT_METHOD",
+    "label": "Payment Method",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2072",
+        "VALUE": "Cash / Wire Transfer"
+      },
+      {
+        "ID": "2074",
+        "VALUE": "Bank Mortgage"
+      },
+      {
+        "ID": "2076",
+        "VALUE": "Developer Payment Plan"
+      },
+      {
+        "ID": "2078",
+        "VALUE": "Cheque"
+      },
+      {
+        "ID": "2080",
+        "VALUE": "Cryptocurrency"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PREVIOUSSTATUS",
+    "label": "Previous Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2082",
+        "VALUE": "Draft"
+      },
+      {
+        "ID": "2084",
+        "VALUE": "Under Review"
+      },
+      {
+        "ID": "2086",
+        "VALUE": "Active"
+      },
+      {
+        "ID": "2088",
+        "VALUE": "Reserved"
+      },
+      {
+        "ID": "2090",
+        "VALUE": "Sold"
+      },
+      {
+        "ID": "2092",
+        "VALUE": "Rented"
+      },
+      {
+        "ID": "2094",
+        "VALUE": "Expired"
+      },
+      {
+        "ID": "2096",
+        "VALUE": "Withdrawn"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_SUB_TYPE",
+    "label": "Property Sub Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2098",
+        "VALUE": "Standard"
+      },
+      {
+        "ID": "2100",
+        "VALUE": "Luxury"
+      },
+      {
+        "ID": "2102",
+        "VALUE": "Ultra Luxury"
+      },
+      {
+        "ID": "2104",
+        "VALUE": "Simplex"
+      },
+      {
+        "ID": "2106",
+        "VALUE": "Duplex"
+      },
+      {
+        "ID": "2108",
+        "VALUE": "Triplex"
+      },
+      {
+        "ID": "2110",
+        "VALUE": "Penthouse"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PUBLISH_STATUS",
+    "label": "Publish Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2112",
+        "VALUE": "Published"
+      },
+      {
+        "ID": "2114",
+        "VALUE": "Unpublished"
+      },
+      {
+        "ID": "2116",
+        "VALUE": "Pending Review"
+      },
+      {
+        "ID": "2118",
+        "VALUE": "Sync Failed"
+      },
+      {
+        "ID": "2120",
+        "VALUE": "Archived"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_SQFTSOURCE",
+    "label": "Sq./Ft. Source",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2122",
+        "VALUE": "Title Deed"
+      },
+      {
+        "ID": "2124",
+        "VALUE": "Developer Oqood / SPA"
+      },
+      {
+        "ID": "2126",
+        "VALUE": "Floor Plan Layout"
+      },
+      {
+        "ID": "2128",
+        "VALUE": "Site Inspection / Valuation"
+      },
+      {
+        "ID": "2130",
+        "VALUE": "Owner Estimate"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_STATUS",
+    "label": "Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2132",
+        "VALUE": "Active"
+      },
+      {
+        "ID": "2134",
+        "VALUE": "Under Offer"
+      },
+      {
+        "ID": "2136",
+        "VALUE": "Reserved"
+      },
+      {
+        "ID": "2138",
+        "VALUE": "Sold"
+      },
+      {
+        "ID": "2140",
+        "VALUE": "Rented"
+      },
+      {
+        "ID": "2142",
+        "VALUE": "Off-Market"
+      },
+      {
+        "ID": "2144",
+        "VALUE": "Withdrawn"
+      },
+      {
+        "ID": "2146",
+        "VALUE": "Expired"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_UK_PRICE_QUALIFIER",
+    "label": "UK_Price_Qualifier",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2148",
+        "VALUE": "Fixed Price"
+      },
+      {
+        "ID": "2150",
+        "VALUE": "Guide Price"
+      },
+      {
+        "ID": "2152",
+        "VALUE": "Offers in Excess of"
+      },
+      {
+        "ID": "2154",
+        "VALUE": "Offers in Region of"
+      },
+      {
+        "ID": "2156",
+        "VALUE": "Price on Application (POA)"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_UK_TENURE",
+    "label": "UK_Tenure",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2158",
+        "VALUE": "Freehold"
+      },
+      {
+        "ID": "2160",
+        "VALUE": "Leasehold"
+      },
+      {
+        "ID": "2162",
+        "VALUE": "Commonhold"
+      },
+      {
+        "ID": "2164",
+        "VALUE": "Share of Freehold"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_VIEWING_STATUS",
+    "label": "Viewing Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2166",
+        "VALUE": "Available for Viewing"
+      },
+      {
+        "ID": "2168",
+        "VALUE": "Key with Security"
+      },
+      {
+        "ID": "2170",
+        "VALUE": "Appointment Required"
+      },
+      {
+        "ID": "2172",
+        "VALUE": "Tenant Occupied - 24h Notice"
+      },
+      {
+        "ID": "2174",
+        "VALUE": "Keys with Agent"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_WATERBODY",
+    "label": "Water Body",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2176",
+        "VALUE": "Arabian Gulf"
+      },
+      {
+        "ID": "2178",
+        "VALUE": "Dubai Canal"
+      },
+      {
+        "ID": "2180",
+        "VALUE": "Dubai Marina"
+      },
+      {
+        "ID": "2182",
+        "VALUE": "Creek / Lagoons"
+      },
+      {
+        "ID": "2184",
+        "VALUE": "Lake"
+      },
+      {
+        "ID": "2186",
+        "VALUE": "None"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_WITHDRAW_REASON",
+    "label": "Withdraw Reason",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2188",
+        "VALUE": "Sold by Another Agency"
+      },
+      {
+        "ID": "2190",
+        "VALUE": "Sold by Owner"
+      },
+      {
+        "ID": "2192",
+        "VALUE": "Owner Changed Mind"
+      },
+      {
+        "ID": "2194",
+        "VALUE": "Price Too High"
+      },
+      {
+        "ID": "2196",
+        "VALUE": "Overpriced / No Demand"
+      },
+      {
+        "ID": "2198",
+        "VALUE": "Rented Out"
+      },
+      {
+        "ID": "2200",
+        "VALUE": "Listing Agreement Expired"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTYFINDER_PROPERTY_TYPE",
+    "label": "PropertyFinder Property Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2202",
+        "VALUE": "Apartment"
+      },
+      {
+        "ID": "2204",
+        "VALUE": "Villa"
+      },
+      {
+        "ID": "2206",
+        "VALUE": "Townhouse"
+      },
+      {
+        "ID": "2208",
+        "VALUE": "Penthouse"
+      },
+      {
+        "ID": "2210",
+        "VALUE": "Hotel Apartment"
+      },
+      {
+        "ID": "2212",
+        "VALUE": "Duplex"
+      },
+      {
+        "ID": "2214",
+        "VALUE": "Plot"
+      },
+      {
+        "ID": "2216",
+        "VALUE": "Full Floor"
+      },
+      {
+        "ID": "2218",
+        "VALUE": "Whole Building"
+      },
+      {
+        "ID": "2220",
+        "VALUE": "Office Space"
+      },
+      {
+        "ID": "2222",
+        "VALUE": "Retail"
+      },
+      {
+        "ID": "2224",
+        "VALUE": "Shop"
+      },
+      {
+        "ID": "2226",
+        "VALUE": "Warehouse"
+      },
+      {
+        "ID": "2228",
+        "VALUE": "Factory"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_RECORDTYPEID",
+    "label": "Record Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2230",
+        "VALUE": "Residential"
+      },
+      {
+        "ID": "2232",
+        "VALUE": "Commercial"
+      },
+      {
+        "ID": "2234",
+        "VALUE": "Off-Plan"
+      },
+      {
+        "ID": "2236",
+        "VALUE": "Secondary / Resale"
+      },
+      {
+        "ID": "2238",
+        "VALUE": "Rental"
+      },
+      {
+        "ID": "2240",
+        "VALUE": "Land / Plot"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
+    "label": "Photos and Documents",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_FORM_A_DOCUMENT",
+    "label": "Form A Document",
+    "type": "file",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_TRAKHEESI_PERMIT_NO",
+    "label": "Trakheesi Permit No",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
+    "label": "Trakheesi Permit Expiry Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_PHOTOS",
+    "label": "Photos",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_DOCUMENTS",
+    "label": "Documents",
+    "type": "file",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "LIST_WIDTH": 0,
+      "LIST_HEIGHT": 0,
+      "MAX_SHOW_SIZE": 0,
+      "MAX_ALLOWED_SIZE": 0,
+      "EXTENSIONS": [],
+      "TARGET_BLANK": "Y",
+      "DEFAULT_VIEW": null
+    }
+  },
+  {
+    "code": "UF_CRM_ENQUIRY",
+    "label": "Enquiry",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_ACCOUNT",
+    "label": "Account",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_BODYOFWATER",
+    "label": "Body of Water",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOUSEHOLDMEMBERS",
+    "label": "Household Members",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_INCLUDESALLCHANGES",
+    "label": "Includes All Changes",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SCHOOL_1",
+    "label": "School",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STYLE_1",
+    "label": "Style",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ACREMAX",
+    "label": "Acre Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_ACREMIN",
+    "label": "Acre Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_AD_ID",
+    "label": "Ad ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ADDITIONALCITIES",
+    "label": "Additional Cities",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ADDITIONALPOSTALCODES",
+    "label": "Additional Postal Codes",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AGENT_REFERRAL",
+    "label": "Agent Referral",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_AS_SET_ID",
+    "label": "As Set ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ASSIGNED_TO_BROKER",
+    "label": "Assigned to Broker",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
+    "label": "Buildings and Developments",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUYINGTIMEFRAME",
+    "label": "Buying Time Frame",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_CAMPAIGN_NAME",
+    "label": "Campaign Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_CHEQUES_1",
+    "label": "Cheques",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_CONTACT_NAME",
+    "label": "Contact Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_CONTACTED_CONVERSION_DAYS",
+    "label": "Contacted conversion days",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_COUNTIES",
+    "label": "Counties",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
+    "label": "Date Assigned to Broker",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DAYSONMARKETMAX",
+    "label": "Days On Market Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DAYSONMARKETMIN",
+    "label": "Days On Market Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DAYS_SINCE_LAST_ACTIVITY",
+    "label": "Days since last activity",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_DEVELOPMENTNAME",
+    "label": "Development Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DISQUALIFY_DATE",
+    "label": "Disqualify Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DISQUALIFY_REASON",
+    "label": "Disqualify Reason",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
+    "label": "Disqualify Reason Other",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMAILFREQUENCY",
+    "label": "Email Frequency",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
+    "label": "eMortgage Auto Referral",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_BROKER",
+    "label": "eMortgage Broker",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
+    "label": "eMortgage Broker email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
+    "label": "eMortgage Broker number",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
+    "label": "eMortgage Referral Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
+    "label": "eMortgage Referred By",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
+    "label": "eMortgage Skip Send",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_NAME",
+    "label": "Enquiry ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ENQUIRY_LOCKED_1",
+    "label": "Enquiry Locked",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LEGACY_ENQUIRY_OWNER",
+    "label": "Enquiry Owner",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ENQUIRY_OWNER_NAME",
+    "label": "Enquiry Owner Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_EPPRAISALVALUATION",
+    "label": "Eppraisal Valuation",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ESTATEDVALUATION",
+    "label": "Estated Valuation",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ESTIMATEDHOMEVALUE",
+    "label": "Estimated Home Value",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_FINANCE",
+    "label": "Finance",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_FIRST_CONTACTED_DATE",
+    "label": "First Contacted Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_FIRST_VIEWING_DATE",
+    "label": "First Viewing Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_FLOOR_MAX",
+    "label": "Floor - max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_FLOOR_MIN",
+    "label": "Floor - min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_FLOORINGTYPE",
+    "label": "Flooring Type",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_FRONT_DESK_EMAIL",
+    "label": "Front Desk Email",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_FUTURE_TASK_DATE",
+    "label": "Future Task Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_GARAGESPACEMAX",
+    "label": "Garage Space Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_GARAGESPACEMIN",
+    "label": "Garage Space Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_GLD_ENQUIRY_NAME",
+    "label": "Gld Enquiry Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HISTORIC",
+    "label": "Historic",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOAFEESMAX",
+    "label": "HOA Fees Max",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOAFEESMIN",
+    "label": "HOA Fees Min",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_HOMEOWNERCONFIRMED",
+    "label": "Homeowner Confirmed",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_INCLUDESNEWLISTINGS",
+    "label": "Includes New Listings",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
+    "label": "Includes Open House Changes",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_INCLUDESPRICECHANGES",
+    "label": "Includes Price Changes",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_INCLUDESSTATUSCHANGES",
+    "label": "Includes Status Changes",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_IS_A_REAL_ESTATE_BROKER",
+    "label": "Is a Real Estate Broker",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_IS_CONTACT_VIEWABLE",
+    "label": "Is Contact Viewable",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
+    "label": "Is Website Saved Search",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_KEYWORDS",
+    "label": "Keywords",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LEAD_RESPONSE",
+    "label": "Lead Response",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LENGTHOFRESIDENCEINHOME",
+    "label": "Length of Residence in Home (months)",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGOFFICE",
+    "label": "Listing Office",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_LOCATIONKEYWORDS",
+    "label": "Location Keywords",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LOTSIZE_MAX",
+    "label": "Lot Size - max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LOTSIZE_MIN",
+    "label": "Lot Size - min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_MANUALLY_SET_CRITERIA",
+    "label": "Manually Set Criteria",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MESSAGECONTENT",
+    "label": "Message",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_META_RESPONSE",
+    "label": "META Response",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MONTHLYRENTMAX",
+    "label": "Monthly Rent - max",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MONTHLYRENTMIN",
+    "label": "Monthly Rent - min",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_MORTGAGEDATE",
+    "label": "Mortgage Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_MOVE_DATE",
+    "label": "Move Date",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_NEIGHBORHOODS",
+    "label": "Neighborhoods",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_OWNER_ENQUIRY",
+    "label": "Owner - Enquiry",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "N",
+      "CONTACT": "Y",
+      "COMPANY": "Y",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PARKINGMIN",
+    "label": "Parking Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PARKING_SPACES_MAX",
+    "label": "Parking Spaces - max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PARKING_SPACES_MIN",
+    "label": "Parking Spaces - min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_PORTAL_LISTING_ID",
+    "label": "Portal Listing Id",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGPRICE_MAX",
+    "label": "Price - max",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_LISTINGPRICE_MIN",
+    "label": "Price - min",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_PROPSPACE_AGENT",
+    "label": "Propspace Agent",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
+    "label": "Purchase Amount of Home",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_RECOMMENDED_LISTINGS",
+    "label": "Recommended_Listings",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_REFERRAL_AGENT_BUYER",
+    "label": "Referral agent - Buyer",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_REFERRAL_AGENT_TENANT",
+    "label": "Referral agent - Tenant",
+    "type": "crm",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "LEAD": "Y",
+      "CONTACT": "N",
+      "COMPANY": "N",
+      "DEAL": "N"
+    }
+  },
+  {
+    "code": "UF_CRM_RESPOND_LINK",
+    "label": "Respond Link",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_ROTATION_NAME",
+    "label": "Rotation Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SATURDAYOPENHOUSE",
+    "label": "Saturday Open House",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_DESCRIPTION_2",
+    "label": "Saved Search Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SCHOOLATTENDANCEZONES",
+    "label": "School Attendance Zones",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SCHOOLDISTRICTS",
+    "label": "School Districts",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SECONDARY_REFERENCE",
+    "label": "Secondary Reference",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SELLINGTIMEFRAME",
+    "label": "Selling Time Frame",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_TOTALAREA_MAX",
+    "label": "Size - max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_TOTALAREA_MIN",
+    "label": "Size - min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_SPAM_ENQUIRY",
+    "label": "Spam Enquiry",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SPAM_REASON",
+    "label": "Spam Reason",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_STORIES_MAX",
+    "label": "Stories - max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STORIES_MIN",
+    "label": "Stories - min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STORIESMAX",
+    "label": "Stories Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STORIESMIN",
+    "label": "Stories Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_STREETNAME",
+    "label": "Street Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUBDIVISIONNAME",
+    "label": "Subdivision Name",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUBDIVISIONS",
+    "label": "Subdivisions",
+    "type": "string",
+    "isMultiple": true,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SUNDAYOPENHOUSE",
+    "label": "Sunday Open House",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMISEXTERNALUPDATE",
+    "label": "System Is External Update",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEM_SKIPS_ROTATION",
+    "label": "System Skips Rotation",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMCONTROL",
+    "label": "SystemControl",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_SYSTEMISACTIVE",
+    "label": "SystemIsActive",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TAXMAX",
+    "label": "Tax Max",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_TAXMIN",
+    "label": "Tax Min",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_THISWEEKOPENHOUSE",
+    "label": "This Week Open House",
+    "type": "date",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": {
+        "TYPE": "NONE",
+        "VALUE": ""
+      }
+    }
+  },
+  {
+    "code": "UF_CRM_UNITSMIN",
+    "label": "Units Min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_VOT_REQUIRED",
+    "label": "VOT required?",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITEMLSID",
+    "label": "Website MLS ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITESEARCHID",
+    "label": "Website Search ID",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITESEARCHTYPE",
+    "label": "Website Search Type",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_WEBSITESEARCHURL",
+    "label": "Website Search URL",
+    "type": "url",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "POPUP": "Y",
+      "SIZE": 20,
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": "",
+      "ROWS": 1
+    }
+  },
+  {
+    "code": "UF_CRM_WHATSAPP_RESPONSE",
+    "label": "Whatsapp Response",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_YEARBUILT_MAX",
+    "label": "Year Built - max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_YEARBUILT_MIN",
+    "label": "Year Built - min",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_UNITSMAX",
+    "label": "Units Max",
+    "type": "integer",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "MIN_VALUE": 0,
+      "MAX_VALUE": 0,
+      "DEFAULT_VALUE": null
+    }
+  },
+  {
+    "code": "UF_CRM_LISTING_REF",
+    "label": "Listing Ref",
+    "type": "string",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "SIZE": 20,
+      "ROWS": 1,
+      "REGEXP": "",
+      "MIN_LENGTH": 0,
+      "MAX_LENGTH": 0,
+      "DEFAULT_VALUE": ""
+    }
+  },
+  {
+    "code": "UF_CRM_BUYING_TIMEFRAME",
+    "label": "Buying Timeframe",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2242",
+        "VALUE": "Immediate (< 1 month)"
+      },
+      {
+        "ID": "2244",
+        "VALUE": "1 - 3 Months"
+      },
+      {
+        "ID": "2246",
+        "VALUE": "3 - 6 Months"
+      },
+      {
+        "ID": "2248",
+        "VALUE": "6 - 12 Months"
+      },
+      {
+        "ID": "2250",
+        "VALUE": "More than 1 year"
+      },
+      {
+        "ID": "2252",
+        "VALUE": "Just Exploring"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_BASEMENTTYPE",
+    "label": "Basement Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2254",
+        "VALUE": "Finished"
+      },
+      {
+        "ID": "2256",
+        "VALUE": "Unfinished"
+      },
+      {
+        "ID": "2258",
+        "VALUE": "Full Basement"
+      },
+      {
+        "ID": "2260",
+        "VALUE": "Walkout"
+      },
+      {
+        "ID": "2262",
+        "VALUE": "Underground Parking"
+      },
+      {
+        "ID": "2264",
+        "VALUE": "None"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_CONSTRUCTION",
+    "label": "Construction",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2266",
+        "VALUE": "Concrete Frame"
+      },
+      {
+        "ID": "2268",
+        "VALUE": "Steel Structure"
+      },
+      {
+        "ID": "2270",
+        "VALUE": "Pre-Cast Concrete"
+      },
+      {
+        "ID": "2272",
+        "VALUE": "Brick / Masonry"
+      },
+      {
+        "ID": "2274",
+        "VALUE": "Timber / Wood Frame"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_COOLINGTYPE",
+    "label": "Cooling Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2276",
+        "VALUE": "Central A/C"
+      },
+      {
+        "ID": "2278",
+        "VALUE": "Chiller Free"
+      },
+      {
+        "ID": "2280",
+        "VALUE": "District Cooling (Empower/Tabreed)"
+      },
+      {
+        "ID": "2282",
+        "VALUE": "Split A/C System"
+      },
+      {
+        "ID": "2284",
+        "VALUE": "Window A/C"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_ENQUIRY_SOURCE",
+    "label": "Enquiry Source",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2286",
+        "VALUE": "Property Finder"
+      },
+      {
+        "ID": "2288",
+        "VALUE": "Bayut / Dubizzle"
+      },
+      {
+        "ID": "2290",
+        "VALUE": "Google Ads"
+      },
+      {
+        "ID": "2292",
+        "VALUE": "Meta (FB / IG)"
+      },
+      {
+        "ID": "2294",
+        "VALUE": "Website Direct"
+      },
+      {
+        "ID": "2296",
+        "VALUE": "WhatsApp Campaign"
+      },
+      {
+        "ID": "2298",
+        "VALUE": "Referral / Word of Mouth"
+      },
+      {
+        "ID": "2300",
+        "VALUE": "Walk-in / Event"
+      },
+      {
+        "ID": "2302",
+        "VALUE": "Phone Inquiry"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_FUTURE_VIEWINGS_BOOKED",
+    "label": "Future Viewings Booked",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2304",
+        "VALUE": "None"
+      },
+      {
+        "ID": "2306",
+        "VALUE": "1 Viewing"
+      },
+      {
+        "ID": "2308",
+        "VALUE": "2 Viewings"
+      },
+      {
+        "ID": "2310",
+        "VALUE": "3+ Viewings"
+      },
+      {
+        "ID": "2312",
+        "VALUE": "Viewing Pending Schedule"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_HEATTYPE",
+    "label": "Heat Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2314",
+        "VALUE": "Central Heating"
+      },
+      {
+        "ID": "2316",
+        "VALUE": "Split Unit Heating"
+      },
+      {
+        "ID": "2318",
+        "VALUE": "Electric Heating"
+      },
+      {
+        "ID": "2320",
+        "VALUE": "Solar Heating"
+      },
+      {
+        "ID": "2322",
+        "VALUE": "None / Not Applicable"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_LEAD_SOURCE_TYPE",
+    "label": "Lead source Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2324",
+        "VALUE": "Inbound Portal"
+      },
+      {
+        "ID": "2326",
+        "VALUE": "Paid Ad Campaign"
+      },
+      {
+        "ID": "2328",
+        "VALUE": "Organic Search"
+      },
+      {
+        "ID": "2330",
+        "VALUE": "Direct Message"
+      },
+      {
+        "ID": "2332",
+        "VALUE": "Cold Outreach"
+      },
+      {
+        "ID": "2334",
+        "VALUE": "Partner Broker"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_NATIONALITY",
+    "label": "Nationality",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2336",
+        "VALUE": "Emirati (UAE)"
+      },
+      {
+        "ID": "2338",
+        "VALUE": "British (UK)"
+      },
+      {
+        "ID": "2340",
+        "VALUE": "Indian"
+      },
+      {
+        "ID": "2342",
+        "VALUE": "Pakistani"
+      },
+      {
+        "ID": "2344",
+        "VALUE": "Russian"
+      },
+      {
+        "ID": "2346",
+        "VALUE": "French"
+      },
+      {
+        "ID": "2348",
+        "VALUE": "German"
+      },
+      {
+        "ID": "2350",
+        "VALUE": "Saudi Arabian"
+      },
+      {
+        "ID": "2352",
+        "VALUE": "Chinese"
+      },
+      {
+        "ID": "2354",
+        "VALUE": "Canadian"
+      },
+      {
+        "ID": "2356",
+        "VALUE": "American (USA)"
+      },
+      {
+        "ID": "2358",
+        "VALUE": "Italian"
+      },
+      {
+        "ID": "2360",
+        "VALUE": "Turkish"
+      },
+      {
+        "ID": "2362",
+        "VALUE": "Lebanese"
+      },
+      {
+        "ID": "2364",
+        "VALUE": "Egyptian"
+      },
+      {
+        "ID": "2366",
+        "VALUE": "Jordanian"
+      },
+      {
+        "ID": "2368",
+        "VALUE": "Other"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_NORMAL_LOW_HIGH_URGENT",
+    "label": "Normal Low High Urgent",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2370",
+        "VALUE": "Low"
+      },
+      {
+        "ID": "2372",
+        "VALUE": "Normal"
+      },
+      {
+        "ID": "2374",
+        "VALUE": "High"
+      },
+      {
+        "ID": "2376",
+        "VALUE": "Urgent"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTYSTATUS",
+    "label": "Property Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2378",
+        "VALUE": "Available"
+      },
+      {
+        "ID": "2380",
+        "VALUE": "Reserved"
+      },
+      {
+        "ID": "2382",
+        "VALUE": "Sold"
+      },
+      {
+        "ID": "2384",
+        "VALUE": "Rented"
+      },
+      {
+        "ID": "2386",
+        "VALUE": "Under Maintenance"
+      },
+      {
+        "ID": "2388",
+        "VALUE": "Off Market"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_PROPERTY_SUB_TYPE_MULTI",
+    "label": "Property Sub Type (multi)",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2390",
+        "VALUE": "Standard"
+      },
+      {
+        "ID": "2392",
+        "VALUE": "Luxury"
+      },
+      {
+        "ID": "2394",
+        "VALUE": "Ultra Luxury"
+      },
+      {
+        "ID": "2396",
+        "VALUE": "Simplex"
+      },
+      {
+        "ID": "2398",
+        "VALUE": "Duplex"
+      },
+      {
+        "ID": "2400",
+        "VALUE": "Triplex"
+      },
+      {
+        "ID": "2402",
+        "VALUE": "Penthouse"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_SUB_STATUS",
+    "label": "Sub Status",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2404",
+        "VALUE": "Attempted Contact"
+      },
+      {
+        "ID": "2406",
+        "VALUE": "Follow-up Required"
+      },
+      {
+        "ID": "2408",
+        "VALUE": "Meeting Set"
+      },
+      {
+        "ID": "2410",
+        "VALUE": "Offer Made"
+      },
+      {
+        "ID": "2412",
+        "VALUE": "Budget Mismatch"
+      },
+      {
+        "ID": "2414",
+        "VALUE": "Unresponsive"
+      },
+      {
+        "ID": "2416",
+        "VALUE": "Wrong Number"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_SUBTYPE",
+    "label": "Sub Type",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [
+      {
+        "ID": "2418",
+        "VALUE": "Standard"
+      },
+      {
+        "ID": "2420",
+        "VALUE": "Luxury"
+      },
+      {
+        "ID": "2422",
+        "VALUE": "Ultra Luxury"
+      },
+      {
+        "ID": "2424",
+        "VALUE": "Simplex"
+      },
+      {
+        "ID": "2426",
+        "VALUE": "Duplex"
+      },
+      {
+        "ID": "2428",
+        "VALUE": "Triplex"
+      },
+      {
+        "ID": "2430",
+        "VALUE": "Penthouse"
+      }
+    ],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_FINANCE_1",
+    "label": "Finance",
+    "type": "enumeration",
+    "isMultiple": false,
+    "items": [],
+    "settings": {
+      "DISPLAY": "LIST",
+      "LIST_HEIGHT": 1,
+      "CAPTION_NO_VALUE": "",
+      "SHOW_NO_VALUE": "Y"
+    }
+  },
+  {
+    "code": "UF_CRM_WHATSAPP_RESPONSE_1",
+    "label": "Whatsapp Response",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_ENQUIRY_LOCKED_2",
+    "label": "Enquiry Locked",
+    "type": "boolean",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": 0,
+      "DISPLAY": "CHECKBOX",
+      "LABEL": [
+        "",
+        ""
+      ],
+      "LABEL_CHECKBOX": ""
+    }
+  },
+  {
+    "code": "UF_CRM_DEAL_VALUE_1",
+    "label": "Deal Value",
+    "type": "money",
+    "isMultiple": false,
+    "items": null,
+    "settings": {
+      "DEFAULT_VALUE": ""
+    }
+  }
+]

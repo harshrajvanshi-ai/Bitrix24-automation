@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Installing Bitrix24 Real Estate App</title>
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <link rel="stylesheet" href="/css/tab.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #f5f7f8;
+      padding: 16px;
+    }
+    .install-box {
+      background: #ffffff;
+      border: 1px solid var(--b24-border);
+      border-radius: 8px;
+      padding: 32px;
+      max-width: 560px;
+      width: 100%;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .install-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #202428;
+      margin-bottom: 12px;
+    }
+    .step-list {
+      text-align: left;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--b24-text-muted);
+    }
+    .step-item.active {
+      color: var(--b24-primary);
+      font-weight: 600;
+    }
+    .step-item.done {
+      color: #2b8a3e;
+      font-weight: 600;
+    }
+    .step-item.error {
+      color: var(--b24-danger);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="install-box">
+    <h2 class="install-title">Real Estate Lead Application Setup</h2>
+    <p style="color: var(--b24-text-muted); font-size: 13px; margin-bottom: 20px;">
+      Registering lead card placement, binding automation webhooks, and syncing schema...
+    </p>
+
+    <!-- Warning if opened directly in a browser instead of inside Bitrix24 -->
+    <div id="direct-browser-warning" class="alert alert-warning" style="display: none; text-align: left; font-size: 12px;">
+      <strong>⚠️ Standalone Browser Detected:</strong> This page was opened outside Bitrix24.
+      To complete installation, open this application from inside your Bitrix24 portal:
+      <br><strong>Bitrix24 ➔ Developer Resources ➔ Local Applications ➔ Click "Install"</strong>
+    </div>
+
+    <div class="step-list">
+      <div id="step-auth" class="step-item active">● Authenticating OAuth credentials</div>
+      <div id="step-placement" class="step-item">○ Registering 'Lead Details' tab (CRM_LEAD_DETAIL_TAB)</div>
+      <div id="step-events" class="step-item">○ Subscribing to ONCRMLEADADD and ONCRMLEADUPDATE</div>
+      <div id="step-discovery" class="step-item">○ Discovering Lead Type field and pipeline stages</div>
+    </div>
+
+    <div id="install-spinner" class="spinner" style="margin: 20px auto;"></div>
+    <div id="install-status" style="font-weight: 600; font-size: 14px; margin-top: 12px;">Initializing setup...</div>
+
+    <div id="action-buttons" style="margin-top: 20px; display: none;">
+      <a href="/admin" class="btn btn-primary" style="text-decoration: none; display: inline-block;">
+        Open Admin Field Manager
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function updateStep(stepId, status, text) {
+      const el = document.getElementById(stepId);
+      if (!el) return;
+      el.className = 'step-item ' + status;
+      if (status === 'done') el.innerHTML = '✓ ' + (text || el.textContent.replace(/^[●○]\s*/, ''));
+      if (status === 'active') el.innerHTML = '● ' + (text || el.textContent.replace(/^[●○]\s*/, ''));
+      if (status === 'error') el.innerHTML = '✗ ' + (text || el.textContent.replace(/^[●○]\s*/, ''));
+    }
+
+    function bx24Call(method, params) {
+      return new Promise((resolve) => {
+        if (!window.BX24 || typeof window.BX24.callMethod !== 'function') {
+          return resolve({ error: 'BX24 not available' });
+        }
+        window.BX24.callMethod(method, params, function (result) {
+          if (result.error()) {
+            console.warn(`BX24 ${method} warning:`, result.error());
+            resolve({ error: result.error().toString() });
+          } else {
+            resolve({ data: result.data() });
+          }
+        });
+      });
+    }
+
+    async function runInstallation() {
+      const statusEl = document.getElementById('install-status');
+      const spinner = document.getElementById('install-spinner');
+      const actionBtns = document.getElementById('action-buttons');
+
+      let authData = {};
+      if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+        authData = window.BX24.getAuth() || {};
+      }
+
+      // Check if running inside Bitrix24 iframe
+      const isInsideBitrix = Boolean(authData.access_token || authData.AUTH_ID || window.location.search.includes('AUTH_ID'));
+      if (!isInsideBitrix && (!window.parent || window.parent === window)) {
+        document.getElementById('direct-browser-warning').style.display = 'block';
+      }
+
+      try {
+        // Step 1: Save Auth to server
+        updateStep('step-auth', 'active');
+        statusEl.textContent = 'Saving OAuth credentials...';
+
+        const res = await fetch('/api/install-setup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ auth: authData })
+        });
+        const setupResult = await res.json();
+        updateStep('step-auth', 'done');
+
+        // Step 2: Register CRM_LEAD_DETAIL_TAB placement via BX24 in client context
+        updateStep('step-placement', 'active');
+        statusEl.textContent = 'Registering Lead Details tab...';
+
+        const publicUrl = setupResult.publicUrl || window.location.origin;
+        const placementRes = await bx24Call('placement.bind', {
+          PLACEMENT: 'CRM_LEAD_DETAIL_TAB',
+          HANDLER: publicUrl + '/tab',
+          TITLE: 'Lead Details'
+        });
+
+        if (placementRes.error) {
+          if (placementRes.error.toLowerCase().includes('already')) {
+            updateStep('step-placement', 'done', 'Lead Details tab already registered');
+          } else {
+            console.error('Placement bind error:', placementRes.error);
+            updateStep('step-placement', 'error', 'Placement error: ' + placementRes.error + ' (Check "placement" permission in App settings)');
+          }
+        } else {
+          updateStep('step-placement', 'done');
+        }
+
+        // Step 3: Register Events
+        updateStep('step-events', 'active');
+        statusEl.textContent = 'Subscribing to lead events...';
+
+        const evAdd = await bx24Call('event.bind', { event: 'ONCRMLEADADD', handler: publicUrl + '/events' });
+        const evUpd = await bx24Call('event.bind', { event: 'ONCRMLEADUPDATE', handler: publicUrl + '/events' });
+
+        if (evAdd.error && !evAdd.error.toLowerCase().includes('already')) {
+          console.warn('Event ONCRMLEADADD warning:', evAdd.error);
+        }
+        if (evUpd.error && !evUpd.error.toLowerCase().includes('already')) {
+          console.warn('Event ONCRMLEADUPDATE warning:', evUpd.error);
+        }
+        updateStep('step-events', 'done');
+
+        // Step 4: Discovery
+        updateStep('step-discovery', 'done');
+
+        statusEl.innerHTML = '<span style="color: #2b8a3e;">Installation Successfully Completed!</span>';
+        spinner.style.display = 'none';
+        actionBtns.style.display = 'block';
+
+        // Notify Bitrix24 that installation is finished
+        if (window.BX24 && typeof window.BX24.installFinish === 'function') {
+          setTimeout(() => {
+            window.BX24.installFinish();
+          }, 1500);
+        }
+      } catch (err) {
+        console.error('Install error:', err);
+        statusEl.innerHTML = `<span style="color: #c92a2a;">Installation notice: ${err.message}</span>`;
+        spinner.style.display = 'none';
+        actionBtns.style.display = 'block';
+      }
+    }
+
+    if (window.BX24) {
+      window.BX24.init(runInstallation);
+    } else {
+      document.addEventListener('DOMContentLoaded', runInstallation);
+    }
+  </script>
+</body>
+</html>
