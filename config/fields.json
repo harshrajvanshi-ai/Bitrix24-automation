@@ -375,6 +375,13 @@
             "lookupEntity": "project"
           },
           {
+            "code": "UF_CRM_DEVELOPER_1",
+            "label": "Developer",
+            "type": "lookup",
+            "placeholder": "Search Developer / Company...",
+            "lookupEntity": "developer"
+          },
+          {
             "code": "UF_CRM_PROPERTY",
             "label": "Property",
             "type": "lookup",
@@ -386,7 +393,7 @@
             "label": "Layout",
             "type": "lookup",
             "placeholder": "Search Layout...",
-            "lookupEntity": "property"
+            "lookupEntity": "layout"
           },
           {
             "code": "UF_CRM_1791970638065",
@@ -943,8 +950,8 @@
             "code": "UF_CRM_REFERRAL_AGENT_SELLER",
             "label": "Referral Agent - Seller",
             "type": "lookup",
-            "placeholder": "Search Referral Agent - Seller...",
-            "lookupEntity": "contact"
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
           },
           {
             "code": "UF_CRM_TENANT",
@@ -957,8 +964,8 @@
             "code": "UF_CRM_PORTAL_LISTING_AGENT",
             "label": "Portal Listing Agent",
             "type": "lookup",
-            "placeholder": "Search Portal Listing Agent...",
-            "lookupEntity": "agent"
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
           },
           {
             "code": "UF_CRM_LISTINGAGENTNAME",
@@ -1280,15 +1287,15 @@
             "code": "UF_CRM_ASSIGNED_TO_BROKER",
             "label": "Assigned to Broker",
             "type": "lookup",
-            "placeholder": "Search Assigned to Broker...",
-            "lookupEntity": "user"
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
           },
           {
             "code": "UF_CRM_LISTINGAGENT",
             "label": "Listing Agent",
             "type": "lookup",
-            "placeholder": "Search Listing Agent...",
-            "lookupEntity": "user"
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
           },
           {
             "code": "UF_CRM_IS_CLAIMABLE",
@@ -1409,9 +1416,8 @@
           {
             "code": "UF_CRM_EMORTGAGE_BROKER",
             "label": "eMortgage Broker",
-            "type": "lookup",
-            "placeholder": "Search eMortgage Broker...",
-            "lookupEntity": "contact"
+            "type": "string",
+            "placeholder": "Search eMortgage Broker..."
           },
           {
             "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
@@ -1434,9 +1440,8 @@
           {
             "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
             "label": "eMortgage Referred By",
-            "type": "lookup",
-            "placeholder": "Search eMortgage Referred By...",
-            "lookupEntity": "contact"
+            "type": "string",
+            "placeholder": "Search eMortgage Referred By..."
           },
           {
             "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
@@ -1938,15 +1943,14 @@
             "code": "UF_CRM_PROPERTY_LAYOUT",
             "label": "Property Layout",
             "type": "lookup",
-            "placeholder": "Search Property Layout...",
-            "lookupEntity": "property"
+            "placeholder": "Search Layout...",
+            "lookupEntity": "layout"
           },
           {
             "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
             "label": "Buildings and Developments",
-            "type": "lookup",
-            "placeholder": "Search Buildings and Developments...",
-            "lookupEntity": "developer"
+            "type": "string",
+            "placeholder": "Search Buildings and Developments..."
           },
           {
             "code": "UF_CRM_RECOMMENDED_LISTINGS",
@@ -2002,6 +2006,13 @@
             "label": "City - Propertyfinder",
             "type": "string",
             "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_DEVELOPER_1",
+            "label": "Developer",
+            "type": "lookup",
+            "placeholder": "Search Developer / Company...",
+            "lookupEntity": "developer"
           }
         ]
       },
@@ -2705,7 +2716,7 @@
       "label": "Layout",
       "type": "lookup",
       "placeholder": "Search Layout...",
-      "lookupEntity": "property"
+      "lookupEntity": "layout"
     },
     {
       "code": "UF_CRM_1791970638065",
@@ -3217,8 +3228,8 @@
       "code": "UF_CRM_REFERRAL_AGENT_SELLER",
       "label": "Referral Agent - Seller",
       "type": "lookup",
-      "placeholder": "Search Referral Agent - Seller...",
-      "lookupEntity": "contact"
+      "placeholder": "Search Broker / Agent...",
+      "lookupEntity": "broker"
     },
     {
       "code": "UF_CRM_TENANT",
@@ -3231,8 +3242,8 @@
       "code": "UF_CRM_PORTAL_LISTING_AGENT",
       "label": "Portal Listing Agent",
       "type": "lookup",
-      "placeholder": "Search Portal Listing Agent...",
-      "lookupEntity": "agent"
+      "placeholder": "Search Broker / Agent...",
+      "lookupEntity": "broker"
     },
     {
       "code": "UF_CRM_LISTINGAGENTNAME",
@@ -3297,6 +3308,13 @@
       "type": "string",
       "placeholder": "",
       "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_DEVELOPER_1",
+      "label": "Developer",
+      "type": "lookup",
+      "placeholder": "Search Developer / Company...",
+      "lookupEntity": "developer"
     }
   ],
   "enquiryFields": [
@@ -3533,8 +3551,8 @@
       "code": "UF_CRM_PROPERTY_LAYOUT",
       "label": "Property Layout",
       "type": "lookup",
-      "placeholder": "Search Property Layout...",
-      "lookupEntity": "property"
+      "placeholder": "Search Layout...",
+      "lookupEntity": "layout"
     },
     {
       "code": "UF_CRM_1791952050535",
@@ -3632,15 +3650,15 @@
       "code": "UF_CRM_ASSIGNED_TO_BROKER",
       "label": "Assigned to Broker",
       "type": "lookup",
-      "placeholder": "Search Assigned to Broker...",
-      "lookupEntity": "user"
+      "placeholder": "Search Broker / Agent...",
+      "lookupEntity": "broker"
     },
     {
       "code": "UF_CRM_LISTINGAGENT",
       "label": "Listing Agent",
       "type": "lookup",
-      "placeholder": "Search Listing Agent...",
-      "lookupEntity": "user"
+      "placeholder": "Search Broker / Agent...",
+      "lookupEntity": "broker"
     },
     {
       "code": "UF_CRM_DISQUALIFY_DATE",
@@ -3676,9 +3694,8 @@
     {
       "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
       "label": "Buildings and Developments",
-      "type": "lookup",
-      "placeholder": "Search Buildings and Developments...",
-      "lookupEntity": "developer"
+      "type": "string",
+      "placeholder": "Search Buildings and Developments..."
     },
     {
       "code": "UF_CRM_PROPERTY_SUB_TYPE",
@@ -4031,9 +4048,8 @@
     {
       "code": "UF_CRM_EMORTGAGE_BROKER",
       "label": "eMortgage Broker",
-      "type": "lookup",
-      "placeholder": "Search eMortgage Broker...",
-      "lookupEntity": "contact"
+      "type": "string",
+      "placeholder": "Search eMortgage Broker..."
     },
     {
       "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
@@ -4056,9 +4072,8 @@
     {
       "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
       "label": "eMortgage Referred By",
-      "type": "lookup",
-      "placeholder": "Search eMortgage Referred By...",
-      "lookupEntity": "contact"
+      "type": "string",
+      "placeholder": "Search eMortgage Referred By..."
     },
     {
       "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
@@ -4553,6 +4568,13 @@
       "label": "Is Contact Viewable",
       "type": "boolean",
       "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_DEVELOPER_1",
+      "label": "Developer",
+      "type": "lookup",
+      "placeholder": "Search Developer / Company...",
+      "lookupEntity": "developer"
     }
   ]
 }

@@ -292,8 +292,13 @@ async function fetchLookupData(entity) {
       items = (res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}` }));
     } else if (entity === 'contact' || entity === 'owner') {
       const res = await BitrixClient.call('crm.contact.list', { select: ['ID', 'NAME', 'LAST_NAME'], order: { LAST_NAME: 'ASC' } });
-      items = (res || []).map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}` }));
-    } else if (entity === 'user' || entity === 'agent') {
+    } else if (entity === 'layout') {
+      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1048, select: ['id', 'title'], order: { title: 'ASC' } });
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Layout #${i.id}` }));
+    } else if (entity === 'broker' || entity === 'agent') {
+      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1094, select: ['id', 'title'], order: { title: 'ASC' } });
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Broker #${i.id}` }));
+    } else if (entity === 'user') {
       const res = await BitrixClient.call('user.get', { ACTIVE: true });
       items = (res || []).map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `User #${i.ID}` }));
     } else if (entity === 'listing') {
