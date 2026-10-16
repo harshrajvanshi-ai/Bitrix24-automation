@@ -301,6 +301,7 @@ async function fetchLookupData(entity) {
       items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Property #${i.id}` }));
     } else if (entity === 'developer' || entity === 'company') {
       const res = await BitrixClient.call('crm.company.list', { select: ['ID', 'TITLE'], order: { TITLE: 'ASC' } });
+      items = (res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}` }));
     } else if (entity === 'contact' || entity === 'owner' || entity === 'tenant') {
       const [contacts, companies] = await Promise.all([
         BitrixClient.call('crm.contact.list', { select: ['ID', 'NAME', 'LAST_NAME'], order: { LAST_NAME: 'ASC' } }).catch(() => []),

@@ -184,6 +184,20 @@
     input.value = currentVal || '';
     input.autocomplete = 'off';
 
+    // If initial value is an entity ID (e.g., "CO_22" or "22"), resolve title asynchronously
+    if (currentVal && /^(CO_|C_|L_|P_|D_)?\d+$/i.test(String(currentVal).trim())) {
+      const cleanId = String(currentVal).replace(/^[A-Z]+_/i, '').trim();
+      fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanId)}`)
+        .then(r => r.json())
+        .then(d => {
+          const match = (d.items || []).find(it => String(it.id) === cleanId);
+          if (match && input.value === currentVal) {
+            input.value = match.title;
+          }
+        })
+        .catch(() => {});
+    }
+
     const clearBtn = document.createElement('button');
     clearBtn.type = 'button';
     clearBtn.className = 'lookup-clear-btn';
@@ -308,7 +322,12 @@
         optEl.textContent = optText;
 
         const curStr = String(currentVal === null || currentVal === undefined ? '' : currentVal).trim().toLowerCase();
-        if (curStr && curStr !== '0' && (curStr === String(optValue).trim().toLowerCase() || curStr === String(optText).trim().toLowerCase())) {
+        if (curStr && curStr !== '0' && (
+          curStr === String(optValue).trim().toLowerCase() ||
+          curStr === String(optText).trim().toLowerCase() ||
+          curStr.replace(/s$/, '') === String(optValue).trim().toLowerCase().replace(/s$/, '') ||
+          curStr.replace(/s$/, '') === String(optText).trim().toLowerCase().replace(/s$/, '')
+        )) {
           optEl.selected = true;
         }
         inputElement.appendChild(optEl);

@@ -314,9 +314,35 @@
           },
           {
             "code": "UF_CRM_CHEQUES_1",
-            "label": "Cheques",
-            "type": "string",
-            "placeholder": "e.g., 4 Cheques / 1 Cheque"
+            "label": "Number of Cheques",
+            "type": "enumeration",
+            "placeholder": "-- Select Number of Cheques --",
+            "options": [
+              {
+                "id": "1 Cheque",
+                "value": "1 Cheque"
+              },
+              {
+                "id": "2 Cheques",
+                "value": "2 Cheques"
+              },
+              {
+                "id": "3 Cheques",
+                "value": "3 Cheques"
+              },
+              {
+                "id": "4 Cheques",
+                "value": "4 Cheques"
+              },
+              {
+                "id": "6 Cheques",
+                "value": "6 Cheques"
+              },
+              {
+                "id": "12 Cheques",
+                "value": "12 Cheques"
+              }
+            ]
           },
           {
             "code": "UF_CRM_YEARLY_RENTAL",
@@ -1320,9 +1346,35 @@
           },
           {
             "code": "UF_CRM_CHEQUES_1",
-            "label": "Cheques",
-            "type": "string",
-            "placeholder": ""
+            "label": "Number of Cheques",
+            "type": "enumeration",
+            "placeholder": "-- Select Number of Cheques --",
+            "options": [
+              {
+                "id": "1 Cheque",
+                "value": "1 Cheque"
+              },
+              {
+                "id": "2 Cheques",
+                "value": "2 Cheques"
+              },
+              {
+                "id": "3 Cheques",
+                "value": "3 Cheques"
+              },
+              {
+                "id": "4 Cheques",
+                "value": "4 Cheques"
+              },
+              {
+                "id": "6 Cheques",
+                "value": "6 Cheques"
+              },
+              {
+                "id": "12 Cheques",
+                "value": "12 Cheques"
+              }
+            ]
           },
           {
             "code": "UF_CRM_FINANCE",
@@ -2631,9 +2683,35 @@
     },
     {
       "code": "UF_CRM_CHEQUES_1",
-      "label": "Cheques",
-      "type": "string",
-      "placeholder": "e.g., 4 Cheques / 1 Cheque"
+      "label": "Number of Cheques",
+      "type": "enumeration",
+      "placeholder": "-- Select Number of Cheques --",
+      "options": [
+        {
+          "id": "1 Cheque",
+          "value": "1 Cheque"
+        },
+        {
+          "id": "2 Cheques",
+          "value": "2 Cheques"
+        },
+        {
+          "id": "3 Cheques",
+          "value": "3 Cheques"
+        },
+        {
+          "id": "4 Cheques",
+          "value": "4 Cheques"
+        },
+        {
+          "id": "6 Cheques",
+          "value": "6 Cheques"
+        },
+        {
+          "id": "12 Cheques",
+          "value": "12 Cheques"
+        }
+      ]
     },
     {
       "code": "UF_CRM_YEARLY_RENTAL",
@@ -3925,9 +4003,35 @@
     },
     {
       "code": "UF_CRM_CHEQUES_1",
-      "label": "Cheques",
-      "type": "string",
-      "placeholder": ""
+      "label": "Number of Cheques",
+      "type": "enumeration",
+      "placeholder": "-- Select Number of Cheques --",
+      "options": [
+        {
+          "id": "1 Cheque",
+          "value": "1 Cheque"
+        },
+        {
+          "id": "2 Cheques",
+          "value": "2 Cheques"
+        },
+        {
+          "id": "3 Cheques",
+          "value": "3 Cheques"
+        },
+        {
+          "id": "4 Cheques",
+          "value": "4 Cheques"
+        },
+        {
+          "id": "6 Cheques",
+          "value": "6 Cheques"
+        },
+        {
+          "id": "12 Cheques",
+          "value": "12 Cheques"
+        }
+      ]
     },
     {
       "code": "UF_CRM_FINANCE",
