@@ -184,18 +184,36 @@
     input.value = currentVal || '';
     input.autocomplete = 'off';
 
-    // If initial value is an entity ID (e.g., "CO_22" or "22"), resolve title asynchronously
-    if (currentVal && /^(CO_|C_|L_|P_|D_)?\d+$/i.test(String(currentVal).trim())) {
-      const cleanId = String(currentVal).replace(/^[A-Z]+_/i, '').trim();
-      fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanId)}`)
-        .then(r => r.json())
-        .then(d => {
-          const match = (d.items || []).find(it => String(it.id) === cleanId);
-          if (match && input.value === currentVal) {
-            input.value = match.title;
-          }
-        })
-        .catch(() => {});
+    // If initial value is an entity ID or CRM reference (e.g., "DYNAMIC_1044_220", "CO_22", or "22"), resolve title asynchronously
+    if (currentVal) {
+      const refMatch = String(currentVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
+      if (refMatch) {
+        const cleanId = refMatch[1];
+        input.dataset.selectedId = cleanId;
+        input.dataset.selectedRef = currentVal;
+        fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanId)}`)
+          .then(r => r.json())
+          .then(d => {
+            const match = (d.items || []).find(it => String(it.id) === cleanId);
+            if (match && (input.value === currentVal || input.value === cleanId)) {
+              input.value = match.title;
+              input.dataset.selectedRef = match.crmRef || currentVal;
+            }
+          })
+          .catch(() => {});
+      } else {
+        // Plain text title passed (e.g. from legacy data), pre-resolve ID and CRM reference
+        fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(String(currentVal).trim())}`)
+          .then(r => r.json())
+          .then(d => {
+            const match = (d.items || []).find(it => it.title.toLowerCase() === String(currentVal).trim().toLowerCase());
+            if (match) {
+              input.dataset.selectedId = match.id;
+              input.dataset.selectedRef = match.crmRef || match.id;
+            }
+          })
+          .catch(() => {});
+      }
     }
 
     const clearBtn = document.createElement('button');
@@ -248,6 +266,8 @@
 
           itemEl.addEventListener('click', () => {
             input.value = item.title;
+            input.dataset.selectedId = item.id;
+            input.dataset.selectedRef = item.crmRef || item.id;
             clearBtn.style.display = 'block';
             dropdown.style.display = 'none';
             markFieldDirty();
@@ -275,6 +295,8 @@
 
     clearBtn.addEventListener('click', () => {
       input.value = '';
+      input.dataset.selectedId = '';
+      input.dataset.selectedRef = '';
       clearBtn.style.display = 'none';
       dropdown.style.display = 'none';
       markFieldDirty();
@@ -653,7 +675,7 @@
       gridEl.className = 'form-grid';
 
       (sec.fields || []).forEach(f => {
-        let currentVal = lead[f.code];
+        let currentVal = lead[f.code + '_TITLE'] || lead[f.code];
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_LISTING_NAME') {
           currentVal = lead['UF_CRM_1791952409183'] || '';
         }
@@ -890,6 +912,8 @@
           });
           filePromises.push(p);
         }
+      } else if (f.type === 'lookup') {
+        payload[f.code] = input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();
       } else {
         payload[f.code] = input.value.trim();
       }

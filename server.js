@@ -292,16 +292,16 @@ async function fetchLookupData(entity) {
   try {
     if (entity === 'master_project') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1040, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Master Project #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Master Project #${i.id}`, crmRef: `DYNAMIC_1040_${i.id}` }));
     } else if (entity === 'project') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1044, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Project #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Project #${i.id}`, crmRef: `DYNAMIC_1044_${i.id}` }));
     } else if (entity === 'property') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1052, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Property #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Property #${i.id}`, crmRef: `DYNAMIC_1052_${i.id}` }));
     } else if (entity === 'developer' || entity === 'company') {
       const res = await BitrixClient.call('crm.company.list', { select: ['ID', 'TITLE'], order: { TITLE: 'ASC' } });
-      items = (res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}` }));
+      items = (res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}`, crmRef: `CO_${i.ID}` }));
     } else if (entity === 'contact' || entity === 'owner' || entity === 'tenant') {
       const [contacts, companies] = await Promise.all([
         BitrixClient.call('crm.contact.list', { select: ['ID', 'NAME', 'LAST_NAME'], order: { LAST_NAME: 'ASC' } }).catch(() => []),
@@ -309,28 +309,30 @@ async function fetchLookupData(entity) {
       ]);
       const contactItems = (contacts || []).map(i => ({
         id: i.ID,
-        title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`
+        title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`,
+        crmRef: `C_${i.ID}`
       }));
       const companyItems = (companies || []).map(i => ({
         id: i.ID,
-        title: i.TITLE || `Company #${i.ID}`
+        title: i.TITLE || `Company #${i.ID}`,
+        crmRef: `CO_${i.ID}`
       }));
       items = [...contactItems, ...companyItems];
     } else if (entity === 'layout') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1048, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Layout #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Layout #${i.id}`, crmRef: `DYNAMIC_1048_${i.id}` }));
     } else if (entity === 'broker' || entity === 'agent') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1094, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Broker #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Broker #${i.id}`, crmRef: `DYNAMIC_1094_${i.id}` }));
     } else if (entity === 'user') {
       const res = await BitrixClient.call('user.get', { ACTIVE: true });
-      items = (res || []).map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `User #${i.ID}` }));
+      items = (res || []).map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `User #${i.ID}`, crmRef: `U_${i.ID}` }));
     } else if (entity === 'listing') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1058, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Listing #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Listing #${i.id}`, crmRef: `DYNAMIC_1058_${i.id}` }));
     } else if (entity === 'enquiry') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1062, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Enquiry #${i.id}` }));
+      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Enquiry #${i.id}`, crmRef: `DYNAMIC_1062_${i.id}` }));
     }
 
     lookupCache.data[entity] = items;
@@ -341,6 +343,134 @@ async function fetchLookupData(entity) {
   }
 
   return items;
+}
+
+// Native Bitrix24 CRM binding configuration for lookup fields
+const CRM_LOOKUP_CONFIG = {
+  UF_CRM_PROJECT_1: { entity: 'project', prefix: 'DYNAMIC_1044_' },
+  UF_CRM_1791794196: { entity: 'project', prefix: 'DYNAMIC_1044_' },
+  UF_CRM_PROJECT: { entity: 'master_project', prefix: 'DYNAMIC_1040_' },
+  UF_CRM_DEVELOPER_1: { entity: 'developer', prefix: 'CO_' },
+  UF_CRM_YOUR_COMPANY_DETAILS: { entity: 'company', prefix: 'CO_' },
+  UF_CRM_PROPERTY: { entity: 'property', prefix: 'DYNAMIC_1052_' },
+  UF_CRM_PROPERTY_PROPERTYFINDER: { entity: 'property', prefix: 'DYNAMIC_1052_' },
+  UF_CRM_MASTERPROPERTY: { entity: 'property', prefix: 'DYNAMIC_1052_' },
+  UF_CRM_LAYOUT: { entity: 'layout', prefix: 'DYNAMIC_1048_' },
+  UF_CRM_PROPERTY_LAYOUT: { entity: 'layout', prefix: 'DYNAMIC_1048_' },
+  UF_CRM_OWNER_LISTING: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_PROPERTYOWNERCONTACT: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_PROPERTY_OWNER_2: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_TENANT: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_OWNER_ENQUIRY: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_CONTACTS: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_OWNERID: { entity: 'contact', prefix: 'C_' },
+  UF_CRM_PORTAL_LISTING_AGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_REFERRAL_AGENT_SELLER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_ASSIGNED_TO_BROKER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_LISTINGAGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_COLISTINGAGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_EXTERNAL_LISTING_BROKER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_REFERRAL_AGENT_LANDLORD: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_REFERRAL_AGENT_BUYER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_REFERRAL_AGENT_TENANT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_REFERRED_BY: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_REFER_TO: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_PROPSPACE_AGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
+  UF_CRM_LISTING: { entity: 'listing', prefix: 'DYNAMIC_1058_' },
+  UF_CRM_ENQUIRY: { entity: 'enquiry', prefix: 'DYNAMIC_1062_' }
+};
+
+/**
+ * Normalizes lookup fields into native Bitrix24 CRM entity bindings
+ * e.g., "Creek Beach Residences" -> "DYNAMIC_1044_220"
+ *        "New DHL" -> "CO_10"
+ *        "Apartment 1204" -> "DYNAMIC_1052_336"
+ */
+async function normalizeLookupFields(fields) {
+  const normalized = { ...fields };
+  for (const [code, val] of Object.entries(normalized)) {
+    const cfg = CRM_LOOKUP_CONFIG[code];
+    if (!cfg || val === undefined || val === null) continue;
+
+    const strVal = String(val).trim();
+    if (strVal === '') {
+      normalized[code] = '';
+      continue;
+    }
+
+    // Already in valid Bitrix CRM binding format (e.g. DYNAMIC_1044_220, CO_10, C_66, L_10)
+    if (/^(DYNAMIC_\d+_|CO_|C_|L_|D_)\d+$/i.test(strVal)) {
+      normalized[code] = strVal;
+      continue;
+    }
+
+    // Pure numeric ID passed (e.g. "220" or 220)
+    if (/^\d+$/.test(strVal)) {
+      normalized[code] = `${cfg.prefix}${strVal}`;
+      continue;
+    }
+
+    // Title string passed (e.g. "Creek Beach Residences" or "Damac Properties")
+    try {
+      const items = await fetchLookupData(cfg.entity);
+      const match = items.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal);
+      if (match) {
+        normalized[code] = match.crmRef || `${cfg.prefix}${match.id}`;
+      } else {
+        // Direct search fallback in case item wasn't on first cached page
+        let directMatch = null;
+        if (cfg.entity === 'developer' || cfg.entity === 'company') {
+          const comps = await BitrixClient.call('crm.company.list', { filter: { '%TITLE': strVal }, select: ['ID', 'TITLE'] }).catch(() => []);
+          if (comps && comps[0]) directMatch = { id: comps[0].ID, crmRef: `CO_${comps[0].ID}`, title: comps[0].TITLE };
+        } else if (cfg.entity === 'project') {
+          const p = await BitrixClient.call('crm.item.list', { entityTypeId: 1044, filter: { '%title': strVal } }).catch(() => null);
+          if (p?.items && p.items[0]) directMatch = { id: p.items[0].id, crmRef: `DYNAMIC_1044_${p.items[0].id}`, title: p.items[0].title };
+        } else if (cfg.entity === 'property') {
+          const pr = await BitrixClient.call('crm.item.list', { entityTypeId: 1052, filter: { '%title': strVal } }).catch(() => null);
+          if (pr?.items && pr.items[0]) directMatch = { id: pr.items[0].id, crmRef: `DYNAMIC_1052_${pr.items[0].id}`, title: pr.items[0].title };
+        } else if (cfg.entity === 'layout') {
+          const l = await BitrixClient.call('crm.item.list', { entityTypeId: 1048, filter: { '%title': strVal } }).catch(() => null);
+          if (l?.items && l.items[0]) directMatch = { id: l.items[0].id, crmRef: `DYNAMIC_1048_${l.items[0].id}`, title: l.items[0].title };
+        } else if (cfg.entity === 'contact') {
+          const c = await BitrixClient.call('crm.contact.list', { filter: { '%NAME': strVal }, select: ['ID', 'NAME', 'LAST_NAME'] }).catch(() => []);
+          if (c && c[0]) directMatch = { id: c[0].ID, crmRef: `C_${c[0].ID}`, title: `${c[0].NAME || ''} ${c[0].LAST_NAME || ''}`.trim() };
+        }
+        if (directMatch) {
+          normalized[code] = directMatch.crmRef;
+        }
+      }
+    } catch (e) {
+      console.warn(`[LOOKUP] Could not resolve title "${strVal}" for ${code}:`, e.message);
+    }
+  }
+
+  // Synchronize companion text fields for Developer & Project if present
+  if (normalized.UF_CRM_DEVELOPER_1) {
+    const devIdMatch = String(normalized.UF_CRM_DEVELOPER_1).match(/\d+/);
+    if (devIdMatch) {
+      try {
+        const items = await fetchLookupData('developer');
+        const dev = items.find(it => String(it.id) === devIdMatch[0]);
+        if (dev && !normalized.UF_CRM_DEVELOPER_NAME) {
+          normalized.UF_CRM_DEVELOPER_NAME = dev.title;
+        }
+      } catch (e) {}
+    }
+  }
+  if (normalized.UF_CRM_PROJECT_1) {
+    const projIdMatch = String(normalized.UF_CRM_PROJECT_1).match(/\d+/);
+    if (projIdMatch) {
+      try {
+        const items = await fetchLookupData('project');
+        const proj = items.find(it => String(it.id) === projIdMatch[0]);
+        if (proj && !normalized.UF_CRM_PROJECT_NAME) {
+          normalized.UF_CRM_PROJECT_NAME = proj.title;
+        }
+      } catch (e) {}
+    }
+  }
+
+  return normalized;
 }
 
 /**
@@ -498,6 +628,9 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
   fields = normalizeEnumFields(fields);
 
+  // Normalize lookup fields to native Bitrix24 CRM binding identifiers (DYNAMIC_1044_, CO_, C_, etc.)
+  fields = await normalizeLookupFields(fields);
+
   // Normalize file fields to ensure proper { fileData: [name, base64] } structure for Bitrix24
   fields = normalizeFileFields(fields);
 
@@ -529,6 +662,24 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       // Resolve Number of Parking Spaces fallback for legacy leads
       if (!lead.UF_CRM_NUMBEROFPARKINGSPACES && lead.UF_CRM_PARKING) {
         lead.UF_CRM_NUMBEROFPARKINGSPACES = lead.UF_CRM_PARKING;
+      }
+
+      // Enrich CRM lookup fields with resolved titles and references
+      for (const [code, cfg] of Object.entries(CRM_LOOKUP_CONFIG)) {
+        if (lead[code]) {
+          const rawVal = String(lead[code]).trim();
+          const refMatch = rawVal.match(/^(?:DYNAMIC_\d+_|CO_|C_|L_|D_)?(\d+)$/i);
+          if (refMatch) {
+            try {
+              const items = await fetchLookupData(cfg.entity);
+              const found = items.find(it => String(it.id) === refMatch[1]);
+              if (found) {
+                lead[code + '_TITLE'] = found.title;
+                lead[code + '_REF'] = found.crmRef || rawVal;
+              }
+            } catch (e) {}
+          }
+        }
       }
       // Note: Enquiry Name and Listing Name are kept separate from native Lead Name (lead.TITLE)
     }
