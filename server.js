@@ -279,60 +279,189 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-// Lookup in-memory cache
+// Lookup in-memory cache with 60-second TTL
 const lookupCache = { data: {}, timestamp: {} };
 
-async function fetchLookupData(entity) {
+async function fetchAllSpaItems(entityTypeId, mapFn) {
+  let all = [];
+  let start = 0;
+  while (true) {
+    const res = await BitrixClient.call('crm.item.list', {
+      entityTypeId,
+      select: ['id', 'title'],
+      order: { id: 'DESC' },
+      start
+    }).catch(err => {
+      console.warn(`[LOOKUP] Error fetching SPA ${entityTypeId} at start=${start}:`, err.message);
+      return { items: [] };
+    });
+    const items = res.items || [];
+    all.push(...items.map(mapFn));
+    if (items.length < 50) break;
+    start += 50;
+    if (all.length >= 1000) break;
+  }
+  return all;
+}
+
+async function fetchAllCompanies() {
+  let all = [];
+  let start = 0;
+  while (true) {
+    const res = await BitrixClient.call('crm.company.list', {
+      select: ['ID', 'TITLE'],
+      order: { ID: 'DESC' },
+      start
+    }).catch(err => {
+      console.warn(`[LOOKUP] Error fetching companies at start=${start}:`, err.message);
+      return [];
+    });
+    all.push(...(res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}`, crmRef: `CO_${i.ID}` })));
+    if (!res || res.length < 50) break;
+    start += 50;
+    if (all.length >= 1000) break;
+  }
+  return all;
+}
+
+async function fetchAllContacts() {
+  let all = [];
+  let start = 0;
+  while (true) {
+    const res = await BitrixClient.call('crm.contact.list', {
+      select: ['ID', 'NAME', 'LAST_NAME'],
+      order: { ID: 'DESC' },
+      start
+    }).catch(err => {
+      console.warn(`[LOOKUP] Error fetching contacts at start=${start}:`, err.message);
+      return [];
+    });
+    all.push(...(res || []).map(i => ({
+      id: i.ID,
+      title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`,
+      crmRef: `C_${i.ID}`
+    })));
+    if (!res || res.length < 50) break;
+    start += 50;
+    if (all.length >= 1000) break;
+  }
+  return all;
+}
+
+async function searchLookupLive(entity, query) {
+  if (!query) return [];
+  const cleanQ = String(query).trim();
+  const idMatch = cleanQ.match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
+  const numericId = idMatch ? parseInt(idMatch[1], 10) : null;
+
+  const spaMap = {
+    project: { entityTypeId: 1044, prefix: 'DYNAMIC_1044_' },
+    master_project: { entityTypeId: 1040, prefix: 'DYNAMIC_1040_' },
+    property: { entityTypeId: 1052, prefix: 'DYNAMIC_1052_' },
+    layout: { entityTypeId: 1048, prefix: 'DYNAMIC_1048_' },
+    broker: { entityTypeId: 1094, prefix: 'DYNAMIC_1094_' },
+    agent: { entityTypeId: 1094, prefix: 'DYNAMIC_1094_' },
+    listing: { entityTypeId: 1058, prefix: 'DYNAMIC_1058_' },
+    enquiry: { entityTypeId: 1062, prefix: 'DYNAMIC_1062_' },
+  };
+
+  const spa = spaMap[entity];
+  if (spa) {
+    let items = [];
+    if (numericId !== null) {
+      const byId = await BitrixClient.call('crm.item.list', {
+        entityTypeId: spa.entityTypeId,
+        filter: { '=id': numericId },
+        select: ['id', 'title']
+      }).catch(() => ({ items: [] }));
+      if (byId.items && byId.items.length > 0) {
+        items.push(...byId.items);
+      }
+    }
+    const byTitle = await BitrixClient.call('crm.item.list', {
+      entityTypeId: spa.entityTypeId,
+      filter: { '%title': cleanQ },
+      select: ['id', 'title'],
+      order: { id: 'DESC' }
+    }).catch(() => ({ items: [] }));
+    if (byTitle.items) {
+      for (const it of byTitle.items) {
+        if (!items.some(x => x.id === it.id)) items.push(it);
+      }
+    }
+    return items.map(i => ({
+      id: i.id,
+      title: i.title || `${entity} #${i.id}`,
+      crmRef: `${spa.prefix}${i.id}`
+    }));
+  }
+
+  if (entity === 'developer' || entity === 'company') {
+    let items = [];
+    if (numericId !== null) {
+      const byId = await BitrixClient.call('crm.company.list', { filter: { '=ID': numericId }, select: ['ID', 'TITLE'] }).catch(() => []);
+      if (byId && byId.length) items.push(...byId);
+    }
+    const byTitle = await BitrixClient.call('crm.company.list', { filter: { '%TITLE': cleanQ }, select: ['ID', 'TITLE'], order: { ID: 'DESC' } }).catch(() => []);
+    if (byTitle) {
+      for (const it of byTitle) {
+        if (!items.some(x => String(x.ID) === String(it.ID))) items.push(it);
+      }
+    }
+    return items.map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}`, crmRef: `CO_${i.ID}` }));
+  }
+
+  if (entity === 'contact' || entity === 'owner' || entity === 'tenant') {
+    let items = [];
+    if (numericId !== null) {
+      const byId = await BitrixClient.call('crm.contact.list', { filter: { '=ID': numericId }, select: ['ID', 'NAME', 'LAST_NAME'] }).catch(() => []);
+      if (byId && byId.length) items.push(...byId);
+    }
+    const byName = await BitrixClient.call('crm.contact.list', { filter: { '%NAME': cleanQ }, select: ['ID', 'NAME', 'LAST_NAME'], order: { ID: 'DESC' } }).catch(() => []);
+    if (byName) {
+      for (const it of byName) {
+        if (!items.some(x => String(x.ID) === String(it.ID))) items.push(it);
+      }
+    }
+    return items.map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`, crmRef: `C_${i.ID}` }));
+  }
+
+  return [];
+}
+
+async function fetchLookupData(entity, forceRefresh = false) {
   const now = Date.now();
-  if (lookupCache.data[entity] && (now - lookupCache.timestamp[entity] < 300000)) {
+  if (!forceRefresh && lookupCache.data[entity] && (now - lookupCache.timestamp[entity] < 60000)) {
     return lookupCache.data[entity];
   }
 
   let items = [];
   try {
     if (entity === 'master_project') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1040, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Master Project #${i.id}`, crmRef: `DYNAMIC_1040_${i.id}` }));
+      items = await fetchAllSpaItems(1040, i => ({ id: i.id, title: i.title || `Master Project #${i.id}`, crmRef: `DYNAMIC_1040_${i.id}` }));
     } else if (entity === 'project') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1044, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Project #${i.id}`, crmRef: `DYNAMIC_1044_${i.id}` }));
+      items = await fetchAllSpaItems(1044, i => ({ id: i.id, title: i.title || `Project #${i.id}`, crmRef: `DYNAMIC_1044_${i.id}` }));
     } else if (entity === 'property') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1052, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Property #${i.id}`, crmRef: `DYNAMIC_1052_${i.id}` }));
-    } else if (entity === 'developer' || entity === 'company') {
-      const res = await BitrixClient.call('crm.company.list', { select: ['ID', 'TITLE'], order: { TITLE: 'ASC' } });
-      items = (res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}`, crmRef: `CO_${i.ID}` }));
-    } else if (entity === 'contact' || entity === 'owner' || entity === 'tenant') {
-      const [contacts, companies] = await Promise.all([
-        BitrixClient.call('crm.contact.list', { select: ['ID', 'NAME', 'LAST_NAME'], order: { LAST_NAME: 'ASC' } }).catch(() => []),
-        BitrixClient.call('crm.company.list', { select: ['ID', 'TITLE'], order: { TITLE: 'ASC' } }).catch(() => [])
-      ]);
-      const contactItems = (contacts || []).map(i => ({
-        id: i.ID,
-        title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`,
-        crmRef: `C_${i.ID}`
-      }));
-      const companyItems = (companies || []).map(i => ({
-        id: i.ID,
-        title: i.TITLE || `Company #${i.ID}`,
-        crmRef: `CO_${i.ID}`
-      }));
-      items = [...contactItems, ...companyItems];
+      items = await fetchAllSpaItems(1052, i => ({ id: i.id, title: i.title || `Property #${i.id}`, crmRef: `DYNAMIC_1052_${i.id}` }));
     } else if (entity === 'layout') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1048, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Layout #${i.id}`, crmRef: `DYNAMIC_1048_${i.id}` }));
+      items = await fetchAllSpaItems(1048, i => ({ id: i.id, title: i.title || `Layout #${i.id}`, crmRef: `DYNAMIC_1048_${i.id}` }));
     } else if (entity === 'broker' || entity === 'agent') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1094, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Broker #${i.id}`, crmRef: `DYNAMIC_1094_${i.id}` }));
-    } else if (entity === 'user') {
-      const res = await BitrixClient.call('user.get', { ACTIVE: true });
-      items = (res || []).map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `User #${i.ID}`, crmRef: `U_${i.ID}` }));
+      items = await fetchAllSpaItems(1094, i => ({ id: i.id, title: i.title || `Broker #${i.id}`, crmRef: `DYNAMIC_1094_${i.id}` }));
     } else if (entity === 'listing') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1058, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Listing #${i.id}`, crmRef: `DYNAMIC_1058_${i.id}` }));
+      items = await fetchAllSpaItems(1058, i => ({ id: i.id, title: i.title || `Listing #${i.id}`, crmRef: `DYNAMIC_1058_${i.id}` }));
     } else if (entity === 'enquiry') {
-      const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1062, select: ['id', 'title'], order: { title: 'ASC' } });
-      items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Enquiry #${i.id}`, crmRef: `DYNAMIC_1062_${i.id}` }));
+      items = await fetchAllSpaItems(1062, i => ({ id: i.id, title: i.title || `Enquiry #${i.id}`, crmRef: `DYNAMIC_1062_${i.id}` }));
+    } else if (entity === 'developer' || entity === 'company') {
+      items = await fetchAllCompanies();
+    } else if (entity === 'contact' || entity === 'owner' || entity === 'tenant') {
+      const [contactItems, companyItems] = await Promise.all([
+        fetchAllContacts(),
+        fetchAllCompanies()
+      ]);
+      items = [...contactItems, ...companyItems];
+    } else if (entity === 'user') {
+      const res = await BitrixClient.call('user.get', { ACTIVE: true }).catch(() => []);
+      items = (res || []).map(i => ({ id: i.ID, title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `User #${i.ID}`, crmRef: `U_${i.ID}` }));
     }
 
     lookupCache.data[entity] = items;
@@ -410,34 +539,19 @@ async function normalizeLookupFields(fields) {
       continue;
     }
 
-    // Title string passed (e.g. "Creek Beach Residences" or "Damac Properties")
+    // Title string passed (e.g. "Creek Beach Residences" or "testin project")
     try {
       const items = await fetchLookupData(cfg.entity);
-      const match = items.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal);
+      let match = items.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal);
+      if (!match) {
+        // Direct search fallback in case item wasn't on first cached page
+        const live = await searchLookupLive(cfg.entity, strVal);
+        if (live && live.length > 0) {
+          match = live.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal) || live[0];
+        }
+      }
       if (match) {
         normalized[code] = match.crmRef || `${cfg.prefix}${match.id}`;
-      } else {
-        // Direct search fallback in case item wasn't on first cached page
-        let directMatch = null;
-        if (cfg.entity === 'developer' || cfg.entity === 'company') {
-          const comps = await BitrixClient.call('crm.company.list', { filter: { '%TITLE': strVal }, select: ['ID', 'TITLE'] }).catch(() => []);
-          if (comps && comps[0]) directMatch = { id: comps[0].ID, crmRef: `CO_${comps[0].ID}`, title: comps[0].TITLE };
-        } else if (cfg.entity === 'project') {
-          const p = await BitrixClient.call('crm.item.list', { entityTypeId: 1044, filter: { '%title': strVal } }).catch(() => null);
-          if (p?.items && p.items[0]) directMatch = { id: p.items[0].id, crmRef: `DYNAMIC_1044_${p.items[0].id}`, title: p.items[0].title };
-        } else if (cfg.entity === 'property') {
-          const pr = await BitrixClient.call('crm.item.list', { entityTypeId: 1052, filter: { '%title': strVal } }).catch(() => null);
-          if (pr?.items && pr.items[0]) directMatch = { id: pr.items[0].id, crmRef: `DYNAMIC_1052_${pr.items[0].id}`, title: pr.items[0].title };
-        } else if (cfg.entity === 'layout') {
-          const l = await BitrixClient.call('crm.item.list', { entityTypeId: 1048, filter: { '%title': strVal } }).catch(() => null);
-          if (l?.items && l.items[0]) directMatch = { id: l.items[0].id, crmRef: `DYNAMIC_1048_${l.items[0].id}`, title: l.items[0].title };
-        } else if (cfg.entity === 'contact') {
-          const c = await BitrixClient.call('crm.contact.list', { filter: { '%NAME': strVal }, select: ['ID', 'NAME', 'LAST_NAME'] }).catch(() => []);
-          if (c && c[0]) directMatch = { id: c[0].ID, crmRef: `C_${c[0].ID}`, title: `${c[0].NAME || ''} ${c[0].LAST_NAME || ''}`.trim() };
-        }
-        if (directMatch) {
-          normalized[code] = directMatch.crmRef;
-        }
       }
     } catch (e) {
       console.warn(`[LOOKUP] Could not resolve title "${strVal}" for ${code}:`, e.message);
@@ -450,7 +564,11 @@ async function normalizeLookupFields(fields) {
     if (devIdMatch) {
       try {
         const items = await fetchLookupData('developer');
-        const dev = items.find(it => String(it.id) === devIdMatch[0]);
+        let dev = items.find(it => String(it.id) === devIdMatch[0]);
+        if (!dev) {
+          const live = await searchLookupLive('developer', devIdMatch[0]);
+          if (live && live.length > 0) dev = live[0];
+        }
         if (dev && !normalized.UF_CRM_DEVELOPER_NAME) {
           normalized.UF_CRM_DEVELOPER_NAME = dev.title;
         }
@@ -462,7 +580,11 @@ async function normalizeLookupFields(fields) {
     if (projIdMatch) {
       try {
         const items = await fetchLookupData('project');
-        const proj = items.find(it => String(it.id) === projIdMatch[0]);
+        let proj = items.find(it => String(it.id) === projIdMatch[0]);
+        if (!proj) {
+          const live = await searchLookupLive('project', projIdMatch[0]);
+          if (live && live.length > 0) proj = live[0];
+        }
         if (proj && !normalized.UF_CRM_PROJECT_NAME) {
           normalized.UF_CRM_PROJECT_NAME = proj.title;
         }
@@ -480,18 +602,45 @@ async function normalizeLookupFields(fields) {
 app.get('/api/lookup', async (req, res) => {
   const entity = (req.query.entity || req.query.type || '').toLowerCase().trim();
   const query = (req.query.q || '').toLowerCase().trim();
+  const forceRefresh = req.query.refresh === '1' || req.query.refresh === 'true';
 
   if (!entity) {
     return res.status(400).json({ success: false, error: 'Missing entity query parameter' });
   }
 
-  const allItems = await fetchLookupData(entity);
+  let allItems = await fetchLookupData(entity, forceRefresh);
   let results = allItems;
   if (query) {
-    results = allItems.filter(item => item.title.toLowerCase().includes(query) || String(item.id).includes(query));
+    const isNum = /^\d+$/.test(query);
+    results = allItems.filter(item => {
+      const titleMatch = item.title && item.title.toLowerCase().includes(query);
+      const idMatch = isNum ? String(item.id) === query : String(item.id).includes(query);
+      const refMatch = item.crmRef && item.crmRef.toLowerCase().includes(query);
+      return titleMatch || idMatch || refMatch;
+    });
+
+    // If query returned no matches in cache, do an immediate live Bitrix lookup
+    if (results.length === 0) {
+      try {
+        const liveItems = await searchLookupLive(entity, query);
+        if (liveItems && liveItems.length > 0) {
+          const existingIds = new Set(allItems.map(i => String(i.id)));
+          for (const li of liveItems) {
+            if (!existingIds.has(String(li.id))) {
+              allItems.unshift(li);
+              existingIds.add(String(li.id));
+            }
+          }
+          lookupCache.data[entity] = allItems;
+          results = liveItems;
+        }
+      } catch (err) {
+        console.warn(`[LOOKUP] Live search fallback failed for ${entity} "${query}":`, err.message);
+      }
+    }
   }
 
-  res.json({ success: true, count: results.length, items: results.slice(0, 30) });
+  res.json({ success: true, count: results.length, items: results.slice(0, 50) });
 });
 
 
@@ -672,7 +821,11 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
           if (refMatch) {
             try {
               const items = await fetchLookupData(cfg.entity);
-              const found = items.find(it => String(it.id) === refMatch[1]);
+              let found = items.find(it => String(it.id) === refMatch[1]);
+              if (!found) {
+                const live = await searchLookupLive(cfg.entity, refMatch[1]);
+                if (live && live.length > 0) found = live[0];
+              }
               if (found) {
                 lead[code + '_TITLE'] = found.title;
                 lead[code + '_REF'] = found.crmRef || rawVal;

@@ -184,8 +184,13 @@
     input.value = currentVal || '';
     input.autocomplete = 'off';
 
-    // If initial value is an entity ID or CRM reference (e.g., "DYNAMIC_1044_220", "CO_22", or "22"), resolve title asynchronously
-    if (currentVal) {
+    // Check if initial value is already resolved in currentLead or needs lookup resolution
+    if (currentLead && currentLead[f.code + '_TITLE']) {
+      input.value = currentLead[f.code + '_TITLE'];
+      input.dataset.selectedRef = currentLead[f.code + '_REF'] || currentVal;
+      const idM = String(currentVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
+      if (idM) input.dataset.selectedId = idM[1];
+    } else if (currentVal) {
       const refMatch = String(currentVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
       if (refMatch) {
         const cleanId = refMatch[1];
@@ -194,8 +199,8 @@
         fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanId)}`)
           .then(r => r.json())
           .then(d => {
-            const match = (d.items || []).find(it => String(it.id) === cleanId);
-            if (match && (input.value === currentVal || input.value === cleanId)) {
+            const match = (d.items || []).find(it => String(it.id) === cleanId) || (d.items && d.items[0]);
+            if (match && (input.value === currentVal || input.value === cleanId || !input.value)) {
               input.value = match.title;
               input.dataset.selectedRef = match.crmRef || currentVal;
             }
@@ -206,7 +211,7 @@
         fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(String(currentVal).trim())}`)
           .then(r => r.json())
           .then(d => {
-            const match = (d.items || []).find(it => it.title.toLowerCase() === String(currentVal).trim().toLowerCase());
+            const match = (d.items || []).find(it => it.title.toLowerCase() === String(currentVal).trim().toLowerCase()) || (d.items && d.items[0]);
             if (match) {
               input.dataset.selectedId = match.id;
               input.dataset.selectedRef = match.crmRef || match.id;
@@ -234,21 +239,41 @@
 
     let debounceTimer = null;
 
-    async function queryLookup(query = '') {
+    async function queryLookup(query = '', refresh = false) {
       dropdown.innerHTML = '<div class="lookup-spinner">Searching Bitrix24 records...</div>';
       dropdown.style.display = 'block';
 
       try {
-        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(query)}`);
+        const refreshParam = refresh ? '&refresh=1' : '';
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(query)}${refreshParam}`);
         const data = await res.json();
         const items = data.items || [];
 
+        dropdown.innerHTML = '';
+
+        // Dropdown Header with records count and live refresh action
+        const header = document.createElement('div');
+        header.className = 'lookup-dropdown-header';
+        header.innerHTML = `<span>${items.length} records</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">🔄 Refresh</button>`;
+        const refreshBtn = header.querySelector('.lookup-refresh-btn');
+        if (refreshBtn) {
+          refreshBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            queryLookup(input.value.trim(), true);
+          });
+        }
+        dropdown.appendChild(header);
+
         if (items.length === 0) {
-          dropdown.innerHTML = '<div class="lookup-item" style="color: #828b95; cursor: default;">No matching records found</div>';
+          const empty = document.createElement('div');
+          empty.className = 'lookup-item';
+          empty.style.cssText = 'color: #828b95; cursor: default;';
+          empty.textContent = 'No matching records found';
+          dropdown.appendChild(empty);
           return;
         }
 
-        dropdown.innerHTML = '';
         items.forEach(item => {
           const itemEl = document.createElement('div');
           itemEl.className = 'lookup-item';

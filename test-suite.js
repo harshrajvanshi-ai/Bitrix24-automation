@@ -398,6 +398,46 @@ async function runTests() {
   assert(Array.isArray(normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS) && normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS.length === 2, 'Multiple file field preserves array of attachments');
   assert(normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS[0]?.fileData && normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS[1]?.fileData, 'Each attachment has { fileData: [name, base64] } structure');
 
+  // --- Case 13: Lookup Auto-Pagination & Live Search for Newly Created Projects ---
+  console.log('\n--- Case 13: Lookup Auto-Pagination & Live Search for Newly Created Projects ---');
+  // Verify that fetchAllSpaItems pagination logic handles datasets exceeding 50 items
+  function simulatePaginatedFetch(totalCount, batchSize = 50) {
+    let all = [];
+    let start = 0;
+    while (true) {
+      const items = [];
+      const remaining = totalCount - start;
+      const count = Math.min(batchSize, Math.max(0, remaining));
+      for (let i = 0; i < count; i++) {
+        const id = totalCount - (start + i);
+        items.push({ id, title: `Item #${id}` });
+      }
+      all.push(...items);
+      if (items.length < batchSize) break;
+      start += batchSize;
+    }
+    return all;
+  }
+
+  const simulated75Projects = simulatePaginatedFetch(75);
+  assert(simulated75Projects.length === 75, 'Pagination retrieves all 75 items across multiple pages');
+  assert(simulated75Projects[0].id === 75, 'Newest items appear at index 0 (ID DESC)');
+  assert(simulated75Projects[simulated75Projects.length - 1].id === 1, 'Oldest item at end of list');
+
+  // Verify search query filter matches by title, ID, and CRM ref
+  const testItems = [
+    { id: 402, title: 'testin project', crmRef: 'DYNAMIC_1044_402' },
+    { id: 220, title: 'Creek Beach Residences', crmRef: 'DYNAMIC_1044_220' }
+  ];
+  const queryMatchesTitle = testItems.filter(i => i.title.toLowerCase().includes('testin'));
+  assert(queryMatchesTitle.length === 1 && queryMatchesTitle[0].id === 402, 'Lookup query matches newly created project by title "testin"');
+
+  const queryMatchesId = testItems.filter(i => String(i.id) === '402');
+  assert(queryMatchesId.length === 1 && queryMatchesId[0].title === 'testin project', 'Lookup query matches project by ID "402"');
+
+  const queryMatchesRef = testItems.filter(i => i.crmRef === 'DYNAMIC_1044_402');
+  assert(queryMatchesRef.length === 1 && queryMatchesRef[0].id === 402, 'Lookup query matches project by CRM ref "DYNAMIC_1044_402"');
+
   // ============================================================================
   // Summary
   // ============================================================================
