@@ -376,22 +376,44 @@
       const fileContainer = document.createElement('div');
       fileContainer.className = 'file-field-container';
 
-      if (currentVal) {
+      // Support single or multiple existing files returned by Bitrix24
+      const filesList = Array.isArray(currentVal) ? currentVal : (currentVal ? [currentVal] : []);
+      filesList.forEach((fileItem, idx) => {
+        if (!fileItem) return;
         const fileChip = document.createElement('div');
         fileChip.className = 'file-preview-chip';
-        const fileUrl = typeof currentVal === 'object' ? (currentVal.showUrl || currentVal.downloadUrl || '') : (typeof currentVal === 'string' && currentVal.startsWith('http') ? currentVal : '');
-        const fileName = typeof currentVal === 'object' ? (currentVal.name || 'Attached File') : 'Attached File';
-        fileChip.innerHTML = `📎 <span class="file-name">${fileName}</span> ${fileUrl ? `<a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="file-download-link">View File</a>` : ''}`;
+
+        let fileUrl = '';
+        let fileName = '';
+
+        if (typeof fileItem === 'object') {
+          fileUrl = fileItem.showUrl || fileItem.downloadUrl || '';
+          fileName = fileItem.name || `${f.label || 'Attached File'}${filesList.length > 1 ? ` #${idx + 1}` : ''}`;
+        } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
+          fileUrl = fileItem;
+          fileName = fileItem.split('/').pop() || 'Attached File';
+        }
+
+        const domain = window.__BITRIX_DOMAIN__ || 'csl.bitrix24.com';
+        const fullUrl = fileUrl ? (fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl}`) : '';
+
+        fileChip.innerHTML = `📎 <span class="file-name">${fileName}</span> ${fullUrl ? `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer" class="file-download-link">View File</a>` : ''}`;
         fileContainer.appendChild(fileChip);
-      }
+      });
 
       inputElement = document.createElement('input');
       inputElement.type = 'file';
       inputElement.className = 'form-control file-input';
       inputElement.id = `field_${f.code}`;
       inputElement.name = f.code;
-      fileContainer.appendChild(inputElement);
 
+      // Allow multiple file selection for multiple-file fields
+      const isMultiple = f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS') || f.code.endsWith('_1');
+      if (isMultiple) {
+        inputElement.multiple = true;
+      }
+
+      fileContainer.appendChild(inputElement);
       container.appendChild(fileContainer);
       initialFormValues[f.code] = '';
     } else if (f.type === 'address') {
@@ -811,19 +833,35 @@
       if (f.type === 'boolean') {
         payload[f.code] = input.checked ? 'Y' : 'N';
       } else if (f.type === 'file') {
-        if (input.files && input.files[0]) {
-          const file = input.files[0];
-          const p = new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-              const base64Data = (evt.target.result || '').split(',')[1];
-              if (base64Data) {
-                payload[f.code] = [file.name, base64Data];
+        if (input.files && input.files.length > 0) {
+          const files = Array.from(input.files);
+          const isMultiple = input.multiple;
+
+          const fileReadPromises = files.map(file => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = function(evt) {
+                const base64Data = (evt.target.result || '').split(',')[1];
+                if (base64Data) {
+                  resolve({ name: file.name, base64: base64Data });
+                } else {
+                  resolve(null);
+                }
+              };
+              reader.onerror = () => resolve(null);
+              reader.readAsDataURL(file);
+            });
+          });
+
+          const p = Promise.all(fileReadPromises).then(results => {
+            const validFiles = results.filter(Boolean);
+            if (validFiles.length > 0) {
+              if (isMultiple) {
+                payload[f.code] = validFiles.map(vf => ({ fileData: [vf.name, vf.base64] }));
+              } else {
+                payload[f.code] = { fileData: [validFiles[0].name, validFiles[0].base64] };
               }
-              resolve();
-            };
-            reader.onerror = () => resolve();
-            reader.readAsDataURL(file);
+            }
           });
           filePromises.push(p);
         }

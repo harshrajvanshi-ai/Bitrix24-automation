@@ -56,9 +56,9 @@ app.use(helmet({
 
 app.use(cors());
 
-// Parse incoming URL-encoded bodies (standard Bitrix24 webhooks) & JSON
-app.use(express.urlencoded({ extended: true, limit: '5mb' }));
-app.use(express.json({ limit: '5mb' }));
+// Parse incoming URL-encoded bodies (standard Bitrix24 webhooks) & JSON (up to 25MB for file attachments)
+app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+app.use(express.json({ limit: '25mb' }));
 
 // Serve static assets
 app.use(express.static(path.join(__dirname, 'public')));
@@ -196,7 +196,7 @@ app.all('/tab', (req, res) => {
     initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id;
   }
 
-  // Read HTML file and inject initialLeadId if present
+  // Read HTML file and inject initialLeadId and bitrixDomain if present
   const htmlPath = path.join(__dirname, 'views/tab.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
@@ -206,6 +206,18 @@ app.all('/tab', (req, res) => {
       `window.__INITIAL_LEAD_ID__ = "${initialLeadId}";`
     );
   }
+
+  const auth = StorageManager.getAuth('latest');
+  let bitrixDomain = req.body?.DOMAIN || req.query?.DOMAIN || auth?.domain;
+  if (!bitrixDomain && config.INBOUND_WEBHOOK_URL) {
+    try { bitrixDomain = new URL(config.INBOUND_WEBHOOK_URL).hostname; } catch (e) {}
+  }
+  if (!bitrixDomain) bitrixDomain = 'csl.bitrix24.com';
+
+  html = html.replace(
+    'window.__BITRIX_DOMAIN__ = null;',
+    `window.__BITRIX_DOMAIN__ = "${bitrixDomain}";`
+  );
 
   res.send(html);
 });
@@ -411,6 +423,38 @@ function normalizeEnumFields(fields) {
   return normalized;
 }
 
+// Known Bitrix24 multiple-file user fields that accept arrays of files
+const knownMultipleFileFields = new Set([
+  'UF_CRM_DOCS_1', 'UF_CRM_PRIMARY_IMAGE_1', 'UF_CRM_EXPOSE_IMAGES',
+  'UF_CRM_WEBSITE_IMAGES', 'UF_CRM_PHOTOS_AND_DOCUMENTS', 'UF_CRM_PHOTOS',
+  'UF_CRM_DOCUMENTS'
+]);
+
+function normalizeFileFields(fields) {
+  const normalized = { ...fields };
+  for (const [code, val] of Object.entries(normalized)) {
+    if (!val) continue;
+
+    // Check if value is raw [fileName, base64String] without fileData wrapper
+    if (Array.isArray(val) && val.length === 2 && typeof val[0] === 'string' && typeof val[1] === 'string' && val[1].length > 10) {
+      if (knownMultipleFileFields.has(code)) {
+        normalized[code] = [{ fileData: [val[0], val[1]] }];
+      } else {
+        normalized[code] = { fileData: [val[0], val[1]] };
+      }
+    } else if (Array.isArray(val)) {
+      // Check if it's an array of files that need fileData wrapper
+      normalized[code] = val.map(item => {
+        if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
+          return { fileData: [item[0], item[1]] };
+        }
+        return item;
+      });
+    }
+  }
+  return normalized;
+}
+
 /**
  * POST /api/lead/:id
  * Saves lead edits back to Bitrix24 via crm.lead.update
@@ -444,6 +488,9 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
 
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
   fields = normalizeEnumFields(fields);
+
+  // Normalize file fields to ensure proper { fileData: [name, base64] } structure for Bitrix24
+  fields = normalizeFileFields(fields);
 
   try {
     const result = await BitrixClient.crmLeadUpdate(leadId, fields);

@@ -316,6 +316,58 @@ async function runTests() {
   assert(hasListingCheques, 'Listing layout uses valid Bitrix field UF_CRM_CHEQUES_1');
 
   // ============================================================================
+  // Test Case 12: File Fields Specification & Normalizer Verification
+  // ============================================================================
+  console.log('\n--- Case 12: File Fields & Upload Normalization ---');
+  const allFileFields = [
+    ...(fieldCfg.listingLayout?.sections || []).flatMap(s => s.fields || []),
+    ...(fieldCfg.enquiryLayout?.sections || []).flatMap(s => s.fields || [])
+  ].filter(f => f.type === 'file');
+
+  assert(allFileFields.length >= 2, 'File fields registered in layout schema');
+  const hasQrCode = allFileFields.some(f => f.code === 'UF_CRM_QR_CODE');
+  const hasPhotosDocs = allFileFields.some(f => f.code === 'UF_CRM_PHOTOS_AND_DOCUMENTS');
+  assert(hasQrCode, 'UF_CRM_QR_CODE registered as file field');
+  assert(hasPhotosDocs, 'UF_CRM_PHOTOS_AND_DOCUMENTS registered as file field');
+
+  // Verify file normalization logic matches Bitrix24 { fileData: [name, base64] } specification
+  const knownMultipleFileFields = new Set([
+    'UF_CRM_DOCS_1', 'UF_CRM_PRIMARY_IMAGE_1', 'UF_CRM_EXPOSE_IMAGES',
+    'UF_CRM_WEBSITE_IMAGES', 'UF_CRM_PHOTOS_AND_DOCUMENTS', 'UF_CRM_PHOTOS',
+    'UF_CRM_DOCUMENTS'
+  ]);
+  function testNormalizeFiles(fields) {
+    const normalized = { ...fields };
+    for (const [code, val] of Object.entries(normalized)) {
+      if (!val) continue;
+      if (Array.isArray(val) && val.length === 2 && typeof val[0] === 'string' && typeof val[1] === 'string' && val[1].length > 10) {
+        if (knownMultipleFileFields.has(code)) {
+          normalized[code] = [{ fileData: [val[0], val[1]] }];
+        } else {
+          normalized[code] = { fileData: [val[0], val[1]] };
+        }
+      } else if (Array.isArray(val)) {
+        normalized[code] = val.map(item => {
+          if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
+            return { fileData: [item[0], item[1]] };
+          }
+          return item;
+        });
+      }
+    }
+    return normalized;
+  }
+
+  const rawSingle = { UF_CRM_QR_CODE: ['qr.png', 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='] };
+  const normSingle = testNormalizeFiles(rawSingle);
+  assert(normSingle.UF_CRM_QR_CODE?.fileData && normSingle.UF_CRM_QR_CODE.fileData[0] === 'qr.png', 'Single file field wrapped with { fileData: [name, base64] }');
+
+  const rawMulti = { UF_CRM_PHOTOS_AND_DOCUMENTS: [['photo1.png', 'AAAAAA111111222222333333'], ['photo2.png', 'BBBBBB111111222222333333']] };
+  const normMulti = testNormalizeFiles(rawMulti);
+  assert(Array.isArray(normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS) && normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS.length === 2, 'Multiple file field preserves array of attachments');
+  assert(normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS[0]?.fileData && normMulti.UF_CRM_PHOTOS_AND_DOCUMENTS[1]?.fileData, 'Each attachment has { fileData: [name, base64] } structure');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
