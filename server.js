@@ -481,10 +481,12 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
     fields.UF_CRM_LISTING_NAME = fields.UF_CRM_1791952409183;
   }
 
-  // Handle legacy UF_CRM_CHEQUES mapping to UF_CRM_CHEQUES_1 if received
-  if (fields.UF_CRM_CHEQUES && !fields.UF_CRM_CHEQUES_1) {
-    fields.UF_CRM_CHEQUES_1 = fields.UF_CRM_CHEQUES;
-    delete fields.UF_CRM_CHEQUES;
+  // Handle Cheques field mapping: map legacy UF_CRM_CHEQUES / UF_CRM_CHEQUES_1 to new native enumeration field UF_CRM_1792139023
+  if ((fields.UF_CRM_CHEQUES || fields.UF_CRM_CHEQUES_1) && !fields.UF_CRM_1792139023) {
+    fields.UF_CRM_1792139023 = fields.UF_CRM_CHEQUES_1 || fields.UF_CRM_CHEQUES;
+  }
+  if (fields.UF_CRM_1792139023 && !fields.UF_CRM_CHEQUES_1) {
+    fields.UF_CRM_CHEQUES_1 = fields.UF_CRM_1792139023;
   }
 
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
@@ -513,6 +515,10 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       // Resolve Listing Name from UF_CRM_LISTING_NAME or legacy UF_CRM_1791952409183
       if (!lead.UF_CRM_LISTING_NAME && lead.UF_CRM_1791952409183) {
         lead.UF_CRM_LISTING_NAME = lead.UF_CRM_1791952409183;
+      }
+      // Resolve Number of Cheques fallback for legacy leads
+      if (!lead.UF_CRM_1792139023 && (lead.UF_CRM_CHEQUES_1 || lead.UF_CRM_CHEQUES)) {
+        lead.UF_CRM_1792139023 = lead.UF_CRM_CHEQUES_1 || lead.UF_CRM_CHEQUES;
       }
       // Note: Enquiry Name and Listing Name are kept separate from native Lead Name (lead.TITLE)
     }

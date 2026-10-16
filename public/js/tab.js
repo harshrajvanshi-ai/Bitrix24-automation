@@ -657,6 +657,9 @@
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_LISTING_NAME') {
           currentVal = lead['UF_CRM_1791952409183'] || '';
         }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_1792139023') {
+          currentVal = lead['UF_CRM_CHEQUES_1'] || lead['UF_CRM_CHEQUES'] || '';
+        }
         if (currentVal === undefined || currentVal === null) currentVal = '';
         gridEl.appendChild(createFormGroup(f, currentVal));
       });

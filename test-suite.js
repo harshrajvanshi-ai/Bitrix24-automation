@@ -293,10 +293,9 @@ async function runTests() {
 
   assert(allEnumFields.length >= 10, 'Enumeration fields found in layouts');
 
-  // Check that native Bitrix enumeration fields in layouts use numeric item IDs
+  // Check that all enumeration fields in layouts use numeric item IDs
   const fieldsWithTextIds = [];
   for (const f of allEnumFields) {
-    if (f.code === 'UF_CRM_CHEQUES_1') continue; // UF_CRM_CHEQUES_1 is rendered as a dropdown list saving standard cheque values
     for (const opt of (f.options || [])) {
       if (!/^\d+$/.test(String(opt.id))) {
         fieldsWithTextIds.push({ code: f.code, id: opt.id, value: opt.value });
@@ -312,11 +311,12 @@ async function runTests() {
   const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
   assert(leadSource && leadSource.options.some(o => o.id === '2324' && o.value === 'Inbound Portal'), 'UF_CRM_LEAD_SOURCE_TYPE mapped to numeric ID 2324 for Inbound Portal');
 
-  // Check cheques field is configured as an enumeration dropdown list with options
-  const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_CHEQUES_1' && f.type === 'enumeration'));
-  assert(hasListingCheques, 'Listing layout uses valid Bitrix field UF_CRM_CHEQUES_1 as an enumeration list');
-  const chequeField = allEnumFields.find(f => f.code === 'UF_CRM_CHEQUES_1');
-  assert(chequeField && chequeField.options.length >= 4, 'Number of Cheques dropdown list populated with options');
+  // Check Number of Cheques field uses new native Bitrix field UF_CRM_1792139023
+  const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_1792139023' && f.type === 'enumeration'));
+  assert(hasListingCheques, 'Listing layout uses native Bitrix field UF_CRM_1792139023 as an enumeration list');
+  const chequeField = allEnumFields.find(f => f.code === 'UF_CRM_1792139023');
+  assert(chequeField && chequeField.options.length === 5, 'Number of Cheques dropdown list populated with 5 Bitrix options');
+  assert(chequeField && chequeField.options.some(o => o.id === '2446' && o.value === '4 Cheques'), 'UF_CRM_1792139023 mapped to numeric ID 2446 for 4 Cheques');
 
   // ============================================================================
   // Test Case 12: File Fields Specification & Normalizer Verification
