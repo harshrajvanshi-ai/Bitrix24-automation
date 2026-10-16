@@ -559,8 +559,8 @@
             ]
           },
           {
-            "code": "UF_CRM_PARKING",
-            "label": "Parking Spaces",
+            "code": "UF_CRM_NUMBEROFPARKINGSPACES",
+            "label": "Number of Parking Spaces",
             "type": "integer",
             "placeholder": ""
           }
@@ -2062,8 +2062,8 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_PARKING",
-            "label": "Parking Spaces",
+            "code": "UF_CRM_NUMBEROFPARKINGSPACES",
+            "label": "Number of Parking Spaces",
             "type": "integer",
             "placeholder": ""
           },
@@ -2895,8 +2895,8 @@
       ]
     },
     {
-      "code": "UF_CRM_PARKING",
-      "label": "Parking Spaces",
+      "code": "UF_CRM_NUMBEROFPARKINGSPACES",
+      "label": "Number of Parking Spaces",
       "type": "integer",
       "placeholder": ""
     },
@@ -4186,8 +4186,8 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_PARKING",
-      "label": "Parking Spaces",
+      "code": "UF_CRM_NUMBEROFPARKINGSPACES",
+      "label": "Number of Parking Spaces",
       "type": "integer",
       "placeholder": ""
     },

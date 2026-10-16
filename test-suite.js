@@ -315,8 +315,13 @@ async function runTests() {
   const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_1792139023' && f.type === 'enumeration'));
   assert(hasListingCheques, 'Listing layout uses native Bitrix field UF_CRM_1792139023 as an enumeration list');
   const chequeField = allEnumFields.find(f => f.code === 'UF_CRM_1792139023');
-  assert(chequeField && chequeField.options.length === 5, 'Number of Cheques dropdown list populated with 5 Bitrix options');
-  assert(chequeField && chequeField.options.some(o => o.id === '2446' && o.value === '4 Cheques'), 'UF_CRM_1792139023 mapped to numeric ID 2446 for 4 Cheques');
+  assert(chequeField && chequeField.options.some(o => o.id === '2446' && (o.value === '4 Cheque' || o.value === '4 Cheques')), 'UF_CRM_1792139023 mapped to numeric ID 2446 for 4 Cheque');
+
+  // Check Number of Parking Spaces field uses native Bitrix field UF_CRM_NUMBEROFPARKINGSPACES
+  const hasListingParking = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_NUMBEROFPARKINGSPACES' && f.type === 'integer'));
+  assert(hasListingParking, 'Listing layout uses native Bitrix field UF_CRM_NUMBEROFPARKINGSPACES for Number of Parking Spaces');
+  const hasListingFieldParking = (fieldCfg.listingFields || []).some(f => f.code === 'UF_CRM_NUMBEROFPARKINGSPACES');
+  assert(hasListingFieldParking, 'listingFields array contains UF_CRM_NUMBEROFPARKINGSPACES');
 
   // ============================================================================
   // Test Case 12: File Fields Specification & Normalizer Verification

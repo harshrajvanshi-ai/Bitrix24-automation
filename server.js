@@ -489,6 +489,12 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
     fields.UF_CRM_CHEQUES_1 = fields.UF_CRM_1792139023;
   }
 
+  // Handle Parking Spaces mapping: map legacy UF_CRM_PARKING to native field UF_CRM_NUMBEROFPARKINGSPACES
+  if (fields.UF_CRM_PARKING && !fields.UF_CRM_NUMBEROFPARKINGSPACES) {
+    fields.UF_CRM_NUMBEROFPARKINGSPACES = fields.UF_CRM_PARKING;
+    delete fields.UF_CRM_PARKING;
+  }
+
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
   fields = normalizeEnumFields(fields);
 
@@ -519,6 +525,10 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       // Resolve Number of Cheques fallback for legacy leads
       if (!lead.UF_CRM_1792139023 && (lead.UF_CRM_CHEQUES_1 || lead.UF_CRM_CHEQUES)) {
         lead.UF_CRM_1792139023 = lead.UF_CRM_CHEQUES_1 || lead.UF_CRM_CHEQUES;
+      }
+      // Resolve Number of Parking Spaces fallback for legacy leads
+      if (!lead.UF_CRM_NUMBEROFPARKINGSPACES && lead.UF_CRM_PARKING) {
+        lead.UF_CRM_NUMBEROFPARKINGSPACES = lead.UF_CRM_PARKING;
       }
       // Note: Enquiry Name and Listing Name are kept separate from native Lead Name (lead.TITLE)
     }
