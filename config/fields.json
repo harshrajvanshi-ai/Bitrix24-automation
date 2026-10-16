@@ -725,7 +725,7 @@
           },
           {
             "code": "UF_CRM_PORTAL_LISTING_ID",
-            "label": "Portal Listing Id",
+            "label": "Bayut Listing Id",
             "type": "string",
             "placeholder": ""
           },
@@ -3046,7 +3046,7 @@
     },
     {
       "code": "UF_CRM_PORTAL_LISTING_ID",
-      "label": "Portal Listing Id",
+      "label": "Bayut Listing Id",
       "type": "string",
       "placeholder": ""
     },
