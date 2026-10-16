@@ -352,13 +352,72 @@ app.get('/api/lookup', async (req, res) => {
 });
 
 
+// Build picklist / enumeration value-to-numeric-ID lookup map from configuration
+function getEnumTranslationMap() {
+  const fieldsConfig = config.loadFieldsConfig();
+  const map = {};
+  function scan(arr) {
+    for (const f of (arr || [])) {
+      if (f.type === 'enumeration' && Array.isArray(f.options)) {
+        if (!map[f.code]) map[f.code] = {};
+        for (const opt of f.options) {
+          if (opt.id && opt.value) {
+            map[f.code][opt.value.trim().toLowerCase()] = String(opt.id);
+            map[f.code][String(opt.id).trim().toLowerCase()] = String(opt.id);
+          }
+        }
+      }
+    }
+  }
+
+  if (fieldsConfig?.listingLayout?.sections) {
+    for (const s of fieldsConfig.listingLayout.sections) scan(s.fields);
+  }
+  if (fieldsConfig?.enquiryLayout?.sections) {
+    for (const s of fieldsConfig.enquiryLayout.sections) scan(s.fields);
+  }
+  scan(fieldsConfig?.listingFields);
+  scan(fieldsConfig?.enquiryFields);
+
+  return map;
+}
+
+function normalizeEnumFields(fields) {
+  const enumMap = getEnumTranslationMap();
+  const normalized = { ...fields };
+
+  for (const [code, val] of Object.entries(normalized)) {
+    if (enumMap[code]) {
+      if (typeof val === 'string') {
+        const trimmed = val.trim();
+        if (trimmed !== '') {
+          const lower = trimmed.toLowerCase();
+          if (enumMap[code][lower]) {
+            normalized[code] = enumMap[code][lower];
+          }
+        }
+      } else if (Array.isArray(val)) {
+        normalized[code] = val.map(v => {
+          if (typeof v === 'string') {
+            const lower = v.trim().toLowerCase();
+            return enumMap[code][lower] || v;
+          }
+          return v;
+        });
+      }
+    }
+  }
+
+  return normalized;
+}
+
 /**
  * POST /api/lead/:id
  * Saves lead edits back to Bitrix24 via crm.lead.update
  */
 app.post('/api/lead/:id', apiLimiter, async (req, res) => {
   const leadId = req.params.id;
-  const fields = req.body?.fields || {};
+  let fields = req.body?.fields || {};
 
   if (!leadId) {
     return res.status(400).json({ success: false, error: 'Missing lead ID' });
@@ -376,6 +435,15 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
   } else if (fields.UF_CRM_1791952409183 && !fields.UF_CRM_LISTING_NAME) {
     fields.UF_CRM_LISTING_NAME = fields.UF_CRM_1791952409183;
   }
+
+  // Handle legacy UF_CRM_CHEQUES mapping to UF_CRM_CHEQUES_1 if received
+  if (fields.UF_CRM_CHEQUES && !fields.UF_CRM_CHEQUES_1) {
+    fields.UF_CRM_CHEQUES_1 = fields.UF_CRM_CHEQUES;
+    delete fields.UF_CRM_CHEQUES;
+  }
+
+  // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
+  fields = normalizeEnumFields(fields);
 
   try {
     const result = await BitrixClient.crmLeadUpdate(leadId, fields);

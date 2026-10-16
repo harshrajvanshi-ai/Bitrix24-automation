@@ -313,32 +313,10 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_CHEQUES",
-            "label": "Number of Cheques",
-            "type": "enumeration",
-            "placeholder": "-- Select Number of Cheques --",
-            "options": [
-              {
-                "id": "1846",
-                "value": "1 Cheque"
-              },
-              {
-                "id": "1848",
-                "value": "2 Cheques"
-              },
-              {
-                "id": "1850",
-                "value": "4 Cheques"
-              },
-              {
-                "id": "1852",
-                "value": "6 Cheques"
-              },
-              {
-                "id": "1854",
-                "value": "12 Cheques"
-              }
-            ]
+            "code": "UF_CRM_CHEQUES_1",
+            "label": "Cheques",
+            "type": "string",
+            "placeholder": "e.g., 4 Cheques / 1 Cheque"
           },
           {
             "code": "UF_CRM_YEARLY_RENTAL",
@@ -1065,27 +1043,27 @@
             "placeholder": "-- Select Lead source Type --",
             "options": [
               {
-                "id": "Inbound Portal",
+                "id": "2324",
                 "value": "Inbound Portal"
               },
               {
-                "id": "Paid Ad Campaign",
+                "id": "2326",
                 "value": "Paid Ad Campaign"
               },
               {
-                "id": "Organic Search",
+                "id": "2328",
                 "value": "Organic Search"
               },
               {
-                "id": "Direct Message",
+                "id": "2330",
                 "value": "Direct Message"
               },
               {
-                "id": "Cold Outreach",
+                "id": "2332",
                 "value": "Cold Outreach"
               },
               {
-                "id": "Partner Broker",
+                "id": "2334",
                 "value": "Partner Broker"
               }
             ]
@@ -1104,35 +1082,35 @@
             "placeholder": "-- Select Enquiry status --",
             "options": [
               {
-                "id": "Active",
+                "id": "2132",
                 "value": "Active"
               },
               {
-                "id": "Under Offer",
+                "id": "2134",
                 "value": "Under Offer"
               },
               {
-                "id": "Reserved",
+                "id": "2136",
                 "value": "Reserved"
               },
               {
-                "id": "Sold",
+                "id": "2138",
                 "value": "Sold"
               },
               {
-                "id": "Rented",
+                "id": "2140",
                 "value": "Rented"
               },
               {
-                "id": "Off-Market",
+                "id": "2142",
                 "value": "Off-Market"
               },
               {
-                "id": "Withdrawn",
+                "id": "2144",
                 "value": "Withdrawn"
               },
               {
-                "id": "Expired",
+                "id": "2146",
                 "value": "Expired"
               }
             ]
@@ -1157,23 +1135,23 @@
             "placeholder": "-- Select Listing Type --",
             "options": [
               {
-                "id": "Rent",
+                "id": "1772",
                 "value": "Rent"
               },
               {
-                "id": "Sale",
+                "id": "1774",
                 "value": "Sale"
               },
               {
-                "id": "Off-Plan",
+                "id": "1776",
                 "value": "Off-Plan"
               },
               {
-                "id": "Commercial Sale",
+                "id": "1778",
                 "value": "Commercial Sale"
               },
               {
-                "id": "Commercial Rent",
+                "id": "1780",
                 "value": "Commercial Rent"
               }
             ]
@@ -1185,15 +1163,15 @@
             "placeholder": "-- Select Priority --",
             "options": [
               {
-                "id": "HIGH",
+                "id": "1788",
                 "value": "HIGH"
               },
               {
-                "id": "MEDIUM",
+                "id": "1790",
                 "value": "MEDIUM"
               },
               {
-                "id": "LOW",
+                "id": "1792",
                 "value": "LOW"
               }
             ]
@@ -1205,19 +1183,19 @@
             "placeholder": "-- Select Urgency --",
             "options": [
               {
-                "id": "Low",
+                "id": "2370",
                 "value": "Low"
               },
               {
-                "id": "Normal",
+                "id": "2372",
                 "value": "Normal"
               },
               {
-                "id": "High",
+                "id": "2374",
                 "value": "High"
               },
               {
-                "id": "Urgent",
+                "id": "2376",
                 "value": "Urgent"
               }
             ]
@@ -1463,39 +1441,39 @@
             "placeholder": "-- Select Property Type --",
             "options": [
               {
-                "id": "Apartment",
+                "id": "1754",
                 "value": "Apartment"
               },
               {
-                "id": "Villa",
+                "id": "1756",
                 "value": "Villa"
               },
               {
-                "id": "Townhouse",
+                "id": "1758",
                 "value": "Townhouse"
               },
               {
-                "id": "Penthouse",
+                "id": "1760",
                 "value": "Penthouse"
               },
               {
-                "id": "Duplex",
+                "id": "1762",
                 "value": "Duplex"
               },
               {
-                "id": "Land",
+                "id": "1764",
                 "value": "Land"
               },
               {
-                "id": "Commercial",
+                "id": "1766",
                 "value": "Commercial"
               },
               {
-                "id": "Office",
+                "id": "1768",
                 "value": "Office"
               },
               {
-                "id": "Retail",
+                "id": "1770",
                 "value": "Retail"
               }
             ]
@@ -1507,31 +1485,31 @@
             "placeholder": "-- Select Property Subtype --",
             "options": [
               {
-                "id": "Standard",
+                "id": "2098",
                 "value": "Standard"
               },
               {
-                "id": "Luxury",
+                "id": "2100",
                 "value": "Luxury"
               },
               {
-                "id": "Ultra Luxury",
+                "id": "2102",
                 "value": "Ultra Luxury"
               },
               {
-                "id": "Simplex",
+                "id": "2104",
                 "value": "Simplex"
               },
               {
-                "id": "Duplex",
+                "id": "2106",
                 "value": "Duplex"
               },
               {
-                "id": "Triplex",
+                "id": "2108",
                 "value": "Triplex"
               },
               {
-                "id": "Penthouse",
+                "id": "2110",
                 "value": "Penthouse"
               }
             ]
@@ -1651,11 +1629,11 @@
             "placeholder": "-- Select Measurement --",
             "options": [
               {
-                "id": "Sq.Ft.",
+                "id": "2068",
                 "value": "Sq.Ft."
               },
               {
-                "id": "Sq.M.",
+                "id": "2070",
                 "value": "Sq.M."
               }
             ]
@@ -1667,15 +1645,15 @@
             "placeholder": "-- Select Furnished --",
             "options": [
               {
-                "id": "Fully-Furnished",
+                "id": "1794",
                 "value": "Fully-Furnished"
               },
               {
-                "id": "Semi-Furnished",
+                "id": "1796",
                 "value": "Semi-Furnished"
               },
               {
-                "id": "Unfurnished",
+                "id": "1798",
                 "value": "Unfurnished"
               }
             ]
@@ -1693,23 +1671,23 @@
             "placeholder": "-- Select Construction --",
             "options": [
               {
-                "id": "Concrete Frame",
+                "id": "2266",
                 "value": "Concrete Frame"
               },
               {
-                "id": "Steel Structure",
+                "id": "2268",
                 "value": "Steel Structure"
               },
               {
-                "id": "Pre-Cast Concrete",
+                "id": "2270",
                 "value": "Pre-Cast Concrete"
               },
               {
-                "id": "Brick / Masonry",
+                "id": "2272",
                 "value": "Brick / Masonry"
               },
               {
-                "id": "Timber / Wood Frame",
+                "id": "2274",
                 "value": "Timber / Wood Frame"
               }
             ]
@@ -1739,51 +1717,51 @@
             "placeholder": "-- Select View --",
             "options": [
               {
-                "id": "Sea View",
+                "id": "1800",
                 "value": "Sea View"
               },
               {
-                "id": "Burj Khalifa View",
+                "id": "1802",
                 "value": "Burj Khalifa View"
               },
               {
-                "id": "Marina View",
+                "id": "1804",
                 "value": "Marina View"
               },
               {
-                "id": "Palm View",
+                "id": "1806",
                 "value": "Palm View"
               },
               {
-                "id": "Golf Course View",
+                "id": "1808",
                 "value": "Golf Course View"
               },
               {
-                "id": "Pool View",
+                "id": "1810",
                 "value": "Pool View"
               },
               {
-                "id": "Garden View",
+                "id": "1812",
                 "value": "Garden View"
               },
               {
-                "id": "Park View",
+                "id": "1814",
                 "value": "Park View"
               },
               {
-                "id": "City View",
+                "id": "1816",
                 "value": "City View"
               },
               {
-                "id": "Community View",
+                "id": "1818",
                 "value": "Community View"
               },
               {
-                "id": "Street View",
+                "id": "1820",
                 "value": "Street View"
               },
               {
-                "id": "Canal View",
+                "id": "1822",
                 "value": "Canal View"
               }
             ]
@@ -2142,27 +2120,27 @@
             "placeholder": "-- Select Basement Type --",
             "options": [
               {
-                "id": "Finished",
+                "id": "2254",
                 "value": "Finished"
               },
               {
-                "id": "Unfinished",
+                "id": "2256",
                 "value": "Unfinished"
               },
               {
-                "id": "Full Basement",
+                "id": "2258",
                 "value": "Full Basement"
               },
               {
-                "id": "Walkout",
+                "id": "2260",
                 "value": "Walkout"
               },
               {
-                "id": "Underground Parking",
+                "id": "2262",
                 "value": "Underground Parking"
               },
               {
-                "id": "None",
+                "id": "2264",
                 "value": "None"
               }
             ]
@@ -2174,23 +2152,23 @@
             "placeholder": "-- Select Cooling Type --",
             "options": [
               {
-                "id": "Central A/C",
+                "id": "2276",
                 "value": "Central A/C"
               },
               {
-                "id": "Chiller Free",
+                "id": "2278",
                 "value": "Chiller Free"
               },
               {
-                "id": "District Cooling (Empower/Tabreed)",
+                "id": "2280",
                 "value": "District Cooling (Empower/Tabreed)"
               },
               {
-                "id": "Split A/C System",
+                "id": "2282",
                 "value": "Split A/C System"
               },
               {
-                "id": "Window A/C",
+                "id": "2284",
                 "value": "Window A/C"
               }
             ]
@@ -2202,23 +2180,23 @@
             "placeholder": "-- Select Heat Type --",
             "options": [
               {
-                "id": "Central Heating",
+                "id": "2314",
                 "value": "Central Heating"
               },
               {
-                "id": "Split Unit Heating",
+                "id": "2316",
                 "value": "Split Unit Heating"
               },
               {
-                "id": "Electric Heating",
+                "id": "2318",
                 "value": "Electric Heating"
               },
               {
-                "id": "Solar Heating",
+                "id": "2320",
                 "value": "Solar Heating"
               },
               {
-                "id": "None / Not Applicable",
+                "id": "2322",
                 "value": "None / Not Applicable"
               }
             ]
@@ -2652,32 +2630,10 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_CHEQUES",
-      "label": "Number of Cheques",
-      "type": "enumeration",
-      "placeholder": "-- Select Number of Cheques --",
-      "options": [
-        {
-          "id": "1846",
-          "value": "1 Cheque"
-        },
-        {
-          "id": "1848",
-          "value": "2 Cheques"
-        },
-        {
-          "id": "1850",
-          "value": "4 Cheques"
-        },
-        {
-          "id": "1852",
-          "value": "6 Cheques"
-        },
-        {
-          "id": "1854",
-          "value": "12 Cheques"
-        }
-      ]
+      "code": "UF_CRM_CHEQUES_1",
+      "label": "Cheques",
+      "type": "string",
+      "placeholder": "e.g., 4 Cheques / 1 Cheque"
     },
     {
       "code": "UF_CRM_YEARLY_RENTAL",
@@ -3332,27 +3288,27 @@
       "placeholder": "-- Select Lead source Type --",
       "options": [
         {
-          "id": "Inbound Portal",
+          "id": "2324",
           "value": "Inbound Portal"
         },
         {
-          "id": "Paid Ad Campaign",
+          "id": "2326",
           "value": "Paid Ad Campaign"
         },
         {
-          "id": "Organic Search",
+          "id": "2328",
           "value": "Organic Search"
         },
         {
-          "id": "Direct Message",
+          "id": "2330",
           "value": "Direct Message"
         },
         {
-          "id": "Cold Outreach",
+          "id": "2332",
           "value": "Cold Outreach"
         },
         {
-          "id": "Partner Broker",
+          "id": "2334",
           "value": "Partner Broker"
         }
       ]
@@ -3371,35 +3327,35 @@
       "placeholder": "-- Select Enquiry status --",
       "options": [
         {
-          "id": "Active",
+          "id": "2132",
           "value": "Active"
         },
         {
-          "id": "Under Offer",
+          "id": "2134",
           "value": "Under Offer"
         },
         {
-          "id": "Reserved",
+          "id": "2136",
           "value": "Reserved"
         },
         {
-          "id": "Sold",
+          "id": "2138",
           "value": "Sold"
         },
         {
-          "id": "Rented",
+          "id": "2140",
           "value": "Rented"
         },
         {
-          "id": "Off-Market",
+          "id": "2142",
           "value": "Off-Market"
         },
         {
-          "id": "Withdrawn",
+          "id": "2144",
           "value": "Withdrawn"
         },
         {
-          "id": "Expired",
+          "id": "2146",
           "value": "Expired"
         }
       ]
@@ -3424,23 +3380,23 @@
       "placeholder": "-- Select Listing Type --",
       "options": [
         {
-          "id": "Rent",
+          "id": "1772",
           "value": "Rent"
         },
         {
-          "id": "Sale",
+          "id": "1774",
           "value": "Sale"
         },
         {
-          "id": "Off-Plan",
+          "id": "1776",
           "value": "Off-Plan"
         },
         {
-          "id": "Commercial Sale",
+          "id": "1778",
           "value": "Commercial Sale"
         },
         {
-          "id": "Commercial Rent",
+          "id": "1780",
           "value": "Commercial Rent"
         }
       ]
@@ -3464,15 +3420,15 @@
       "placeholder": "-- Select Priority --",
       "options": [
         {
-          "id": "HIGH",
+          "id": "1788",
           "value": "HIGH"
         },
         {
-          "id": "MEDIUM",
+          "id": "1790",
           "value": "MEDIUM"
         },
         {
-          "id": "LOW",
+          "id": "1792",
           "value": "LOW"
         }
       ]
@@ -3509,19 +3465,19 @@
       "placeholder": "-- Select Urgency --",
       "options": [
         {
-          "id": "Low",
+          "id": "2370",
           "value": "Low"
         },
         {
-          "id": "Normal",
+          "id": "2372",
           "value": "Normal"
         },
         {
-          "id": "High",
+          "id": "2374",
           "value": "High"
         },
         {
-          "id": "Urgent",
+          "id": "2376",
           "value": "Urgent"
         }
       ]
@@ -3561,39 +3517,39 @@
       "placeholder": "-- Select Property Type --",
       "options": [
         {
-          "id": "Apartment",
+          "id": "1754",
           "value": "Apartment"
         },
         {
-          "id": "Villa",
+          "id": "1756",
           "value": "Villa"
         },
         {
-          "id": "Townhouse",
+          "id": "1758",
           "value": "Townhouse"
         },
         {
-          "id": "Penthouse",
+          "id": "1760",
           "value": "Penthouse"
         },
         {
-          "id": "Duplex",
+          "id": "1762",
           "value": "Duplex"
         },
         {
-          "id": "Land",
+          "id": "1764",
           "value": "Land"
         },
         {
-          "id": "Commercial",
+          "id": "1766",
           "value": "Commercial"
         },
         {
-          "id": "Office",
+          "id": "1768",
           "value": "Office"
         },
         {
-          "id": "Retail",
+          "id": "1770",
           "value": "Retail"
         }
       ]
@@ -3704,31 +3660,31 @@
       "placeholder": "-- Select Property Subtype --",
       "options": [
         {
-          "id": "Standard",
+          "id": "2098",
           "value": "Standard"
         },
         {
-          "id": "Luxury",
+          "id": "2100",
           "value": "Luxury"
         },
         {
-          "id": "Ultra Luxury",
+          "id": "2102",
           "value": "Ultra Luxury"
         },
         {
-          "id": "Simplex",
+          "id": "2104",
           "value": "Simplex"
         },
         {
-          "id": "Duplex",
+          "id": "2106",
           "value": "Duplex"
         },
         {
-          "id": "Triplex",
+          "id": "2108",
           "value": "Triplex"
         },
         {
-          "id": "Penthouse",
+          "id": "2110",
           "value": "Penthouse"
         }
       ]
@@ -3812,11 +3768,11 @@
       "placeholder": "-- Select Measurement --",
       "options": [
         {
-          "id": "Sq.Ft.",
+          "id": "2068",
           "value": "Sq.Ft."
         },
         {
-          "id": "Sq.M.",
+          "id": "2070",
           "value": "Sq.M."
         }
       ]
@@ -3852,15 +3808,15 @@
       "placeholder": "-- Select Furnished --",
       "options": [
         {
-          "id": "Fully-Furnished",
+          "id": "1794",
           "value": "Fully-Furnished"
         },
         {
-          "id": "Semi-Furnished",
+          "id": "1796",
           "value": "Semi-Furnished"
         },
         {
-          "id": "Unfurnished",
+          "id": "1798",
           "value": "Unfurnished"
         }
       ]
@@ -3890,23 +3846,23 @@
       "placeholder": "-- Select Construction --",
       "options": [
         {
-          "id": "Concrete Frame",
+          "id": "2266",
           "value": "Concrete Frame"
         },
         {
-          "id": "Steel Structure",
+          "id": "2268",
           "value": "Steel Structure"
         },
         {
-          "id": "Pre-Cast Concrete",
+          "id": "2270",
           "value": "Pre-Cast Concrete"
         },
         {
-          "id": "Brick / Masonry",
+          "id": "2272",
           "value": "Brick / Masonry"
         },
         {
-          "id": "Timber / Wood Frame",
+          "id": "2274",
           "value": "Timber / Wood Frame"
         }
       ]
@@ -3918,51 +3874,51 @@
       "placeholder": "-- Select View --",
       "options": [
         {
-          "id": "Sea View",
+          "id": "1800",
           "value": "Sea View"
         },
         {
-          "id": "Burj Khalifa View",
+          "id": "1802",
           "value": "Burj Khalifa View"
         },
         {
-          "id": "Marina View",
+          "id": "1804",
           "value": "Marina View"
         },
         {
-          "id": "Palm View",
+          "id": "1806",
           "value": "Palm View"
         },
         {
-          "id": "Golf Course View",
+          "id": "1808",
           "value": "Golf Course View"
         },
         {
-          "id": "Pool View",
+          "id": "1810",
           "value": "Pool View"
         },
         {
-          "id": "Garden View",
+          "id": "1812",
           "value": "Garden View"
         },
         {
-          "id": "Park View",
+          "id": "1814",
           "value": "Park View"
         },
         {
-          "id": "City View",
+          "id": "1816",
           "value": "City View"
         },
         {
-          "id": "Community View",
+          "id": "1818",
           "value": "Community View"
         },
         {
-          "id": "Street View",
+          "id": "1820",
           "value": "Street View"
         },
         {
-          "id": "Canal View",
+          "id": "1822",
           "value": "Canal View"
         }
       ]
@@ -4190,27 +4146,27 @@
       "placeholder": "-- Select Basement Type --",
       "options": [
         {
-          "id": "Finished",
+          "id": "2254",
           "value": "Finished"
         },
         {
-          "id": "Unfinished",
+          "id": "2256",
           "value": "Unfinished"
         },
         {
-          "id": "Full Basement",
+          "id": "2258",
           "value": "Full Basement"
         },
         {
-          "id": "Walkout",
+          "id": "2260",
           "value": "Walkout"
         },
         {
-          "id": "Underground Parking",
+          "id": "2262",
           "value": "Underground Parking"
         },
         {
-          "id": "None",
+          "id": "2264",
           "value": "None"
         }
       ]
@@ -4222,23 +4178,23 @@
       "placeholder": "-- Select Cooling Type --",
       "options": [
         {
-          "id": "Central A/C",
+          "id": "2276",
           "value": "Central A/C"
         },
         {
-          "id": "Chiller Free",
+          "id": "2278",
           "value": "Chiller Free"
         },
         {
-          "id": "District Cooling (Empower/Tabreed)",
+          "id": "2280",
           "value": "District Cooling (Empower/Tabreed)"
         },
         {
-          "id": "Split A/C System",
+          "id": "2282",
           "value": "Split A/C System"
         },
         {
-          "id": "Window A/C",
+          "id": "2284",
           "value": "Window A/C"
         }
       ]
@@ -4250,23 +4206,23 @@
       "placeholder": "-- Select Heat Type --",
       "options": [
         {
-          "id": "Central Heating",
+          "id": "2314",
           "value": "Central Heating"
         },
         {
-          "id": "Split Unit Heating",
+          "id": "2316",
           "value": "Split Unit Heating"
         },
         {
-          "id": "Electric Heating",
+          "id": "2318",
           "value": "Electric Heating"
         },
         {
-          "id": "Solar Heating",
+          "id": "2320",
           "value": "Solar Heating"
         },
         {
-          "id": "None / Not Applicable",
+          "id": "2322",
           "value": "None / Not Applicable"
         }
       ]

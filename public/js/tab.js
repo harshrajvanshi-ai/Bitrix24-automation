@@ -307,8 +307,8 @@
         optEl.value = optValue;
         optEl.textContent = optText;
 
-        const curStr = String(currentVal || '').toLowerCase();
-        if (curStr === String(optValue).toLowerCase() || curStr === String(optText).toLowerCase()) {
+        const curStr = String(currentVal === null || currentVal === undefined ? '' : currentVal).trim().toLowerCase();
+        if (curStr && curStr !== '0' && (curStr === String(optValue).trim().toLowerCase() || curStr === String(optText).trim().toLowerCase())) {
           optEl.selected = true;
         }
         inputElement.appendChild(optEl);

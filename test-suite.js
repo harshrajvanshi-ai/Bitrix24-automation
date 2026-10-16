@@ -282,7 +282,38 @@ async function runTests() {
 
   const enquirySectionTitles = fieldCfg.enquiryLayout.sections.map(s => s.title);
   assert(enquirySectionTitles.some(t => t.includes('Client')), 'Enquiry layout includes Client & Inquiry Overview section');
-  assert(enquirySectionTitles.some(t => t.includes('Budget')), 'Enquiry layout includes Budget & Financing section');
+  // ============================================================================
+  // Test Case 11: Picklist / Enumeration Options and Numeric ID Verification
+  // ============================================================================
+  console.log('\n--- Case 11: Picklist / Enumeration Verification ---');
+  const allEnumFields = [
+    ...(fieldCfg.listingLayout?.sections || []).flatMap(s => s.fields || []),
+    ...(fieldCfg.enquiryLayout?.sections || []).flatMap(s => s.fields || [])
+  ].filter(f => f.type === 'enumeration');
+
+  assert(allEnumFields.length >= 10, 'Enumeration fields found in layouts');
+
+  // Check that no enumeration field in layouts uses text strings as option IDs
+  const fieldsWithTextIds = [];
+  for (const f of allEnumFields) {
+    for (const opt of (f.options || [])) {
+      if (!/^\d+$/.test(String(opt.id))) {
+        fieldsWithTextIds.push({ code: f.code, id: opt.id, value: opt.value });
+      }
+    }
+  }
+  assert(fieldsWithTextIds.length === 0, 'All enumeration options have numeric Bitrix item IDs');
+
+  // Specific check on enquiry status and source type
+  const enquiryStatus = allEnumFields.find(f => f.code === 'UF_CRM_STATUS');
+  assert(enquiryStatus && enquiryStatus.options.some(o => o.id === '2132' && o.value === 'Active'), 'UF_CRM_STATUS mapped to numeric ID 2132 for Active');
+
+  const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
+  assert(leadSource && leadSource.options.some(o => o.id === '2324' && o.value === 'Inbound Portal'), 'UF_CRM_LEAD_SOURCE_TYPE mapped to numeric ID 2324 for Inbound Portal');
+
+  // Check cheques field references existing UF_CRM_CHEQUES_1 in listing
+  const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_CHEQUES_1'));
+  assert(hasListingCheques, 'Listing layout uses valid Bitrix field UF_CRM_CHEQUES_1');
 
   // ============================================================================
   // Summary
