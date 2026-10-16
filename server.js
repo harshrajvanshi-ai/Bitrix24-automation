@@ -476,16 +476,35 @@ async function fetchLookupData(entity, forceRefresh = false) {
 
 // Native Bitrix24 CRM binding configuration for lookup fields
 const CRM_LOOKUP_CONFIG = {
-  UF_CRM_PROJECT_1: { entity: 'project', prefix: 'DYNAMIC_1044_' },
-  UF_CRM_1791794196: { entity: 'project', prefix: 'DYNAMIC_1044_' },
-  UF_CRM_PROJECT: { entity: 'master_project', prefix: 'DYNAMIC_1040_' },
+  // Smart Process userfields in Bitrix natively store pure numeric ID (e.g. 402, 336, 326)
+  UF_CRM_PROJECT_1: { entity: 'project', prefix: '' },
+  UF_CRM_1791794196: { entity: 'project', prefix: '', isArray: true },
+  UF_CRM_PROJECT: { entity: 'master_project', prefix: '' },
+  UF_CRM_PROPERTY: { entity: 'property', prefix: '' },
+  UF_CRM_PROPERTY_PROPERTYFINDER: { entity: 'property', prefix: '' },
+  UF_CRM_MASTERPROPERTY: { entity: 'property', prefix: '' },
+  UF_CRM_LAYOUT: { entity: 'layout', prefix: '' },
+  UF_CRM_PROPERTY_LAYOUT: { entity: 'layout', prefix: '' },
+  UF_CRM_PORTAL_LISTING_AGENT: { entity: 'broker', prefix: '' },
+  UF_CRM_REFERRAL_AGENT_SELLER: { entity: 'broker', prefix: '' },
+  UF_CRM_ASSIGNED_TO_BROKER: { entity: 'broker', prefix: '' },
+  UF_CRM_LISTINGAGENT: { entity: 'broker', prefix: '' },
+  UF_CRM_COLISTINGAGENT: { entity: 'broker', prefix: '' },
+  UF_CRM_EXTERNAL_LISTING_BROKER: { entity: 'broker', prefix: '' },
+  UF_CRM_REFERRAL_AGENT_LANDLORD: { entity: 'broker', prefix: '' },
+  UF_CRM_REFERRAL_AGENT_BUYER: { entity: 'broker', prefix: '' },
+  UF_CRM_REFERRAL_AGENT_TENANT: { entity: 'broker', prefix: '' },
+  UF_CRM_REFERRED_BY: { entity: 'broker', prefix: '' },
+  UF_CRM_REFER_TO: { entity: 'broker', prefix: '' },
+  UF_CRM_PROPSPACE_AGENT: { entity: 'broker', prefix: '' },
+  UF_CRM_LISTING: { entity: 'listing', prefix: '' },
+  UF_CRM_ENQUIRY: { entity: 'enquiry', prefix: '' },
+
+  // Company userfields in Bitrix natively store CO_<id>
   UF_CRM_DEVELOPER_1: { entity: 'developer', prefix: 'CO_' },
   UF_CRM_YOUR_COMPANY_DETAILS: { entity: 'company', prefix: 'CO_' },
-  UF_CRM_PROPERTY: { entity: 'property', prefix: 'DYNAMIC_1052_' },
-  UF_CRM_PROPERTY_PROPERTYFINDER: { entity: 'property', prefix: 'DYNAMIC_1052_' },
-  UF_CRM_MASTERPROPERTY: { entity: 'property', prefix: 'DYNAMIC_1052_' },
-  UF_CRM_LAYOUT: { entity: 'layout', prefix: 'DYNAMIC_1048_' },
-  UF_CRM_PROPERTY_LAYOUT: { entity: 'layout', prefix: 'DYNAMIC_1048_' },
+
+  // Contact userfields in Bitrix natively store C_<id>
   UF_CRM_OWNER_LISTING: { entity: 'contact', prefix: 'C_' },
   UF_CRM_PROPERTYOWNERCONTACT: { entity: 'contact', prefix: 'C_' },
   UF_CRM_PROPERTY_OWNER_2: { entity: 'contact', prefix: 'C_' },
@@ -493,27 +512,13 @@ const CRM_LOOKUP_CONFIG = {
   UF_CRM_OWNER_ENQUIRY: { entity: 'contact', prefix: 'C_' },
   UF_CRM_CONTACTS: { entity: 'contact', prefix: 'C_' },
   UF_CRM_OWNERID: { entity: 'contact', prefix: 'C_' },
-  UF_CRM_PORTAL_LISTING_AGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_REFERRAL_AGENT_SELLER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_ASSIGNED_TO_BROKER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_LISTINGAGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_COLISTINGAGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_EXTERNAL_LISTING_BROKER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_REFERRAL_AGENT_LANDLORD: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_REFERRAL_AGENT_BUYER: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_REFERRAL_AGENT_TENANT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_REFERRED_BY: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_REFER_TO: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_PROPSPACE_AGENT: { entity: 'broker', prefix: 'DYNAMIC_1094_' },
-  UF_CRM_LISTING: { entity: 'listing', prefix: 'DYNAMIC_1058_' },
-  UF_CRM_ENQUIRY: { entity: 'enquiry', prefix: 'DYNAMIC_1062_' }
 };
 
 /**
  * Normalizes lookup fields into native Bitrix24 CRM entity bindings
- * e.g., "Creek Beach Residences" -> "DYNAMIC_1044_220"
- *        "New DHL" -> "CO_10"
- *        "Apartment 1204" -> "DYNAMIC_1052_336"
+ * SPAs -> pure numeric ID string (e.g. "402", "336")
+ * Companies -> "CO_14"
+ * Contacts -> "C_66"
  */
 async function normalizeLookupFields(fields) {
   const normalized = { ...fields };
@@ -523,70 +528,79 @@ async function normalizeLookupFields(fields) {
 
     const strVal = String(val).trim();
     if (strVal === '') {
-      normalized[code] = '';
+      normalized[code] = cfg.isArray ? [] : '';
       continue;
     }
 
-    // Already in valid Bitrix CRM binding format (e.g. DYNAMIC_1044_220, CO_10, C_66, L_10)
-    if (/^(DYNAMIC_\d+_|CO_|C_|L_|D_)\d+$/i.test(strVal)) {
-      normalized[code] = strVal;
-      continue;
-    }
+    // Extract numeric ID if value has prefix like DYNAMIC_1044_402, T414_402, CO_14, C_66, or is pure 402
+    const idMatch = strVal.match(/^(?:DYNAMIC_\d+_|T[0-9a-f]+_|CO_|C_|L_|D_)?(\d+)$/i);
+    let resolvedId = idMatch ? idMatch[1] : null;
 
-    // Pure numeric ID passed (e.g. "220" or 220)
-    if (/^\d+$/.test(strVal)) {
-      normalized[code] = `${cfg.prefix}${strVal}`;
-      continue;
-    }
-
-    // Title string passed (e.g. "Creek Beach Residences" or "testin project")
-    try {
-      const items = await fetchLookupData(cfg.entity);
-      let match = items.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal);
-      if (!match) {
-        // Direct search fallback in case item wasn't on first cached page
-        const live = await searchLookupLive(cfg.entity, strVal);
-        if (live && live.length > 0) {
-          match = live.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal) || live[0];
-        }
-      }
-      if (match) {
-        normalized[code] = match.crmRef || `${cfg.prefix}${match.id}`;
-      }
-    } catch (e) {
-      console.warn(`[LOOKUP] Could not resolve title "${strVal}" for ${code}:`, e.message);
-    }
-  }
-
-  // Synchronize companion text fields for Developer & Project if present
-  if (normalized.UF_CRM_DEVELOPER_1) {
-    const devIdMatch = String(normalized.UF_CRM_DEVELOPER_1).match(/\d+/);
-    if (devIdMatch) {
+    if (!resolvedId) {
+      // Title string passed (e.g. "Creek Beach Residences" or "testin project new")
       try {
-        const items = await fetchLookupData('developer');
-        let dev = items.find(it => String(it.id) === devIdMatch[0]);
-        if (!dev) {
-          const live = await searchLookupLive('developer', devIdMatch[0]);
-          if (live && live.length > 0) dev = live[0];
+        const items = await fetchLookupData(cfg.entity);
+        let match = items.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal);
+        if (!match) {
+          const live = await searchLookupLive(cfg.entity, strVal);
+          if (live && live.length > 0) {
+            match = live.find(it => it.title.toLowerCase() === strVal.toLowerCase() || String(it.id) === strVal) || live[0];
+          }
         }
-        if (dev && !normalized.UF_CRM_DEVELOPER_NAME) {
-          normalized.UF_CRM_DEVELOPER_NAME = dev.title;
+        if (match) {
+          resolvedId = String(match.id);
         }
-      } catch (e) {}
+      } catch (e) {
+        console.warn(`[LOOKUP] Could not resolve title "${strVal}" for ${code}:`, e.message);
+      }
+    }
+
+    if (resolvedId) {
+      if (cfg.isArray) {
+        normalized[code] = [resolvedId];
+      } else if (cfg.prefix) {
+        normalized[code] = `${cfg.prefix}${resolvedId}`;
+      } else {
+        // Pure numeric ID string for Smart Process userfields
+        normalized[code] = resolvedId;
+      }
     }
   }
+
+  // Synchronize Project companion fields: UF_CRM_1791794196 and UF_CRM_PROJECT_NAME
   if (normalized.UF_CRM_PROJECT_1) {
-    const projIdMatch = String(normalized.UF_CRM_PROJECT_1).match(/\d+/);
-    if (projIdMatch) {
+    const projId = String(normalized.UF_CRM_PROJECT_1).replace(/\D/g, '');
+    if (projId) {
+      if (!normalized.UF_CRM_1791794196) {
+        normalized.UF_CRM_1791794196 = [projId];
+      }
       try {
         const items = await fetchLookupData('project');
-        let proj = items.find(it => String(it.id) === projIdMatch[0]);
+        let proj = items.find(it => String(it.id) === projId);
         if (!proj) {
-          const live = await searchLookupLive('project', projIdMatch[0]);
+          const live = await searchLookupLive('project', projId);
           if (live && live.length > 0) proj = live[0];
         }
         if (proj && !normalized.UF_CRM_PROJECT_NAME) {
           normalized.UF_CRM_PROJECT_NAME = proj.title;
+        }
+      } catch (e) {}
+    }
+  }
+
+  // Synchronize Developer companion field: UF_CRM_DEVELOPER_NAME
+  if (normalized.UF_CRM_DEVELOPER_1) {
+    const devId = String(normalized.UF_CRM_DEVELOPER_1).replace(/\D/g, '');
+    if (devId) {
+      try {
+        const items = await fetchLookupData('developer');
+        let dev = items.find(it => String(it.id) === devId);
+        if (!dev) {
+          const live = await searchLookupLive('developer', devId);
+          if (live && live.length > 0) dev = live[0];
+        }
+        if (dev && !normalized.UF_CRM_DEVELOPER_NAME) {
+          normalized.UF_CRM_DEVELOPER_NAME = dev.title;
         }
       } catch (e) {}
     }

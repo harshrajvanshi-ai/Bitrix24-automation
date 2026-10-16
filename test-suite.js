@@ -269,27 +269,27 @@ async function runTests() {
   assert(hasPropertyLookup, 'Property lookup registered with lookupEntity: property');
   assert(hasDeveloperLookup, 'Developer lookup registered with lookupEntity: developer');
 
-  // Verify Bitrix CRM entity binding prefixes
+  // Verify Bitrix CRM entity binding prefixes: SPAs store pure numeric IDs for native card rendering
   const CRM_PREFIX_MAP = {
-    project: 'DYNAMIC_1044_',
-    master_project: 'DYNAMIC_1040_',
-    layout: 'DYNAMIC_1048_',
-    property: 'DYNAMIC_1052_',
+    project: '',
+    master_project: '',
+    layout: '',
+    property: '',
     developer: 'CO_',
     company: 'CO_',
     contact: 'C_',
-    broker: 'DYNAMIC_1094_',
-    listing: 'DYNAMIC_1058_',
-    enquiry: 'DYNAMIC_1062_'
+    broker: '',
+    listing: '',
+    enquiry: ''
   };
   function testLookupRef(entity, id) {
     const prefix = CRM_PREFIX_MAP[entity] || '';
     return `${prefix}${id}`;
   }
-  assert(testLookupRef('project', 220) === 'DYNAMIC_1044_220', 'Project maps to DYNAMIC_1044_<id>');
+  assert(testLookupRef('project', 220) === '220', 'Project maps to pure numeric ID string');
   assert(testLookupRef('developer', 10) === 'CO_10', 'Developer maps to CO_<id>');
-  assert(testLookupRef('property', 336) === 'DYNAMIC_1052_336', 'Property maps to DYNAMIC_1052_<id>');
-  assert(testLookupRef('layout', 46) === 'DYNAMIC_1048_46', 'Layout maps to DYNAMIC_1048_<id>');
+  assert(testLookupRef('property', 336) === '336', 'Property maps to pure numeric ID string');
+  assert(testLookupRef('layout', 46) === '46', 'Layout maps to pure numeric ID string');
   assert(testLookupRef('contact', 66) === 'C_66', 'Contact maps to C_<id>');
 
   // ============================================================================
