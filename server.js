@@ -800,6 +800,13 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
     fields.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE = fields.UF_CRM_TRAKHEESI_EXPIRY;
   }
 
+  // Handle Property Finder Listing Id mapping: sync UF_CRM_1792151466 and UF_CRM_PF_ID
+  if (fields.UF_CRM_PF_ID && !fields.UF_CRM_1792151466) {
+    fields.UF_CRM_1792151466 = fields.UF_CRM_PF_ID;
+  } else if (fields.UF_CRM_1792151466 && !fields.UF_CRM_PF_ID) {
+    fields.UF_CRM_PF_ID = fields.UF_CRM_1792151466;
+  }
+
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
   fields = normalizeEnumFields(fields);
 
@@ -850,6 +857,14 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       // Resolve Trakheesi Permit Expiry fallback
       if (!lead.UF_CRM_TRAKHEESI_EXPIRY && lead.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE) {
         lead.UF_CRM_TRAKHEESI_EXPIRY = lead.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE;
+      }
+
+      // Resolve Property Finder Listing Id fallback
+      if (!lead.UF_CRM_1792151466 && lead.UF_CRM_PF_ID) {
+        lead.UF_CRM_1792151466 = lead.UF_CRM_PF_ID;
+      }
+      if (!lead.UF_CRM_PF_ID && lead.UF_CRM_1792151466) {
+        lead.UF_CRM_PF_ID = lead.UF_CRM_1792151466;
       }
 
       // Enrich CRM lookup fields with resolved titles and references

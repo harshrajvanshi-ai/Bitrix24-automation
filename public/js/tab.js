@@ -763,6 +763,9 @@
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_TRAKHEESI_EXPIRY') {
           currentVal = lead['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE'] || '';
         }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_1792151466') {
+          currentVal = lead['UF_CRM_PF_ID'] || '';
+        }
         if (currentVal === undefined || currentVal === null) currentVal = '';
         gridEl.appendChild(createFormGroup(f, currentVal));
       });
@@ -1009,6 +1012,10 @@
 
     if (payload.UF_CRM_TRAKHEESI_EXPIRY && !payload.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE) {
       payload.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE = payload.UF_CRM_TRAKHEESI_EXPIRY;
+    }
+
+    if (payload.UF_CRM_1792151466 && !payload.UF_CRM_PF_ID) {
+      payload.UF_CRM_PF_ID = payload.UF_CRM_1792151466;
     }
 
     await Promise.all(filePromises);

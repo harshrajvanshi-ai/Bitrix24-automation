@@ -249,8 +249,12 @@ async function runTests() {
   // Check specific UAE fields
   const hasBudget = fieldCfg.enquiryFields.some(f => f.code.includes('BUDGET') || f.code.includes('PRICE') || (f.label && (f.label.toLowerCase().includes('budget') || f.label.toLowerCase().includes('price'))));
   const hasListingPriceOrRera = fieldCfg.listingFields.some(f => f.code.includes('RERA') || f.code.includes('PRICE') || (f.label && f.label.toLowerCase().includes('price')));
+  const hasPortalListingId = fieldCfg.listingFields.some(f => f.code === 'UF_CRM_PORTAL_LISTING_ID');
+  const hasPfListingId = fieldCfg.listingFields.some(f => f.code === 'UF_CRM_1792151466' && f.label.includes('Property Finder'));
   assert(hasBudget, 'Enquiry includes Budget field');
   assert(hasListingPriceOrRera, 'Listing includes Price / UAE property field');
+  assert(hasPortalListingId, 'Listing includes native UF_CRM_PORTAL_LISTING_ID field');
+  assert(hasPfListingId, 'Listing includes native UF_CRM_1792151466 for Property Finder Listing Id');
 
   // ============================================================================
   // Test Case 9: Version 2 Lookup Fields Specification
