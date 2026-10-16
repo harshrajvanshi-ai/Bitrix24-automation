@@ -64,11 +64,11 @@ class BitrixClient {
     let endpoint;
     let postData = { ...params };
 
-    if (auth && auth.accessToken) {
+    if (config.INBOUND_WEBHOOK_URL) {
+      endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+    } else if (auth && auth.accessToken) {
       endpoint = `${auth.clientEndpoint.replace(/\/+$/, '')}/${method}`;
       postData.auth = auth.accessToken;
-    } else if (config.INBOUND_WEBHOOK_URL) {
-      endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
     } else {
       throw new Error('Bitrix24 authentication missing. Please install the local application first.');
     }

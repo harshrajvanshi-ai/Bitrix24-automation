@@ -289,9 +289,20 @@ async function fetchLookupData(entity) {
       items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Property #${i.id}` }));
     } else if (entity === 'developer' || entity === 'company') {
       const res = await BitrixClient.call('crm.company.list', { select: ['ID', 'TITLE'], order: { TITLE: 'ASC' } });
-      items = (res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}` }));
-    } else if (entity === 'contact' || entity === 'owner') {
-      const res = await BitrixClient.call('crm.contact.list', { select: ['ID', 'NAME', 'LAST_NAME'], order: { LAST_NAME: 'ASC' } });
+    } else if (entity === 'contact' || entity === 'owner' || entity === 'tenant') {
+      const [contacts, companies] = await Promise.all([
+        BitrixClient.call('crm.contact.list', { select: ['ID', 'NAME', 'LAST_NAME'], order: { LAST_NAME: 'ASC' } }).catch(() => []),
+        BitrixClient.call('crm.company.list', { select: ['ID', 'TITLE'], order: { TITLE: 'ASC' } }).catch(() => [])
+      ]);
+      const contactItems = (contacts || []).map(i => ({
+        id: i.ID,
+        title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`
+      }));
+      const companyItems = (companies || []).map(i => ({
+        id: i.ID,
+        title: i.TITLE || `Company #${i.ID}`
+      }));
+      items = [...contactItems, ...companyItems];
     } else if (entity === 'layout') {
       const res = await BitrixClient.call('crm.item.list', { entityTypeId: 1048, select: ['id', 'title'], order: { title: 'ASC' } });
       items = (res.items || []).map(i => ({ id: i.id, title: i.title || `Layout #${i.id}` }));
