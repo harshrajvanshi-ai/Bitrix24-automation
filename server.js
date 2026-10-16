@@ -788,6 +788,18 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
     delete fields.UF_CRM_PARKING;
   }
 
+  // Handle Date Available mapping: sync UF_CRM_DATE_AVAILABLE and UF_CRM_AVAILABLE_TO
+  if (fields.UF_CRM_DATE_AVAILABLE && !fields.UF_CRM_AVAILABLE_TO) {
+    fields.UF_CRM_AVAILABLE_TO = fields.UF_CRM_DATE_AVAILABLE;
+  } else if (fields.UF_CRM_AVAILABLE_TO && !fields.UF_CRM_DATE_AVAILABLE) {
+    fields.UF_CRM_DATE_AVAILABLE = fields.UF_CRM_AVAILABLE_TO;
+  }
+
+  // Handle Trakheesi Permit Expiry mapping: sync UF_CRM_TRAKHEESI_EXPIRY and UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE
+  if (fields.UF_CRM_TRAKHEESI_EXPIRY && !fields.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE) {
+    fields.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE = fields.UF_CRM_TRAKHEESI_EXPIRY;
+  }
+
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
   fields = normalizeEnumFields(fields);
 
@@ -825,6 +837,19 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       // Resolve Number of Parking Spaces fallback for legacy leads
       if (!lead.UF_CRM_NUMBEROFPARKINGSPACES && lead.UF_CRM_PARKING) {
         lead.UF_CRM_NUMBEROFPARKINGSPACES = lead.UF_CRM_PARKING;
+      }
+
+      // Resolve Date Available fallback (UF_CRM_AVAILABLE_TO <-> UF_CRM_DATE_AVAILABLE)
+      if (!lead.UF_CRM_DATE_AVAILABLE && (lead.UF_CRM_AVAILABLE_TO || lead.UF_CRM_AVAILABILITY_DATE)) {
+        lead.UF_CRM_DATE_AVAILABLE = lead.UF_CRM_AVAILABLE_TO || lead.UF_CRM_AVAILABILITY_DATE;
+      }
+      if (!lead.UF_CRM_AVAILABLE_TO && lead.UF_CRM_DATE_AVAILABLE) {
+        lead.UF_CRM_AVAILABLE_TO = lead.UF_CRM_DATE_AVAILABLE;
+      }
+
+      // Resolve Trakheesi Permit Expiry fallback
+      if (!lead.UF_CRM_TRAKHEESI_EXPIRY && lead.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE) {
+        lead.UF_CRM_TRAKHEESI_EXPIRY = lead.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE;
       }
 
       // Enrich CRM lookup fields with resolved titles and references

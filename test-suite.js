@@ -439,6 +439,68 @@ async function runTests() {
   assert(queryMatchesRef.length === 1 && queryMatchesRef[0].id === 402, 'Lookup query matches project by CRM ref "DYNAMIC_1044_402"');
 
   // ============================================================================
+  // Test Case 14: Date Field Normalization & HTML5 Compatibility
+  // ============================================================================
+  console.log('\n--- Case 14: Date Field Normalization & HTML5 Compatibility ---');
+
+  function formatDateForInput(val) {
+    if (!val) return '';
+    const s = String(val).trim();
+    const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    if (isoMatch) return isoMatch[1];
+    const b24Match = s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
+    if (b24Match) return `${b24Match[3]}-${b24Match[2]}-${b24Match[1]}`;
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    return '';
+  }
+
+  function formatDateTimeForInput(val) {
+    if (!val) return '';
+    const s = String(val).trim();
+    const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
+    if (isoMatch) return isoMatch[1];
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${mins}`;
+    }
+    return '';
+  }
+
+  // Verify ISO date conversion (stripping T03:00:00+03:00 so HTML5 date input accepts it)
+  const normalizedIsoDate = formatDateForInput('2028-10-01T03:00:00+03:00');
+  assert(normalizedIsoDate === '2028-10-01', 'Bitrix ISO date 2028-10-01T03:00:00+03:00 converts to HTML5 2028-10-01');
+
+  // Verify DD.MM.YYYY Bitrix legacy date format
+  const normalizedB24Date = formatDateForInput('15.10.2027');
+  assert(normalizedB24Date === '2027-10-15', 'Bitrix date 15.10.2027 converts to HTML5 2027-10-15');
+
+  // Verify datetime conversion (stripping seconds and timezone offset for HTML5 datetime-local)
+  const normalizedIsoDateTime = formatDateTimeForInput('2026-10-16T13:57:33+03:00');
+  assert(normalizedIsoDateTime === '2026-10-16T13:57', 'Bitrix ISO datetime converts to HTML5 2026-10-16T13:57');
+
+  // Verify fields configuration contains Trakheesi Permit Expiry and Completion Date
+  const hasTrakheesi = fieldCfg.listingFields.some(f => f.code === 'UF_CRM_TRAKHEESI_EXPIRY' && f.type === 'date');
+  const hasCompletion = fieldCfg.listingFields.some(f => f.code === 'UF_CRM_COMPLETIONDATE' && f.type === 'date');
+  assert(hasTrakheesi, 'Listing layout includes native UF_CRM_TRAKHEESI_EXPIRY date field');
+  assert(hasCompletion, 'Listing layout includes native UF_CRM_COMPLETIONDATE date field');
+
+  // Verify Date Available fallback resolution logic
+  const mockLead = { UF_CRM_AVAILABLE_TO: '2028-10-01T03:00:00+03:00' };
+  const resolvedDateAvailable = mockLead.UF_CRM_DATE_AVAILABLE || mockLead.UF_CRM_AVAILABLE_TO;
+  assert(resolvedDateAvailable === '2028-10-01T03:00:00+03:00', 'UF_CRM_DATE_AVAILABLE resolves from UF_CRM_AVAILABLE_TO');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

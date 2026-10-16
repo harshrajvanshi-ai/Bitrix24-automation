@@ -563,6 +563,12 @@
             "label": "Number of Parking Spaces",
             "type": "integer",
             "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_COMPLETIONDATE",
+            "label": "Completion Date",
+            "type": "date",
+            "placeholder": ""
           }
         ]
       },
@@ -661,6 +667,12 @@
             "placeholder": ""
           },
           {
+            "code": "UF_CRM_TRAKHEESI_EXPIRY",
+            "label": "Trakheesi Permit Expiry",
+            "type": "date",
+            "placeholder": ""
+          },
+          {
             "code": "UF_CRM_BROKER_S_LISTING_ID",
             "label": "Broker's Listing ID",
             "type": "string",
@@ -712,8 +724,8 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_BAYUT_ID",
-            "label": "Bayut Listing ID",
+            "code": "UF_CRM_PORTAL_LISTING_ID",
+            "label": "Portal Listing Id",
             "type": "string",
             "placeholder": ""
           },
@@ -2901,6 +2913,12 @@
       "placeholder": ""
     },
     {
+      "code": "UF_CRM_COMPLETIONDATE",
+      "label": "Completion Date",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
       "code": "UF_CRM_COMMERCIAL_AMENITIES",
       "label": "Commercial Amenities",
       "type": "string",
@@ -2979,6 +2997,12 @@
       "placeholder": ""
     },
     {
+      "code": "UF_CRM_TRAKHEESI_EXPIRY",
+      "label": "Trakheesi Permit Expiry",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
       "code": "UF_CRM_BROKER_S_LISTING_ID",
       "label": "Broker's Listing ID",
       "type": "string",
@@ -3021,8 +3045,8 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_BAYUT_ID",
-      "label": "Bayut Listing ID",
+      "code": "UF_CRM_PORTAL_LISTING_ID",
+      "label": "Portal Listing Id",
       "type": "string",
       "placeholder": ""
     },

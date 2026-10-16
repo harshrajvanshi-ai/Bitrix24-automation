@@ -339,6 +339,46 @@
   }
 
   /**
+   * Normalize Bitrix ISO 8601 date string (e.g. 2026-10-30T03:00:00+03:00) to HTML5 YYYY-MM-DD
+   */
+  function formatDateForInput(val) {
+    if (!val) return '';
+    const s = String(val).trim();
+    const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
+    if (isoMatch) return isoMatch[1];
+    const b24Match = s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
+    if (b24Match) return `${b24Match[3]}-${b24Match[2]}-${b24Match[1]}`;
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+    return '';
+  }
+
+  /**
+   * Normalize Bitrix ISO 8601 datetime string to HTML5 YYYY-MM-DDTHH:mm
+   */
+  function formatDateTimeForInput(val) {
+    if (!val) return '';
+    const s = String(val).trim();
+    const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
+    if (isoMatch) return isoMatch[1];
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const mins = String(d.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${mins}`;
+    }
+    return '';
+  }
+
+  /**
    * Create field input control supporting lookup, enumeration, boolean, money, date, text, number
    */
   function createFieldInput(f, currentVal, markFieldDirty) {
@@ -510,17 +550,21 @@
       if (f.type === 'number' || f.type === 'integer' || f.type === 'double') {
         inputElement.type = 'number';
         if (f.type === 'double') inputElement.step = 'any';
+        inputElement.value = currentVal !== undefined && currentVal !== null ? currentVal : '';
       } else if (f.type === 'date') {
         inputElement.type = 'date';
+        inputElement.value = formatDateForInput(currentVal);
       } else if (f.type === 'datetime') {
         inputElement.type = 'datetime-local';
+        inputElement.value = formatDateTimeForInput(currentVal);
       } else if (f.type === 'url') {
         inputElement.type = 'url';
+        inputElement.value = currentVal || '';
       } else {
         inputElement.type = 'text';
+        inputElement.value = currentVal || '';
       }
 
-      inputElement.value = currentVal || '';
       container.appendChild(inputElement);
       initialFormValues[f.code] = inputElement.value;
     }
@@ -709,6 +753,15 @@
         }
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_NUMBEROFPARKINGSPACES') {
           currentVal = lead['UF_CRM_PARKING'] || '';
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_DATE_AVAILABLE') {
+          currentVal = lead['UF_CRM_AVAILABLE_TO'] || lead['UF_CRM_AVAILABILITY_DATE'] || '';
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_AVAILABLE_TO') {
+          currentVal = lead['UF_CRM_DATE_AVAILABLE'] || lead['UF_CRM_AVAILABILITY_DATE'] || '';
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_TRAKHEESI_EXPIRY') {
+          currentVal = lead['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE'] || '';
         }
         if (currentVal === undefined || currentVal === null) currentVal = '';
         gridEl.appendChild(createFormGroup(f, currentVal));
@@ -946,6 +999,16 @@
 
     if (payload.UF_CRM_LISTING_NAME && !payload.UF_CRM_1791952409183) {
       payload.UF_CRM_1791952409183 = payload.UF_CRM_LISTING_NAME;
+    }
+
+    if (payload.UF_CRM_DATE_AVAILABLE && !payload.UF_CRM_AVAILABLE_TO) {
+      payload.UF_CRM_AVAILABLE_TO = payload.UF_CRM_DATE_AVAILABLE;
+    } else if (payload.UF_CRM_AVAILABLE_TO && !payload.UF_CRM_DATE_AVAILABLE) {
+      payload.UF_CRM_DATE_AVAILABLE = payload.UF_CRM_AVAILABLE_TO;
+    }
+
+    if (payload.UF_CRM_TRAKHEESI_EXPIRY && !payload.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE) {
+      payload.UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE = payload.UF_CRM_TRAKHEESI_EXPIRY;
     }
 
     await Promise.all(filePromises);
