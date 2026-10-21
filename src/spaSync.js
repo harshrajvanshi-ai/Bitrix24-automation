@@ -1,7 +1,7 @@
 /**
  * src/spaSync.js
  * Cross-entity synchronizer between Bitrix24 Leads and Enquiry Smart Process Automation (SPA 1062).
- * Handles enum ID translation for Lead Source Type, Urgency, and State.
+ * Handles enum ID translation for Lead Source Type, Urgency, State, City - Bayut, and City - Propertyfinder.
  */
 
 const BitrixClient = require('./bitrixClient');
@@ -84,8 +84,50 @@ const STATE_LABEL_TO_ENUM = {
   'umm al quwain': '2544'
 };
 
+// 4. City - Bayut Translation Map (Lead enum ID <-> SPA 1062 enum ID)
+const CITY_BAYUT_MAP = {
+  '2546': 1134, // Dubai
+  '2548': 1136, // Abu Dhabi
+  '2550': 1138, // Sharjah
+  '2552': 1140, // Ajman
+  '2554': 1142, // Ras Al Khaimah
+  '2556': 1144, // Fujairah
+  '2558': 1146, // Umm Al Quwain
+  '2560': 1148, // Al Ain
+  // String label fallbacks
+  'dubai': 1134,
+  'abu dhabi': 1136,
+  'sharjah': 1138,
+  'ajman': 1140,
+  'ras al khaimah': 1142,
+  'fujairah': 1144,
+  'umm al quwain': 1146,
+  'al ain': 1148
+};
+
+// 5. City - Propertyfinder Translation Map (Lead enum ID <-> SPA 1062 enum ID)
+const CITY_PROPERTYFINDER_MAP = {
+  '2562': 1150, // Dubai
+  '2564': 1152, // Abu Dhabi
+  '2566': 1154, // Sharjah
+  '2568': 1156, // Ajman
+  '2570': 1158, // Ras Al Khaimah
+  '2572': 1160, // Fujairah
+  '2574': 1162, // Umm Al Quwain
+  '2576': 1164, // Al Ain
+  // String label fallbacks
+  'dubai': 1150,
+  'abu dhabi': 1152,
+  'sharjah': 1154,
+  'ajman': 1156,
+  'ras al khaimah': 1158,
+  'fujairah': 1160,
+  'umm al quwain': 1162,
+  'al ain': 1164
+};
+
 /**
- * Synchronize Lead fields (Lead Source Type, Urgency, State) to linked Enquiry SPA item
+ * Synchronize Lead fields (Lead Source Type, Urgency, State, City Bayut, City PF) to linked Enquiry SPA item
  * @param {string|number} leadId 
  * @param {string} domain 
  * @returns {Promise<Object|null>}
@@ -105,14 +147,30 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
 
     if (lead.UF_CRM_ENQUIRY) {
       const match = String(lead.UF_CRM_ENQUIRY).match(/\d+/);
-      if (match) spaItemId = parseInt(match[0], 10);
+      if (match) {
+        const potentialId = parseInt(match[0], 10);
+        const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1062, id: potentialId }, domain).catch(() => null);
+        if (getRes?.item) {
+          spaItemId = potentialId;
+          spaItem = getRes.item;
+        }
+      }
     }
+
+    const selectFields = [
+      'id', 'xmlId', 'ufCrm18Lead',
+      'ufCrm18LeadSourceType',
+      'ufCrm18NormalLowHighUrgent',
+      'ufCrm18State',
+      'ufCrm18CityBayut',
+      'ufCrm18CityPropertyfinder'
+    ];
 
     if (!spaItemId) {
       const listByXml = await BitrixClient.call('crm.item.list', {
         entityTypeId: 1062,
         filter: { '=xmlId': cleanLeadId },
-        select: ['id', 'xmlId', 'ufCrm18Lead', 'ufCrm18LeadSourceType', 'ufCrm18NormalLowHighUrgent', 'ufCrm18State']
+        select: selectFields
       }, domain).catch(() => ({ items: [] }));
 
       if (listByXml?.items?.length > 0) {
@@ -125,7 +183,7 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
       const listByUf = await BitrixClient.call('crm.item.list', {
         entityTypeId: 1062,
         filter: { '=ufCrm18Lead': cleanLeadId },
-        select: ['id', 'xmlId', 'ufCrm18Lead', 'ufCrm18LeadSourceType', 'ufCrm18NormalLowHighUrgent', 'ufCrm18State']
+        select: selectFields
       }, domain).catch(() => ({ items: [] }));
 
       if (listByUf?.items?.length > 0) {
@@ -180,6 +238,26 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
       }
     }
 
+    // Map City - Bayut
+    const rawCityBayut = lead.UF_CRM_CITY_BAYUT;
+    if (rawCityBayut !== undefined && rawCityBayut !== null && rawCityBayut !== '') {
+      const key = String(rawCityBayut).trim().toLowerCase();
+      const targetCityBayut = CITY_BAYUT_MAP[key] || CITY_BAYUT_MAP[String(rawCityBayut).trim()];
+      if (targetCityBayut && String(spaItem.ufCrm18CityBayut) !== String(targetCityBayut)) {
+        updates.ufCrm18CityBayut = targetCityBayut;
+      }
+    }
+
+    // Map City - Propertyfinder
+    const rawCityPf = lead.UF_CRM_CITY_PF || lead.UF_CRM_CITY_PROPERTYFINDER;
+    if (rawCityPf !== undefined && rawCityPf !== null && rawCityPf !== '') {
+      const key = String(rawCityPf).trim().toLowerCase();
+      const targetCityPf = CITY_PROPERTYFINDER_MAP[key] || CITY_PROPERTYFINDER_MAP[String(rawCityPf).trim()];
+      if (targetCityPf && String(spaItem.ufCrm18CityPropertyfinder) !== String(targetCityPf)) {
+        updates.ufCrm18CityPropertyfinder = targetCityPf;
+      }
+    }
+
     // 3. Apply updates to Bitrix Enquiry SPA item
     if (Object.keys(updates).length > 0) {
       console.log(`[SPA SYNC] Updating Enquiry SPA Item #${spaItemId} from Lead #${cleanLeadId}:`, updates);
@@ -210,5 +288,7 @@ module.exports = {
   STATE_MAP,
   STATE_ENUM_TO_LABEL,
   STATE_LABEL_TO_ENUM,
+  CITY_BAYUT_MAP,
+  CITY_PROPERTYFINDER_MAP,
   syncEnquirySpaFromLead
 };

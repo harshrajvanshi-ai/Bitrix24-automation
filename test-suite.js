@@ -733,6 +733,29 @@ async function runTests() {
   assert(STATE_ENUM_TO_LABEL['2532'] === 'Dubai', 'STATE_ENUM_TO_LABEL resolves 2532 to Dubai');
   assert(STATE_LABEL_TO_ENUM['dubai'] === '2532', 'STATE_LABEL_TO_ENUM resolves dubai to 2532');
 
+  // 6. Verify City - Bayut schema and translation
+  const { CITY_BAYUT_MAP, CITY_PROPERTYFINDER_MAP } = require('./src/spaSync');
+  const cityBayutField = fieldsConfig.enquiryLayout?.sections
+    ?.flatMap(s => s.fields || [])
+    ?.find(f => f.code === 'UF_CRM_CITY_BAYUT');
+  assert(cityBayutField && cityBayutField.type === 'enumeration', 'UF_CRM_CITY_BAYUT is configured as type enumeration');
+  assert(Array.isArray(cityBayutField.options) && cityBayutField.options.length === 8, 'UF_CRM_CITY_BAYUT has exactly 8 UAE city options');
+  assert(cityBayutField.options.some(o => o.value === 'Dubai' && String(o.id) === '2546'), 'UF_CRM_CITY_BAYUT includes Dubai (2546)');
+  assert(cityBayutField.options.some(o => o.value === 'Al Ain' && String(o.id) === '2560'), 'UF_CRM_CITY_BAYUT includes Al Ain (2560)');
+  assert(CITY_BAYUT_MAP['2546'] === 1134, 'City Bayut Dubai (2546) maps to SPA 1134');
+  assert(CITY_BAYUT_MAP['2560'] === 1148, 'City Bayut Al Ain (2560) maps to SPA 1148');
+
+  // 7. Verify City - Propertyfinder schema and translation
+  const cityPfField = fieldsConfig.enquiryLayout?.sections
+    ?.flatMap(s => s.fields || [])
+    ?.find(f => f.code === 'UF_CRM_CITY_PF');
+  assert(cityPfField && cityPfField.type === 'enumeration', 'UF_CRM_CITY_PF is configured as type enumeration');
+  assert(Array.isArray(cityPfField.options) && cityPfField.options.length === 8, 'UF_CRM_CITY_PF has exactly 8 UAE city options');
+  assert(cityPfField.options.some(o => o.value === 'Dubai' && String(o.id) === '2562'), 'UF_CRM_CITY_PF includes Dubai (2562)');
+  assert(cityPfField.options.some(o => o.value === 'Al Ain' && String(o.id) === '2576'), 'UF_CRM_CITY_PF includes Al Ain (2576)');
+  assert(CITY_PROPERTYFINDER_MAP['2562'] === 1150, 'City PF Dubai (2562) maps to SPA 1150');
+  assert(CITY_PROPERTYFINDER_MAP['2576'] === 1164, 'City PF Al Ain (2576) maps to SPA 1164');
+
   // ============================================================================
   // Summary
   // ============================================================================

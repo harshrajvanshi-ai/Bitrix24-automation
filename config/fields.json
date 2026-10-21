@@ -870,8 +870,42 @@
             "code": "UF_CRM_CITY_BAYUT",
             "label": "City - Bayut",
             "bitrixLabel": "City (Bayut)",
-            "type": "string",
-            "placeholder": ""
+            "type": "enumeration",
+            "placeholder": "-- Select City - Bayut --",
+            "options": [
+              {
+                "id": "2546",
+                "value": "Dubai"
+              },
+              {
+                "id": "2548",
+                "value": "Abu Dhabi"
+              },
+              {
+                "id": "2550",
+                "value": "Sharjah"
+              },
+              {
+                "id": "2552",
+                "value": "Ajman"
+              },
+              {
+                "id": "2554",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2556",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2558",
+                "value": "Umm Al Quwain"
+              },
+              {
+                "id": "2560",
+                "value": "Al Ain"
+              }
+            ]
           },
           {
             "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
@@ -971,8 +1005,42 @@
             "code": "UF_CRM_CITY_PF",
             "label": "City - Propertyfinder",
             "bitrixLabel": "City (Propertyfinder)",
-            "type": "string",
-            "placeholder": ""
+            "type": "enumeration",
+            "placeholder": "-- Select City - Propertyfinder --",
+            "options": [
+              {
+                "id": "2562",
+                "value": "Dubai"
+              },
+              {
+                "id": "2564",
+                "value": "Abu Dhabi"
+              },
+              {
+                "id": "2566",
+                "value": "Sharjah"
+              },
+              {
+                "id": "2568",
+                "value": "Ajman"
+              },
+              {
+                "id": "2570",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2572",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2574",
+                "value": "Umm Al Quwain"
+              },
+              {
+                "id": "2576",
+                "value": "Al Ain"
+              }
+            ]
           },
           {
             "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
@@ -2250,8 +2318,42 @@
             "code": "UF_CRM_CITY_BAYUT",
             "label": "City - Bayut",
             "bitrixLabel": "City (Bayut)",
-            "type": "string",
-            "placeholder": ""
+            "type": "enumeration",
+            "placeholder": "-- Select City - Bayut --",
+            "options": [
+              {
+                "id": "2546",
+                "value": "Dubai"
+              },
+              {
+                "id": "2548",
+                "value": "Abu Dhabi"
+              },
+              {
+                "id": "2550",
+                "value": "Sharjah"
+              },
+              {
+                "id": "2552",
+                "value": "Ajman"
+              },
+              {
+                "id": "2554",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2556",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2558",
+                "value": "Umm Al Quwain"
+              },
+              {
+                "id": "2560",
+                "value": "Al Ain"
+              }
+            ]
           },
           {
             "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
@@ -2286,8 +2388,42 @@
             "code": "UF_CRM_CITY_PF",
             "label": "City - Propertyfinder",
             "bitrixLabel": "City (Propertyfinder)",
-            "type": "string",
-            "placeholder": ""
+            "type": "enumeration",
+            "placeholder": "-- Select City - Propertyfinder --",
+            "options": [
+              {
+                "id": "2562",
+                "value": "Dubai"
+              },
+              {
+                "id": "2564",
+                "value": "Abu Dhabi"
+              },
+              {
+                "id": "2566",
+                "value": "Sharjah"
+              },
+              {
+                "id": "2568",
+                "value": "Ajman"
+              },
+              {
+                "id": "2570",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2572",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2574",
+                "value": "Umm Al Quwain"
+              },
+              {
+                "id": "2576",
+                "value": "Al Ain"
+              }
+            ]
           },
           {
             "code": "UF_CRM_DEVELOPER_1",
@@ -3491,8 +3627,42 @@
       "code": "UF_CRM_CITY_BAYUT",
       "label": "City - Bayut",
       "bitrixLabel": "City (Bayut)",
-      "type": "string",
-      "placeholder": ""
+      "type": "enumeration",
+      "placeholder": "-- Select City - Bayut --",
+      "options": [
+        {
+          "id": "2546",
+          "value": "Dubai"
+        },
+        {
+          "id": "2548",
+          "value": "Abu Dhabi"
+        },
+        {
+          "id": "2550",
+          "value": "Sharjah"
+        },
+        {
+          "id": "2552",
+          "value": "Ajman"
+        },
+        {
+          "id": "2554",
+          "value": "Ras Al Khaimah"
+        },
+        {
+          "id": "2556",
+          "value": "Fujairah"
+        },
+        {
+          "id": "2558",
+          "value": "Umm Al Quwain"
+        },
+        {
+          "id": "2560",
+          "value": "Al Ain"
+        }
+      ]
     },
     {
       "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
@@ -3592,8 +3762,42 @@
       "code": "UF_CRM_CITY_PF",
       "label": "City - Propertyfinder",
       "bitrixLabel": "City (Propertyfinder)",
-      "type": "string",
-      "placeholder": ""
+      "type": "enumeration",
+      "placeholder": "-- Select City - Propertyfinder --",
+      "options": [
+        {
+          "id": "2562",
+          "value": "Dubai"
+        },
+        {
+          "id": "2564",
+          "value": "Abu Dhabi"
+        },
+        {
+          "id": "2566",
+          "value": "Sharjah"
+        },
+        {
+          "id": "2568",
+          "value": "Ajman"
+        },
+        {
+          "id": "2570",
+          "value": "Ras Al Khaimah"
+        },
+        {
+          "id": "2572",
+          "value": "Fujairah"
+        },
+        {
+          "id": "2574",
+          "value": "Umm Al Quwain"
+        },
+        {
+          "id": "2576",
+          "value": "Al Ain"
+        }
+      ]
     },
     {
       "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
@@ -4817,8 +5021,42 @@
       "code": "UF_CRM_CITY_BAYUT",
       "label": "City - Bayut",
       "bitrixLabel": "City (Bayut)",
-      "type": "string",
-      "placeholder": ""
+      "type": "enumeration",
+      "placeholder": "-- Select City - Bayut --",
+      "options": [
+        {
+          "id": "2546",
+          "value": "Dubai"
+        },
+        {
+          "id": "2548",
+          "value": "Abu Dhabi"
+        },
+        {
+          "id": "2550",
+          "value": "Sharjah"
+        },
+        {
+          "id": "2552",
+          "value": "Ajman"
+        },
+        {
+          "id": "2554",
+          "value": "Ras Al Khaimah"
+        },
+        {
+          "id": "2556",
+          "value": "Fujairah"
+        },
+        {
+          "id": "2558",
+          "value": "Umm Al Quwain"
+        },
+        {
+          "id": "2560",
+          "value": "Al Ain"
+        }
+      ]
     },
     {
       "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
@@ -4853,8 +5091,42 @@
       "code": "UF_CRM_CITY_PF",
       "label": "City - Propertyfinder",
       "bitrixLabel": "City (Propertyfinder)",
-      "type": "string",
-      "placeholder": ""
+      "type": "enumeration",
+      "placeholder": "-- Select City - Propertyfinder --",
+      "options": [
+        {
+          "id": "2562",
+          "value": "Dubai"
+        },
+        {
+          "id": "2564",
+          "value": "Abu Dhabi"
+        },
+        {
+          "id": "2566",
+          "value": "Sharjah"
+        },
+        {
+          "id": "2568",
+          "value": "Ajman"
+        },
+        {
+          "id": "2570",
+          "value": "Ras Al Khaimah"
+        },
+        {
+          "id": "2572",
+          "value": "Fujairah"
+        },
+        {
+          "id": "2574",
+          "value": "Umm Al Quwain"
+        },
+        {
+          "id": "2576",
+          "value": "Al Ain"
+        }
+      ]
     },
     {
       "code": "UF_CRM_DEVELOPER_1",
