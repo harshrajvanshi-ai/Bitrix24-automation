@@ -447,7 +447,7 @@
       inputElement.id = `field_${f.code}`;
       inputElement.name = f.code;
       inputElement.placeholder = f.placeholder || '';
-      inputElement.value = currentVal || '';
+      inputElement.value = Array.isArray(currentVal) ? currentVal.join(', ') : (currentVal || '');
 
       container.appendChild(inputElement);
       initialFormValues[f.code] = inputElement.value;
@@ -562,7 +562,7 @@
         inputElement.value = currentVal || '';
       } else {
         inputElement.type = 'text';
-        inputElement.value = currentVal || '';
+        inputElement.value = Array.isArray(currentVal) ? currentVal.join(', ') : (currentVal || '');
       }
 
       container.appendChild(inputElement);
@@ -1002,6 +1002,26 @@
 
     if (payload.UF_CRM_LISTING_NAME && !payload.UF_CRM_1791952409183) {
       payload.UF_CRM_1791952409183 = payload.UF_CRM_LISTING_NAME;
+    }
+
+    if (payload.UF_CRM_ENQUIRY_NAME && !payload.TITLE) {
+      payload.TITLE = payload.UF_CRM_ENQUIRY_NAME;
+    }
+
+    if (payload.UF_CRM_COMMENTS_1 && !payload.COMMENTS) {
+      payload.COMMENTS = payload.UF_CRM_COMMENTS_1;
+    }
+
+    if (payload.UF_CRM_PROJECT && !payload.UF_CRM_1792558317) {
+      payload.UF_CRM_1792558317 = payload.UF_CRM_PROJECT;
+    }
+
+    if (payload.UF_CRM_PROPERTY_LAYOUT && !payload.UF_CRM_LAYOUT) {
+      payload.UF_CRM_LAYOUT = payload.UF_CRM_PROPERTY_LAYOUT;
+    }
+
+    if (payload.UF_CRM_PROPERTY_PROPERTYFINDER && !payload.UF_CRM_PROPERTY) {
+      payload.UF_CRM_PROPERTY = payload.UF_CRM_PROPERTY_PROPERTYFINDER;
     }
 
     if (payload.UF_CRM_DATE_AVAILABLE && !payload.UF_CRM_AVAILABLE_TO) {

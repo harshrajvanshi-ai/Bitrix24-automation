@@ -768,11 +768,81 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
 
   console.log(`[API] Updating Lead #${leadId} fields:`, Object.keys(fields));
 
-  // Handle dedicated Listing Name & Enquiry Name fields (completely separate from native Lead Name TITLE)
+  // Handle dedicated Listing Name & Enquiry Name fields with native Lead Name TITLE
   if (fields.UF_CRM_LISTING_NAME && !fields.UF_CRM_1791952409183) {
     fields.UF_CRM_1791952409183 = fields.UF_CRM_LISTING_NAME;
   } else if (fields.UF_CRM_1791952409183 && !fields.UF_CRM_LISTING_NAME) {
     fields.UF_CRM_LISTING_NAME = fields.UF_CRM_1791952409183;
+  }
+
+  // Sync Enquiry Name with native Bitrix Lead TITLE
+  if (fields.UF_CRM_ENQUIRY_NAME) {
+    fields.TITLE = fields.UF_CRM_ENQUIRY_NAME;
+  } else if (fields.TITLE && !fields.UF_CRM_ENQUIRY_NAME) {
+    fields.UF_CRM_ENQUIRY_NAME = fields.TITLE;
+  }
+
+  // Sync Contact lookup (UF_CRM_CONTACTS) with native Bitrix CONTACT_ID
+  if (fields.UF_CRM_CONTACTS) {
+    const rawContact = Array.isArray(fields.UF_CRM_CONTACTS) ? fields.UF_CRM_CONTACTS[0] : fields.UF_CRM_CONTACTS;
+    const cMatch = String(rawContact).match(/(?:C_)?(\d+)/i);
+    if (cMatch && cMatch[1]) {
+      fields.CONTACT_ID = parseInt(cMatch[1], 10);
+      fields.UF_CRM_CONTACTS = [`C_${cMatch[1]}`];
+    }
+  }
+
+  // Sync Comments (UF_CRM_COMMENTS_1) with native Bitrix COMMENTS
+  if (fields.UF_CRM_COMMENTS_1 !== undefined && fields.UF_CRM_COMMENTS_1 !== null) {
+    fields.COMMENTS = fields.UF_CRM_COMMENTS_1;
+  } else if (fields.COMMENTS !== undefined && !fields.UF_CRM_COMMENTS_1) {
+    fields.UF_CRM_COMMENTS_1 = fields.COMMENTS;
+  }
+
+  // Sync Deal Value / Budget / Price with native Bitrix OPPORTUNITY & CURRENCY_ID
+  const dealAmount = fields.UF_CRM_DEAL_VALUE_1 || fields.UF_CRM_LISTINGPRICE_MAX || fields.UF_CRM_LISTINGPRICE;
+  if (dealAmount) {
+    const parts = String(dealAmount).split('|');
+    const num = parseFloat(parts[0]);
+    if (!isNaN(num) && num > 0) {
+      fields.OPPORTUNITY = num;
+      if (parts[1]) fields.CURRENCY_ID = parts[1];
+    }
+  }
+
+  // Sync Address fields with native Bitrix Lead ADDRESS properties
+  if (fields.UF_CRM_1791970638065 && !fields.ADDRESS) {
+    fields.ADDRESS = fields.UF_CRM_1791970638065;
+  }
+  if (fields.UF_CRM_CITY && !fields.ADDRESS_CITY) {
+    fields.ADDRESS_CITY = fields.UF_CRM_CITY;
+  }
+  if (fields.UF_CRM_POSTALCODE && !fields.ADDRESS_POSTAL_CODE) {
+    fields.ADDRESS_POSTAL_CODE = fields.UF_CRM_POSTALCODE;
+  }
+  if (fields.UF_CRM_STATE && !fields.ADDRESS_PROVINCE) {
+    fields.ADDRESS_PROVINCE = fields.UF_CRM_STATE;
+  }
+
+  // Sync Master Project companion fields (UF_CRM_PROJECT <-> UF_CRM_1792558317)
+  if (fields.UF_CRM_PROJECT && !fields.UF_CRM_1792558317) {
+    fields.UF_CRM_1792558317 = fields.UF_CRM_PROJECT;
+  } else if (fields.UF_CRM_1792558317 && !fields.UF_CRM_PROJECT) {
+    fields.UF_CRM_PROJECT = fields.UF_CRM_1792558317;
+  }
+
+  // Sync Property Layout companion fields (UF_CRM_PROPERTY_LAYOUT <-> UF_CRM_LAYOUT)
+  if (fields.UF_CRM_PROPERTY_LAYOUT && !fields.UF_CRM_LAYOUT) {
+    fields.UF_CRM_LAYOUT = fields.UF_CRM_PROPERTY_LAYOUT;
+  } else if (fields.UF_CRM_LAYOUT && !fields.UF_CRM_PROPERTY_LAYOUT) {
+    fields.UF_CRM_PROPERTY_LAYOUT = fields.UF_CRM_LAYOUT;
+  }
+
+  // Sync Property companion fields (UF_CRM_PROPERTY_PROPERTYFINDER <-> UF_CRM_PROPERTY)
+  if (fields.UF_CRM_PROPERTY_PROPERTYFINDER && !fields.UF_CRM_PROPERTY) {
+    fields.UF_CRM_PROPERTY = fields.UF_CRM_PROPERTY_PROPERTYFINDER;
+  } else if (fields.UF_CRM_PROPERTY && !fields.UF_CRM_PROPERTY_PROPERTYFINDER) {
+    fields.UF_CRM_PROPERTY_PROPERTYFINDER = fields.UF_CRM_PROPERTY;
   }
 
   // Handle Cheques field mapping: map legacy UF_CRM_CHEQUES / UF_CRM_CHEQUES_1 to new native enumeration field UF_CRM_1792139023
@@ -817,6 +887,25 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
   // Normalize file fields to ensure proper { fileData: [name, base64] } structure for Bitrix24
   fields = normalizeFileFields(fields);
 
+  // Ensure MULTIPLE: 'Y' userfields are arrays in Bitrix
+  const multipleUfCodes = [
+    'UF_CRM_ADDITIONALCITIES',
+    'UF_CRM_ADDITIONALPOSTALCODES',
+    'UF_CRM_COUNTIES',
+    'UF_CRM_NEIGHBORHOODS',
+    'UF_CRM_SUBDIVISIONS',
+    'UF_CRM_SCHOOLDISTRICTS',
+    'UF_CRM_RECOMMENDED_LISTINGS',
+    'UF_CRM_CONTACTS'
+  ];
+  for (const mCode of multipleUfCodes) {
+    if (fields[mCode] !== undefined && fields[mCode] !== null && fields[mCode] !== '') {
+      if (!Array.isArray(fields[mCode])) {
+        fields[mCode] = [String(fields[mCode]).trim()];
+      }
+    }
+  }
+
   try {
     const result = await BitrixClient.crmLeadUpdate(leadId, fields);
     res.json({ success: true, result });
@@ -838,6 +927,61 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       if (!lead.UF_CRM_LISTING_NAME && lead.UF_CRM_1791952409183) {
         lead.UF_CRM_LISTING_NAME = lead.UF_CRM_1791952409183;
       }
+      // Resolve Enquiry Name fallback from native TITLE
+      if (!lead.UF_CRM_ENQUIRY_NAME && lead.TITLE) {
+        lead.UF_CRM_ENQUIRY_NAME = lead.TITLE;
+      }
+
+      // Resolve Contact fallback from native CONTACT_ID
+      if ((!lead.UF_CRM_CONTACTS || (Array.isArray(lead.UF_CRM_CONTACTS) && lead.UF_CRM_CONTACTS.length === 0)) && lead.CONTACT_ID && String(lead.CONTACT_ID) !== '0') {
+        lead.UF_CRM_CONTACTS = [`C_${lead.CONTACT_ID}`];
+      }
+
+      // Resolve Comments fallback from native COMMENTS
+      if (!lead.UF_CRM_COMMENTS_1 && lead.COMMENTS) {
+        lead.UF_CRM_COMMENTS_1 = lead.COMMENTS.replace(/\[\/?p\]/gi, '').trim();
+      }
+
+      // Resolve Deal Value fallback from native OPPORTUNITY
+      if (!lead.UF_CRM_DEAL_VALUE_1 && lead.OPPORTUNITY && parseFloat(lead.OPPORTUNITY) > 0) {
+        lead.UF_CRM_DEAL_VALUE_1 = `${lead.OPPORTUNITY}|${lead.CURRENCY_ID || 'AED'}`;
+      }
+
+      // Resolve Address fallbacks from native Lead address fields
+      if (!lead.UF_CRM_1791970638065 && lead.ADDRESS) {
+        lead.UF_CRM_1791970638065 = lead.ADDRESS;
+      }
+      if (!lead.UF_CRM_CITY && lead.ADDRESS_CITY) {
+        lead.UF_CRM_CITY = lead.ADDRESS_CITY;
+      }
+      if (!lead.UF_CRM_POSTALCODE && lead.ADDRESS_POSTAL_CODE) {
+        lead.UF_CRM_POSTALCODE = lead.ADDRESS_POSTAL_CODE;
+      }
+      if (!lead.UF_CRM_STATE && lead.ADDRESS_PROVINCE) {
+        lead.UF_CRM_STATE = lead.ADDRESS_PROVINCE;
+      }
+
+      // Resolve Master Project fallback
+      if (!lead.UF_CRM_PROJECT && lead.UF_CRM_1792558317) {
+        lead.UF_CRM_PROJECT = lead.UF_CRM_1792558317;
+      } else if (!lead.UF_CRM_1792558317 && lead.UF_CRM_PROJECT) {
+        lead.UF_CRM_1792558317 = lead.UF_CRM_PROJECT;
+      }
+
+      // Resolve Property Layout fallback
+      if (!lead.UF_CRM_PROPERTY_LAYOUT && lead.UF_CRM_LAYOUT) {
+        lead.UF_CRM_PROPERTY_LAYOUT = lead.UF_CRM_LAYOUT;
+      } else if (!lead.UF_CRM_LAYOUT && lead.UF_CRM_PROPERTY_LAYOUT) {
+        lead.UF_CRM_LAYOUT = lead.UF_CRM_PROPERTY_LAYOUT;
+      }
+
+      // Resolve Property fallback
+      if (!lead.UF_CRM_PROPERTY_PROPERTYFINDER && lead.UF_CRM_PROPERTY) {
+        lead.UF_CRM_PROPERTY_PROPERTYFINDER = lead.UF_CRM_PROPERTY;
+      } else if (!lead.UF_CRM_PROPERTY && lead.UF_CRM_PROPERTY_PROPERTYFINDER) {
+        lead.UF_CRM_PROPERTY = lead.UF_CRM_PROPERTY_PROPERTYFINDER;
+      }
+
       // Resolve Number of Cheques fallback for legacy leads
       if (!lead.UF_CRM_1792139023 && (lead.UF_CRM_CHEQUES_1 || lead.UF_CRM_CHEQUES)) {
         lead.UF_CRM_1792139023 = lead.UF_CRM_CHEQUES_1 || lead.UF_CRM_CHEQUES;

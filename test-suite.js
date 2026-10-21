@@ -505,6 +505,143 @@ async function runTests() {
   assert(resolvedDateAvailable === '2028-10-01T03:00:00+03:00', 'UF_CRM_DATE_AVAILABLE resolves from UF_CRM_AVAILABLE_TO');
 
   // ============================================================================
+  // Test Case 15: Enquiry Field Synchronization with Native Bitrix24 Lead Properties
+  // ============================================================================
+  console.log('\n--- Case 15: Enquiry Native Lead Field Bridging & Companion Sync ---');
+
+  // Test helper simulating the update normalization logic in server.js
+  function simulateEnquiryLeadUpdate(rawFields) {
+    const fields = { ...rawFields };
+    // Sync Enquiry Name with native Bitrix Lead TITLE
+    if (fields.UF_CRM_ENQUIRY_NAME) {
+      fields.TITLE = fields.UF_CRM_ENQUIRY_NAME;
+    } else if (fields.TITLE && !fields.UF_CRM_ENQUIRY_NAME) {
+      fields.UF_CRM_ENQUIRY_NAME = fields.TITLE;
+    }
+
+    // Sync Contact lookup (UF_CRM_CONTACTS) with native Bitrix CONTACT_ID
+    if (fields.UF_CRM_CONTACTS) {
+      const rawContact = Array.isArray(fields.UF_CRM_CONTACTS) ? fields.UF_CRM_CONTACTS[0] : fields.UF_CRM_CONTACTS;
+      const cMatch = String(rawContact).match(/(?:C_)?(\d+)/i);
+      if (cMatch && cMatch[1]) {
+        fields.CONTACT_ID = parseInt(cMatch[1], 10);
+        fields.UF_CRM_CONTACTS = [`C_${cMatch[1]}`];
+      }
+    }
+
+    // Sync Comments (UF_CRM_COMMENTS_1) with native Bitrix COMMENTS
+    if (fields.UF_CRM_COMMENTS_1 !== undefined && fields.UF_CRM_COMMENTS_1 !== null) {
+      fields.COMMENTS = fields.UF_CRM_COMMENTS_1;
+    } else if (fields.COMMENTS !== undefined && !fields.UF_CRM_COMMENTS_1) {
+      fields.UF_CRM_COMMENTS_1 = fields.COMMENTS;
+    }
+
+    // Sync Deal Value / Budget / Price with native Bitrix OPPORTUNITY & CURRENCY_ID
+    const dealAmount = fields.UF_CRM_DEAL_VALUE_1 || fields.UF_CRM_LISTINGPRICE_MAX || fields.UF_CRM_LISTINGPRICE;
+    if (dealAmount) {
+      const parts = String(dealAmount).split('|');
+      const num = parseFloat(parts[0]);
+      if (!isNaN(num) && num > 0) {
+        fields.OPPORTUNITY = num;
+        if (parts[1]) fields.CURRENCY_ID = parts[1];
+      }
+    }
+
+    // Sync Address fields with native Bitrix Lead ADDRESS properties
+    if (fields.UF_CRM_1791970638065 && !fields.ADDRESS) {
+      fields.ADDRESS = fields.UF_CRM_1791970638065;
+    }
+    if (fields.UF_CRM_CITY && !fields.ADDRESS_CITY) {
+      fields.ADDRESS_CITY = fields.UF_CRM_CITY;
+    }
+    if (fields.UF_CRM_POSTALCODE && !fields.ADDRESS_POSTAL_CODE) {
+      fields.ADDRESS_POSTAL_CODE = fields.UF_CRM_POSTALCODE;
+    }
+    if (fields.UF_CRM_STATE && !fields.ADDRESS_PROVINCE) {
+      fields.ADDRESS_PROVINCE = fields.UF_CRM_STATE;
+    }
+
+    // Sync Master Project companion fields (UF_CRM_PROJECT <-> UF_CRM_1792558317)
+    if (fields.UF_CRM_PROJECT && !fields.UF_CRM_1792558317) {
+      fields.UF_CRM_1792558317 = fields.UF_CRM_PROJECT;
+    } else if (fields.UF_CRM_1792558317 && !fields.UF_CRM_PROJECT) {
+      fields.UF_CRM_PROJECT = fields.UF_CRM_1792558317;
+    }
+
+    // Sync Property Layout companion fields (UF_CRM_PROPERTY_LAYOUT <-> UF_CRM_LAYOUT)
+    if (fields.UF_CRM_PROPERTY_LAYOUT && !fields.UF_CRM_LAYOUT) {
+      fields.UF_CRM_LAYOUT = fields.UF_CRM_PROPERTY_LAYOUT;
+    } else if (fields.UF_CRM_LAYOUT && !fields.UF_CRM_PROPERTY_LAYOUT) {
+      fields.UF_CRM_PROPERTY_LAYOUT = fields.UF_CRM_LAYOUT;
+    }
+
+    // Sync Property companion fields (UF_CRM_PROPERTY_PROPERTYFINDER <-> UF_CRM_PROPERTY)
+    if (fields.UF_CRM_PROPERTY_PROPERTYFINDER && !fields.UF_CRM_PROPERTY) {
+      fields.UF_CRM_PROPERTY = fields.UF_CRM_PROPERTY_PROPERTYFINDER;
+    } else if (fields.UF_CRM_PROPERTY && !fields.UF_CRM_PROPERTY_PROPERTYFINDER) {
+      fields.UF_CRM_PROPERTY_PROPERTYFINDER = fields.UF_CRM_PROPERTY;
+    }
+
+    // Ensure MULTIPLE: 'Y' userfields are arrays in Bitrix
+    const multipleUfCodes = [
+      'UF_CRM_ADDITIONALCITIES',
+      'UF_CRM_ADDITIONALPOSTALCODES',
+      'UF_CRM_COUNTIES',
+      'UF_CRM_NEIGHBORHOODS',
+      'UF_CRM_SUBDIVISIONS',
+      'UF_CRM_SCHOOLDISTRICTS',
+      'UF_CRM_RECOMMENDED_LISTINGS',
+      'UF_CRM_CONTACTS'
+    ];
+    for (const mCode of multipleUfCodes) {
+      if (fields[mCode] !== undefined && fields[mCode] !== null && fields[mCode] !== '') {
+        if (!Array.isArray(fields[mCode])) {
+          fields[mCode] = [String(fields[mCode]).trim()];
+        }
+      }
+    }
+
+    return fields;
+  }
+
+  // 1. Verify TITLE synchronizes from UF_CRM_ENQUIRY_NAME
+  const out1 = simulateEnquiryLeadUpdate({ UF_CRM_ENQUIRY_NAME: '3BR Luxury Waterfront Penthouse' });
+  assert(out1.TITLE === '3BR Luxury Waterfront Penthouse', 'TITLE updates from UF_CRM_ENQUIRY_NAME');
+
+  // 2. Verify CONTACT_ID extracts numeric ID and formats UF_CRM_CONTACTS as array
+  const out2 = simulateEnquiryLeadUpdate({ UF_CRM_CONTACTS: 'C_68' });
+  assert(out2.CONTACT_ID === 68, 'CONTACT_ID extracts numeric ID 68 from C_68');
+  assert(Array.isArray(out2.UF_CRM_CONTACTS) && out2.UF_CRM_CONTACTS[0] === 'C_68', 'UF_CRM_CONTACTS wrapped in array [C_68] for MULTIPLE: Y');
+
+  // 3. Verify COMMENTS synchronizes from UF_CRM_COMMENTS_1
+  const out3 = simulateEnquiryLeadUpdate({ UF_CRM_COMMENTS_1: 'Client prefers high floor with sea view' });
+  assert(out3.COMMENTS === 'Client prefers high floor with sea view', 'COMMENTS updates from UF_CRM_COMMENTS_1');
+
+  // 4. Verify OPPORTUNITY and CURRENCY_ID synchronize from UF_CRM_DEAL_VALUE_1
+  const out4 = simulateEnquiryLeadUpdate({ UF_CRM_DEAL_VALUE_1: '140000|AED' });
+  assert(out4.OPPORTUNITY === 140000 && out4.CURRENCY_ID === 'AED', 'OPPORTUNITY (140000) and CURRENCY_ID (AED) update from UF_CRM_DEAL_VALUE_1');
+
+  // 5. Verify ADDRESS properties synchronize from property fields
+  const out5 = simulateEnquiryLeadUpdate({
+    UF_CRM_1791970638065: 'Building 4, Downtown Boulevard',
+    UF_CRM_CITY: 'Dubai',
+    UF_CRM_POSTALCODE: '00000',
+    UF_CRM_STATE: 'Dubai'
+  });
+  assert(out5.ADDRESS === 'Building 4, Downtown Boulevard', 'Native ADDRESS updates from UF_CRM_1791970638065');
+  assert(out5.ADDRESS_CITY === 'Dubai', 'Native ADDRESS_CITY updates from UF_CRM_CITY');
+  assert(out5.ADDRESS_POSTAL_CODE === '00000', 'Native ADDRESS_POSTAL_CODE updates from UF_CRM_POSTALCODE');
+  assert(out5.ADDRESS_PROVINCE === 'Dubai', 'Native ADDRESS_PROVINCE updates from UF_CRM_STATE');
+
+  // 6. Verify Master Project companion fields synchronize
+  const out6 = simulateEnquiryLeadUpdate({ UF_CRM_PROJECT: '220' });
+  assert(out6.UF_CRM_1792558317 === '220', 'Native Master Project UF_CRM_1792558317 synchronizes from UF_CRM_PROJECT');
+
+  // 7. Verify MULTIPLE userfields are formatted as arrays
+  const out7 = simulateEnquiryLeadUpdate({ UF_CRM_ADDITIONALCITIES: 'Sharjah, Ajman' });
+  assert(Array.isArray(out7.UF_CRM_ADDITIONALCITIES) && out7.UF_CRM_ADDITIONALCITIES[0] === 'Sharjah, Ajman', 'MULTIPLE string userfields wrapped as arrays');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
