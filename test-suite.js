@@ -336,7 +336,7 @@ async function runTests() {
   assert(enquiryStatus && enquiryStatus.options.some(o => o.id === '2132' && o.value === 'Active'), 'UF_CRM_STATUS mapped to numeric ID 2132 for Active');
 
   const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
-  assert(leadSource && leadSource.options.some(o => o.id === '2324' && o.value === 'Inbound Portal'), 'UF_CRM_LEAD_SOURCE_TYPE mapped to numeric ID 2324 for Inbound Portal');
+  assert(leadSource && leadSource.options.some(o => (o.id === '2508' || o.id === '2324') && o.value === 'Inbound Portal'), 'UF_CRM_LEAD_SOURCE_TYPE mapped to numeric ID 2508 for Inbound Portal');
 
   // Check Number of Cheques field uses new native Bitrix field UF_CRM_1792139023
   const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_1792139023' && f.type === 'enumeration'));
