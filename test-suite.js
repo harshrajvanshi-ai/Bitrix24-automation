@@ -821,6 +821,19 @@ async function runTests() {
   assert(matchingJs.includes("iconCode: 'info'"), 'Includes mandatory iconCode: "info"');
   assert(matchingJs.includes("BX24.openPath"), 'Uses BX24.openPath to open listing items');
 
+  // 8. Verify Configurable Activity & "Save as recommendation"
+  assert(matchingJs.includes("crm.activity.configurable.add"), 'Uses crm.activity.configurable.add for interactive card layout');
+  assert(matchingJs.includes("function addRecommendation("), 'addRecommendation function is defined');
+  assert(matchingJs.includes("typeId: 'CONFIGURABLE'"), 'Configurable activity specifies typeId: CONFIGURABLE');
+  assert(matchingJs.includes("completed: 'Y'"), 'Configurable activity marks completed: Y for direct history feed insertion');
+  assert(matchingJs.includes("icon: { code: 'bookmark' }"), 'Configurable activity layout specifies bookmark icon');
+  assert(matchingJs.includes("header: { title: 'Recommended listings' }"), 'Configurable activity layout specifies Recommended listings header');
+  assert(matchingJs.includes("type: 'lineOfBlocks'"), 'Configurable activity layout uses lineOfBlocks row structure');
+  assert(matchingJs.includes("action: { type: 'redirect', uri: `/crm/type/${LISTING_TYPE}/details/${l.id}/` }"), 'Listing title links redirect to /crm/type/<LISTING_TYPE>/details/<id>/');
+  assert(matchingJs.includes("price: { type: 'text', properties: { value: '  AED ' + l.price, color: 'base_70' } }"), 'Listing price formatted with base_70 color and AED value');
+  assert(matchingJs.includes("btnSaveRecommendation.addEventListener('click', saveSelectedRecommendations)"), 'Save as recommendation button wired to saveSelectedRecommendations');
+  assert(matchingJs.includes("addRecommendation,"), 'addRecommendation exposed on window.__MATCHING_APP__ for testing');
+
   // ============================================================================
   // Summary
   // ============================================================================

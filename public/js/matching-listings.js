@@ -110,6 +110,7 @@
   const filterForm = document.getElementById('filter-form');
   const btnSearch = document.getElementById('btn-search');
   const btnReset = document.getElementById('btn-reset');
+  const btnSaveRecommendation = document.getElementById('btn-save-recommendation');
   const btnSendTimeline = document.getElementById('btn-send-timeline');
   const selectAllCheckbox = document.getElementById('select-all-checkbox');
   const selectedCountText = document.getElementById('selected-count-text');
@@ -774,8 +775,16 @@
   function updateSelectedCount() {
     const count = selectedListingIds.size;
     selectedCountText.textContent = `${count} selected`;
-    btnSendTimeline.disabled = count === 0;
-    btnSendTimeline.textContent = count > 0 ? `📨 Send (${count}) to Timeline` : '📨 Send to Timeline';
+    
+    if (btnSaveRecommendation) {
+      btnSaveRecommendation.disabled = count === 0;
+      btnSaveRecommendation.textContent = count > 0 ? `⭐ Save as recommendation (${count})` : '⭐ Save as recommendation';
+    }
+
+    if (btnSendTimeline) {
+      btnSendTimeline.disabled = count === 0;
+      btnSendTimeline.textContent = count > 0 ? `📨 Send (${count}) to Timeline` : '📨 Send to Timeline';
+    }
 
     // Update select-all checkbox state
     if (currentResults.length > 0 && currentResults.every(r => selectedListingIds.has(r.id))) {
@@ -800,24 +809,68 @@
   }
 
   // ============================================================================
-  // 8. TIMELINE INTEGRATION (crm.timeline.logmessage.add)
+  // 8. TIMELINE & RECOMMENDATION INTEGRATION
+  //    (crm.activity.configurable.add with custom cards & clickable links)
   // ============================================================================
 
-  async function sendSelectedToTimeline() {
-    if (selectedListingIds.size === 0) {
-      showToast('Select at least one listing to send to the timeline', 'warning');
-      return;
+  const ENQUIRY_TYPE = CONFIG.ENQUIRY.entityTypeId; // 1062
+  const LISTING_TYPE = CONFIG.LISTING.entityTypeId; // 1058
+  const call = callMethod;
+
+  /**
+   * Adds recommended listings as a configurable activity card to the Enquiry timeline
+   * Each listing appears as a clickable link that opens the Listing card (/crm/type/<LISTING_TYPE>/details/<id>/)
+   */
+  function addRecommendation(enquiryId, listings) {
+    const blocks = {};
+    listings.forEach((l, i) => {
+      blocks['row' + i] = {
+        type: 'lineOfBlocks',
+        properties: {
+          blocks: {
+            link: {
+              type: 'link',
+              properties: {
+                text: l.title || (`Listing #${l.id}`),
+                action: { type: 'redirect', uri: `/crm/type/${LISTING_TYPE}/details/${l.id}/` }
+              }
+            },
+            price: { type: 'text', properties: { value: '  AED ' + l.price, color: 'base_70' } }
+          }
+        }
+      };
+    });
+
+    let responsibleId = 1;
+    if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+      const auth = window.BX24.getAuth();
+      if (auth?.user_id) responsibleId = auth.user_id;
+    } else if (currentEnquiry?.assignedById) {
+      responsibleId = currentEnquiry.assignedById;
     }
 
-    const selectedItems = currentResults.filter(r => selectedListingIds.has(r.id));
-    if (selectedItems.length === 0) return;
+    return call('crm.activity.configurable.add', {
+      ownerTypeId: ENQUIRY_TYPE,
+      ownerId: enquiryId,
+      fields: {
+        typeId: 'CONFIGURABLE',
+        completed: 'Y',                  // 'Y' puts it straight into the history feed
+        responsibleId: responsibleId
+      },
+      layout: {
+        icon: { code: 'bookmark' },
+        header: { title: 'Recommended listings' },
+        body: { blocks }
+      }
+    });
+  }
 
-    btnSendTimeline.disabled = true;
-    btnSendTimeline.textContent = 'Posting to Timeline...';
-
-    // Build timeline message content
+  /**
+   * Fallback plain text timeline logmessage (crm.timeline.logmessage.add)
+   */
+  async function sendSelectedToTimelineMessage(selectedItems) {
     const lFields = CONFIG.LISTING.fields;
-    let messageBody = `Matched Listings from CRM (${selectedItems.length} selected):\n\n`;
+    let messageBody = `Recommended Listings from CRM (${selectedItems.length} selected):\n\n`;
 
     selectedItems.forEach((item, idx) => {
       const price = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
@@ -831,34 +884,83 @@
       messageBody += `   • Link: /crm/type/${CONFIG.LISTING.entityTypeId}/details/${item.id}/\n\n`;
     });
 
+    return callMethod('crm.timeline.logmessage.add', {
+      fields: {
+        entityTypeId: CONFIG.ENQUIRY.entityTypeId,
+        entityId: currentEnquiryId,
+        title: `Recommended Listings Sent (${selectedItems.length})`,
+        text: messageBody,
+        iconCode: 'info'
+      }
+    });
+  }
+
+  async function saveSelectedRecommendations() {
+    if (selectedListingIds.size === 0) {
+      showToast('Select at least one listing to save as recommendation', 'warning');
+      return;
+    }
+
+    const selectedItems = currentResults.filter(r => selectedListingIds.has(r.id));
+    if (selectedItems.length === 0) return;
+
+    if (btnSaveRecommendation) {
+      btnSaveRecommendation.disabled = true;
+      btnSaveRecommendation.textContent = 'Saving...';
+    }
+    if (btnSendTimeline) {
+      btnSendTimeline.disabled = true;
+      btnSendTimeline.textContent = 'Posting to Timeline...';
+    }
+
+    const normalizedListings = selectedItems.map(item => {
+      const numPrice = parseMoneyValue(item[CONFIG.LISTING.fields.price]) || parseMoneyValue(item[CONFIG.LISTING.fields.listingPrice]) || parseMoneyValue(item[CONFIG.LISTING.fields.opportunity]) || 0;
+      const formattedPrice = numPrice > 0 ? numPrice.toLocaleString('en-US') : (item.price || 'Price on Request');
+      return {
+        id: item.id,
+        title: item.title || `Listing #${item.id}`,
+        price: formattedPrice,
+        raw: item
+      };
+    });
+
     try {
-      // Must use Enquiry entityTypeId (1062), not 1
-      await callMethod('crm.timeline.logmessage.add', {
-        fields: {
-          entityTypeId: CONFIG.ENQUIRY.entityTypeId,
-          entityId: currentEnquiryId,
-          title: `Matching Listings Sent (${selectedItems.length})`,
-          text: messageBody,
-          iconCode: 'info'
-        }
-      });
-
-      showToast(`Successfully logged ${selectedItems.length} listing(s) to Enquiry timeline!`, 'success');
-      selectedListingIds.clear();
-      updateSelectedCount();
-
-      // Refresh card styles
-      document.querySelectorAll('.listing-card').forEach(c => c.classList.remove('selected'));
-      document.querySelectorAll('.card-select-checkbox').forEach(cb => cb.checked = false);
-    } catch (err) {
-      console.error('[MATCHING] Timeline post error:', err);
-      showToast(`Failed to post to timeline: ${err.message}`, 'error');
+      // 1. Primary: Use configurable activity (creates interactive card in timeline with clickable links)
+      await addRecommendation(currentEnquiryId, normalizedListings);
+      showToast(`⭐ Successfully saved ${selectedItems.length} recommended listing(s) to Timeline!`, 'success');
+    } catch (actErr) {
+      console.warn('[RECOMMENDATION] Configurable activity fallback to timeline logmessage:', actErr.message);
+      try {
+        // 2. Secondary fallback: Use crm.timeline.logmessage.add
+        await sendSelectedToTimelineMessage(selectedItems);
+        showToast(`Saved ${selectedItems.length} recommendation(s) to timeline!`, 'success');
+      } catch (logErr) {
+        console.error('[RECOMMENDATION] Timeline post error:', logErr);
+        showToast(`Failed to save recommendation: ${actErr.message || logErr.message}`, 'error');
+        return;
+      }
     } finally {
-      btnSendTimeline.disabled = selectedListingIds.size === 0;
-      btnSendTimeline.textContent = selectedListingIds.size > 0 ? `📨 Send (${selectedListingIds.size}) to Timeline` : '📨 Send to Timeline';
+      if (btnSaveRecommendation) {
+        btnSaveRecommendation.disabled = selectedListingIds.size === 0;
+        btnSaveRecommendation.textContent = selectedListingIds.size > 0 ? `⭐ Save as recommendation (${selectedListingIds.size})` : '⭐ Save as recommendation';
+      }
+      if (btnSendTimeline) {
+        btnSendTimeline.disabled = selectedListingIds.size === 0;
+        btnSendTimeline.textContent = selectedListingIds.size > 0 ? `📨 Send (${selectedListingIds.size}) to Timeline` : '📨 Send to Timeline';
+      }
       fitWindow();
     }
+
+    selectedListingIds.clear();
+    updateSelectedCount();
+
+    // Refresh card styles
+    document.querySelectorAll('.listing-card').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.card-select-checkbox').forEach(cb => cb.checked = false);
   }
+
+  // Alias for backward compatibility
+  const sendSelectedToTimeline = saveSelectedRecommendations;
 
   // ============================================================================
   // 9. EVENT LISTENERS
@@ -892,8 +994,15 @@
     updateSelectedCount();
   });
 
-  // Timeline button
-  btnSendTimeline.addEventListener('click', sendSelectedToTimeline);
+  // Save as recommendation button (Configurable Activity)
+  if (btnSaveRecommendation) {
+    btnSaveRecommendation.addEventListener('click', saveSelectedRecommendations);
+  }
+
+  // Timeline button (legacy / fallback)
+  if (btnSendTimeline) {
+    btnSendTimeline.addEventListener('click', sendSelectedToTimeline);
+  }
 
   // Sorting
   sortSelect.addEventListener('change', () => {
@@ -925,6 +1034,9 @@
   // 10. PUBLIC API FOR INLINE ACTIONS
   // ============================================================================
   window.__MATCHING_APP__ = {
+    addRecommendation,
+    saveSelectedRecommendations,
+    sendSelectedToTimeline,
     retrySearch: () => searchListings(currentPageStart),
     resetToEnquiry: () => btnReset.click(),
     clearPriceFilter: () => {
