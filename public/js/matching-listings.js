@@ -41,7 +41,8 @@
         bedroomsMin: 'ufCrm18BedroomsMin',        // Min Bedrooms
         bedroomsMax: 'ufCrm18BedroomsMax',        // Max Bedrooms
         furnished: 'ufCrm18Furnished',            // Furnished flag
-        status: 'ufCrm18_1791175765'              // Enquiry status
+        status: 'ufCrm18_1791175765',             // Enquiry status
+        recommendedListings: 'ufCrm18_1792649609' // Recommended Listing CRM binding field (UF_CRM_18_1792649609)
       }
     },
     LISTING: {
@@ -681,12 +682,17 @@
       const beds = parseFloat(item[lFields.bedrooms]) || 0;
       const area = item[lFields.area] || item[lFields.community] || 'Downtown Dubai';
       const furnishedLabel = mapListingFurnishedToLabel(item[lFields.furnished]);
+      const recList = currentEnquiry?.[CONFIG.ENQUIRY.fields.recommendedListings] || currentEnquiry?.ufCrm18_1792649609 || [];
+      const isAlreadyRecommended = Array.isArray(recList) && recList.map(String).includes(String(item.id));
 
       card.innerHTML = `
         <div class="card-top-bar">
           <input type="checkbox" class="card-select-checkbox" data-id="${item.id}" ${isSelected ? 'checked' : ''} aria-label="Select listing">
           <div class="card-title-group">
-            <div class="card-title">${escapeHtml(item.title || `Listing #${item.id}`)}</div>
+            <div class="card-title">
+              ${escapeHtml(item.title || `Listing #${item.id}`)}
+              ${isAlreadyRecommended ? '<span class="badge badge-recommended" title="Already in Recommended Listing field">⭐ Recommended</span>' : ''}
+            </div>
             <span class="card-id-tag">ID: #${item.id} • ${escapeHtml(propTypeLabel)} (${escapeHtml(listingTypeLabel)})</span>
           </div>
         </div>
@@ -809,90 +815,60 @@
   }
 
   // ============================================================================
-  // 8. TIMELINE & RECOMMENDATION INTEGRATION
-  //    (crm.activity.configurable.add with custom cards & clickable links)
+  // 8. ENQUIRY RECOMMENDATIONS FIELD INTEGRATION
+  //    (Directly updates UF_CRM_18_1792649609 on Enquiry item - no activities)
   // ============================================================================
 
   const ENQUIRY_TYPE = CONFIG.ENQUIRY.entityTypeId; // 1062
   const LISTING_TYPE = CONFIG.LISTING.entityTypeId; // 1058
+  const RECOMMENDATION_FIELD = CONFIG.ENQUIRY.fields.recommendedListings; // 'ufCrm18_1792649609'
   const call = callMethod;
 
   /**
-   * Adds recommended listings as a configurable activity card to the Enquiry timeline
-   * Each listing appears as a clickable link that opens the Listing card (/crm/type/<LISTING_TYPE>/details/<id>/)
+   * Adds recommended listings directly to Enquiry field UF_CRM_18_1792649609
+   * (Updates only this field via crm.item.update - no activities or timeline logmessages)
    */
-  function addRecommendation(enquiryId, listings) {
-    const blocks = {};
-    listings.forEach((l, i) => {
-      blocks['row' + i] = {
-        type: 'lineOfBlocks',
-        properties: {
-          blocks: {
-            link: {
-              type: 'link',
-              properties: {
-                text: l.title || (`Listing #${l.id}`),
-                action: { type: 'redirect', uri: `/crm/type/${LISTING_TYPE}/details/${l.id}/` }
-              }
-            },
-            price: { type: 'text', properties: { value: '  AED ' + l.price, color: 'base_70' } }
-          }
-        }
-      };
-    });
+  async function addRecommendation(enquiryId, listings) {
+    const ids = (listings || []).map(l => (typeof l === 'object' && l !== null ? String(l.id) : String(l)));
 
-    let responsibleId = 1;
-    if (window.BX24 && typeof window.BX24.getAuth === 'function') {
-      const auth = window.BX24.getAuth();
-      if (auth?.user_id) responsibleId = auth.user_id;
-    } else if (currentEnquiry?.assignedById) {
-      responsibleId = currentEnquiry.assignedById;
+    let existing = [];
+    try {
+      const res = await callMethod('crm.item.get', {
+        entityTypeId: ENQUIRY_TYPE,
+        id: enquiryId
+      });
+      const item = res.data?.item || res.data;
+      const cur = item?.[RECOMMENDATION_FIELD] || item?.ufCrm18_1792649609;
+      if (Array.isArray(cur)) {
+        existing = cur.map(String);
+      } else if (cur) {
+        existing = [String(cur)];
+      }
+    } catch (e) {
+      const cur = currentEnquiry?.[RECOMMENDATION_FIELD] || currentEnquiry?.ufCrm18_1792649609;
+      if (Array.isArray(cur)) {
+        existing = cur.map(String);
+      } else if (cur) {
+        existing = [String(cur)];
+      }
     }
 
-    return call('crm.activity.configurable.add', {
-      ownerTypeId: ENQUIRY_TYPE,
-      ownerId: enquiryId,
+    const merged = Array.from(new Set([...existing, ...ids]));
+
+    const updateRes = await callMethod('crm.item.update', {
+      entityTypeId: ENQUIRY_TYPE,
+      id: enquiryId,
       fields: {
-        typeId: 'CONFIGURABLE',
-        completed: 'Y',                  // 'Y' puts it straight into the history feed
-        responsibleId: responsibleId
-      },
-      layout: {
-        icon: { code: 'bookmark' },
-        header: { title: 'Recommended listings' },
-        body: { blocks }
+        [RECOMMENDATION_FIELD]: merged
       }
     });
-  }
 
-  /**
-   * Fallback plain text timeline logmessage (crm.timeline.logmessage.add)
-   */
-  async function sendSelectedToTimelineMessage(selectedItems) {
-    const lFields = CONFIG.LISTING.fields;
-    let messageBody = `Recommended Listings from CRM (${selectedItems.length} selected):\n\n`;
+    if (currentEnquiry && currentEnquiry.id == enquiryId) {
+      currentEnquiry[RECOMMENDATION_FIELD] = merged;
+      currentEnquiry.ufCrm18_1792649609 = merged;
+    }
 
-    selectedItems.forEach((item, idx) => {
-      const price = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
-      const currency = item[lFields.currencyId] || 'AED';
-      const type = mapListingPropTypeToLabel(item[lFields.propertyType]);
-      const beds = item[lFields.bedrooms] || 0;
-      const area = item[lFields.area] || 'Dubai';
-
-      messageBody += `${idx + 1}. [Listing #${item.id}] ${item.title || 'Property'}\n`;
-      messageBody += `   • Price: ${formatMoney(price, currency)} | Beds: ${beds} | Type: ${type} | Area: ${area}\n`;
-      messageBody += `   • Link: /crm/type/${CONFIG.LISTING.entityTypeId}/details/${item.id}/\n\n`;
-    });
-
-    return callMethod('crm.timeline.logmessage.add', {
-      fields: {
-        entityTypeId: CONFIG.ENQUIRY.entityTypeId,
-        entityId: currentEnquiryId,
-        title: `Recommended Listings Sent (${selectedItems.length})`,
-        text: messageBody,
-        iconCode: 'info'
-      }
-    });
+    return updateRes;
   }
 
   async function saveSelectedRecommendations() {
@@ -901,62 +877,46 @@
       return;
     }
 
-    const selectedItems = currentResults.filter(r => selectedListingIds.has(r.id));
-    if (selectedItems.length === 0) return;
+    if (!currentEnquiryId) {
+      showToast('Error: No active enquiry identified', 'error');
+      return;
+    }
+
+    const selectedIds = Array.from(selectedListingIds).map(String);
 
     if (btnSaveRecommendation) {
       btnSaveRecommendation.disabled = true;
-      btnSaveRecommendation.textContent = 'Saving...';
+      btnSaveRecommendation.textContent = 'Saving to Enquiry...';
     }
-    if (btnSendTimeline) {
-      btnSendTimeline.disabled = true;
-      btnSendTimeline.textContent = 'Posting to Timeline...';
-    }
-
-    const normalizedListings = selectedItems.map(item => {
-      const numPrice = parseMoneyValue(item[CONFIG.LISTING.fields.price]) || parseMoneyValue(item[CONFIG.LISTING.fields.listingPrice]) || parseMoneyValue(item[CONFIG.LISTING.fields.opportunity]) || 0;
-      const formattedPrice = numPrice > 0 ? numPrice.toLocaleString('en-US') : (item.price || 'Price on Request');
-      return {
-        id: item.id,
-        title: item.title || `Listing #${item.id}`,
-        price: formattedPrice,
-        raw: item
-      };
-    });
 
     try {
-      // 1. Primary: Use configurable activity (creates interactive card in timeline with clickable links)
-      await addRecommendation(currentEnquiryId, normalizedListings);
-      showToast(`⭐ Successfully saved ${selectedItems.length} recommended listing(s) to Timeline!`, 'success');
-    } catch (actErr) {
-      console.warn('[RECOMMENDATION] Configurable activity fallback to timeline logmessage:', actErr.message);
-      try {
-        // 2. Secondary fallback: Use crm.timeline.logmessage.add
-        await sendSelectedToTimelineMessage(selectedItems);
-        showToast(`Saved ${selectedItems.length} recommendation(s) to timeline!`, 'success');
-      } catch (logErr) {
-        console.error('[RECOMMENDATION] Timeline post error:', logErr);
-        showToast(`Failed to save recommendation: ${actErr.message || logErr.message}`, 'error');
-        return;
+      // Updates UF_CRM_18_1792649609 directly via crm.item.update (no activity)
+      await addRecommendation(currentEnquiryId, selectedIds);
+
+      showToast(`⭐ Added ${selectedIds.length} recommended listing(s) to Enquiry field!`, 'success');
+
+      selectedListingIds.clear();
+      updateSelectedCount();
+
+      // Refresh card styles and re-render to update recommended badges
+      document.querySelectorAll('.listing-card').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.card-select-checkbox').forEach(cb => cb.checked = false);
+
+      if (currentResults && currentResults.length > 0) {
+        renderResults(currentResults);
       }
+    } catch (err) {
+      console.error('[RECOMMENDATION] Failed to update recommended listings field:', err);
+      showToast(`Failed to save recommendations: ${err.message}`, 'error');
     } finally {
       if (btnSaveRecommendation) {
         btnSaveRecommendation.disabled = selectedListingIds.size === 0;
-        btnSaveRecommendation.textContent = selectedListingIds.size > 0 ? `⭐ Save as recommendation (${selectedListingIds.size})` : '⭐ Save as recommendation';
-      }
-      if (btnSendTimeline) {
-        btnSendTimeline.disabled = selectedListingIds.size === 0;
-        btnSendTimeline.textContent = selectedListingIds.size > 0 ? `📨 Send (${selectedListingIds.size}) to Timeline` : '📨 Send to Timeline';
+        btnSaveRecommendation.textContent = selectedListingIds.size > 0 
+          ? `⭐ Save as recommendation (${selectedListingIds.size})` 
+          : '⭐ Save as recommendation';
       }
       fitWindow();
     }
-
-    selectedListingIds.clear();
-    updateSelectedCount();
-
-    // Refresh card styles
-    document.querySelectorAll('.listing-card').forEach(c => c.classList.remove('selected'));
-    document.querySelectorAll('.card-select-checkbox').forEach(cb => cb.checked = false);
   }
 
   // Alias for backward compatibility
