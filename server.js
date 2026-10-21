@@ -768,18 +768,11 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
 
   console.log(`[API] Updating Lead #${leadId} fields:`, Object.keys(fields));
 
-  // Handle dedicated Listing Name & Enquiry Name fields with native Lead Name TITLE
+  // Handle dedicated Listing Name & Enquiry Name fields (completely separate from native Lead Name TITLE)
   if (fields.UF_CRM_LISTING_NAME && !fields.UF_CRM_1791952409183) {
     fields.UF_CRM_1791952409183 = fields.UF_CRM_LISTING_NAME;
   } else if (fields.UF_CRM_1791952409183 && !fields.UF_CRM_LISTING_NAME) {
     fields.UF_CRM_LISTING_NAME = fields.UF_CRM_1791952409183;
-  }
-
-  // Sync Enquiry Name with native Bitrix Lead TITLE
-  if (fields.UF_CRM_ENQUIRY_NAME) {
-    fields.TITLE = fields.UF_CRM_ENQUIRY_NAME;
-  } else if (fields.TITLE && !fields.UF_CRM_ENQUIRY_NAME) {
-    fields.UF_CRM_ENQUIRY_NAME = fields.TITLE;
   }
 
   // Sync Contact lookup (UF_CRM_CONTACTS) with native Bitrix CONTACT_ID
@@ -926,10 +919,6 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
       // Resolve Listing Name from UF_CRM_LISTING_NAME or legacy UF_CRM_1791952409183
       if (!lead.UF_CRM_LISTING_NAME && lead.UF_CRM_1791952409183) {
         lead.UF_CRM_LISTING_NAME = lead.UF_CRM_1791952409183;
-      }
-      // Resolve Enquiry Name fallback from native TITLE
-      if (!lead.UF_CRM_ENQUIRY_NAME && lead.TITLE) {
-        lead.UF_CRM_ENQUIRY_NAME = lead.TITLE;
       }
 
       // Resolve Contact fallback from native CONTACT_ID

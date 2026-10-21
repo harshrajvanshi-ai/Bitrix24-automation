@@ -512,12 +512,6 @@ async function runTests() {
   // Test helper simulating the update normalization logic in server.js
   function simulateEnquiryLeadUpdate(rawFields) {
     const fields = { ...rawFields };
-    // Sync Enquiry Name with native Bitrix Lead TITLE
-    if (fields.UF_CRM_ENQUIRY_NAME) {
-      fields.TITLE = fields.UF_CRM_ENQUIRY_NAME;
-    } else if (fields.TITLE && !fields.UF_CRM_ENQUIRY_NAME) {
-      fields.UF_CRM_ENQUIRY_NAME = fields.TITLE;
-    }
 
     // Sync Contact lookup (UF_CRM_CONTACTS) with native Bitrix CONTACT_ID
     if (fields.UF_CRM_CONTACTS) {
@@ -604,9 +598,9 @@ async function runTests() {
     return fields;
   }
 
-  // 1. Verify TITLE synchronizes from UF_CRM_ENQUIRY_NAME
+  // 1. Verify UF_CRM_ENQUIRY_NAME remains independent and does not overwrite native Lead TITLE
   const out1 = simulateEnquiryLeadUpdate({ UF_CRM_ENQUIRY_NAME: '3BR Luxury Waterfront Penthouse' });
-  assert(out1.TITLE === '3BR Luxury Waterfront Penthouse', 'TITLE updates from UF_CRM_ENQUIRY_NAME');
+  assert(!out1.TITLE, 'UF_CRM_ENQUIRY_NAME remains independent and does not overwrite native Lead TITLE');
 
   // 2. Verify CONTACT_ID extracts numeric ID and formats UF_CRM_CONTACTS as array
   const out2 = simulateEnquiryLeadUpdate({ UF_CRM_CONTACTS: 'C_68' });
