@@ -25,6 +25,7 @@
           {
             "code": "UF_CRM_LISTING_NAME",
             "label": "Listing Name",
+            "bitrixLabel": "Listing Name",
             "type": "string",
             "placeholder": "Enter listing name...",
             "fullWidth": true
@@ -32,6 +33,7 @@
           {
             "code": "UF_CRM_1791952650167",
             "label": "Listing Type",
+            "bitrixLabel": "Listing type",
             "type": "enumeration",
             "placeholder": "-- Select Listing Type --",
             "options": [
@@ -60,6 +62,7 @@
           {
             "code": "UF_CRM_1791952050535",
             "label": "Property Type",
+            "bitrixLabel": "Property Type",
             "type": "enumeration",
             "placeholder": "-- Select Property Type --",
             "options": [
@@ -104,6 +107,7 @@
           {
             "code": "UF_CRM_PROPERTY_SUB_TYPE",
             "label": "Property Sub Type",
+            "bitrixLabel": "Property Sub Type",
             "type": "enumeration",
             "placeholder": "-- Select Property Sub Type --",
             "options": [
@@ -140,6 +144,7 @@
           {
             "code": "UF_CRM_LISTING_SOURCE",
             "label": "Listing Source",
+            "bitrixLabel": "Listing Source",
             "type": "enumeration",
             "placeholder": "-- Select Listing Source --",
             "options": [
@@ -184,18 +189,21 @@
           {
             "code": "UF_CRM_LISTEDDATE",
             "label": "Listed Date",
+            "bitrixLabel": "Listed Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DATE_AVAILABLE",
             "label": "Date Available",
+            "bitrixLabel": "Date Available",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_VIEWING_STATUS",
             "label": "Viewing Status",
+            "bitrixLabel": "Viewing Status",
             "type": "enumeration",
             "placeholder": "-- Select Viewing Status --",
             "options": [
@@ -224,6 +232,7 @@
           {
             "code": "UF_CRM_1791970832589",
             "label": "Occupancy",
+            "bitrixLabel": "Occupancy",
             "type": "enumeration",
             "placeholder": "-- Select Occupancy --",
             "options": [
@@ -252,36 +261,42 @@
           {
             "code": "UF_CRM_1791970897872",
             "label": "Exclusive",
+            "bitrixLabel": "Exclusive",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_HOT_STOCK",
             "label": "Hot Stock",
+            "bitrixLabel": "Hot Stock",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_IS_CLAIMABLE",
             "label": "Is Claimable",
+            "bitrixLabel": "Is Claimable",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LISTING_LOCKED",
             "label": "Listing Locked",
+            "bitrixLabel": "Listing Locked",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PREVIOUS_LISTING_ID",
             "label": "Previous Listing ID",
+            "bitrixLabel": "Previous Listing ID",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
             "label": "Days since last contacted",
+            "bitrixLabel": "Days since last contacted",
             "type": "integer",
             "placeholder": ""
           }
@@ -297,24 +312,28 @@
           {
             "code": "UF_CRM_LISTINGPRICE",
             "label": "Price",
+            "bitrixLabel": "Price",
             "type": "money",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
             "label": "Price Per Square Foot",
+            "bitrixLabel": "Price Per Square Foot",
             "type": "money",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PRICE_ON_REQUEST",
             "label": "Price on Request",
+            "bitrixLabel": "Price on Request",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1792139023",
             "label": "Number of Cheques",
+            "bitrixLabel": "Number of Cheques",
             "type": "enumeration",
             "placeholder": "-- Select Number of Cheques --",
             "options": [
@@ -343,18 +362,21 @@
           {
             "code": "UF_CRM_YEARLY_RENTAL",
             "label": "Yearly Rental",
+            "bitrixLabel": "Yearly Rental",
             "type": "money",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SERVICE_CHARGE",
             "label": "Service Charge",
+            "bitrixLabel": "Service Charge",
             "type": "money",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_NET_RENTAL_YIELD",
             "label": "Net Rental Yield",
+            "bitrixLabel": "Net Rental Yield",
             "type": "double",
             "placeholder": ""
           }
@@ -370,6 +392,7 @@
           {
             "code": "UF_CRM_PROJECT_1",
             "label": "Project",
+            "bitrixLabel": "Project",
             "type": "lookup",
             "placeholder": "Search Project...",
             "lookupEntity": "project"
@@ -377,6 +400,7 @@
           {
             "code": "UF_CRM_DEVELOPER_1",
             "label": "Developer",
+            "bitrixLabel": "Developer",
             "type": "lookup",
             "placeholder": "Search Developer / Company...",
             "lookupEntity": "developer"
@@ -384,6 +408,7 @@
           {
             "code": "UF_CRM_PROPERTY",
             "label": "Property",
+            "bitrixLabel": "Property",
             "type": "lookup",
             "placeholder": "Search Property...",
             "lookupEntity": "property"
@@ -391,6 +416,7 @@
           {
             "code": "UF_CRM_LAYOUT",
             "label": "Layout",
+            "bitrixLabel": "Layout",
             "type": "lookup",
             "placeholder": "Search Layout...",
             "lookupEntity": "layout"
@@ -398,6 +424,7 @@
           {
             "code": "UF_CRM_1791970638065",
             "label": "Address",
+            "bitrixLabel": "Property Address",
             "type": "address",
             "placeholder": "",
             "fullWidth": true
@@ -405,18 +432,21 @@
           {
             "code": "UF_CRM_LATITUDE",
             "label": "Latitude",
+            "bitrixLabel": "Latitude",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LONGITUDE",
             "label": "Longitude",
+            "bitrixLabel": "Longitude",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOCATION_SOURCE",
             "label": "Location Source",
+            "bitrixLabel": "Location Source",
             "type": "enumeration",
             "placeholder": "-- Select Location Source --",
             "options": [
@@ -445,6 +475,7 @@
           {
             "code": "UF_CRM_WEBSITE_URL",
             "label": "Website URL",
+            "bitrixLabel": "Website URL",
             "type": "url",
             "placeholder": "",
             "fullWidth": true
@@ -461,30 +492,35 @@
           {
             "code": "UF_CRM_1791966366775",
             "label": "Bedrooms",
+            "bitrixLabel": "Bedrooms",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1791966408374",
             "label": "Bathrooms",
+            "bitrixLabel": "Bathrooms",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_TOTALAREA",
             "label": "Size",
+            "bitrixLabel": "Size",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOTSIZE",
             "label": "Lot Size",
+            "bitrixLabel": "Lot Size",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1791970130059",
             "label": "View",
+            "bitrixLabel": "View",
             "type": "enumeration",
             "placeholder": "-- Select View --",
             "options": [
@@ -541,6 +577,7 @@
           {
             "code": "UF_CRM_1791969936048",
             "label": "Furnished",
+            "bitrixLabel": "Furnished",
             "type": "enumeration",
             "placeholder": "-- Select Furnished --",
             "options": [
@@ -561,12 +598,14 @@
           {
             "code": "UF_CRM_NUMBEROFPARKINGSPACES",
             "label": "Number of Parking Spaces",
+            "bitrixLabel": "Number of Parking Spaces",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_COMPLETIONDATE",
             "label": "Completion Date",
+            "bitrixLabel": "Completion Date",
             "type": "date",
             "placeholder": ""
           }
@@ -582,72 +621,84 @@
           {
             "code": "UF_CRM_COMMERCIAL_AMENITIES",
             "label": "Commercial Amenities",
+            "bitrixLabel": "Commercial Amenities",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PRIVATE_AMENITIES",
             "label": "Private Amenities",
+            "bitrixLabel": "Private Amenities",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_1",
             "label": "Feature 1",
+            "bitrixLabel": "Feature 1",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_2",
             "label": "Feature 2",
+            "bitrixLabel": "Feature 2",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_3",
             "label": "Feature 3",
+            "bitrixLabel": "Feature 3",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_4",
             "label": "Feature 4",
+            "bitrixLabel": "Feature 4",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_5",
             "label": "Feature 5",
+            "bitrixLabel": "Feature 5",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_6",
             "label": "Feature 6",
+            "bitrixLabel": "Feature 6",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_7",
             "label": "Feature 7",
+            "bitrixLabel": "Feature 7",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_8",
             "label": "Feature 8",
+            "bitrixLabel": "Feature 8",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE_9",
             "label": "Feature 9",
+            "bitrixLabel": "Feature 9",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UK_FEATURE",
             "label": "Feature 10",
+            "bitrixLabel": "Feature 10",
             "type": "string",
             "placeholder": ""
           }
@@ -663,48 +714,56 @@
           {
             "code": "UF_CRM_1791970864836",
             "label": "RERA Permit Number",
+            "bitrixLabel": "RERA Permit Number",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_TRAKHEESI_EXPIRY",
             "label": "Trakheesi Permit Expiry",
+            "bitrixLabel": "Trakheesi Permit Expiry",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BROKER_S_LISTING_ID",
             "label": "Broker's Listing ID",
+            "bitrixLabel": "Broker's Listing ID",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FORM_A_DATE",
             "label": "Form A Signed Date",
+            "bitrixLabel": "Form A Signed Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FORM_A_EXPIRY_DATE",
             "label": "Form A expiry date",
+            "bitrixLabel": "Form A expiry date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FORM_A_PASSWORD",
             "label": "Form A Password",
+            "bitrixLabel": "Form A Password",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LAST_REFRESH_DATE",
             "label": "Last Refresh Date",
+            "bitrixLabel": "Last Refresh Date",
             "type": "datetime",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_QR_CODE",
             "label": "QR Code",
+            "bitrixLabel": "QR Code",
             "type": "file",
             "placeholder": ""
           }
@@ -720,18 +779,21 @@
           {
             "code": "UF_CRM_PORTALS_ENABLED",
             "label": "BayutDubizzle Feed",
+            "bitrixLabel": "BayutDubizzle Feed",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PORTAL_LISTING_ID",
             "label": "Bayut Listing Id",
+            "bitrixLabel": "Portal Listing Id",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BAYUT_PROPERTY_TYPE",
             "label": "Bayut Property Type",
+            "bitrixLabel": "Bayut Property Type",
             "type": "enumeration",
             "placeholder": "-- Select Bayut Property Type --",
             "options": [
@@ -800,36 +862,42 @@
           {
             "code": "UF_CRM_BUILDING_DUBIZZLE",
             "label": "Building - Bayut",
+            "bitrixLabel": "Building - Bayut",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_CITY_BAYUT",
             "label": "City - Bayut",
+            "bitrixLabel": "City (Bayut)",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
             "label": "LocationText - Bayut",
+            "bitrixLabel": "LocationText - Bayut",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BAYUT_ERROR_LOG",
             "label": "Bayut Error Log",
+            "bitrixLabel": "Bayut Error Log",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1792151466",
             "label": "Property Finder Listing Id",
+            "bitrixLabel": "Property Finder Listing Id",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PROPERTYFINDER_PROPERTY_TYPE",
             "label": "PropertyFinder Property Type",
+            "bitrixLabel": "PropertyFinder Property Type",
             "type": "enumeration",
             "placeholder": "-- Select PropertyFinder Property Type --",
             "options": [
@@ -894,6 +962,7 @@
           {
             "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
             "label": "Property - Propertyfinder",
+            "bitrixLabel": "Property - Propertyfinder",
             "type": "lookup",
             "placeholder": "Search Property - Propertyfinder...",
             "lookupEntity": "property"
@@ -901,30 +970,35 @@
           {
             "code": "UF_CRM_CITY_PF",
             "label": "City - Propertyfinder",
+            "bitrixLabel": "City (Propertyfinder)",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
             "label": "Community - Propertyfinder",
+            "bitrixLabel": "Community - Propertyfinder",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
             "label": "Sub Community - Propertyfinder",
+            "bitrixLabel": "Sub Community - Propertyfinder",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PROPERTYFINDER_REGION",
             "label": "Propertyfinder Region",
+            "bitrixLabel": "Propertyfinder Region",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PF_ERROR_LOG",
             "label": "PF Error Log",
+            "bitrixLabel": "PF Error Log",
             "type": "string",
             "placeholder": ""
           }
@@ -940,6 +1014,7 @@
           {
             "code": "UF_CRM_OWNER_LISTING",
             "label": "Owner - Listing",
+            "bitrixLabel": "Owner - Listing",
             "type": "lookup",
             "placeholder": "Search Owner - Listing...",
             "lookupEntity": "contact"
@@ -947,6 +1022,7 @@
           {
             "code": "UF_CRM_PROPERTYOWNERCONTACT",
             "label": "Property Owner",
+            "bitrixLabel": "Property Owner",
             "type": "lookup",
             "placeholder": "Search Property Owner...",
             "lookupEntity": "contact"
@@ -954,6 +1030,7 @@
           {
             "code": "UF_CRM_PROPERTY_OWNER_2",
             "label": "Property Owner 2",
+            "bitrixLabel": "Property Owner 2",
             "type": "lookup",
             "placeholder": "Search Property Owner 2...",
             "lookupEntity": "contact"
@@ -961,6 +1038,7 @@
           {
             "code": "UF_CRM_REFERRAL_AGENT_SELLER",
             "label": "Referral Agent - Seller",
+            "bitrixLabel": "Referral Agent - Seller",
             "type": "lookup",
             "placeholder": "Search Broker / Agent...",
             "lookupEntity": "broker"
@@ -968,6 +1046,7 @@
           {
             "code": "UF_CRM_TENANT",
             "label": "Tenant",
+            "bitrixLabel": "Tenant",
             "type": "lookup",
             "placeholder": "Search Tenant...",
             "lookupEntity": "contact"
@@ -975,6 +1054,7 @@
           {
             "code": "UF_CRM_PORTAL_LISTING_AGENT",
             "label": "Portal Listing Agent",
+            "bitrixLabel": "Portal Listing Agent",
             "type": "lookup",
             "placeholder": "Search Broker / Agent...",
             "lookupEntity": "broker"
@@ -982,36 +1062,42 @@
           {
             "code": "UF_CRM_LISTINGAGENTNAME",
             "label": "Listing Agent Name",
+            "bitrixLabel": "Listing Agent Name",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LISTING_AGENT_PHONE",
             "label": "Listing Agent Phone",
+            "bitrixLabel": "Listing Agent Phone",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LISTING_AGENT_EMAIL",
             "label": "Listing Agent Email",
+            "bitrixLabel": "Listing Agent Email",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LISTING_OWNER_NAME",
             "label": "Listing Owner Name",
+            "bitrixLabel": "Listing Owner Name",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LISTING_OWNER_MOBILE",
             "label": "Listing Owner Mobile",
+            "bitrixLabel": "Listing Owner Mobile",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LISTING_OWNER_EMAIL",
             "label": "Listing Owner email",
+            "bitrixLabel": "Listing Owner email",
             "type": "string",
             "placeholder": ""
           }
@@ -1027,6 +1113,7 @@
           {
             "code": "UF_CRM_DESCRIPTION_INTRO_TEXT",
             "label": "Description - Intro Text",
+            "bitrixLabel": "Description - Intro Text",
             "type": "string",
             "placeholder": "",
             "fullWidth": true
@@ -1034,6 +1121,7 @@
           {
             "code": "UF_CRM_DESCRIPTION_OUTRO_TEXT",
             "label": "Description - Outro Text",
+            "bitrixLabel": "Description - Outro Text",
             "type": "string",
             "placeholder": "",
             "fullWidth": true
@@ -1041,6 +1129,7 @@
           {
             "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
             "label": "Photos and Documents",
+            "bitrixLabel": "Photos and Documents",
             "type": "file",
             "placeholder": "",
             "fullWidth": true
@@ -1048,6 +1137,7 @@
           {
             "code": "UF_CRM_COMMENTS_1",
             "label": "Comments",
+            "bitrixLabel": "Comments",
             "type": "string",
             "placeholder": "",
             "fullWidth": true
@@ -1066,6 +1156,7 @@
           {
             "code": "UF_CRM_ENQUIRY_NAME",
             "label": "Enquiry Name",
+            "bitrixLabel": "Enquiry Name",
             "type": "string",
             "placeholder": "Enter enquiry name...",
             "fullWidth": true
@@ -1073,6 +1164,7 @@
           {
             "code": "UF_CRM_LEAD_SOURCE_TYPE",
             "label": "Lead source Type",
+            "bitrixLabel": "Lead source Type",
             "type": "enumeration",
             "placeholder": "-- Select Lead source Type --",
             "options": [
@@ -1105,6 +1197,7 @@
           {
             "code": "UF_CRM_OWNER_ENQUIRY",
             "label": "Owner - Enquiry",
+            "bitrixLabel": "Owner - Enquiry",
             "type": "lookup",
             "placeholder": "Search Owner - Enquiry...",
             "lookupEntity": "contact"
@@ -1112,6 +1205,7 @@
           {
             "code": "UF_CRM_STATUS",
             "label": "Enquiry status",
+            "bitrixLabel": "Status",
             "type": "enumeration",
             "placeholder": "-- Select Enquiry status --",
             "options": [
@@ -1152,6 +1246,7 @@
           {
             "code": "UF_CRM_CONTACTS",
             "label": "Contact",
+            "bitrixLabel": "Contacts",
             "type": "lookup",
             "placeholder": "Search Contact...",
             "lookupEntity": "contact"
@@ -1159,12 +1254,14 @@
           {
             "code": "UF_CRM_IS_A_REAL_ESTATE_BROKER",
             "label": "Is a Real Estate Broker",
+            "bitrixLabel": "Is a Real Estate Broker",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1791952650167",
             "label": "Listing Type",
+            "bitrixLabel": "Listing type",
             "type": "enumeration",
             "placeholder": "-- Select Listing Type --",
             "options": [
@@ -1193,6 +1290,7 @@
           {
             "code": "UF_CRM_1791962499457",
             "label": "Priority",
+            "bitrixLabel": "Priority",
             "type": "enumeration",
             "placeholder": "-- Select Priority --",
             "options": [
@@ -1213,6 +1311,7 @@
           {
             "code": "UF_CRM_NORMAL_LOW_HIGH_URGENT",
             "label": "Urgency",
+            "bitrixLabel": "Normal Low High Urgent",
             "type": "enumeration",
             "placeholder": "-- Select Urgency --",
             "options": [
@@ -1237,36 +1336,42 @@
           {
             "code": "UF_CRM_DEAL_VALUE_1",
             "label": "Deal Value",
+            "bitrixLabel": "Deal Value",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
             "label": "Days since last contacted",
+            "bitrixLabel": "Days since last contacted",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_ENQUIRY_LOCKED",
             "label": "Enquiry Locked",
+            "bitrixLabel": "Enquiry Locked / Assigned",
             "type": "boolean",
             "placeholder": "Enquiry Locked"
           },
           {
             "code": "UF_CRM_MOVE_DATE",
             "label": "Move Date",
+            "bitrixLabel": "Move Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_AD_ID",
             "label": "Ad ID",
+            "bitrixLabel": "Ad ID",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_COMMENTS_1",
             "label": "Comments",
+            "bitrixLabel": "Comments",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1274,30 +1379,35 @@
           {
             "code": "UF_CRM_FIRST_CONTACTED_DATE",
             "label": "First Contacted Date",
+            "bitrixLabel": "First Contacted Date",
             "type": "datetime",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FIRST_VIEWING_DATE",
             "label": "First Viewing Date",
+            "bitrixLabel": "First Viewing Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
             "label": "Date Assigned to Broker",
+            "bitrixLabel": "Date Assigned to Broker",
             "type": "datetime",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DEFERRAL_DATE",
             "label": "Deferral Date",
+            "bitrixLabel": "Deferral Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_ASSIGNED_TO_BROKER",
             "label": "Assigned to Broker",
+            "bitrixLabel": "Assigned to Broker",
             "type": "lookup",
             "placeholder": "Search Broker / Agent...",
             "lookupEntity": "broker"
@@ -1305,6 +1415,7 @@
           {
             "code": "UF_CRM_LISTINGAGENT",
             "label": "Listing Agent",
+            "bitrixLabel": "Listing Agent",
             "type": "lookup",
             "placeholder": "Search Broker / Agent...",
             "lookupEntity": "broker"
@@ -1312,18 +1423,21 @@
           {
             "code": "UF_CRM_IS_CLAIMABLE",
             "label": "Is Claimable",
+            "bitrixLabel": "Is Claimable",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_IS_CONTACT_VIEWABLE",
             "label": "Is Contact Viewable",
+            "bitrixLabel": "Is Contact Viewable",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BROKER_COMPANY",
             "label": "Broker Company",
+            "bitrixLabel": "Broker Company",
             "type": "string",
             "placeholder": "Enter broker company..."
           }
@@ -1337,30 +1451,35 @@
           {
             "code": "UF_CRM_LISTINGPRICE_MIN",
             "label": "Price - min",
+            "bitrixLabel": "Price - min",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_LISTINGPRICE_MAX",
             "label": "Price - max",
+            "bitrixLabel": "Price - max",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_MONTHLYRENTMIN",
             "label": "Monthly Rent - min",
+            "bitrixLabel": "Monthly Rent - min",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_MONTHLYRENTMAX",
             "label": "Monthly Rent - max",
+            "bitrixLabel": "Monthly Rent - max",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_1792139023",
             "label": "Number of Cheques",
+            "bitrixLabel": "Number of Cheques",
             "type": "enumeration",
             "placeholder": "-- Select Number of Cheques --",
             "options": [
@@ -1389,48 +1508,56 @@
           {
             "code": "UF_CRM_FINANCE",
             "label": "Finance",
+            "bitrixLabel": "Finance",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_HOAFEESMIN",
             "label": "HOA Fees Min",
+            "bitrixLabel": "HOA Fees Min",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_HOAFEESMAX",
             "label": "HOA Fees Max",
+            "bitrixLabel": "HOA Fees Max",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_TAXMIN",
             "label": "Tax Min",
+            "bitrixLabel": "Tax Min",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_TAXMAX",
             "label": "Tax Max",
+            "bitrixLabel": "Tax Max",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
             "label": "Purchase Amount of Home",
+            "bitrixLabel": "Purchase Amount of Home",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_EPPRAISALVALUATION",
             "label": "Eppraisal Valuation",
+            "bitrixLabel": "Eppraisal Valuation",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_ESTATEDVALUATION",
             "label": "Estated Valuation",
+            "bitrixLabel": "Estated Valuation",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           }
@@ -1444,48 +1571,56 @@
           {
             "code": "UF_CRM_MORTGAGEDATE",
             "label": "Mortgage Date",
+            "bitrixLabel": "Mortgage Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
             "label": "eMortgage Auto Referral",
+            "bitrixLabel": "eMortgage Auto Referral",
             "type": "boolean",
             "placeholder": "Yes / Auto Referral"
           },
           {
             "code": "UF_CRM_EMORTGAGE_BROKER",
             "label": "eMortgage Broker",
+            "bitrixLabel": "eMortgage Broker",
             "type": "string",
             "placeholder": "Search eMortgage Broker..."
           },
           {
             "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
             "label": "eMortgage Broker email",
+            "bitrixLabel": "eMortgage Broker email",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
             "label": "eMortgage Broker number",
+            "bitrixLabel": "eMortgage Broker number",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
             "label": "eMortgage Referral Date",
+            "bitrixLabel": "eMortgage Referral Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
             "label": "eMortgage Referred By",
+            "bitrixLabel": "eMortgage Referred By",
             "type": "string",
             "placeholder": "Search eMortgage Referred By..."
           },
           {
             "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
             "label": "eMortgage Skip Send",
+            "bitrixLabel": "eMortgage Skip Send",
             "type": "boolean",
             "placeholder": "Yes / Skip Send"
           }
@@ -1499,6 +1634,7 @@
           {
             "code": "UF_CRM_1791952050535",
             "label": "Property Type",
+            "bitrixLabel": "Property Type",
             "type": "enumeration",
             "placeholder": "-- Select Property Type --",
             "options": [
@@ -1543,6 +1679,7 @@
           {
             "code": "UF_CRM_PROPERTY_SUB_TYPE",
             "label": "Property Subtype",
+            "bitrixLabel": "Property Sub Type",
             "type": "enumeration",
             "placeholder": "-- Select Property Subtype --",
             "options": [
@@ -1579,114 +1716,133 @@
           {
             "code": "UF_CRM_BEDS_MIN",
             "label": "Bedrooms - min",
+            "bitrixLabel": "Bedrooms Min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BEDS_MAX",
             "label": "Bedrooms - max",
+            "bitrixLabel": "Bedrooms Max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BATHS_MIN",
             "label": "Bathrooms - min",
+            "bitrixLabel": "Bathrooms Min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BATHS_MAX",
             "label": "Bathrooms - max",
+            "bitrixLabel": "Bathrooms Max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_TOTALAREA_MIN",
             "label": "Size - min",
+            "bitrixLabel": "Size - min",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_TOTALAREA_MAX",
             "label": "Size - max",
+            "bitrixLabel": "Size - max",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOTSIZE_MIN",
             "label": "Lot Size - min",
+            "bitrixLabel": "Lot Size - min",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOTSIZE_MAX",
             "label": "Lot Size - max",
+            "bitrixLabel": "Lot Size - max",
             "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_ACREMIN",
             "label": "Acre Min",
+            "bitrixLabel": "Acre Min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_ACREMAX",
             "label": "Acre Max",
+            "bitrixLabel": "Acre Max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FLOOR_MIN",
             "label": "Floor - min",
+            "bitrixLabel": "Floor - min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FLOOR_MAX",
             "label": "Floor - max",
+            "bitrixLabel": "Floor - max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_STORIES_MIN",
             "label": "Stories - min",
+            "bitrixLabel": "Stories - min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_STORIES_MAX",
             "label": "Stories - max",
+            "bitrixLabel": "Stories - max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_STORIES_1",
             "label": "Stories",
+            "bitrixLabel": "Stories",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UNIT_NO",
             "label": "Unit Number",
+            "bitrixLabel": "Unit Number",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UNITSMIN",
             "label": "Units Min",
+            "bitrixLabel": "Units Min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_UNITSMAX",
             "label": "Units Max",
+            "bitrixLabel": "Units Max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_MEASUREMENT",
             "label": "Measurement",
+            "bitrixLabel": "Measurement",
             "type": "enumeration",
             "placeholder": "-- Select Measurement --",
             "options": [
@@ -1703,6 +1859,7 @@
           {
             "code": "UF_CRM_1791969936048",
             "label": "Furnished",
+            "bitrixLabel": "Furnished",
             "type": "enumeration",
             "placeholder": "-- Select Furnished --",
             "options": [
@@ -1723,12 +1880,14 @@
           {
             "code": "UF_CRM_STYLE_1",
             "label": "Style",
+            "bitrixLabel": "Style",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_CONSTRUCTION",
             "label": "Construction",
+            "bitrixLabel": "Construction",
             "type": "enumeration",
             "placeholder": "-- Select Construction --",
             "options": [
@@ -1757,24 +1916,28 @@
           {
             "code": "UF_CRM_NEWCONSTRUCTION",
             "label": "New Construction",
+            "bitrixLabel": "New Construction",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_YEARBUILT_MIN",
             "label": "Year Built - min",
+            "bitrixLabel": "Year Built - min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_YEARBUILT_MAX",
             "label": "Year Built - max",
+            "bitrixLabel": "Year Built - max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1791970130059",
             "label": "View",
+            "bitrixLabel": "View",
             "type": "enumeration",
             "placeholder": "-- Select View --",
             "options": [
@@ -1831,24 +1994,28 @@
           {
             "code": "UF_CRM_ADULTCOMMUNITY",
             "label": "Adult Community",
+            "bitrixLabel": "Adult Community",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DAYSONMARKETMIN",
             "label": "Days On Market Min",
+            "bitrixLabel": "Days On Market Min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DAYSONMARKETMAX",
             "label": "Days On Market Max",
+            "bitrixLabel": "Days On Market Max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_CHEQUES",
             "label": "Cheques",
+            "bitrixLabel": "Number of Cheques",
             "type": "string",
             "placeholder": "Enter cheques requirement..."
           }
@@ -1862,18 +2029,21 @@
           {
             "code": "UF_CRM_AREA",
             "label": "Area",
+            "bitrixLabel": "Area",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_CITY",
             "label": "City",
+            "bitrixLabel": "City (Emirate)",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_ADDITIONALCITIES",
             "label": "Additional Cities",
+            "bitrixLabel": "Additional Cities",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1881,6 +2051,7 @@
           {
             "code": "UF_CRM_ADDITIONALPOSTALCODES",
             "label": "Additional Postal Codes",
+            "bitrixLabel": "Additional Postal Codes",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1888,6 +2059,7 @@
           {
             "code": "UF_CRM_COUNTIES",
             "label": "Counties",
+            "bitrixLabel": "Counties",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1895,6 +2067,7 @@
           {
             "code": "UF_CRM_1791970638065",
             "label": "Property Address",
+            "bitrixLabel": "Property Address",
             "type": "string",
             "placeholder": "",
             "fullWidth": true
@@ -1902,24 +2075,28 @@
           {
             "code": "UF_CRM_POSTALCODE",
             "label": "Zip/Postal Code",
+            "bitrixLabel": "Zip/Postal Code",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_STATE",
             "label": "State",
+            "bitrixLabel": "State",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_STREETNAME",
             "label": "Street Name",
+            "bitrixLabel": "Street Name",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_NEIGHBORHOODS",
             "label": "Neighborhoods",
+            "bitrixLabel": "Neighborhoods",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1927,6 +2104,7 @@
           {
             "code": "UF_CRM_LOCATIONKEYWORDS",
             "label": "Location Keywords",
+            "bitrixLabel": "Location Keywords",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1934,12 +2112,14 @@
           {
             "code": "UF_CRM_SUBDIVISIONNAME",
             "label": "Subdivision Name",
+            "bitrixLabel": "Subdivision Name",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SUBDIVISIONS",
             "label": "Subdivisions",
+            "bitrixLabel": "Subdivisions",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1947,12 +2127,14 @@
           {
             "code": "UF_CRM_SCHOOL_1",
             "label": "School",
+            "bitrixLabel": "School",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SCHOOLATTENDANCEZONES",
             "label": "School Attendance Zones",
+            "bitrixLabel": "School Attendance Zones",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1960,6 +2142,7 @@
           {
             "code": "UF_CRM_SCHOOLDISTRICTS",
             "label": "School Districts",
+            "bitrixLabel": "School Districts",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -1974,6 +2157,7 @@
           {
             "code": "UF_CRM_LISTING",
             "label": "Listing",
+            "bitrixLabel": "Listing",
             "type": "lookup",
             "placeholder": "Search Listing...",
             "lookupEntity": "listing"
@@ -1981,6 +2165,7 @@
           {
             "code": "UF_CRM_PROJECT",
             "label": "Master Project",
+            "bitrixLabel": "Master Project",
             "type": "lookup",
             "placeholder": "Search Master Project...",
             "lookupEntity": "master_project"
@@ -1988,6 +2173,7 @@
           {
             "code": "UF_CRM_PROJECT_1",
             "label": "Project",
+            "bitrixLabel": "Project",
             "type": "lookup",
             "placeholder": "Search Project...",
             "lookupEntity": "project"
@@ -1995,6 +2181,7 @@
           {
             "code": "UF_CRM_PROPERTY_LAYOUT",
             "label": "Property Layout",
+            "bitrixLabel": "Property Layout",
             "type": "lookup",
             "placeholder": "Search Layout...",
             "lookupEntity": "layout"
@@ -2002,6 +2189,7 @@
           {
             "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
             "label": "Buildings and Developments",
+            "bitrixLabel": "Buildings and Developments",
             "type": "text",
             "placeholder": "Search Buildings and Developments...",
             "fullWidth": true
@@ -2009,6 +2197,7 @@
           {
             "code": "UF_CRM_RECOMMENDED_LISTINGS",
             "label": "Recommended_Listings",
+            "bitrixLabel": "Recommended_Listings",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -2016,24 +2205,28 @@
           {
             "code": "UF_CRM_BUILDING_DUBIZZLE",
             "label": "Building - Bayut",
+            "bitrixLabel": "Building - Bayut",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
             "label": "Locationtext - Bayut",
+            "bitrixLabel": "LocationText - Bayut",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_CITY_BAYUT",
             "label": "City - Bayut",
+            "bitrixLabel": "City (Bayut)",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
             "label": "Property - Propertyfinder",
+            "bitrixLabel": "Property - Propertyfinder",
             "type": "lookup",
             "placeholder": "Search Property - Propertyfinder...",
             "lookupEntity": "property"
@@ -2041,30 +2234,35 @@
           {
             "code": "UF_CRM_PROPERTYFINDER_REGION",
             "label": "Propertyfinder Region",
+            "bitrixLabel": "Propertyfinder Region",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
             "label": "Community - Propertyfinder",
+            "bitrixLabel": "Community - Propertyfinder",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
             "label": "Sub Community - Propertyfinder",
+            "bitrixLabel": "Sub Community - Propertyfinder",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_CITY_PF",
             "label": "City - Propertyfinder",
+            "bitrixLabel": "City (Propertyfinder)",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DEVELOPER_1",
             "label": "Developer",
+            "bitrixLabel": "Developer",
             "type": "lookup",
             "placeholder": "Search Developer / Company...",
             "lookupEntity": "developer"
@@ -2079,6 +2277,7 @@
           {
             "code": "UF_CRM_COMMERCIAL_AMENITIES",
             "label": "Commercial Amenities",
+            "bitrixLabel": "Commercial Amenities",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -2086,6 +2285,7 @@
           {
             "code": "UF_CRM_PRIVATE_AMENITIES",
             "label": "Private Amenities",
+            "bitrixLabel": "Private Amenities",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -2093,108 +2293,126 @@
           {
             "code": "UF_CRM_PARKINGAVAILABLE",
             "label": "Parking Available",
+            "bitrixLabel": "Parking Available",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_NUMBEROFPARKINGSPACES",
             "label": "Number of Parking Spaces",
+            "bitrixLabel": "Number of Parking Spaces",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PARKINGMIN",
             "label": "Parking Min",
+            "bitrixLabel": "Parking Min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PARKING_SPACES_MIN",
             "label": "Parking Spaces - min",
+            "bitrixLabel": "Parking Spaces - min",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_PARKING_SPACES_MAX",
             "label": "Parking Spaces - max",
+            "bitrixLabel": "Parking Spaces - max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_GARAGESPACEMAX",
             "label": "Garage Space Max",
+            "bitrixLabel": "Garage Space Max",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_POOL",
             "label": "Pool",
+            "bitrixLabel": "Pool",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WATERFRONT",
             "label": "Waterfront",
+            "bitrixLabel": "Waterfront",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BEACHFRONT_1",
             "label": "Beachfront",
+            "bitrixLabel": "Beachfront",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BODYOFWATER",
             "label": "Body of Water",
+            "bitrixLabel": "Body of Water",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WATERVIEW",
             "label": "Water View",
+            "bitrixLabel": "Water View",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DOCK",
             "label": "Dock",
+            "bitrixLabel": "Dock",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_YARD",
             "label": "Yard",
+            "bitrixLabel": "Yard",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_1791970241624",
             "label": "Pets Allowed",
+            "bitrixLabel": "Pets Allowed",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FIREPLACE",
             "label": "Fireplace",
+            "bitrixLabel": "Fireplace",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_FLOORINGTYPE",
             "label": "Flooring Type",
+            "bitrixLabel": "Flooring Type",
             "type": "integer",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_BASEMENT_BOOL",
             "label": "Basement",
+            "bitrixLabel": "Basement",
             "type": "boolean",
             "placeholder": "Has Basement"
           },
           {
             "code": "UF_CRM_BASEMENTTYPE",
             "label": "Basement Type",
+            "bitrixLabel": "Basement Type",
             "type": "enumeration",
             "placeholder": "-- Select Basement Type --",
             "options": [
@@ -2227,6 +2445,7 @@
           {
             "code": "UF_CRM_COOLINGTYPE",
             "label": "Cooling Type",
+            "bitrixLabel": "Cooling Type",
             "type": "enumeration",
             "placeholder": "-- Select Cooling Type --",
             "options": [
@@ -2255,6 +2474,7 @@
           {
             "code": "UF_CRM_HEATTYPE",
             "label": "Heat Type",
+            "bitrixLabel": "Heat Type",
             "type": "enumeration",
             "placeholder": "-- Select Heat Type --",
             "options": [
@@ -2283,6 +2503,7 @@
           {
             "code": "UF_CRM_KEYWORDS",
             "label": "Keywords",
+            "bitrixLabel": "Keywords",
             "type": "text",
             "placeholder": "",
             "fullWidth": true
@@ -2297,96 +2518,112 @@
           {
             "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
             "label": "Is Website Saved Search",
+            "bitrixLabel": "Is Website Saved Search",
             "type": "url",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WEBSITEID",
             "label": "Website ID",
+            "bitrixLabel": "Website ID",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WEBSITEMLSID",
             "label": "Website MLS ID",
+            "bitrixLabel": "Website MLS ID",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WEBSITESEARCHID",
             "label": "Website Search ID",
+            "bitrixLabel": "Website Search ID",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WEBSITESEARCHTYPE",
             "label": "Website Search Type",
+            "bitrixLabel": "Website Search Type",
             "type": "url",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_WEBSITESEARCHURL",
             "label": "Website Search URL",
+            "bitrixLabel": "Website Search URL",
             "type": "url",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_EMAILFREQUENCY",
             "label": "Email Frequency",
+            "bitrixLabel": "Email Frequency",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_INCLUDESALLCHANGES",
             "label": "Includes All Changes",
+            "bitrixLabel": "Includes All Changes",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_INCLUDESNEWLISTINGS",
             "label": "Includes New Listings",
+            "bitrixLabel": "Includes New Listings",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_INCLUDESPRICECHANGES",
             "label": "Includes Price Changes",
+            "bitrixLabel": "Includes Price Changes",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           },
           {
             "code": "UF_CRM_INCLUDESSTATUSCHANGES",
             "label": "Includes Status Changes",
+            "bitrixLabel": "Includes Status Changes",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
             "label": "Includes Open House Changes",
+            "bitrixLabel": "Includes Open House Changes",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SATURDAYOPENHOUSE",
             "label": "Saturday Open House",
+            "bitrixLabel": "Saturday Open House",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SUNDAYOPENHOUSE",
             "label": "Sunday Open House",
+            "bitrixLabel": "Sunday Open House",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_THISWEEKOPENHOUSE",
             "label": "This Week Open House",
+            "bitrixLabel": "This Week Open House",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SAVED_SEARCH_NAME",
             "label": "Saved Search Name",
+            "bitrixLabel": "Saved Search Name",
             "type": "string",
             "placeholder": "Enter saved search name..."
           }
@@ -2400,18 +2637,21 @@
           {
             "code": "UF_CRM_DISQUALIFY_DATE",
             "label": "Disqualify Date",
+            "bitrixLabel": "Disqualify Date",
             "type": "date",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DISQUALIFY_REASON",
             "label": "Disqualify Reason",
+            "bitrixLabel": "Disqualify Reason",
             "type": "string",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
             "label": "Disqualify Reason Other",
+            "bitrixLabel": "Disqualify Reason Other",
             "type": "string",
             "placeholder": "",
             "fullWidth": true
@@ -2419,12 +2659,14 @@
           {
             "code": "UF_CRM_SPAM_ENQUIRY",
             "label": "Spam Enquiry",
+            "bitrixLabel": "Spam Enquiry",
             "type": "boolean",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_SPAM_REASON",
             "label": "Spam Reason",
+            "bitrixLabel": "Spam Reason",
             "type": "string",
             "placeholder": ""
           }
@@ -2436,6 +2678,7 @@
     {
       "code": "UF_CRM_LISTING_NAME",
       "label": "Listing Name",
+      "bitrixLabel": "Listing Name",
       "type": "string",
       "placeholder": "Enter listing name...",
       "fullWidth": true
@@ -2443,6 +2686,7 @@
     {
       "code": "UF_CRM_1791952650167",
       "label": "Listing Type",
+      "bitrixLabel": "Listing type",
       "type": "enumeration",
       "placeholder": "-- Select Listing Type --",
       "options": [
@@ -2471,6 +2715,7 @@
     {
       "code": "UF_CRM_1791952050535",
       "label": "Property Type",
+      "bitrixLabel": "Property Type",
       "type": "enumeration",
       "placeholder": "-- Select Property Type --",
       "options": [
@@ -2515,6 +2760,7 @@
     {
       "code": "UF_CRM_PROPERTY_SUB_TYPE",
       "label": "Property Sub Type",
+      "bitrixLabel": "Property Sub Type",
       "type": "enumeration",
       "placeholder": "-- Select Property Sub Type --",
       "options": [
@@ -2551,6 +2797,7 @@
     {
       "code": "UF_CRM_LISTING_SOURCE",
       "label": "Listing Source",
+      "bitrixLabel": "Listing Source",
       "type": "enumeration",
       "placeholder": "-- Select Listing Source --",
       "options": [
@@ -2595,18 +2842,21 @@
     {
       "code": "UF_CRM_LISTEDDATE",
       "label": "Listed Date",
+      "bitrixLabel": "Listed Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DATE_AVAILABLE",
       "label": "Date Available",
+      "bitrixLabel": "Date Available",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_VIEWING_STATUS",
       "label": "Viewing Status",
+      "bitrixLabel": "Viewing Status",
       "type": "enumeration",
       "placeholder": "-- Select Viewing Status --",
       "options": [
@@ -2635,6 +2885,7 @@
     {
       "code": "UF_CRM_1791970832589",
       "label": "Occupancy",
+      "bitrixLabel": "Occupancy",
       "type": "enumeration",
       "placeholder": "-- Select Occupancy --",
       "options": [
@@ -2663,60 +2914,70 @@
     {
       "code": "UF_CRM_1791970897872",
       "label": "Exclusive",
+      "bitrixLabel": "Exclusive",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_HOT_STOCK",
       "label": "Hot Stock",
+      "bitrixLabel": "Hot Stock",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_IS_CLAIMABLE",
       "label": "Is Claimable",
+      "bitrixLabel": "Is Claimable",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTING_LOCKED",
       "label": "Listing Locked",
+      "bitrixLabel": "Listing Locked",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PREVIOUS_LISTING_ID",
       "label": "Previous Listing ID",
+      "bitrixLabel": "Previous Listing ID",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
       "label": "Days since last contacted",
+      "bitrixLabel": "Days since last contacted",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTINGPRICE",
       "label": "Price",
+      "bitrixLabel": "Price",
       "type": "money",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
       "label": "Price Per Square Foot",
+      "bitrixLabel": "Price Per Square Foot",
       "type": "money",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PRICE_ON_REQUEST",
       "label": "Price on Request",
+      "bitrixLabel": "Price on Request",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1792139023",
       "label": "Number of Cheques",
+      "bitrixLabel": "Number of Cheques",
       "type": "enumeration",
       "placeholder": "-- Select Number of Cheques --",
       "options": [
@@ -2745,24 +3006,28 @@
     {
       "code": "UF_CRM_YEARLY_RENTAL",
       "label": "Yearly Rental",
+      "bitrixLabel": "Yearly Rental",
       "type": "money",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SERVICE_CHARGE",
       "label": "Service Charge",
+      "bitrixLabel": "Service Charge",
       "type": "money",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_NET_RENTAL_YIELD",
       "label": "Net Rental Yield",
+      "bitrixLabel": "Net Rental Yield",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PROJECT_1",
       "label": "Project",
+      "bitrixLabel": "Project",
       "type": "lookup",
       "placeholder": "Search Project...",
       "lookupEntity": "project"
@@ -2770,6 +3035,7 @@
     {
       "code": "UF_CRM_PROPERTY",
       "label": "Property",
+      "bitrixLabel": "Property",
       "type": "lookup",
       "placeholder": "Search Property...",
       "lookupEntity": "property"
@@ -2777,6 +3043,7 @@
     {
       "code": "UF_CRM_LAYOUT",
       "label": "Layout",
+      "bitrixLabel": "Layout",
       "type": "lookup",
       "placeholder": "Search Layout...",
       "lookupEntity": "layout"
@@ -2784,6 +3051,7 @@
     {
       "code": "UF_CRM_1791970638065",
       "label": "Address",
+      "bitrixLabel": "Property Address",
       "type": "address",
       "placeholder": "",
       "fullWidth": true
@@ -2791,18 +3059,21 @@
     {
       "code": "UF_CRM_LATITUDE",
       "label": "Latitude",
+      "bitrixLabel": "Latitude",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LONGITUDE",
       "label": "Longitude",
+      "bitrixLabel": "Longitude",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LOCATION_SOURCE",
       "label": "Location Source",
+      "bitrixLabel": "Location Source",
       "type": "enumeration",
       "placeholder": "-- Select Location Source --",
       "options": [
@@ -2831,6 +3102,7 @@
     {
       "code": "UF_CRM_WEBSITE_URL",
       "label": "Website URL",
+      "bitrixLabel": "Website URL",
       "type": "url",
       "placeholder": "",
       "fullWidth": true
@@ -2838,30 +3110,35 @@
     {
       "code": "UF_CRM_1791966366775",
       "label": "Bedrooms",
+      "bitrixLabel": "Bedrooms",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1791966408374",
       "label": "Bathrooms",
+      "bitrixLabel": "Bathrooms",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_TOTALAREA",
       "label": "Size",
+      "bitrixLabel": "Size",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LOTSIZE",
       "label": "Lot Size",
+      "bitrixLabel": "Lot Size",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1791970130059",
       "label": "View",
+      "bitrixLabel": "View",
       "type": "enumeration",
       "placeholder": "-- Select View --",
       "options": [
@@ -2918,6 +3195,7 @@
     {
       "code": "UF_CRM_1791969936048",
       "label": "Furnished",
+      "bitrixLabel": "Furnished",
       "type": "enumeration",
       "placeholder": "-- Select Furnished --",
       "options": [
@@ -2938,150 +3216,175 @@
     {
       "code": "UF_CRM_NUMBEROFPARKINGSPACES",
       "label": "Number of Parking Spaces",
+      "bitrixLabel": "Number of Parking Spaces",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_COMPLETIONDATE",
       "label": "Completion Date",
+      "bitrixLabel": "Completion Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_COMMERCIAL_AMENITIES",
       "label": "Commercial Amenities",
+      "bitrixLabel": "Commercial Amenities",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PRIVATE_AMENITIES",
       "label": "Private Amenities",
+      "bitrixLabel": "Private Amenities",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_1",
       "label": "Feature 1",
+      "bitrixLabel": "Feature 1",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_2",
       "label": "Feature 2",
+      "bitrixLabel": "Feature 2",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_3",
       "label": "Feature 3",
+      "bitrixLabel": "Feature 3",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_4",
       "label": "Feature 4",
+      "bitrixLabel": "Feature 4",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_5",
       "label": "Feature 5",
+      "bitrixLabel": "Feature 5",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_6",
       "label": "Feature 6",
+      "bitrixLabel": "Feature 6",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_7",
       "label": "Feature 7",
+      "bitrixLabel": "Feature 7",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_8",
       "label": "Feature 8",
+      "bitrixLabel": "Feature 8",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE_9",
       "label": "Feature 9",
+      "bitrixLabel": "Feature 9",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UK_FEATURE",
       "label": "Feature 10",
+      "bitrixLabel": "Feature 10",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1791970864836",
       "label": "RERA Permit Number",
+      "bitrixLabel": "RERA Permit Number",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_TRAKHEESI_EXPIRY",
       "label": "Trakheesi Permit Expiry",
+      "bitrixLabel": "Trakheesi Permit Expiry",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BROKER_S_LISTING_ID",
       "label": "Broker's Listing ID",
+      "bitrixLabel": "Broker's Listing ID",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FORM_A_DATE",
       "label": "Form A Signed Date",
+      "bitrixLabel": "Form A Signed Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FORM_A_EXPIRY_DATE",
       "label": "Form A expiry date",
+      "bitrixLabel": "Form A expiry date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FORM_A_PASSWORD",
       "label": "Form A Password",
+      "bitrixLabel": "Form A Password",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LAST_REFRESH_DATE",
       "label": "Last Refresh Date",
+      "bitrixLabel": "Last Refresh Date",
       "type": "datetime",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_QR_CODE",
       "label": "QR Code",
+      "bitrixLabel": "QR Code",
       "type": "file",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PORTALS_ENABLED",
       "label": "BayutDubizzle Feed",
+      "bitrixLabel": "BayutDubizzle Feed",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PORTAL_LISTING_ID",
       "label": "Bayut Listing Id",
+      "bitrixLabel": "Portal Listing Id",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BAYUT_PROPERTY_TYPE",
       "label": "Bayut Property Type",
+      "bitrixLabel": "Bayut Property Type",
       "type": "enumeration",
       "placeholder": "-- Select Bayut Property Type --",
       "options": [
@@ -3150,36 +3453,42 @@
     {
       "code": "UF_CRM_BUILDING_DUBIZZLE",
       "label": "Building - Bayut",
+      "bitrixLabel": "Building - Bayut",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_CITY_BAYUT",
       "label": "City - Bayut",
+      "bitrixLabel": "City (Bayut)",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
       "label": "LocationText - Bayut",
+      "bitrixLabel": "LocationText - Bayut",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BAYUT_ERROR_LOG",
       "label": "Bayut Error Log",
+      "bitrixLabel": "Bayut Error Log",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1792151466",
       "label": "Property Finder Listing Id",
+      "bitrixLabel": "Property Finder Listing Id",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PROPERTYFINDER_PROPERTY_TYPE",
       "label": "PropertyFinder Property Type",
+      "bitrixLabel": "PropertyFinder Property Type",
       "type": "enumeration",
       "placeholder": "-- Select PropertyFinder Property Type --",
       "options": [
@@ -3244,6 +3553,7 @@
     {
       "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
       "label": "Property - Propertyfinder",
+      "bitrixLabel": "Property - Propertyfinder",
       "type": "lookup",
       "placeholder": "Search Property - Propertyfinder...",
       "lookupEntity": "property"
@@ -3251,36 +3561,42 @@
     {
       "code": "UF_CRM_CITY_PF",
       "label": "City - Propertyfinder",
+      "bitrixLabel": "City (Propertyfinder)",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
       "label": "Community - Propertyfinder",
+      "bitrixLabel": "Community - Propertyfinder",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
       "label": "Sub Community - Propertyfinder",
+      "bitrixLabel": "Sub Community - Propertyfinder",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PROPERTYFINDER_REGION",
       "label": "Propertyfinder Region",
+      "bitrixLabel": "Propertyfinder Region",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PF_ERROR_LOG",
       "label": "PF Error Log",
+      "bitrixLabel": "PF Error Log",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_OWNER_LISTING",
       "label": "Owner - Listing",
+      "bitrixLabel": "Owner - Listing",
       "type": "lookup",
       "placeholder": "Search Owner - Listing...",
       "lookupEntity": "contact"
@@ -3288,6 +3604,7 @@
     {
       "code": "UF_CRM_PROPERTYOWNERCONTACT",
       "label": "Property Owner",
+      "bitrixLabel": "Property Owner",
       "type": "lookup",
       "placeholder": "Search Property Owner...",
       "lookupEntity": "contact"
@@ -3295,6 +3612,7 @@
     {
       "code": "UF_CRM_PROPERTY_OWNER_2",
       "label": "Property Owner 2",
+      "bitrixLabel": "Property Owner 2",
       "type": "lookup",
       "placeholder": "Search Property Owner 2...",
       "lookupEntity": "contact"
@@ -3302,6 +3620,7 @@
     {
       "code": "UF_CRM_REFERRAL_AGENT_SELLER",
       "label": "Referral Agent - Seller",
+      "bitrixLabel": "Referral Agent - Seller",
       "type": "lookup",
       "placeholder": "Search Broker / Agent...",
       "lookupEntity": "broker"
@@ -3309,6 +3628,7 @@
     {
       "code": "UF_CRM_TENANT",
       "label": "Tenant",
+      "bitrixLabel": "Tenant",
       "type": "lookup",
       "placeholder": "Search Tenant...",
       "lookupEntity": "contact"
@@ -3316,6 +3636,7 @@
     {
       "code": "UF_CRM_PORTAL_LISTING_AGENT",
       "label": "Portal Listing Agent",
+      "bitrixLabel": "Portal Listing Agent",
       "type": "lookup",
       "placeholder": "Search Broker / Agent...",
       "lookupEntity": "broker"
@@ -3323,42 +3644,49 @@
     {
       "code": "UF_CRM_LISTINGAGENTNAME",
       "label": "Listing Agent Name",
+      "bitrixLabel": "Listing Agent Name",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTING_AGENT_PHONE",
       "label": "Listing Agent Phone",
+      "bitrixLabel": "Listing Agent Phone",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTING_AGENT_EMAIL",
       "label": "Listing Agent Email",
+      "bitrixLabel": "Listing Agent Email",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTING_OWNER_NAME",
       "label": "Listing Owner Name",
+      "bitrixLabel": "Listing Owner Name",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTING_OWNER_MOBILE",
       "label": "Listing Owner Mobile",
+      "bitrixLabel": "Listing Owner Mobile",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LISTING_OWNER_EMAIL",
       "label": "Listing Owner email",
+      "bitrixLabel": "Listing Owner email",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DESCRIPTION_INTRO_TEXT",
       "label": "Description - Intro Text",
+      "bitrixLabel": "Description - Intro Text",
       "type": "string",
       "placeholder": "",
       "fullWidth": true
@@ -3366,6 +3694,7 @@
     {
       "code": "UF_CRM_DESCRIPTION_OUTRO_TEXT",
       "label": "Description - Outro Text",
+      "bitrixLabel": "Description - Outro Text",
       "type": "string",
       "placeholder": "",
       "fullWidth": true
@@ -3373,6 +3702,7 @@
     {
       "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
       "label": "Photos and Documents",
+      "bitrixLabel": "Photos and Documents",
       "type": "file",
       "placeholder": "",
       "fullWidth": true
@@ -3380,6 +3710,7 @@
     {
       "code": "UF_CRM_COMMENTS_1",
       "label": "Comments",
+      "bitrixLabel": "Comments",
       "type": "string",
       "placeholder": "",
       "fullWidth": true
@@ -3387,6 +3718,7 @@
     {
       "code": "UF_CRM_DEVELOPER_1",
       "label": "Developer",
+      "bitrixLabel": "Developer",
       "type": "lookup",
       "placeholder": "Search Developer / Company...",
       "lookupEntity": "developer"
@@ -3396,6 +3728,7 @@
     {
       "code": "UF_CRM_ENQUIRY_NAME",
       "label": "Enquiry Name",
+      "bitrixLabel": "Enquiry Name",
       "type": "string",
       "placeholder": "Enter enquiry name...",
       "fullWidth": true
@@ -3403,6 +3736,7 @@
     {
       "code": "UF_CRM_LEAD_SOURCE_TYPE",
       "label": "Lead source Type",
+      "bitrixLabel": "Lead source Type",
       "type": "enumeration",
       "placeholder": "-- Select Lead source Type --",
       "options": [
@@ -3435,6 +3769,7 @@
     {
       "code": "UF_CRM_OWNER_ENQUIRY",
       "label": "Owner - Enquiry",
+      "bitrixLabel": "Owner - Enquiry",
       "type": "lookup",
       "placeholder": "Search Owner - Enquiry...",
       "lookupEntity": "contact"
@@ -3442,6 +3777,7 @@
     {
       "code": "UF_CRM_STATUS",
       "label": "Enquiry status",
+      "bitrixLabel": "Status",
       "type": "enumeration",
       "placeholder": "-- Select Enquiry status --",
       "options": [
@@ -3482,6 +3818,7 @@
     {
       "code": "UF_CRM_CONTACTS",
       "label": "Contact",
+      "bitrixLabel": "Contacts",
       "type": "lookup",
       "placeholder": "Search Contact...",
       "lookupEntity": "contact"
@@ -3489,12 +3826,14 @@
     {
       "code": "UF_CRM_IS_A_REAL_ESTATE_BROKER",
       "label": "Is a Real Estate Broker",
+      "bitrixLabel": "Is a Real Estate Broker",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1791952650167",
       "label": "Listing Type",
+      "bitrixLabel": "Listing type",
       "type": "enumeration",
       "placeholder": "-- Select Listing Type --",
       "options": [
@@ -3523,6 +3862,7 @@
     {
       "code": "UF_CRM_1791962499457",
       "label": "Priority",
+      "bitrixLabel": "Priority",
       "type": "enumeration",
       "placeholder": "-- Select Priority --",
       "options": [
@@ -3543,6 +3883,7 @@
     {
       "code": "UF_CRM_NORMAL_LOW_HIGH_URGENT",
       "label": "Urgency",
+      "bitrixLabel": "Normal Low High Urgent",
       "type": "enumeration",
       "placeholder": "-- Select Urgency --",
       "options": [
@@ -3567,36 +3908,42 @@
     {
       "code": "UF_CRM_DEAL_VALUE_1",
       "label": "Deal Value",
+      "bitrixLabel": "Deal Value",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
       "label": "Days since last contacted",
+      "bitrixLabel": "Days since last contacted",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_ENQUIRY_LOCKED",
       "label": "Enquiry Locked",
+      "bitrixLabel": "Enquiry Locked / Assigned",
       "type": "boolean",
       "placeholder": "Enquiry Locked"
     },
     {
       "code": "UF_CRM_MOVE_DATE",
       "label": "Move Date",
+      "bitrixLabel": "Move Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_AD_ID",
       "label": "Ad ID",
+      "bitrixLabel": "Ad ID",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_COMMENTS_1",
       "label": "Comments",
+      "bitrixLabel": "Comments",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -3604,30 +3951,35 @@
     {
       "code": "UF_CRM_FIRST_CONTACTED_DATE",
       "label": "First Contacted Date",
+      "bitrixLabel": "First Contacted Date",
       "type": "datetime",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FIRST_VIEWING_DATE",
       "label": "First Viewing Date",
+      "bitrixLabel": "First Viewing Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
       "label": "Date Assigned to Broker",
+      "bitrixLabel": "Date Assigned to Broker",
       "type": "datetime",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DEFERRAL_DATE",
       "label": "Deferral Date",
+      "bitrixLabel": "Deferral Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_ASSIGNED_TO_BROKER",
       "label": "Assigned to Broker",
+      "bitrixLabel": "Assigned to Broker",
       "type": "lookup",
       "placeholder": "Search Broker / Agent...",
       "lookupEntity": "broker"
@@ -3635,6 +3987,7 @@
     {
       "code": "UF_CRM_LISTINGAGENT",
       "label": "Listing Agent",
+      "bitrixLabel": "Listing Agent",
       "type": "lookup",
       "placeholder": "Search Broker / Agent...",
       "lookupEntity": "broker"
@@ -3642,48 +3995,56 @@
     {
       "code": "UF_CRM_IS_CLAIMABLE",
       "label": "Is Claimable",
+      "bitrixLabel": "Is Claimable",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_IS_CONTACT_VIEWABLE",
       "label": "Is Contact Viewable",
+      "bitrixLabel": "Is Contact Viewable",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BROKER_COMPANY",
       "label": "Broker Company",
+      "bitrixLabel": "Broker Company",
       "type": "string",
       "placeholder": "Enter broker company..."
     },
     {
       "code": "UF_CRM_LISTINGPRICE_MIN",
       "label": "Price - min",
+      "bitrixLabel": "Price - min",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_LISTINGPRICE_MAX",
       "label": "Price - max",
+      "bitrixLabel": "Price - max",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_MONTHLYRENTMIN",
       "label": "Monthly Rent - min",
+      "bitrixLabel": "Monthly Rent - min",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_MONTHLYRENTMAX",
       "label": "Monthly Rent - max",
+      "bitrixLabel": "Monthly Rent - max",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_1792139023",
       "label": "Number of Cheques",
+      "bitrixLabel": "Number of Cheques",
       "type": "enumeration",
       "placeholder": "-- Select Number of Cheques --",
       "options": [
@@ -3712,102 +4073,119 @@
     {
       "code": "UF_CRM_FINANCE",
       "label": "Finance",
+      "bitrixLabel": "Finance",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_HOAFEESMIN",
       "label": "HOA Fees Min",
+      "bitrixLabel": "HOA Fees Min",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_HOAFEESMAX",
       "label": "HOA Fees Max",
+      "bitrixLabel": "HOA Fees Max",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_TAXMIN",
       "label": "Tax Min",
+      "bitrixLabel": "Tax Min",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_TAXMAX",
       "label": "Tax Max",
+      "bitrixLabel": "Tax Max",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
       "label": "Purchase Amount of Home",
+      "bitrixLabel": "Purchase Amount of Home",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_EPPRAISALVALUATION",
       "label": "Eppraisal Valuation",
+      "bitrixLabel": "Eppraisal Valuation",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_ESTATEDVALUATION",
       "label": "Estated Valuation",
+      "bitrixLabel": "Estated Valuation",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_MORTGAGEDATE",
       "label": "Mortgage Date",
+      "bitrixLabel": "Mortgage Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
       "label": "eMortgage Auto Referral",
+      "bitrixLabel": "eMortgage Auto Referral",
       "type": "boolean",
       "placeholder": "Yes / Auto Referral"
     },
     {
       "code": "UF_CRM_EMORTGAGE_BROKER",
       "label": "eMortgage Broker",
+      "bitrixLabel": "eMortgage Broker",
       "type": "string",
       "placeholder": "Search eMortgage Broker..."
     },
     {
       "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
       "label": "eMortgage Broker email",
+      "bitrixLabel": "eMortgage Broker email",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
       "label": "eMortgage Broker number",
+      "bitrixLabel": "eMortgage Broker number",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
       "label": "eMortgage Referral Date",
+      "bitrixLabel": "eMortgage Referral Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
       "label": "eMortgage Referred By",
+      "bitrixLabel": "eMortgage Referred By",
       "type": "string",
       "placeholder": "Search eMortgage Referred By..."
     },
     {
       "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
       "label": "eMortgage Skip Send",
+      "bitrixLabel": "eMortgage Skip Send",
       "type": "boolean",
       "placeholder": "Yes / Skip Send"
     },
     {
       "code": "UF_CRM_1791952050535",
       "label": "Property Type",
+      "bitrixLabel": "Property Type",
       "type": "enumeration",
       "placeholder": "-- Select Property Type --",
       "options": [
@@ -3852,6 +4230,7 @@
     {
       "code": "UF_CRM_PROPERTY_SUB_TYPE",
       "label": "Property Subtype",
+      "bitrixLabel": "Property Sub Type",
       "type": "enumeration",
       "placeholder": "-- Select Property Subtype --",
       "options": [
@@ -3888,114 +4267,133 @@
     {
       "code": "UF_CRM_BEDS_MIN",
       "label": "Bedrooms - min",
+      "bitrixLabel": "Bedrooms Min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BEDS_MAX",
       "label": "Bedrooms - max",
+      "bitrixLabel": "Bedrooms Max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BATHS_MIN",
       "label": "Bathrooms - min",
+      "bitrixLabel": "Bathrooms Min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BATHS_MAX",
       "label": "Bathrooms - max",
+      "bitrixLabel": "Bathrooms Max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_TOTALAREA_MIN",
       "label": "Size - min",
+      "bitrixLabel": "Size - min",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_TOTALAREA_MAX",
       "label": "Size - max",
+      "bitrixLabel": "Size - max",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LOTSIZE_MIN",
       "label": "Lot Size - min",
+      "bitrixLabel": "Lot Size - min",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LOTSIZE_MAX",
       "label": "Lot Size - max",
+      "bitrixLabel": "Lot Size - max",
       "type": "double",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_ACREMIN",
       "label": "Acre Min",
+      "bitrixLabel": "Acre Min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_ACREMAX",
       "label": "Acre Max",
+      "bitrixLabel": "Acre Max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FLOOR_MIN",
       "label": "Floor - min",
+      "bitrixLabel": "Floor - min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FLOOR_MAX",
       "label": "Floor - max",
+      "bitrixLabel": "Floor - max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_STORIES_MIN",
       "label": "Stories - min",
+      "bitrixLabel": "Stories - min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_STORIES_MAX",
       "label": "Stories - max",
+      "bitrixLabel": "Stories - max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_STORIES_1",
       "label": "Stories",
+      "bitrixLabel": "Stories",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UNIT_NO",
       "label": "Unit Number",
+      "bitrixLabel": "Unit Number",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UNITSMIN",
       "label": "Units Min",
+      "bitrixLabel": "Units Min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_UNITSMAX",
       "label": "Units Max",
+      "bitrixLabel": "Units Max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_MEASUREMENT",
       "label": "Measurement",
+      "bitrixLabel": "Measurement",
       "type": "enumeration",
       "placeholder": "-- Select Measurement --",
       "options": [
@@ -4012,6 +4410,7 @@
     {
       "code": "UF_CRM_1791969936048",
       "label": "Furnished",
+      "bitrixLabel": "Furnished",
       "type": "enumeration",
       "placeholder": "-- Select Furnished --",
       "options": [
@@ -4032,12 +4431,14 @@
     {
       "code": "UF_CRM_STYLE_1",
       "label": "Style",
+      "bitrixLabel": "Style",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_CONSTRUCTION",
       "label": "Construction",
+      "bitrixLabel": "Construction",
       "type": "enumeration",
       "placeholder": "-- Select Construction --",
       "options": [
@@ -4066,24 +4467,28 @@
     {
       "code": "UF_CRM_NEWCONSTRUCTION",
       "label": "New Construction",
+      "bitrixLabel": "New Construction",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_YEARBUILT_MIN",
       "label": "Year Built - min",
+      "bitrixLabel": "Year Built - min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_YEARBUILT_MAX",
       "label": "Year Built - max",
+      "bitrixLabel": "Year Built - max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1791970130059",
       "label": "View",
+      "bitrixLabel": "View",
       "type": "enumeration",
       "placeholder": "-- Select View --",
       "options": [
@@ -4140,42 +4545,49 @@
     {
       "code": "UF_CRM_ADULTCOMMUNITY",
       "label": "Adult Community",
+      "bitrixLabel": "Adult Community",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DAYSONMARKETMIN",
       "label": "Days On Market Min",
+      "bitrixLabel": "Days On Market Min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DAYSONMARKETMAX",
       "label": "Days On Market Max",
+      "bitrixLabel": "Days On Market Max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_CHEQUES",
       "label": "Cheques",
+      "bitrixLabel": "Number of Cheques",
       "type": "string",
       "placeholder": "Enter cheques requirement..."
     },
     {
       "code": "UF_CRM_AREA",
       "label": "Area",
+      "bitrixLabel": "Area",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_CITY",
       "label": "City",
+      "bitrixLabel": "City (Emirate)",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_ADDITIONALCITIES",
       "label": "Additional Cities",
+      "bitrixLabel": "Additional Cities",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4183,6 +4595,7 @@
     {
       "code": "UF_CRM_ADDITIONALPOSTALCODES",
       "label": "Additional Postal Codes",
+      "bitrixLabel": "Additional Postal Codes",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4190,6 +4603,7 @@
     {
       "code": "UF_CRM_COUNTIES",
       "label": "Counties",
+      "bitrixLabel": "Counties",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4197,6 +4611,7 @@
     {
       "code": "UF_CRM_1791970638065",
       "label": "Property Address",
+      "bitrixLabel": "Property Address",
       "type": "string",
       "placeholder": "",
       "fullWidth": true
@@ -4204,24 +4619,28 @@
     {
       "code": "UF_CRM_POSTALCODE",
       "label": "Zip/Postal Code",
+      "bitrixLabel": "Zip/Postal Code",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_STATE",
       "label": "State",
+      "bitrixLabel": "State",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_STREETNAME",
       "label": "Street Name",
+      "bitrixLabel": "Street Name",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_NEIGHBORHOODS",
       "label": "Neighborhoods",
+      "bitrixLabel": "Neighborhoods",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4229,6 +4648,7 @@
     {
       "code": "UF_CRM_LOCATIONKEYWORDS",
       "label": "Location Keywords",
+      "bitrixLabel": "Location Keywords",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4236,12 +4656,14 @@
     {
       "code": "UF_CRM_SUBDIVISIONNAME",
       "label": "Subdivision Name",
+      "bitrixLabel": "Subdivision Name",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SUBDIVISIONS",
       "label": "Subdivisions",
+      "bitrixLabel": "Subdivisions",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4249,12 +4671,14 @@
     {
       "code": "UF_CRM_SCHOOL_1",
       "label": "School",
+      "bitrixLabel": "School",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SCHOOLATTENDANCEZONES",
       "label": "School Attendance Zones",
+      "bitrixLabel": "School Attendance Zones",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4262,6 +4686,7 @@
     {
       "code": "UF_CRM_SCHOOLDISTRICTS",
       "label": "School Districts",
+      "bitrixLabel": "School Districts",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4269,6 +4694,7 @@
     {
       "code": "UF_CRM_LISTING",
       "label": "Listing",
+      "bitrixLabel": "Listing",
       "type": "lookup",
       "placeholder": "Search Listing...",
       "lookupEntity": "listing"
@@ -4276,6 +4702,7 @@
     {
       "code": "UF_CRM_PROJECT",
       "label": "Master Project",
+      "bitrixLabel": "Master Project",
       "type": "lookup",
       "placeholder": "Search Master Project...",
       "lookupEntity": "master_project"
@@ -4283,6 +4710,7 @@
     {
       "code": "UF_CRM_PROJECT_1",
       "label": "Project",
+      "bitrixLabel": "Project",
       "type": "lookup",
       "placeholder": "Search Project...",
       "lookupEntity": "project"
@@ -4290,6 +4718,7 @@
     {
       "code": "UF_CRM_PROPERTY_LAYOUT",
       "label": "Property Layout",
+      "bitrixLabel": "Property Layout",
       "type": "lookup",
       "placeholder": "Search Layout...",
       "lookupEntity": "layout"
@@ -4297,6 +4726,7 @@
     {
       "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
       "label": "Buildings and Developments",
+      "bitrixLabel": "Buildings and Developments",
       "type": "text",
       "placeholder": "Search Buildings and Developments...",
       "fullWidth": true
@@ -4304,6 +4734,7 @@
     {
       "code": "UF_CRM_RECOMMENDED_LISTINGS",
       "label": "Recommended_Listings",
+      "bitrixLabel": "Recommended_Listings",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4311,24 +4742,28 @@
     {
       "code": "UF_CRM_BUILDING_DUBIZZLE",
       "label": "Building - Bayut",
+      "bitrixLabel": "Building - Bayut",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
       "label": "Locationtext - Bayut",
+      "bitrixLabel": "LocationText - Bayut",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_CITY_BAYUT",
       "label": "City - Bayut",
+      "bitrixLabel": "City (Bayut)",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
       "label": "Property - Propertyfinder",
+      "bitrixLabel": "Property - Propertyfinder",
       "type": "lookup",
       "placeholder": "Search Property - Propertyfinder...",
       "lookupEntity": "property"
@@ -4336,30 +4771,35 @@
     {
       "code": "UF_CRM_PROPERTYFINDER_REGION",
       "label": "Propertyfinder Region",
+      "bitrixLabel": "Propertyfinder Region",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
       "label": "Community - Propertyfinder",
+      "bitrixLabel": "Community - Propertyfinder",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
       "label": "Sub Community - Propertyfinder",
+      "bitrixLabel": "Sub Community - Propertyfinder",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_CITY_PF",
       "label": "City - Propertyfinder",
+      "bitrixLabel": "City (Propertyfinder)",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DEVELOPER_1",
       "label": "Developer",
+      "bitrixLabel": "Developer",
       "type": "lookup",
       "placeholder": "Search Developer / Company...",
       "lookupEntity": "developer"
@@ -4367,6 +4807,7 @@
     {
       "code": "UF_CRM_COMMERCIAL_AMENITIES",
       "label": "Commercial Amenities",
+      "bitrixLabel": "Commercial Amenities",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4374,6 +4815,7 @@
     {
       "code": "UF_CRM_PRIVATE_AMENITIES",
       "label": "Private Amenities",
+      "bitrixLabel": "Private Amenities",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4381,108 +4823,126 @@
     {
       "code": "UF_CRM_PARKINGAVAILABLE",
       "label": "Parking Available",
+      "bitrixLabel": "Parking Available",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_NUMBEROFPARKINGSPACES",
       "label": "Number of Parking Spaces",
+      "bitrixLabel": "Number of Parking Spaces",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PARKINGMIN",
       "label": "Parking Min",
+      "bitrixLabel": "Parking Min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PARKING_SPACES_MIN",
       "label": "Parking Spaces - min",
+      "bitrixLabel": "Parking Spaces - min",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_PARKING_SPACES_MAX",
       "label": "Parking Spaces - max",
+      "bitrixLabel": "Parking Spaces - max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_GARAGESPACEMAX",
       "label": "Garage Space Max",
+      "bitrixLabel": "Garage Space Max",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_POOL",
       "label": "Pool",
+      "bitrixLabel": "Pool",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WATERFRONT",
       "label": "Waterfront",
+      "bitrixLabel": "Waterfront",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BEACHFRONT_1",
       "label": "Beachfront",
+      "bitrixLabel": "Beachfront",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BODYOFWATER",
       "label": "Body of Water",
+      "bitrixLabel": "Body of Water",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WATERVIEW",
       "label": "Water View",
+      "bitrixLabel": "Water View",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DOCK",
       "label": "Dock",
+      "bitrixLabel": "Dock",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_YARD",
       "label": "Yard",
+      "bitrixLabel": "Yard",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_1791970241624",
       "label": "Pets Allowed",
+      "bitrixLabel": "Pets Allowed",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FIREPLACE",
       "label": "Fireplace",
+      "bitrixLabel": "Fireplace",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_FLOORINGTYPE",
       "label": "Flooring Type",
+      "bitrixLabel": "Flooring Type",
       "type": "integer",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_BASEMENT_BOOL",
       "label": "Basement",
+      "bitrixLabel": "Basement",
       "type": "boolean",
       "placeholder": "Has Basement"
     },
     {
       "code": "UF_CRM_BASEMENTTYPE",
       "label": "Basement Type",
+      "bitrixLabel": "Basement Type",
       "type": "enumeration",
       "placeholder": "-- Select Basement Type --",
       "options": [
@@ -4515,6 +4975,7 @@
     {
       "code": "UF_CRM_COOLINGTYPE",
       "label": "Cooling Type",
+      "bitrixLabel": "Cooling Type",
       "type": "enumeration",
       "placeholder": "-- Select Cooling Type --",
       "options": [
@@ -4543,6 +5004,7 @@
     {
       "code": "UF_CRM_HEATTYPE",
       "label": "Heat Type",
+      "bitrixLabel": "Heat Type",
       "type": "enumeration",
       "placeholder": "-- Select Heat Type --",
       "options": [
@@ -4571,6 +5033,7 @@
     {
       "code": "UF_CRM_KEYWORDS",
       "label": "Keywords",
+      "bitrixLabel": "Keywords",
       "type": "text",
       "placeholder": "",
       "fullWidth": true
@@ -4578,114 +5041,133 @@
     {
       "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
       "label": "Is Website Saved Search",
+      "bitrixLabel": "Is Website Saved Search",
       "type": "url",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WEBSITEID",
       "label": "Website ID",
+      "bitrixLabel": "Website ID",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WEBSITEMLSID",
       "label": "Website MLS ID",
+      "bitrixLabel": "Website MLS ID",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WEBSITESEARCHID",
       "label": "Website Search ID",
+      "bitrixLabel": "Website Search ID",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WEBSITESEARCHTYPE",
       "label": "Website Search Type",
+      "bitrixLabel": "Website Search Type",
       "type": "url",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_WEBSITESEARCHURL",
       "label": "Website Search URL",
+      "bitrixLabel": "Website Search URL",
       "type": "url",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_EMAILFREQUENCY",
       "label": "Email Frequency",
+      "bitrixLabel": "Email Frequency",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_INCLUDESALLCHANGES",
       "label": "Includes All Changes",
+      "bitrixLabel": "Includes All Changes",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_INCLUDESNEWLISTINGS",
       "label": "Includes New Listings",
+      "bitrixLabel": "Includes New Listings",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_INCLUDESPRICECHANGES",
       "label": "Includes Price Changes",
+      "bitrixLabel": "Includes Price Changes",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_INCLUDESSTATUSCHANGES",
       "label": "Includes Status Changes",
+      "bitrixLabel": "Includes Status Changes",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
       "label": "Includes Open House Changes",
+      "bitrixLabel": "Includes Open House Changes",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SATURDAYOPENHOUSE",
       "label": "Saturday Open House",
+      "bitrixLabel": "Saturday Open House",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SUNDAYOPENHOUSE",
       "label": "Sunday Open House",
+      "bitrixLabel": "Sunday Open House",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_THISWEEKOPENHOUSE",
       "label": "This Week Open House",
+      "bitrixLabel": "This Week Open House",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SAVED_SEARCH_NAME",
       "label": "Saved Search Name",
+      "bitrixLabel": "Saved Search Name",
       "type": "string",
       "placeholder": "Enter saved search name..."
     },
     {
       "code": "UF_CRM_DISQUALIFY_DATE",
       "label": "Disqualify Date",
+      "bitrixLabel": "Disqualify Date",
       "type": "date",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DISQUALIFY_REASON",
       "label": "Disqualify Reason",
+      "bitrixLabel": "Disqualify Reason",
       "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
       "label": "Disqualify Reason Other",
+      "bitrixLabel": "Disqualify Reason Other",
       "type": "string",
       "placeholder": "",
       "fullWidth": true
@@ -4693,12 +5175,14 @@
     {
       "code": "UF_CRM_SPAM_ENQUIRY",
       "label": "Spam Enquiry",
+      "bitrixLabel": "Spam Enquiry",
       "type": "boolean",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_SPAM_REASON",
       "label": "Spam Reason",
+      "bitrixLabel": "Spam Reason",
       "type": "string",
       "placeholder": ""
     }
