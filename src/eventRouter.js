@@ -7,6 +7,7 @@
 const BitrixClient = require('./bitrixClient');
 const StorageManager = require('./storage');
 const DiscoveryService = require('./discovery');
+const { syncEnquirySpaFromLead } = require('./spaSync');
 
 // In-memory debounce cache to prevent duplicate processing of the same lead (TTL: 5s)
 const processedLeads = new Map();
@@ -135,6 +136,11 @@ class EventRouter {
     // 6. Loop Guard: If already at target stage, DO NOT UPDATE!
     if (currentStatus === targetStageId) {
       console.log(`[LOOP GUARD] Lead #${leadId} is already in target stage "${targetStageId}". Skipping update.`);
+      if (resolvedType === 'enquiry') {
+        setTimeout(() => {
+          syncEnquirySpaFromLead(leadId, domain).catch(() => {});
+        }, 1000);
+      }
       return { status: 'unchanged', currentStatus, targetStageId };
     }
 
@@ -142,6 +148,13 @@ class EventRouter {
     console.log(`[ROUTER] Shifting Lead #${leadId} (${resolvedType}) stage: "${currentStatus}" -> "${targetStageId}"`);
     await BitrixClient.crmLeadUpdate(leadId, { STATUS_ID: targetStageId }, domain);
     console.log(`[ROUTER] Lead #${leadId} successfully moved to "${targetStageId}".`);
+
+    // Synchronize Enquiry SPA if enquiry lead
+    if (resolvedType === 'enquiry') {
+      setTimeout(() => {
+        syncEnquirySpaFromLead(leadId, domain).catch(() => {});
+      }, 1500);
+    }
 
     return {
       status: 'updated',

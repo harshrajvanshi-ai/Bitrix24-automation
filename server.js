@@ -22,6 +22,7 @@ const StorageManager = require('./src/storage');
 const BitrixClient = require('./src/bitrixClient');
 const DiscoveryService = require('./src/discovery');
 const EventRouter = require('./src/eventRouter');
+const { syncEnquirySpaFromLead, STATE_ENUM_TO_LABEL, STATE_LABEL_TO_ENUM } = require('./src/spaSync');
 const { verifyBitrixEventToken, verifyAdminSecret } = require('./src/middleware/auth');
 const { apiLimiter, eventLimiter } = require('./src/middleware/rateLimiter');
 
@@ -231,7 +232,11 @@ app.all('/tab', (req, res) => {
  */
 app.post('/events', eventLimiter, verifyBitrixEventToken, async (req, res) => {
   const event = req.body?.event || req.body?.['event'] || 'UNKNOWN_EVENT';
-  const leadId = (
+  const entityTypeId = (
+    req.body?.data?.FIELDS?.ENTITY_TYPE_ID ||
+    req.body?.['data[FIELDS][ENTITY_TYPE_ID]']
+  );
+  const rawId = (
     req.body?.data?.FIELDS?.ID ||
     req.body?.data?.FIELDS?.id ||
     req.body?.['data[FIELDS][ID]'] ||
@@ -240,25 +245,39 @@ app.post('/events', eventLimiter, verifyBitrixEventToken, async (req, res) => {
   );
   const domain = req.body?.auth?.domain || req.body?.['auth[domain]'] || 'latest';
 
-  console.log(`[EVENT] Received ${event} for Lead #${leadId} from domain: ${domain}`);
+  console.log(`[EVENT] Received ${event} for ID #${rawId} (entity: ${entityTypeId || 'LEAD'}) from domain: ${domain}`);
 
-  if (!leadId) {
-    return res.status(400).json({ success: false, error: 'Missing lead ID in payload' });
+  if (!rawId) {
+    return res.status(400).json({ success: false, error: 'Missing entity ID in payload' });
   }
 
   // Acknowledge receipt promptly with 200 OK to prevent Bitrix24 webhook timeouts
   res.status(200).json({
     success: true,
-    message: 'Event accepted for asynchronous routing',
+    message: 'Event accepted for asynchronous processing',
     event,
-    leadId
+    id: rawId
   });
 
-  // Asynchronously execute lead type evaluation and stage transition
+  // Handle Smart Process Item events (specifically Enquiry SPA 1062)
+  if (String(entityTypeId) === '1062' || event.startsWith('ONCRMDYNAMICITEM')) {
+    try {
+      const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1062, id: rawId }, domain);
+      const linkedLeadId = itemRes?.item?.xmlId || itemRes?.item?.ufCrm18Lead;
+      if (linkedLeadId) {
+        await syncEnquirySpaFromLead(linkedLeadId, domain);
+      }
+    } catch (spaErr) {
+      console.warn(`[EVENT] Error handling Enquiry SPA event for #${rawId}:`, spaErr.message);
+    }
+    return;
+  }
+
+  // Handle Lead events
   try {
-    await EventRouter.handleLeadEvent(leadId, event, domain);
+    await EventRouter.handleLeadEvent(rawId, event, domain);
   } catch (err) {
-    console.error(`[EVENT] Asynchronous routing failed for Lead #${leadId}:`, err.message);
+    console.error(`[EVENT] Asynchronous routing failed for Lead #${rawId}:`, err.message);
   }
 });
 
@@ -814,7 +833,7 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
     fields.ADDRESS_POSTAL_CODE = fields.UF_CRM_POSTALCODE;
   }
   if (fields.UF_CRM_STATE && !fields.ADDRESS_PROVINCE) {
-    fields.ADDRESS_PROVINCE = fields.UF_CRM_STATE;
+    fields.ADDRESS_PROVINCE = STATE_ENUM_TO_LABEL[String(fields.UF_CRM_STATE)] || fields.UF_CRM_STATE;
   }
 
   // Sync Master Project companion fields (UF_CRM_PROJECT <-> UF_CRM_1792558317)
@@ -934,6 +953,12 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
 
   try {
     const result = await BitrixClient.crmLeadUpdate(leadId, fields);
+
+    // Asynchronously synchronize linked Enquiry SPA item
+    syncEnquirySpaFromLead(leadId).catch(spaErr => {
+      console.warn(`[SPA SYNC] Background sync failed for Lead #${leadId}:`, spaErr.message);
+    });
+
     res.json({ success: true, result });
   } catch (err) {
     console.error(`[API] Failed to update Lead #${leadId}:`, err.message);
@@ -980,7 +1005,11 @@ app.get('/api/lead/:id', apiLimiter, async (req, res) => {
         lead.UF_CRM_POSTALCODE = lead.ADDRESS_POSTAL_CODE;
       }
       if (!lead.UF_CRM_STATE && lead.ADDRESS_PROVINCE) {
-        lead.UF_CRM_STATE = lead.ADDRESS_PROVINCE;
+        const normProv = String(lead.ADDRESS_PROVINCE).trim().toLowerCase();
+        lead.UF_CRM_STATE = STATE_LABEL_TO_ENUM[normProv] || lead.ADDRESS_PROVINCE;
+      }
+      if (lead.UF_CRM_STATE && STATE_ENUM_TO_LABEL[String(lead.UF_CRM_STATE)]) {
+        lead.UF_CRM_STATE_LABEL = STATE_ENUM_TO_LABEL[String(lead.UF_CRM_STATE)];
       }
 
       // Resolve Master Project fallback

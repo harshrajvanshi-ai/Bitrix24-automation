@@ -552,7 +552,16 @@ async function runTests() {
       fields.ADDRESS_POSTAL_CODE = fields.UF_CRM_POSTALCODE;
     }
     if (fields.UF_CRM_STATE && !fields.ADDRESS_PROVINCE) {
-      fields.ADDRESS_PROVINCE = fields.UF_CRM_STATE;
+      const stateEnumToLabel = {
+        '2532': 'Dubai',
+        '2534': 'Abu Dhabi',
+        '2536': 'Sharjah',
+        '2538': 'Ajman',
+        '2540': 'Ras Al Khaimah',
+        '2542': 'Fujairah',
+        '2544': 'Umm Al Quwain'
+      };
+      fields.ADDRESS_PROVINCE = stateEnumToLabel[String(fields.UF_CRM_STATE)] || fields.UF_CRM_STATE;
     }
 
     // Sync Master Project companion fields (UF_CRM_PROJECT <-> UF_CRM_1792558317)
@@ -653,12 +662,12 @@ async function runTests() {
     UF_CRM_1791970638065: 'Building 4, Downtown Boulevard',
     UF_CRM_CITY: 'Dubai',
     UF_CRM_POSTALCODE: '00000',
-    UF_CRM_STATE: 'Dubai'
+    UF_CRM_STATE: '2532'
   });
   assert(out5.ADDRESS === 'Building 4, Downtown Boulevard', 'Native ADDRESS updates from UF_CRM_1791970638065');
   assert(out5.ADDRESS_CITY === 'Dubai', 'Native ADDRESS_CITY updates from UF_CRM_CITY');
   assert(out5.ADDRESS_POSTAL_CODE === '00000', 'Native ADDRESS_POSTAL_CODE updates from UF_CRM_POSTALCODE');
-  assert(out5.ADDRESS_PROVINCE === 'Dubai', 'Native ADDRESS_PROVINCE updates from UF_CRM_STATE');
+  assert(out5.ADDRESS_PROVINCE === 'Dubai', 'Native ADDRESS_PROVINCE updates from UF_CRM_STATE enum ID 2532');
 
   // 6. Verify Master Project companion fields synchronize
   const out6 = simulateEnquiryLeadUpdate({ UF_CRM_PROJECT: '220' });
@@ -678,6 +687,51 @@ async function runTests() {
 
   const out10 = simulateEnquiryLeadUpdate({ UF_CRM_1792563228880: '2498' });
   assert(out10.SOURCE_ID === 'CALL', 'Native Bitrix SOURCE_ID updates to CALL for Cold Outreach');
+
+  // ============================================================================
+  // Case 16: Cross-Entity SPA Enum Translation (Lead Source Type, Urgency, State)
+  // ============================================================================
+  console.log('\n--- Case 16: Cross-Entity SPA Enum Translation ---');
+  const {
+    LEAD_SOURCE_TYPE_MAP,
+    URGENCY_MAP,
+    STATE_MAP,
+    STATE_ENUM_TO_LABEL,
+    STATE_LABEL_TO_ENUM
+  } = require('./src/spaSync');
+
+  // 1. Verify UF_CRM_STATE schema in config/fields.json
+  const fieldsConfig = config.loadFieldsConfig();
+  const stateField = fieldsConfig.enquiryLayout?.sections
+    ?.flatMap(s => s.fields || [])
+    ?.find(f => f.code === 'UF_CRM_STATE');
+  assert(stateField && stateField.type === 'enumeration', 'UF_CRM_STATE is configured as type enumeration');
+  assert(Array.isArray(stateField.options) && stateField.options.length === 7, 'UF_CRM_STATE has exactly 7 UAE Emirates options');
+  assert(stateField.options.some(o => o.value === 'Dubai' && String(o.id) === '2532'), 'UF_CRM_STATE includes Dubai (2532)');
+  assert(stateField.options.some(o => o.value === 'Abu Dhabi' && String(o.id) === '2534'), 'UF_CRM_STATE includes Abu Dhabi (2534)');
+
+  // 2. Verify Lead Source Type Cross-Entity Translation
+  assert(LEAD_SOURCE_TYPE_MAP['2506'] === 1234, 'Inbound Portal (2506) maps to SPA 1234');
+  assert(LEAD_SOURCE_TYPE_MAP['2504'] === 1236, 'Paid Ad Campaign (2504) maps to SPA 1236');
+  assert(LEAD_SOURCE_TYPE_MAP['2502'] === 1238, 'Organic Search (2502) maps to SPA 1238');
+  assert(LEAD_SOURCE_TYPE_MAP['2500'] === 1240, 'Direct Message (2500) maps to SPA 1240');
+  assert(LEAD_SOURCE_TYPE_MAP['2498'] === 1242, 'Cold Outreach (2498) maps to SPA 1242');
+  assert(LEAD_SOURCE_TYPE_MAP['2496'] === 1244, 'Partner Broker (2496) maps to SPA 1244');
+
+  // 3. Verify Urgency Cross-Entity Translation
+  assert(URGENCY_MAP['2370'] === 1294, 'Urgency Low (2370) maps to SPA 1294');
+  assert(URGENCY_MAP['2372'] === 1296, 'Urgency Normal (2372) maps to SPA 1296');
+  assert(URGENCY_MAP['2374'] === 1298, 'Urgency High (2374) maps to SPA 1298');
+  assert(URGENCY_MAP['2376'] === 1300, 'Urgency Urgent (2376) maps to SPA 1300');
+
+  // 4. Verify State Cross-Entity Translation
+  assert(STATE_MAP['2532'] === 1354, 'State Dubai (2532) maps to SPA 1354');
+  assert(STATE_MAP['2534'] === 1356, 'State Abu Dhabi (2534) maps to SPA 1356');
+  assert(STATE_MAP['2544'] === 1366, 'State Umm Al Quwain (2544) maps to SPA 1366');
+
+  // 5. Verify State enum to label mapping
+  assert(STATE_ENUM_TO_LABEL['2532'] === 'Dubai', 'STATE_ENUM_TO_LABEL resolves 2532 to Dubai');
+  assert(STATE_LABEL_TO_ENUM['dubai'] === '2532', 'STATE_LABEL_TO_ENUM resolves dubai to 2532');
 
   // ============================================================================
   // Summary

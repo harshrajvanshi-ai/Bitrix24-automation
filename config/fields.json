@@ -2083,8 +2083,38 @@
             "code": "UF_CRM_STATE",
             "label": "State",
             "bitrixLabel": "State",
-            "type": "string",
-            "placeholder": ""
+            "type": "enumeration",
+            "placeholder": "-- Select State --",
+            "options": [
+              {
+                "id": "2532",
+                "value": "Dubai"
+              },
+              {
+                "id": "2534",
+                "value": "Abu Dhabi"
+              },
+              {
+                "id": "2536",
+                "value": "Sharjah"
+              },
+              {
+                "id": "2538",
+                "value": "Ajman"
+              },
+              {
+                "id": "2540",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2542",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2544",
+                "value": "Umm Al Quwain"
+              }
+            ]
           },
           {
             "code": "UF_CRM_STREETNAME",
@@ -4627,8 +4657,38 @@
       "code": "UF_CRM_STATE",
       "label": "State",
       "bitrixLabel": "State",
-      "type": "string",
-      "placeholder": ""
+      "type": "enumeration",
+      "placeholder": "-- Select State --",
+      "options": [
+        {
+          "id": "2532",
+          "value": "Dubai"
+        },
+        {
+          "id": "2534",
+          "value": "Abu Dhabi"
+        },
+        {
+          "id": "2536",
+          "value": "Sharjah"
+        },
+        {
+          "id": "2538",
+          "value": "Ajman"
+        },
+        {
+          "id": "2540",
+          "value": "Ras Al Khaimah"
+        },
+        {
+          "id": "2542",
+          "value": "Fujairah"
+        },
+        {
+          "id": "2544",
+          "value": "Umm Al Quwain"
+        }
+      ]
     },
     {
       "code": "UF_CRM_STREETNAME",
