@@ -480,6 +480,7 @@ const CRM_LOOKUP_CONFIG = {
   UF_CRM_PROJECT_1: { entity: 'project', prefix: '' },
   UF_CRM_1791794196: { entity: 'project', prefix: '', isArray: true },
   UF_CRM_PROJECT: { entity: 'master_project', prefix: '' },
+  UF_CRM_1792558317: { entity: 'master_project', prefix: '' },
   UF_CRM_PROPERTY: { entity: 'property', prefix: '' },
   UF_CRM_PROPERTY_PROPERTYFINDER: { entity: 'property', prefix: '' },
   UF_CRM_MASTERPROPERTY: { entity: 'property', prefix: '' },

@@ -1247,10 +1247,10 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_ENQUIRY_LOCKED_1",
+            "code": "UF_CRM_ENQUIRY_LOCKED",
             "label": "Enquiry Locked",
-            "type": "string",
-            "placeholder": ""
+            "type": "boolean",
+            "placeholder": "Enquiry Locked"
           },
           {
             "code": "UF_CRM_MOVE_DATE",
@@ -1274,7 +1274,7 @@
           {
             "code": "UF_CRM_FIRST_CONTACTED_DATE",
             "label": "First Contacted Date",
-            "type": "date",
+            "type": "datetime",
             "placeholder": ""
           },
           {
@@ -1286,7 +1286,7 @@
           {
             "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
             "label": "Date Assigned to Broker",
-            "type": "date",
+            "type": "datetime",
             "placeholder": ""
           },
           {
@@ -1320,6 +1320,12 @@
             "label": "Is Contact Viewable",
             "type": "boolean",
             "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BROKER_COMPANY",
+            "label": "Broker Company",
+            "type": "string",
+            "placeholder": "Enter broker company..."
           }
         ]
       },
@@ -1444,8 +1450,8 @@
           {
             "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
             "label": "eMortgage Auto Referral",
-            "type": "string",
-            "placeholder": ""
+            "type": "boolean",
+            "placeholder": "Yes / Auto Referral"
           },
           {
             "code": "UF_CRM_EMORTGAGE_BROKER",
@@ -1480,8 +1486,8 @@
           {
             "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
             "label": "eMortgage Skip Send",
-            "type": "string",
-            "placeholder": ""
+            "type": "boolean",
+            "placeholder": "Yes / Skip Send"
           }
         ]
       },
@@ -1597,25 +1603,25 @@
           {
             "code": "UF_CRM_TOTALAREA_MIN",
             "label": "Size - min",
-            "type": "integer",
+            "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_TOTALAREA_MAX",
             "label": "Size - max",
-            "type": "integer",
+            "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOTSIZE_MIN",
             "label": "Lot Size - min",
-            "type": "integer",
+            "type": "double",
             "placeholder": ""
           },
           {
             "code": "UF_CRM_LOTSIZE_MAX",
             "label": "Lot Size - max",
-            "type": "integer",
+            "type": "double",
             "placeholder": ""
           },
           {
@@ -1839,6 +1845,12 @@
             "label": "Days On Market Max",
             "type": "integer",
             "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_CHEQUES",
+            "label": "Cheques",
+            "type": "string",
+            "placeholder": "Enter cheques requirement..."
           }
         ]
       },
@@ -1862,25 +1874,28 @@
           {
             "code": "UF_CRM_ADDITIONALCITIES",
             "label": "Additional Cities",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_ADDITIONALPOSTALCODES",
             "label": "Additional Postal Codes",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_COUNTIES",
             "label": "Counties",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_1791970638065",
             "label": "Property Address",
-            "type": "text",
+            "type": "string",
             "placeholder": "",
             "fullWidth": true
           },
@@ -1905,8 +1920,9 @@
           {
             "code": "UF_CRM_NEIGHBORHOODS",
             "label": "Neighborhoods",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_LOCATIONKEYWORDS",
@@ -1924,8 +1940,9 @@
           {
             "code": "UF_CRM_SUBDIVISIONS",
             "label": "Subdivisions",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_SCHOOL_1",
@@ -1936,14 +1953,16 @@
           {
             "code": "UF_CRM_SCHOOLATTENDANCEZONES",
             "label": "School Attendance Zones",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_SCHOOLDISTRICTS",
             "label": "School Districts",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           }
         ]
       },
@@ -1983,14 +2002,16 @@
           {
             "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
             "label": "Buildings and Developments",
-            "type": "string",
-            "placeholder": "Search Buildings and Developments..."
+            "type": "text",
+            "placeholder": "Search Buildings and Developments...",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_RECOMMENDED_LISTINGS",
             "label": "Recommended_Listings",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_BUILDING_DUBIZZLE",
@@ -2058,14 +2079,16 @@
           {
             "code": "UF_CRM_COMMERCIAL_AMENITIES",
             "label": "Commercial Amenities",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_PRIVATE_AMENITIES",
             "label": "Private Amenities",
-            "type": "string",
-            "placeholder": ""
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
             "code": "UF_CRM_PARKINGAVAILABLE",
@@ -2164,10 +2187,10 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_BASEMENT_1",
+            "code": "UF_CRM_BASEMENT_BOOL",
             "label": "Basement",
-            "type": "double",
-            "placeholder": ""
+            "type": "boolean",
+            "placeholder": "Has Basement"
           },
           {
             "code": "UF_CRM_BASEMENTTYPE",
@@ -2360,6 +2383,12 @@
             "label": "This Week Open House",
             "type": "date",
             "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_SAVED_SEARCH_NAME",
+            "label": "Saved Search Name",
+            "type": "string",
+            "placeholder": "Enter saved search name..."
           }
         ]
       },
@@ -2383,7 +2412,7 @@
           {
             "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
             "label": "Disqualify Reason Other",
-            "type": "text",
+            "type": "string",
             "placeholder": "",
             "fullWidth": true
           },
@@ -3492,18 +3521,6 @@
       ]
     },
     {
-      "code": "UF_CRM_MOVE_DATE",
-      "label": "Move Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_AD_ID",
-      "label": "Ad ID",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
       "code": "UF_CRM_1791962499457",
       "label": "Priority",
       "type": "enumeration",
@@ -3522,31 +3539,6 @@
           "value": "LOW"
         }
       ]
-    },
-    {
-      "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
-      "label": "Days since last contacted",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_COMMENTS_1",
-      "label": "Comments",
-      "type": "text",
-      "placeholder": "",
-      "fullWidth": true
-    },
-    {
-      "code": "UF_CRM_ENQUIRY_LOCKED_1",
-      "label": "Enquiry Locked",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DEAL_VALUE_1",
-      "label": "Deal Value",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
     },
     {
       "code": "UF_CRM_NORMAL_LOW_HIGH_URGENT",
@@ -3573,32 +3565,245 @@
       ]
     },
     {
-      "code": "UF_CRM_LISTING",
-      "label": "Listing",
-      "type": "lookup",
-      "placeholder": "Search Listing...",
-      "lookupEntity": "listing"
+      "code": "UF_CRM_DEAL_VALUE_1",
+      "label": "Deal Value",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
     },
     {
-      "code": "UF_CRM_PROJECT",
-      "label": "Master Project",
-      "type": "lookup",
-      "placeholder": "Search Master Project...",
-      "lookupEntity": "master_project"
+      "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
+      "label": "Days since last contacted",
+      "type": "integer",
+      "placeholder": ""
     },
     {
-      "code": "UF_CRM_PROJECT_1",
-      "label": "Project",
-      "type": "lookup",
-      "placeholder": "Search Project...",
-      "lookupEntity": "project"
+      "code": "UF_CRM_ENQUIRY_LOCKED",
+      "label": "Enquiry Locked",
+      "type": "boolean",
+      "placeholder": "Enquiry Locked"
     },
     {
-      "code": "UF_CRM_PROPERTY_LAYOUT",
-      "label": "Property Layout",
+      "code": "UF_CRM_MOVE_DATE",
+      "label": "Move Date",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_AD_ID",
+      "label": "Ad ID",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_COMMENTS_1",
+      "label": "Comments",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_FIRST_CONTACTED_DATE",
+      "label": "First Contacted Date",
+      "type": "datetime",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_FIRST_VIEWING_DATE",
+      "label": "First Viewing Date",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
+      "label": "Date Assigned to Broker",
+      "type": "datetime",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_DEFERRAL_DATE",
+      "label": "Deferral Date",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_ASSIGNED_TO_BROKER",
+      "label": "Assigned to Broker",
       "type": "lookup",
-      "placeholder": "Search Layout...",
-      "lookupEntity": "layout"
+      "placeholder": "Search Broker / Agent...",
+      "lookupEntity": "broker"
+    },
+    {
+      "code": "UF_CRM_LISTINGAGENT",
+      "label": "Listing Agent",
+      "type": "lookup",
+      "placeholder": "Search Broker / Agent...",
+      "lookupEntity": "broker"
+    },
+    {
+      "code": "UF_CRM_IS_CLAIMABLE",
+      "label": "Is Claimable",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_IS_CONTACT_VIEWABLE",
+      "label": "Is Contact Viewable",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_BROKER_COMPANY",
+      "label": "Broker Company",
+      "type": "string",
+      "placeholder": "Enter broker company..."
+    },
+    {
+      "code": "UF_CRM_LISTINGPRICE_MIN",
+      "label": "Price - min",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_LISTINGPRICE_MAX",
+      "label": "Price - max",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_MONTHLYRENTMIN",
+      "label": "Monthly Rent - min",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_MONTHLYRENTMAX",
+      "label": "Monthly Rent - max",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_1792139023",
+      "label": "Number of Cheques",
+      "type": "enumeration",
+      "placeholder": "-- Select Number of Cheques --",
+      "options": [
+        {
+          "id": "2442",
+          "value": "1 Cheque"
+        },
+        {
+          "id": "2444",
+          "value": "2 Cheques"
+        },
+        {
+          "id": "2446",
+          "value": "4 Cheques"
+        },
+        {
+          "id": "2448",
+          "value": "6 Cheques"
+        },
+        {
+          "id": "2450",
+          "value": "12 Cheques"
+        }
+      ]
+    },
+    {
+      "code": "UF_CRM_FINANCE",
+      "label": "Finance",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_HOAFEESMIN",
+      "label": "HOA Fees Min",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_HOAFEESMAX",
+      "label": "HOA Fees Max",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_TAXMIN",
+      "label": "Tax Min",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_TAXMAX",
+      "label": "Tax Max",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
+      "label": "Purchase Amount of Home",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_EPPRAISALVALUATION",
+      "label": "Eppraisal Valuation",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_ESTATEDVALUATION",
+      "label": "Estated Valuation",
+      "type": "money",
+      "placeholder": "e.g., 2,500,000"
+    },
+    {
+      "code": "UF_CRM_MORTGAGEDATE",
+      "label": "Mortgage Date",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
+      "label": "eMortgage Auto Referral",
+      "type": "boolean",
+      "placeholder": "Yes / Auto Referral"
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_BROKER",
+      "label": "eMortgage Broker",
+      "type": "string",
+      "placeholder": "Search eMortgage Broker..."
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
+      "label": "eMortgage Broker email",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
+      "label": "eMortgage Broker number",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
+      "label": "eMortgage Referral Date",
+      "type": "date",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
+      "label": "eMortgage Referred By",
+      "type": "string",
+      "placeholder": "Search eMortgage Referred By..."
+    },
+    {
+      "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
+      "label": "eMortgage Skip Send",
+      "type": "boolean",
+      "placeholder": "Yes / Skip Send"
     },
     {
       "code": "UF_CRM_1791952050535",
@@ -3645,105 +3850,6 @@
       ]
     },
     {
-      "code": "UF_CRM_BEDS_MAX",
-      "label": "Bedrooms - max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BATHS_MAX",
-      "label": "Bathrooms - max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BATHS_MIN",
-      "label": "Bathrooms - min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BEDS_MIN",
-      "label": "Bedrooms - min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LISTINGPRICE_MAX",
-      "label": "Price - max",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_LISTINGPRICE_MIN",
-      "label": "Price - min",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_TOTALAREA_MAX",
-      "label": "Size - max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_TOTALAREA_MIN",
-      "label": "Size - min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_ASSIGNED_TO_BROKER",
-      "label": "Assigned to Broker",
-      "type": "lookup",
-      "placeholder": "Search Broker / Agent...",
-      "lookupEntity": "broker"
-    },
-    {
-      "code": "UF_CRM_LISTINGAGENT",
-      "label": "Listing Agent",
-      "type": "lookup",
-      "placeholder": "Search Broker / Agent...",
-      "lookupEntity": "broker"
-    },
-    {
-      "code": "UF_CRM_DISQUALIFY_DATE",
-      "label": "Disqualify Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DISQUALIFY_REASON",
-      "label": "Disqualify Reason",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
-      "label": "Disqualify Reason Other",
-      "type": "text",
-      "placeholder": "",
-      "fullWidth": true
-    },
-    {
-      "code": "UF_CRM_SPAM_ENQUIRY",
-      "label": "Spam Enquiry",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SPAM_REASON",
-      "label": "Spam Reason",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
-      "label": "Buildings and Developments",
-      "type": "string",
-      "placeholder": "Search Buildings and Developments..."
-    },
-    {
       "code": "UF_CRM_PROPERTY_SUB_TYPE",
       "label": "Property Subtype",
       "type": "enumeration",
@@ -3780,8 +3886,56 @@
       ]
     },
     {
-      "code": "UF_CRM_STORIES_1",
-      "label": "Stories",
+      "code": "UF_CRM_BEDS_MIN",
+      "label": "Bedrooms - min",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_BEDS_MAX",
+      "label": "Bedrooms - max",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_BATHS_MIN",
+      "label": "Bathrooms - min",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_BATHS_MAX",
+      "label": "Bathrooms - max",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_TOTALAREA_MIN",
+      "label": "Size - min",
+      "type": "double",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_TOTALAREA_MAX",
+      "label": "Size - max",
+      "type": "double",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_LOTSIZE_MIN",
+      "label": "Lot Size - min",
+      "type": "double",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_LOTSIZE_MAX",
+      "label": "Lot Size - max",
+      "type": "double",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_ACREMIN",
+      "label": "Acre Min",
       "type": "integer",
       "placeholder": ""
     },
@@ -3792,8 +3946,8 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_ACREMIN",
-      "label": "Acre Min",
+      "code": "UF_CRM_FLOOR_MIN",
+      "label": "Floor - min",
       "type": "integer",
       "placeholder": ""
     },
@@ -3804,20 +3958,8 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_FLOOR_MIN",
-      "label": "Floor - min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LOTSIZE_MAX",
-      "label": "Lot Size - max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LOTSIZE_MIN",
-      "label": "Lot Size - min",
+      "code": "UF_CRM_STORIES_MIN",
+      "label": "Stories - min",
       "type": "integer",
       "placeholder": ""
     },
@@ -3828,8 +3970,8 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_STORIES_MIN",
-      "label": "Stories - min",
+      "code": "UF_CRM_STORIES_1",
+      "label": "Stories",
       "type": "integer",
       "placeholder": ""
     },
@@ -3868,30 +4010,6 @@
       ]
     },
     {
-      "code": "UF_CRM_STYLE_1",
-      "label": "Style",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_ADULTCOMMUNITY",
-      "label": "Adult Community",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DAYSONMARKETMAX",
-      "label": "Days On Market Max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DAYSONMARKETMIN",
-      "label": "Days On Market Min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
       "code": "UF_CRM_1791969936048",
       "label": "Furnished",
       "type": "enumeration",
@@ -3912,21 +4030,9 @@
       ]
     },
     {
-      "code": "UF_CRM_NEWCONSTRUCTION",
-      "label": "New Construction",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_YEARBUILT_MAX",
-      "label": "Year Built - max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_YEARBUILT_MIN",
-      "label": "Year Built - min",
-      "type": "integer",
+      "code": "UF_CRM_STYLE_1",
+      "label": "Style",
+      "type": "string",
       "placeholder": ""
     },
     {
@@ -3956,6 +4062,24 @@
           "value": "Timber / Wood Frame"
         }
       ]
+    },
+    {
+      "code": "UF_CRM_NEWCONSTRUCTION",
+      "label": "New Construction",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_YEARBUILT_MIN",
+      "label": "Year Built - min",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_YEARBUILT_MAX",
+      "label": "Year Built - max",
+      "type": "integer",
+      "placeholder": ""
     },
     {
       "code": "UF_CRM_1791970130059",
@@ -4014,145 +4138,292 @@
       ]
     },
     {
-      "code": "UF_CRM_1792139023",
-      "label": "Number of Cheques",
-      "type": "enumeration",
-      "placeholder": "-- Select Number of Cheques --",
-      "options": [
-        {
-          "id": "2442",
-          "value": "1 Cheque"
-        },
-        {
-          "id": "2444",
-          "value": "2 Cheques"
-        },
-        {
-          "id": "2446",
-          "value": "4 Cheques"
-        },
-        {
-          "id": "2448",
-          "value": "6 Cheques"
-        },
-        {
-          "id": "2450",
-          "value": "12 Cheques"
-        }
-      ]
+      "code": "UF_CRM_ADULTCOMMUNITY",
+      "label": "Adult Community",
+      "type": "boolean",
+      "placeholder": ""
     },
     {
-      "code": "UF_CRM_FINANCE",
-      "label": "Finance",
+      "code": "UF_CRM_DAYSONMARKETMIN",
+      "label": "Days On Market Min",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_DAYSONMARKETMAX",
+      "label": "Days On Market Max",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_CHEQUES",
+      "label": "Cheques",
+      "type": "string",
+      "placeholder": "Enter cheques requirement..."
+    },
+    {
+      "code": "UF_CRM_AREA",
+      "label": "Area",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_HOAFEESMAX",
-      "label": "HOA Fees Max",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_HOAFEESMIN",
-      "label": "HOA Fees Min",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_MONTHLYRENTMAX",
-      "label": "Monthly Rent - max",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_MONTHLYRENTMIN",
-      "label": "Monthly Rent - min",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_TAXMAX",
-      "label": "Tax Max",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_TAXMIN",
-      "label": "Tax Min",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_EPPRAISALVALUATION",
-      "label": "Eppraisal Valuation",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_ESTATEDVALUATION",
-      "label": "Estated Valuation",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_MORTGAGEDATE",
-      "label": "Mortgage Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
-      "label": "Purchase Amount of Home",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
-      "label": "eMortgage Auto Referral",
+      "code": "UF_CRM_CITY",
+      "label": "City",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_EMORTGAGE_BROKER",
-      "label": "eMortgage Broker",
+      "code": "UF_CRM_ADDITIONALCITIES",
+      "label": "Additional Cities",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_ADDITIONALPOSTALCODES",
+      "label": "Additional Postal Codes",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_COUNTIES",
+      "label": "Counties",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_1791970638065",
+      "label": "Property Address",
       "type": "string",
-      "placeholder": "Search eMortgage Broker..."
+      "placeholder": "",
+      "fullWidth": true
     },
     {
-      "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
-      "label": "eMortgage Broker email",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
-      "label": "eMortgage Broker number",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
-      "label": "eMortgage Referral Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
-      "label": "eMortgage Referred By",
-      "type": "string",
-      "placeholder": "Search eMortgage Referred By..."
-    },
-    {
-      "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
-      "label": "eMortgage Skip Send",
+      "code": "UF_CRM_POSTALCODE",
+      "label": "Zip/Postal Code",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_BASEMENT_1",
-      "label": "Basement",
-      "type": "double",
+      "code": "UF_CRM_STATE",
+      "label": "State",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_STREETNAME",
+      "label": "Street Name",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_NEIGHBORHOODS",
+      "label": "Neighborhoods",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_LOCATIONKEYWORDS",
+      "label": "Location Keywords",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_SUBDIVISIONNAME",
+      "label": "Subdivision Name",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_SUBDIVISIONS",
+      "label": "Subdivisions",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_SCHOOL_1",
+      "label": "School",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_SCHOOLATTENDANCEZONES",
+      "label": "School Attendance Zones",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_SCHOOLDISTRICTS",
+      "label": "School Districts",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_LISTING",
+      "label": "Listing",
+      "type": "lookup",
+      "placeholder": "Search Listing...",
+      "lookupEntity": "listing"
+    },
+    {
+      "code": "UF_CRM_PROJECT",
+      "label": "Master Project",
+      "type": "lookup",
+      "placeholder": "Search Master Project...",
+      "lookupEntity": "master_project"
+    },
+    {
+      "code": "UF_CRM_PROJECT_1",
+      "label": "Project",
+      "type": "lookup",
+      "placeholder": "Search Project...",
+      "lookupEntity": "project"
+    },
+    {
+      "code": "UF_CRM_PROPERTY_LAYOUT",
+      "label": "Property Layout",
+      "type": "lookup",
+      "placeholder": "Search Layout...",
+      "lookupEntity": "layout"
+    },
+    {
+      "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
+      "label": "Buildings and Developments",
+      "type": "text",
+      "placeholder": "Search Buildings and Developments...",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_RECOMMENDED_LISTINGS",
+      "label": "Recommended_Listings",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_BUILDING_DUBIZZLE",
+      "label": "Building - Bayut",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
+      "label": "Locationtext - Bayut",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_CITY_BAYUT",
+      "label": "City - Bayut",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
+      "label": "Property - Propertyfinder",
+      "type": "lookup",
+      "placeholder": "Search Property - Propertyfinder...",
+      "lookupEntity": "property"
+    },
+    {
+      "code": "UF_CRM_PROPERTYFINDER_REGION",
+      "label": "Propertyfinder Region",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
+      "label": "Community - Propertyfinder",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
+      "label": "Sub Community - Propertyfinder",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_CITY_PF",
+      "label": "City - Propertyfinder",
+      "type": "string",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_DEVELOPER_1",
+      "label": "Developer",
+      "type": "lookup",
+      "placeholder": "Search Developer / Company...",
+      "lookupEntity": "developer"
+    },
+    {
+      "code": "UF_CRM_COMMERCIAL_AMENITIES",
+      "label": "Commercial Amenities",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_PRIVATE_AMENITIES",
+      "label": "Private Amenities",
+      "type": "text",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_PARKINGAVAILABLE",
+      "label": "Parking Available",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_NUMBEROFPARKINGSPACES",
+      "label": "Number of Parking Spaces",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_PARKINGMIN",
+      "label": "Parking Min",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_PARKING_SPACES_MIN",
+      "label": "Parking Spaces - min",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_PARKING_SPACES_MAX",
+      "label": "Parking Spaces - max",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_GARAGESPACEMAX",
+      "label": "Garage Space Max",
+      "type": "integer",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_POOL",
+      "label": "Pool",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_WATERFRONT",
+      "label": "Waterfront",
+      "type": "boolean",
       "placeholder": ""
     },
     {
@@ -4168,20 +4439,26 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_PARKINGAVAILABLE",
-      "label": "Parking Available",
+      "code": "UF_CRM_WATERVIEW",
+      "label": "Water View",
       "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_COMMERCIAL_AMENITIES",
-      "label": "Commercial Amenities",
-      "type": "string",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_DOCK",
       "label": "Dock",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_YARD",
+      "label": "Yard",
+      "type": "boolean",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_1791970241624",
+      "label": "Pets Allowed",
       "type": "boolean",
       "placeholder": ""
     },
@@ -4198,58 +4475,10 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_GARAGESPACEMAX",
-      "label": "Garage Space Max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PARKINGMIN",
-      "label": "Parking Min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_NUMBEROFPARKINGSPACES",
-      "label": "Number of Parking Spaces",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PARKING_SPACES_MAX",
-      "label": "Parking Spaces - max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PARKING_SPACES_MIN",
-      "label": "Parking Spaces - min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_1791970241624",
-      "label": "Pets Allowed",
+      "code": "UF_CRM_BASEMENT_BOOL",
+      "label": "Basement",
       "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_POOL",
-      "label": "Pool",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_WATERFRONT",
-      "label": "Waterfront",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_YARD",
-      "label": "Yard",
-      "type": "boolean",
-      "placeholder": ""
+      "placeholder": "Has Basement"
     },
     {
       "code": "UF_CRM_BASEMENTTYPE",
@@ -4340,12 +4569,6 @@
       ]
     },
     {
-      "code": "UF_CRM_WATERVIEW",
-      "label": "Water View",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
       "code": "UF_CRM_KEYWORDS",
       "label": "Keywords",
       "type": "text",
@@ -4353,168 +4576,45 @@
       "fullWidth": true
     },
     {
-      "code": "UF_CRM_PRIVATE_AMENITIES",
-      "label": "Private Amenities",
+      "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
+      "label": "Is Website Saved Search",
+      "type": "url",
+      "placeholder": ""
+    },
+    {
+      "code": "UF_CRM_WEBSITEID",
+      "label": "Website ID",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_AREA",
-      "label": "Area",
+      "code": "UF_CRM_WEBSITEMLSID",
+      "label": "Website MLS ID",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_CITY",
-      "label": "City",
+      "code": "UF_CRM_WEBSITESEARCHID",
+      "label": "Website Search ID",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_ADDITIONALCITIES",
-      "label": "Additional Cities",
-      "type": "string",
+      "code": "UF_CRM_WEBSITESEARCHTYPE",
+      "label": "Website Search Type",
+      "type": "url",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_ADDITIONALPOSTALCODES",
-      "label": "Additional Postal Codes",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_COUNTIES",
-      "label": "Counties",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_1791970638065",
-      "label": "Property Address",
-      "type": "text",
-      "placeholder": "",
-      "fullWidth": true
-    },
-    {
-      "code": "UF_CRM_POSTALCODE",
-      "label": "Zip/Postal Code",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_STATE",
-      "label": "State",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SCHOOL_1",
-      "label": "School",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LOCATIONKEYWORDS",
-      "label": "Location Keywords",
-      "type": "text",
-      "placeholder": "",
-      "fullWidth": true
-    },
-    {
-      "code": "UF_CRM_NEIGHBORHOODS",
-      "label": "Neighborhoods",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SCHOOLATTENDANCEZONES",
-      "label": "School Attendance Zones",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SCHOOLDISTRICTS",
-      "label": "School Districts",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_STREETNAME",
-      "label": "Street Name",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SUBDIVISIONNAME",
-      "label": "Subdivision Name",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SUBDIVISIONS",
-      "label": "Subdivisions",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BUILDING_DUBIZZLE",
-      "label": "Building - Bayut",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
-      "label": "Locationtext - Bayut",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_CITY_BAYUT",
-      "label": "City - Bayut",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_CITY_PF",
-      "label": "City - Propertyfinder",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
-      "label": "Community - Propertyfinder",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
-      "label": "Property - Propertyfinder",
-      "type": "lookup",
-      "placeholder": "Search Property - Propertyfinder...",
-      "lookupEntity": "property"
-    },
-    {
-      "code": "UF_CRM_PROPERTYFINDER_REGION",
-      "label": "Propertyfinder Region",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
-      "label": "Sub Community - Propertyfinder",
-      "type": "string",
+      "code": "UF_CRM_WEBSITESEARCHURL",
+      "label": "Website Search URL",
+      "type": "url",
       "placeholder": ""
     },
     {
       "code": "UF_CRM_EMAILFREQUENCY",
       "label": "Email Frequency",
       "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
-      "label": "Is Website Saved Search",
-      "type": "url",
       "placeholder": ""
     },
     {
@@ -4566,83 +4666,41 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_WEBSITEID",
-      "label": "Website ID",
+      "code": "UF_CRM_SAVED_SEARCH_NAME",
+      "label": "Saved Search Name",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "Enter saved search name..."
     },
     {
-      "code": "UF_CRM_WEBSITEMLSID",
-      "label": "Website MLS ID",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_WEBSITESEARCHID",
-      "label": "Website Search ID",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_WEBSITESEARCHTYPE",
-      "label": "Website Search Type",
-      "type": "url",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_WEBSITESEARCHURL",
-      "label": "Website Search URL",
-      "type": "url",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_FIRST_CONTACTED_DATE",
-      "label": "First Contacted Date",
+      "code": "UF_CRM_DISQUALIFY_DATE",
+      "label": "Disqualify Date",
       "type": "date",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_FIRST_VIEWING_DATE",
-      "label": "First Viewing Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
-      "label": "Date Assigned to Broker",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DEFERRAL_DATE",
-      "label": "Deferral Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_RECOMMENDED_LISTINGS",
-      "label": "Recommended_Listings",
+      "code": "UF_CRM_DISQUALIFY_REASON",
+      "label": "Disqualify Reason",
       "type": "string",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_IS_CLAIMABLE",
-      "label": "Is Claimable",
+      "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
+      "label": "Disqualify Reason Other",
+      "type": "string",
+      "placeholder": "",
+      "fullWidth": true
+    },
+    {
+      "code": "UF_CRM_SPAM_ENQUIRY",
+      "label": "Spam Enquiry",
       "type": "boolean",
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_IS_CONTACT_VIEWABLE",
-      "label": "Is Contact Viewable",
-      "type": "boolean",
+      "code": "UF_CRM_SPAM_REASON",
+      "label": "Spam Reason",
+      "type": "string",
       "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DEVELOPER_1",
-      "label": "Developer",
-      "type": "lookup",
-      "placeholder": "Search Developer / Company...",
-      "lookupEntity": "developer"
     }
   ]
 }
