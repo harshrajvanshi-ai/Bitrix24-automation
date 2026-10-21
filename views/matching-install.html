@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matching Listings — Placement Installation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <link rel="stylesheet" href="/css/matching-listings.css">
+  <style>
+    body {
+      background: #f8fafb;
+      padding: 24px;
+    }
+    .install-card {
+      background: #ffffff;
+      border: 1px solid var(--b24-border);
+      border-radius: var(--b24-radius-lg);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: var(--b24-shadow-sm);
+    }
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 12px;
+    }
+    .config-table th, .config-table td {
+      padding: 10px 14px;
+      border: 1px solid var(--b24-border-subtle);
+      text-align: left;
+    }
+    .config-table th {
+      background: #f8fafb;
+      font-weight: 600;
+      color: var(--b24-text-muted);
+    }
+    .code-pill {
+      font-family: monospace;
+      background: #eef2f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #0b7285;
+    }
+    .log-box {
+      background: #202428;
+      color: #d1d5db;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 14px;
+      border-radius: var(--b24-radius);
+      max-height: 220px;
+      overflow-y: auto;
+      margin-top: 14px;
+      line-height: 1.6;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="matching-container" style="max-width: 900px;">
+
+    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <header class="matching-header">
+      <div class="header-left">
+        <div class="header-title-wrap">
+          <h1 class="header-title">
+            <span>⚙️ Matching Listings Placement Manager</span>
+          </h1>
+          <span class="header-subtitle">Register and manage the Enquiry SPA detail card placement</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="placement-status-pill" class="badge badge-count">Checking status...</span>
+      </div>
+    </header>
+
+    <!-- ── Placement Info Card ────────────────────────────────────── -->
+    <div class="install-card">
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">Target Placement Configuration</h3>
+      <p style="font-size: 12px; color: var(--b24-text-muted);">
+        This tool registers the <strong>Matching Listings</strong> tab into the detail card of your Enquiry Smart Process Automation (entityTypeId: 1062).
+      </p>
+
+      <table class="config-table">
+        <tr>
+          <th style="width: 25%;">Target Placement</th>
+          <td><span class="code-pill">CRM_DYNAMIC_1062_DETAIL_TAB</span></td>
+        </tr>
+        <tr>
+          <th>Tab Title</th>
+          <td><strong>Matching Listings</strong></td>
+        </tr>
+        <tr>
+          <th>Target Handler URL</th>
+          <td><span id="target-handler-url" class="code-pill">Detecting...</span></td>
+        </tr>
+        <tr>
+          <th>Enquiry SPA Entity</th>
+          <td>entityTypeId = <strong>1062</strong> (Enquiry)</td>
+        </tr>
+        <tr>
+          <th>Listing SPA Entity</th>
+          <td>entityTypeId = <strong>1058</strong> (Listing)</td>
+        </tr>
+      </table>
+
+      <div class="btn-group">
+        <button type="button" id="btn-bind" class="btn btn-primary">
+          ✓ Bind Placement (Register Tab)
+        </button>
+        <button type="button" id="btn-unbind" class="btn btn-secondary" style="color: var(--b24-danger);">
+          ✕ Unbind Placement (Remove Tab)
+        </button>
+        <button type="button" id="btn-refresh" class="btn btn-secondary">
+          🔄 Refresh Placements (placement.get)
+        </button>
+        <a id="btn-test-tab" href="/matching-listings?ID=120" target="_blank" class="btn btn-secondary" style="text-decoration: none;">
+          ↗ Open Tab in Test Mode
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Active Placements Inspector ────────────────────────────── -->
+    <div class="install-card">
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Active Registered Placements in Portal</h3>
+      <div id="placements-list-container">
+        <div style="font-size: 12px; color: var(--b24-text-muted);">Loading registered placements from Bitrix24...</div>
+      </div>
+
+      <div class="log-box" id="activity-log">
+        [READY] Placement Manager initialized.
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      const TARGET_PLACEMENT = 'CRM_DYNAMIC_1062_DETAIL_TAB';
+      const TARGET_TITLE = 'Matching Listings';
+      const handlerUrl = window.location.origin + '/matching-listings';
+
+      const handlerUrlEl = document.getElementById('target-handler-url');
+      const statusPill = document.getElementById('placement-status-pill');
+      const logEl = document.getElementById('activity-log');
+      const placementsContainer = document.getElementById('placements-list-container');
+      const btnBind = document.getElementById('btn-bind');
+      const btnUnbind = document.getElementById('btn-unbind');
+      const btnRefresh = document.getElementById('btn-refresh');
+
+      handlerUrlEl.textContent = handlerUrl;
+
+      function log(msg) {
+        const time = new Date().toLocaleTimeString();
+        logEl.innerHTML += `\n[${time}] ${msg}`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function callMethod(method, params = {}) {
+        return new Promise((resolve, reject) => {
+          if (window.BX24 && typeof window.BX24.callMethod === 'function') {
+            window.BX24.callMethod(method, params, (result) => {
+              if (result.error()) {
+                reject(new Error(result.error().toString()));
+              } else {
+                resolve(result.data());
+              }
+            });
+          } else {
+            // Direct REST proxy fallback if tested outside Bitrix24
+            fetch('/api/b24/' + method, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(params)
+            })
+            .then(res => res.json())
+            .then(json => {
+              if (json.error) reject(new Error(json.error_description || json.error));
+              else resolve(json.result);
+            })
+            .catch(reject);
+          }
+        });
+      }
+
+      async function checkPlacements() {
+        statusPill.className = 'badge badge-count';
+        statusPill.textContent = 'Checking...';
+        log('Querying placement.get...');
+
+        try {
+          const list = await callMethod('placement.get');
+          log(`placement.get returned ${Array.isArray(list) ? list.length : 0} placement(s).`);
+
+          if (!Array.isArray(list) || list.length === 0) {
+            placementsContainer.innerHTML = '<p style="font-size: 12px; color: var(--b24-text-muted);">No placements registered yet.</p>';
+            statusPill.className = 'badge badge-manual';
+            statusPill.textContent = 'Not Bound';
+            return;
+          }
+
+          let isBound = false;
+          let html = '<table class="config-table"><thead><tr><th>Placement</th><th>Title</th><th>Handler</th></tr></thead><tbody>';
+          list.forEach(p => {
+            const matches = p.placement === TARGET_PLACEMENT;
+            if (matches) isBound = true;
+            html += `
+              <tr style="${matches ? 'background: #f3fdf3;' : ''}">
+                <td><span class="code-pill">${p.placement}</span></td>
+                <td><strong>${p.title || 'Untitled'}</strong></td>
+                <td><span style="font-size: 11px; word-break: break-all;">${p.handler}</span></td>
+              </tr>
+            `;
+          });
+          html += '</tbody></table>';
+          placementsContainer.innerHTML = html;
+
+          if (isBound) {
+            statusPill.className = 'badge badge-auto';
+            statusPill.textContent = '✓ Bound & Active';
+            log(`Found active binding for ${TARGET_PLACEMENT}!`);
+          } else {
+            statusPill.className = 'badge badge-manual';
+            statusPill.textContent = 'Not Bound';
+          }
+        } catch (err) {
+          log(`ERROR querying placements: ${err.message}`);
+          placementsContainer.innerHTML = `<div style="color: var(--b24-danger); font-size: 12px;">Failed to load placements: ${err.message}</div>`;
+        }
+      }
+
+      btnBind.addEventListener('click', async () => {
+        btnBind.disabled = true;
+        btnBind.textContent = 'Binding...';
+        log(`Executing placement.bind: PLACEMENT=${TARGET_PLACEMENT}, HANDLER=${handlerUrl}, TITLE=${TARGET_TITLE}`);
+
+        try {
+          const res = await callMethod('placement.bind', {
+            PLACEMENT: TARGET_PLACEMENT,
+            HANDLER: handlerUrl,
+            TITLE: TARGET_TITLE,
+            DESCRIPTION: 'Auto-matching and manual listing search tab for Enquiry SPA'
+          });
+          log(`SUCCESS: placement.bind completed successfully! Result: ${JSON.stringify(res)}`);
+          await checkPlacements();
+        } catch (err) {
+          log(`ERROR: placement.bind failed: ${err.message}`);
+          alert(`Placement bind failed: ${err.message}`);
+        } finally {
+          btnBind.disabled = false;
+          btnBind.textContent = '✓ Bind Placement (Register Tab)';
+        }
+      });
+
+      btnUnbind.addEventListener('click', async () => {
+        if (!confirm(`Are you sure you want to unbind ${TARGET_PLACEMENT}? The tab will be removed from Enquiry cards.`)) return;
+
+        btnUnbind.disabled = true;
+        btnUnbind.textContent = 'Unbinding...';
+        log(`Executing placement.unbind: PLACEMENT=${TARGET_PLACEMENT}, HANDLER=${handlerUrl}`);
+
+        try {
+          const res = await callMethod('placement.unbind', {
+            PLACEMENT: TARGET_PLACEMENT,
+            HANDLER: handlerUrl
+          });
+          log(`SUCCESS: placement.unbind completed. Result: ${JSON.stringify(res)}`);
+          await checkPlacements();
+        } catch (err) {
+          log(`ERROR: placement.unbind failed: ${err.message}`);
+          alert(`Placement unbind failed: ${err.message}`);
+        } finally {
+          btnUnbind.disabled = false;
+          btnUnbind.textContent = '✕ Unbind Placement (Remove Tab)';
+        }
+      });
+
+      btnRefresh.addEventListener('click', checkPlacements);
+
+      // Initialize
+      if (window.BX24 && typeof window.BX24.init === 'function') {
+        window.BX24.init(checkPlacements);
+      } else {
+        document.addEventListener('DOMContentLoaded', checkPlacements);
+      }
+    })();
+  </script>
+</body>
+</html>

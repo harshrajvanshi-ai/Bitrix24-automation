@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matching Listings — Real Estate CRM</title>
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bitrix24 Official JavaScript SDK -->
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/matching-listings.css">
+</head>
+<body>
+  <div class="matching-container">
+
+    <!-- ── Top Header Bar ─────────────────────────────────────────── -->
+    <header class="matching-header">
+      <div class="header-left">
+        <div class="header-title-wrap">
+          <h1 class="header-title">
+            <span>🏢 Matching Listings</span>
+            <span id="search-mode-badge" class="badge badge-auto">Auto-matched from enquiry</span>
+          </h1>
+          <span id="enquiry-title-display" class="header-subtitle">Loading enquiry...</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="total-count-badge" class="badge badge-count">— listings</span>
+      </div>
+    </header>
+
+    <!-- ── Filter & Search Panel ──────────────────────────────────── -->
+    <section class="filter-card" aria-label="Search and Filter Criteria">
+      <div class="filter-header">
+        <span class="filter-title">🔍 Search & Match Criteria</span>
+      </div>
+
+      <form id="filter-form" onsubmit="return false;">
+        <div class="filter-grid">
+          <!-- Property Type -->
+          <div class="form-group">
+            <label class="form-label" for="filter-property-type">Property Type</label>
+            <select id="filter-property-type" class="form-control">
+              <option value="">-- All Property Types --</option>
+            </select>
+          </div>
+
+          <!-- Listing Type / Purpose -->
+          <div class="form-group">
+            <label class="form-label" for="filter-listing-type">Purpose</label>
+            <select id="filter-listing-type" class="form-control">
+              <option value="">-- All Purposes (Sale/Rent) --</option>
+            </select>
+          </div>
+
+          <!-- Area / Community -->
+          <div class="form-group">
+            <label class="form-label" for="filter-area">Community / Area</label>
+            <input type="text" id="filter-area" class="form-control" placeholder="e.g., Downtown Dubai, Marina...">
+          </div>
+
+          <!-- Bedrooms -->
+          <div class="form-group">
+            <label class="form-label" for="filter-bedrooms">Bedrooms</label>
+            <input type="number" id="filter-bedrooms" class="form-control" placeholder="e.g. 2, 3, 4" min="0" max="20">
+          </div>
+
+          <!-- Min Budget -->
+          <div class="form-group">
+            <label class="form-label" for="filter-price-min">Min Budget (AED)</label>
+            <input type="number" id="filter-price-min" class="form-control" placeholder="Min Price" min="0" step="10000">
+          </div>
+
+          <!-- Max Budget -->
+          <div class="form-group">
+            <label class="form-label" for="filter-price-max">Max Budget (AED)</label>
+            <input type="number" id="filter-price-max" class="form-control" placeholder="Max Price" min="0" step="10000">
+          </div>
+
+          <!-- Furnished -->
+          <div class="form-group">
+            <label class="form-label" for="filter-furnished">Furnishing</label>
+            <select id="filter-furnished" class="form-control">
+              <option value="">-- Any Furnished Status --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Toggles Row -->
+        <div class="toggles-row">
+          <label class="toggle-item">
+            <input type="checkbox" id="toggle-tolerance" checked>
+            <span>+/- 10% Budget Tolerance</span>
+          </label>
+          <label class="toggle-item">
+            <input type="checkbox" id="toggle-exact-beds">
+            <span>Exact Bedrooms Only (default: Minimum Beds ≥)</span>
+          </label>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="filter-actions">
+          <button type="button" id="btn-reset" class="btn btn-secondary">
+            ↺ Reset to Enquiry Data
+          </button>
+          <button type="submit" id="btn-search" class="btn btn-primary">
+            🔍 Search Listings
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ── Results Command Toolbar ────────────────────────────────── -->
+    <div class="results-toolbar">
+      <div class="results-toolbar-left">
+        <label class="select-all-wrap">
+          <input type="checkbox" id="select-all-checkbox">
+          <span>Select All</span>
+        </label>
+        <span id="selected-count-text" class="results-count-text">0 selected</span>
+      </div>
+
+      <div class="results-toolbar-right">
+        <div class="sort-wrap">
+          <span>Sort by:</span>
+          <select id="sort-select" class="sort-select">
+            <option value="newest">Newest First</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+          </select>
+        </div>
+        <button type="button" id="btn-send-timeline" class="btn btn-success" disabled>
+          📨 Send to Timeline
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Listings Container ─────────────────────────────────────── -->
+    <div id="listings-container">
+      <!-- Populated dynamically by matching-listings.js -->
+    </div>
+
+    <!-- ── Pagination Bar ─────────────────────────────────────────── -->
+    <div id="pagination-bar" class="pagination-bar" style="display: none;">
+      <button type="button" id="btn-prev-page" class="btn btn-secondary btn-compact" disabled>
+        ← Previous
+      </button>
+      <span id="page-indicator" class="page-indicator">Page 1</span>
+      <button type="button" id="btn-next-page" class="btn btn-secondary btn-compact">
+        Next →
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Matching Logic Script -->
+  <script src="/js/matching-listings.js"></script>
+</body>
+</html>

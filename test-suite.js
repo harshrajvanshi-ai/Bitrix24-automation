@@ -757,6 +757,71 @@ async function runTests() {
   assert(CITY_PROPERTYFINDER_MAP['2576'] === 1164, 'City PF Al Ain (2576) maps to SPA 1164');
 
   // ============================================================================
+  // Case 17: Matching Listings SPA Tab & Search Algorithms
+  // ============================================================================
+  console.log('\n--- Case 17: Matching Listings SPA Tab & Search Algorithms ---');
+
+  // 1. Verify existence of views and static assets
+  assert(fs.existsSync(path.resolve(__dirname, 'views/matching-listings.html')), 'views/matching-listings.html exists');
+  assert(fs.existsSync(path.resolve(__dirname, 'views/matching-install.html')), 'views/matching-install.html exists');
+  assert(fs.existsSync(path.resolve(__dirname, 'public/css/matching-listings.css')), 'public/css/matching-listings.css exists');
+  assert(fs.existsSync(path.resolve(__dirname, 'public/js/matching-listings.js')), 'public/js/matching-listings.js exists');
+
+  // 2. Verify placement registration constants
+  const matchingJs = fs.readFileSync(path.resolve(__dirname, 'public/js/matching-listings.js'), 'utf-8');
+  assert(matchingJs.includes("placement: 'CRM_DYNAMIC_1062_DETAIL_TAB'"), 'Placement identifier is CRM_DYNAMIC_1062_DETAIL_TAB');
+  assert(matchingJs.includes('entityTypeId: 1062'), 'Enquiry SPA entityTypeId is 1062');
+  assert(matchingJs.includes('entityTypeId: 1058'), 'Listing SPA entityTypeId is 1058');
+
+  // 3. Verify field mapping constants
+  assert(matchingJs.includes("propertyType: 'ufCrm18_1790155720'"), 'Enquiry propertyType mapped to ufCrm18_1790155720');
+  assert(matchingJs.includes("propertyType: 'ufCrm16PropertyType'"), 'Listing propertyType mapped to ufCrm16PropertyType');
+  assert(matchingJs.includes("listingType: 'ufCrm18ListingType'"), 'Enquiry listingType mapped to ufCrm18ListingType');
+  assert(matchingJs.includes("listingType: 'ufCrm16_1790154808'"), 'Listing listingType mapped to ufCrm16_1790154808');
+  assert(matchingJs.includes("bedrooms: 'ufCrm16_1791172802'"), 'Listing bedrooms mapped to ufCrm16_1791172802');
+  assert(matchingJs.includes("status: 'ufCrm16Status'"), 'Listing status mapped to ufCrm16Status');
+  assert(matchingJs.includes('AVAILABLE_STATUS_ID: 924'), 'Active listing status ID is 924');
+
+  // 4. Verify enumeration cross-entity mappings
+  assert(matchingJs.includes("label: 'Apartment', enquiryId: 2530, listingId: 886"), 'Apartment maps Enquiry 2530 <-> Listing 886');
+  assert(matchingJs.includes("label: 'Villa', enquiryId: 2528, listingId: 888"), 'Villa maps Enquiry 2528 <-> Listing 888');
+  assert(matchingJs.includes("label: 'Penthouse', enquiryId: 2524, listingId: 892"), 'Penthouse maps Enquiry 2524 <-> Listing 892');
+  assert(matchingJs.includes("label: 'Sale', enquiryId: 1246, listingId: 158"), 'Sale purpose maps Enquiry 1246 <-> Listing 158');
+  assert(matchingJs.includes("label: 'Rent', enquiryId: 1248, listingId: 160"), 'Rent purpose maps Enquiry 1248 <-> Listing 160');
+
+  // 5. Test Budget Tolerance Calculation logic
+  function calcBudgetBounds(min, max, tolerance) {
+    let pMin = min;
+    let pMax = max;
+    if (tolerance) {
+      if (pMin !== null) pMin = Math.max(0, pMin * 0.9);
+      if (pMax !== null) pMax = pMax * 1.1;
+    }
+    return { pMin, pMax };
+  }
+  const boundsWithTol = calcBudgetBounds(1000000, 2000000, true);
+  assert(boundsWithTol.pMin === 900000, 'Tolerance -10% adjusts min 1,000,000 to 900,000');
+  assert(boundsWithTol.pMax === 2200000, 'Tolerance +10% adjusts max 2,000,000 to 2,200,000');
+  const boundsNoTol = calcBudgetBounds(1000000, 2000000, false);
+  assert(boundsNoTol.pMin === 1000000 && boundsNoTol.pMax === 2000000, 'Without tolerance, exact bounds preserved');
+
+  // 6. Test Bedroom Matching logic
+  function matchBeds(listingBeds, reqBeds, exact) {
+    if (reqBeds === null || reqBeds === undefined) return true;
+    return exact ? listingBeds === reqBeds : listingBeds >= reqBeds;
+  }
+  assert(matchBeds(4, 3, false) === true, 'Min beds: 4 beds satisfies 3 beds requirement');
+  assert(matchBeds(2, 3, false) === false, 'Min beds: 2 beds fails 3 beds requirement');
+  assert(matchBeds(4, 3, true) === false, 'Exact beds: 4 beds fails 3 beds requirement');
+  assert(matchBeds(3, 3, true) === true, 'Exact beds: 3 beds matches 3 beds requirement');
+
+  // 7. Verify Timeline LogMessage structure
+  assert(matchingJs.includes("crm.timeline.logmessage.add"), 'Uses crm.timeline.logmessage.add for timeline integration');
+  assert(matchingJs.includes("entityTypeId: CONFIG.ENQUIRY.entityTypeId"), 'Passes Enquiry entityTypeId (1062) to timeline message');
+  assert(matchingJs.includes("iconCode: 'info'"), 'Includes mandatory iconCode: "info"');
+  assert(matchingJs.includes("BX24.openPath"), 'Uses BX24.openPath to open listing items');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

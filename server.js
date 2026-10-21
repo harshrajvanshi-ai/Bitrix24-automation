@@ -224,6 +224,57 @@ app.all('/tab', (req, res) => {
 });
 
 // ------------------------------------------------------------------------------
+// 2b. Matching Listings SPA Tab & Placement Manager
+// ------------------------------------------------------------------------------
+/**
+ * GET/POST /matching-listings
+ * Placement handler for Enquiry SPA (placement: CRM_DYNAMIC_1062_DETAIL_TAB)
+ */
+app.all('/matching-listings', (req, res) => {
+  res.removeHeader('X-Frame-Options');
+
+  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
+    StorageManager.saveAuth({
+      access_token: req.body.AUTH_ID,
+      refresh_token: req.body.REFRESH_ID,
+      domain: req.body.DOMAIN,
+      member_id: req.body.member_id
+    });
+  }
+
+  res.sendFile(path.join(__dirname, 'views/matching-listings.html'));
+});
+
+/**
+ * GET /matching-install
+ * Installation and management interface for CRM_DYNAMIC_1062_DETAIL_TAB placement
+ */
+app.all('/matching-install', (req, res) => {
+  res.removeHeader('X-Frame-Options');
+  res.sendFile(path.join(__dirname, 'views/matching-install.html'));
+});
+
+/**
+ * POST /api/b24/:method
+ * Secure proxy endpoint for Bitrix24 REST methods (supporting dev & testing)
+ */
+app.post('/api/b24/:method', apiLimiter, async (req, res) => {
+  try {
+    const method = req.params.method;
+    const params = req.body || {};
+    const result = await BitrixClient.call(method, params, 'latest');
+    res.json({ success: true, result });
+  } catch (err) {
+    console.error(`[PROXY] Bitrix API call ${req.params.method} failed:`, err.message);
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      error_description: err.response?.data?.error_description || err.message
+    });
+  }
+});
+
+// ------------------------------------------------------------------------------
 // 3. Event Handler (/events)
 // ------------------------------------------------------------------------------
 /**
