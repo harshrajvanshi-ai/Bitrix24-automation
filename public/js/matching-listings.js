@@ -239,22 +239,34 @@
    */
   function resolveEnquiryId() {
     if (window.BX24 && typeof window.BX24.placement === 'object') {
-      const placementInfo = window.BX24.placement.info();
-      const options = placementInfo?.options;
-      if (options) {
-        if (typeof options === 'string') {
-          try {
-            const parsed = JSON.parse(options);
-            return parsed.ID || parsed.id || parsed.ENTITY_ID;
-          } catch (e) {}
-        } else if (typeof options === 'object') {
-          return options.ID || options.id || options.ENTITY_ID;
+      try {
+        const placementInfo = window.BX24.placement.info();
+        const options = placementInfo?.options;
+        if (options) {
+          if (typeof options === 'string') {
+            try {
+              const parsed = JSON.parse(options);
+              const id = parsed.ID || parsed.id || parsed.ENTITY_ID;
+              if (id) return id;
+            } catch (e) {}
+          } else if (typeof options === 'object') {
+            const id = options.ID || options.id || options.ENTITY_ID;
+            if (id) return id;
+          }
         }
-      }
+      } catch (e) {}
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('ID') || urlParams.get('id') || urlParams.get('enquiryId') || urlParams.get('ENTITY_ID');
+    const fromParams = urlParams.get('ID') || urlParams.get('id') || urlParams.get('enquiryId') || urlParams.get('ENTITY_ID');
+    if (fromParams) return fromParams;
+
+    if (document.referrer) {
+      const match = document.referrer.match(/\/details\/(\d+)\//);
+      if (match && match[1]) return match[1];
+    }
+
+    return null;
   }
 
   // ============================================================================
@@ -350,7 +362,23 @@
     currentEnquiryId = resolveEnquiryId();
 
     if (!currentEnquiryId) {
-      renderErrorState('Missing Enquiry ID', 'Could not detect an Enquiry item ID. Open this tab inside an Enquiry detail card, or provide ?ID=120 in URL for testing.');
+      try {
+        const latestRes = await callMethod('crm.item.list', {
+          entityTypeId: CONFIG.ENQUIRY.entityTypeId,
+          order: { id: 'DESC' },
+          start: 0
+        });
+        const latestItems = latestRes.data?.items || (Array.isArray(latestRes.data) ? latestRes.data : []);
+        if (latestItems.length > 0) {
+          currentEnquiryId = latestItems[0].id;
+        }
+      } catch (e) {
+        console.warn('Fallback latest enquiry lookup notice:', e);
+      }
+    }
+
+    if (!currentEnquiryId) {
+      renderErrorState('Missing Enquiry ID', 'Could not detect an Enquiry item ID. Open this tab inside an Enquiry detail card, or provide ?ID=254 in URL for testing.');
       return;
     }
 
@@ -450,11 +478,9 @@
     const filters = getFiltersFromForm();
     const lFields = CONFIG.LISTING.fields;
 
-    // Build REST filter for crm.item.list
+    // 1. Status: Filter available/active listings
+    // Keep AVAILABLE_STATUS_ID in CONFIG and query active or unassigned listings
     const restFilter = {};
-
-    // 1. Filter only available/active listings
-    restFilter['=' + lFields.status] = CONFIG.ENUMS.AVAILABLE_STATUS_ID;
 
     // 2. Exact match for Property Type if provided
     if (filters.propertyType) {
@@ -511,8 +537,14 @@
       hasNextPage = Boolean(res.next);
 
       // Perform Client-side Refinements:
-      // (Budget Tolerance, Min/Exact Bedrooms, and Substring Area matching)
+      // (Budget Tolerance, Min/Exact Bedrooms, Status check, and Substring Area matching)
       const matchedItems = rawItems.filter(item => {
+        // Status check: allow Active (AVAILABLE_STATUS_ID: 924) or unassigned/null status
+        const itemStatus = item[lFields.status];
+        if (itemStatus && parseInt(itemStatus, 10) !== CONFIG.ENUMS.AVAILABLE_STATUS_ID && String(itemStatus) !== '924') {
+          return false;
+        }
+
         // Price / Budget check
         const itemPrice = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
         let pMin = filters.priceMin;
@@ -536,14 +568,17 @@
           }
         }
 
-        // Area / Community substring match
+        // Area / Community substring match (checking area field, community field, and listing title)
         if (filters.area) {
           const itemArea = (item[lFields.area] || '').toLowerCase();
           const itemCommunity = (item[lFields.community] || '').toLowerCase();
-          const qArea = filters.area.toLowerCase();
-          const areaTokens = qArea.split(/\s+/).filter(Boolean);
-          const matchesToken = areaTokens.some(token => itemArea.includes(token) || itemCommunity.includes(token));
-          if (!matchesToken && itemArea && !itemArea.includes(qArea) && !itemCommunity.includes(qArea)) {
+          const itemTitle = (item.title || '').toLowerCase();
+          const qArea = filters.area.toLowerCase().trim();
+          const areaTokens = qArea.split(/[\s,;]+/).filter(Boolean);
+          const matchesToken = areaTokens.some(token => 
+            itemArea.includes(token) || itemCommunity.includes(token) || itemTitle.includes(token)
+          );
+          if (!matchesToken && itemArea && !itemArea.includes(qArea) && !itemCommunity.includes(qArea) && !itemTitle.includes(qArea)) {
             return false;
           }
         }
@@ -597,17 +632,23 @@
     listingsContainer.innerHTML = `
       <div class="state-box">
         <div class="state-icon">🔍</div>
-        <div class="state-title">No Matching Listings Found</div>
+        <div class="state-title">No Exact Matching Listings Found</div>
         <div class="state-desc">
-          No available listings match the current criteria.<br>
-          Try relaxing the budget range (+/- 10% tolerance), clearing the area filter, or switching to minimum bedrooms.
+          No listings currently meet all strict criteria (Property Type, Purpose, Budget range, and Area simultaneously).<br>
+          Use the quick buttons below to expand the search or view all available properties:
         </div>
-        <div style="display: flex; gap: 10px; justify-content: center;">
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.clearPriceFilter()">
+            💰 Any Price / Budget
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.clearAreaFilter()">
+            📍 Any Area / Location
+          </button>
+          <button type="button" class="btn btn-primary" onclick="window.__MATCHING_APP__.showAllListings()">
+            🏢 Show All Available Listings
+          </button>
           <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.resetToEnquiry()">
             ↺ Reset to Enquiry Data
-          </button>
-          <button type="button" class="btn btn-primary" onclick="window.__MATCHING_APP__.relaxFilters()">
-            ⚡ Relax Filters
           </button>
         </div>
       </div>
@@ -886,10 +927,37 @@
   window.__MATCHING_APP__ = {
     retrySearch: () => searchListings(currentPageStart),
     resetToEnquiry: () => btnReset.click(),
+    clearPriceFilter: () => {
+      inputPriceMin.value = '';
+      inputPriceMax.value = '';
+      isManualSearch = true;
+      updateSearchModeBadge();
+      searchListings(0);
+    },
+    clearAreaFilter: () => {
+      inputArea.value = '';
+      isManualSearch = true;
+      updateSearchModeBadge();
+      searchListings(0);
+    },
     relaxFilters: () => {
       toggleTolerance.checked = true;
       toggleExactBeds.checked = false;
       inputArea.value = '';
+      inputPriceMin.value = '';
+      inputPriceMax.value = '';
+      isManualSearch = true;
+      updateSearchModeBadge();
+      searchListings(0);
+    },
+    showAllListings: () => {
+      inputPropType.value = '';
+      inputListingType.value = '';
+      inputArea.value = '';
+      inputBedrooms.value = '';
+      inputPriceMin.value = '';
+      inputPriceMax.value = '';
+      inputFurnished.value = '';
       isManualSearch = true;
       updateSearchModeBadge();
       searchListings(0);
