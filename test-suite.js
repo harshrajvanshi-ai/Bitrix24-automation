@@ -335,8 +335,8 @@ async function runTests() {
   const enquiryStatus = allEnumFields.find(f => f.code === 'UF_CRM_STATUS');
   assert(enquiryStatus && enquiryStatus.options.some(o => o.id === '2132' && o.value === 'Active'), 'UF_CRM_STATUS mapped to numeric ID 2132 for Active');
 
-  const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
-  assert(leadSource && leadSource.options.some(o => (o.id === '2508' || o.id === '2324') && o.value === 'Inbound Portal'), 'UF_CRM_LEAD_SOURCE_TYPE mapped to numeric ID 2508 for Inbound Portal');
+  const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_1792563228880' || f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
+  assert(leadSource && leadSource.options.some(o => (o.id === '2506' || o.id === '2508' || o.id === '2324') && o.value === 'Inbound Portal'), 'Lead Source Type mapped to numeric ID for Inbound Portal');
 
   // Check Number of Cheques field uses new native Bitrix field UF_CRM_1792139023
   const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_1792139023' && f.type === 'enumeration'));
@@ -576,6 +576,39 @@ async function runTests() {
       fields.UF_CRM_PROPERTY_PROPERTYFINDER = fields.UF_CRM_PROPERTY;
     }
 
+    // Sync Lead Source Type companion fields and native Bitrix SOURCE_ID
+    if (fields.UF_CRM_1792563228880 && !fields.UF_CRM_LEAD_SOURCE_TYPE) {
+      fields.UF_CRM_LEAD_SOURCE_TYPE = fields.UF_CRM_1792563228880;
+    } else if (fields.UF_CRM_LEAD_SOURCE_TYPE && !fields.UF_CRM_1792563228880) {
+      fields.UF_CRM_1792563228880 = fields.UF_CRM_LEAD_SOURCE_TYPE;
+    }
+    if (fields.UF_CRM_1792563228880) {
+      const legacySourceMap = {
+        '2324': '2506',
+        '2326': '2504',
+        '2328': '2502',
+        '2330': '2500',
+        '2332': '2498',
+        '2334': '2496'
+      };
+      if (legacySourceMap[String(fields.UF_CRM_1792563228880)]) {
+        fields.UF_CRM_1792563228880 = legacySourceMap[String(fields.UF_CRM_1792563228880)];
+        fields.UF_CRM_LEAD_SOURCE_TYPE = fields.UF_CRM_1792563228880;
+      }
+      const sourceToNativeMap = {
+        '2506': 'WEB',
+        '2504': 'ADVERTISING',
+        '2502': 'WEB',
+        '2500': 'CALLBACK',
+        '2498': 'CALL',
+        '2496': 'PARTNER'
+      };
+      const mappedNative = sourceToNativeMap[String(fields.UF_CRM_1792563228880)];
+      if (mappedNative && !fields.SOURCE_ID) {
+        fields.SOURCE_ID = mappedNative;
+      }
+    }
+
     // Ensure MULTIPLE: 'Y' userfields are arrays in Bitrix
     const multipleUfCodes = [
       'UF_CRM_ADDITIONALCITIES',
@@ -634,6 +667,17 @@ async function runTests() {
   // 7. Verify MULTIPLE userfields are formatted as arrays
   const out7 = simulateEnquiryLeadUpdate({ UF_CRM_ADDITIONALCITIES: 'Sharjah, Ajman' });
   assert(Array.isArray(out7.UF_CRM_ADDITIONALCITIES) && out7.UF_CRM_ADDITIONALCITIES[0] === 'Sharjah, Ajman', 'MULTIPLE string userfields wrapped as arrays');
+
+  // 8. Verify UF_CRM_1792563228880 resolves legacy IDs and synchronizes native Bitrix SOURCE_ID
+  const out8 = simulateEnquiryLeadUpdate({ UF_CRM_1792563228880: '2324' });
+  assert(out8.UF_CRM_1792563228880 === '2506', 'Legacy ID 2324 maps to native Bitrix ID 2506');
+  assert(out8.SOURCE_ID === 'WEB', 'Native Bitrix SOURCE_ID updates to WEB for Inbound Portal');
+
+  const out9 = simulateEnquiryLeadUpdate({ UF_CRM_1792563228880: '2504' });
+  assert(out9.SOURCE_ID === 'ADVERTISING', 'Native Bitrix SOURCE_ID updates to ADVERTISING for Paid Ad Campaign');
+
+  const out10 = simulateEnquiryLeadUpdate({ UF_CRM_1792563228880: '2498' });
+  assert(out10.SOURCE_ID === 'CALL', 'Native Bitrix SOURCE_ID updates to CALL for Cold Outreach');
 
   // ============================================================================
   // Summary

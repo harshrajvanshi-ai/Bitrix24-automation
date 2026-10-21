@@ -871,6 +871,39 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
     fields.UF_CRM_PF_ID = fields.UF_CRM_1792151466;
   }
 
+  // Handle Lead Source Type mapping: sync native UF_CRM_1792563228880, UF_CRM_LEAD_SOURCE_TYPE, and native SOURCE_ID
+  if (fields.UF_CRM_1792563228880 && !fields.UF_CRM_LEAD_SOURCE_TYPE) {
+    fields.UF_CRM_LEAD_SOURCE_TYPE = fields.UF_CRM_1792563228880;
+  } else if (fields.UF_CRM_LEAD_SOURCE_TYPE && !fields.UF_CRM_1792563228880) {
+    fields.UF_CRM_1792563228880 = fields.UF_CRM_LEAD_SOURCE_TYPE;
+  }
+  if (fields.UF_CRM_1792563228880) {
+    const legacySourceMap = {
+      '2324': '2506',
+      '2326': '2504',
+      '2328': '2502',
+      '2330': '2500',
+      '2332': '2498',
+      '2334': '2496'
+    };
+    if (legacySourceMap[String(fields.UF_CRM_1792563228880)]) {
+      fields.UF_CRM_1792563228880 = legacySourceMap[String(fields.UF_CRM_1792563228880)];
+      fields.UF_CRM_LEAD_SOURCE_TYPE = fields.UF_CRM_1792563228880;
+    }
+    const sourceToNativeMap = {
+      '2506': 'WEB',
+      '2504': 'ADVERTISING',
+      '2502': 'WEB',
+      '2500': 'CALLBACK',
+      '2498': 'CALL',
+      '2496': 'PARTNER'
+    };
+    const mappedNative = sourceToNativeMap[String(fields.UF_CRM_1792563228880)];
+    if (mappedNative && !fields.SOURCE_ID) {
+      fields.SOURCE_ID = mappedNative;
+    }
+  }
+
   // Normalize picklist / enumeration fields from label strings to Bitrix numeric IDs
   fields = normalizeEnumFields(fields);
 

@@ -1162,34 +1162,34 @@
             "fullWidth": true
           },
           {
-            "code": "UF_CRM_LEAD_SOURCE_TYPE",
+            "code": "UF_CRM_1792563228880",
             "label": "Lead source Type",
             "bitrixLabel": "Lead source Type",
             "type": "enumeration",
             "placeholder": "-- Select Lead source Type --",
             "options": [
               {
-                "id": "2508",
+                "id": "2506",
                 "value": "Inbound Portal"
               },
               {
-                "id": "2510",
+                "id": "2504",
                 "value": "Paid Ad Campaign"
               },
               {
-                "id": "2512",
+                "id": "2502",
                 "value": "Organic Search"
               },
               {
-                "id": "2514",
+                "id": "2500",
                 "value": "Direct Message"
               },
               {
-                "id": "2516",
+                "id": "2498",
                 "value": "Cold Outreach"
               },
               {
-                "id": "2518",
+                "id": "2496",
                 "value": "Partner Broker"
               }
             ]
@@ -3734,34 +3734,34 @@
       "fullWidth": true
     },
     {
-      "code": "UF_CRM_LEAD_SOURCE_TYPE",
+      "code": "UF_CRM_1792563228880",
       "label": "Lead source Type",
       "bitrixLabel": "Lead source Type",
       "type": "enumeration",
       "placeholder": "-- Select Lead source Type --",
       "options": [
         {
-          "id": "2508",
+          "id": "2506",
           "value": "Inbound Portal"
         },
         {
-          "id": "2510",
+          "id": "2504",
           "value": "Paid Ad Campaign"
         },
         {
-          "id": "2512",
+          "id": "2502",
           "value": "Organic Search"
         },
         {
-          "id": "2514",
+          "id": "2500",
           "value": "Direct Message"
         },
         {
-          "id": "2516",
+          "id": "2498",
           "value": "Cold Outreach"
         },
         {
-          "id": "2518",
+          "id": "2496",
           "value": "Partner Broker"
         }
       ]

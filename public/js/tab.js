@@ -766,6 +766,34 @@
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_1792151466') {
           currentVal = lead['UF_CRM_PF_ID'] || '';
         }
+        if (f.code === 'UF_CRM_1792563228880' || f.code === 'UF_CRM_LEAD_SOURCE_TYPE') {
+          if (!currentVal) {
+            currentVal = lead['UF_CRM_1792563228880'] || lead['UF_CRM_LEAD_SOURCE_TYPE'] || '';
+          }
+          const legacySourceMap = {
+            '2324': '2506',
+            '2326': '2504',
+            '2328': '2502',
+            '2330': '2500',
+            '2332': '2498',
+            '2334': '2496'
+          };
+          if (currentVal && legacySourceMap[String(currentVal)]) {
+            currentVal = legacySourceMap[String(currentVal)];
+          }
+          if ((currentVal === undefined || currentVal === null || currentVal === '') && lead.SOURCE_ID) {
+            const nativeSourceMap = {
+              'WEB': '2506',
+              'WEBFORM': '2506',
+              'ADVERTISING': '2504',
+              'EMAIL': '2498',
+              'CALL': '2498',
+              'CALLBACK': '2500',
+              'PARTNER': '2496'
+            };
+            currentVal = nativeSourceMap[String(lead.SOURCE_ID).toUpperCase()] || '';
+          }
+        }
         if (currentVal === undefined || currentVal === null) currentVal = '';
         gridEl.appendChild(createFormGroup(f, currentVal));
       });
@@ -1032,6 +1060,24 @@
 
     if (payload.UF_CRM_1792151466 && !payload.UF_CRM_PF_ID) {
       payload.UF_CRM_PF_ID = payload.UF_CRM_1792151466;
+    }
+
+    if (payload.UF_CRM_1792563228880 || payload.UF_CRM_LEAD_SOURCE_TYPE) {
+      const srcVal = payload.UF_CRM_1792563228880 || payload.UF_CRM_LEAD_SOURCE_TYPE;
+      payload.UF_CRM_1792563228880 = srcVal;
+      payload.UF_CRM_LEAD_SOURCE_TYPE = srcVal;
+      const sourceToNativeMap = {
+        '2506': 'WEB',
+        '2504': 'ADVERTISING',
+        '2502': 'WEB',
+        '2500': 'CALLBACK',
+        '2498': 'CALL',
+        '2496': 'PARTNER'
+      };
+      const nativeSource = sourceToNativeMap[srcVal];
+      if (nativeSource && !payload.SOURCE_ID) {
+        payload.SOURCE_ID = nativeSource;
+      }
     }
 
     await Promise.all(filePromises);
