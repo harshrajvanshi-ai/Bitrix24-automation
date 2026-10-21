@@ -16,6 +16,7 @@
   const authError = document.getElementById('auth-error');
 
   const refreshDiscoveryBtn = document.getElementById('btn-refresh-discovery');
+  const syncPlacementsBtn = document.getElementById('btn-sync-placements');
   const openCreateModalBtn = document.getElementById('btn-open-create-field');
   const createMissingStagesBtn = document.getElementById('btn-create-missing-stages');
   const createMissingFieldsBtn = document.getElementById('btn-create-missing-fields');
@@ -248,6 +249,38 @@
       createMissingFieldsBtn.textContent = '⚡ Auto-Create All Missing Fields in Bitrix24';
     }
   });
+
+  if (syncPlacementsBtn) {
+    syncPlacementsBtn.addEventListener('click', async () => {
+      syncPlacementsBtn.disabled = true;
+      syncPlacementsBtn.textContent = 'Syncing...';
+      try {
+        const res = await apiCall('/api/admin/bind-placements', 'POST');
+        
+        // Also call client-side BX24 if running inside Bitrix24 iframe
+        if (window.BX24 && typeof window.BX24.callMethod === 'function') {
+          const publicUrl = window.location.origin;
+          window.BX24.callMethod('placement.bind', {
+            PLACEMENT: 'CRM_LEAD_DETAIL_TAB',
+            HANDLER: publicUrl + '/tab',
+            TITLE: 'Lead Details'
+          });
+          window.BX24.callMethod('placement.bind', {
+            PLACEMENT: 'CRM_DYNAMIC_1062_DETAIL_TAB',
+            HANDLER: publicUrl + '/matching-listings',
+            TITLE: 'Matching Listings'
+          });
+        }
+
+        showToast('App placements synchronized! Lead Details & Matching Listings tabs are active.', 'success');
+      } catch (err) {
+        showToast(`Sync error: ${err.message}`, 'error');
+      } finally {
+        syncPlacementsBtn.disabled = false;
+        syncPlacementsBtn.textContent = '⚡ Sync Placements';
+      }
+    });
+  }
 
   // Modal handlers
   openCreateModalBtn.addEventListener('click', () => {

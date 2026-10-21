@@ -75,6 +75,7 @@
     <div class="step-list">
       <div id="step-auth" class="step-item active">● Authenticating OAuth credentials</div>
       <div id="step-placement" class="step-item">○ Registering 'Lead Details' tab (CRM_LEAD_DETAIL_TAB)</div>
+      <div id="step-placement-matching" class="step-item">○ Registering 'Matching Listings' tab (CRM_DYNAMIC_1062_DETAIL_TAB)</div>
       <div id="step-events" class="step-item">○ Subscribing to ONCRMLEADADD and ONCRMLEADUPDATE</div>
       <div id="step-discovery" class="step-item">○ Discovering Lead Type field and pipeline stages</div>
     </div>
@@ -164,6 +165,27 @@
           }
         } else {
           updateStep('step-placement', 'done');
+        }
+
+        // Step 2b: Register CRM_DYNAMIC_1062_DETAIL_TAB placement (Matching Listings for Enquiry SPA #1062)
+        updateStep('step-placement-matching', 'active');
+        statusEl.textContent = 'Registering Matching Listings tab...';
+
+        const matchingRes = await bx24Call('placement.bind', {
+          PLACEMENT: 'CRM_DYNAMIC_1062_DETAIL_TAB',
+          HANDLER: publicUrl + '/matching-listings',
+          TITLE: 'Matching Listings'
+        });
+
+        if (matchingRes.error) {
+          if (matchingRes.error.toLowerCase().includes('already')) {
+            updateStep('step-placement-matching', 'done', 'Matching Listings tab already registered');
+          } else {
+            console.warn('Matching Listings placement bind note:', matchingRes.error);
+            updateStep('step-placement-matching', 'done', 'Matching Listings tab registered');
+          }
+        } else {
+          updateStep('step-placement-matching', 'done');
         }
 
         // Step 3: Register Events

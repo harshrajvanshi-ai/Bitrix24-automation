@@ -75,6 +75,14 @@ app.use((req, res, next) => {
 // 1. Installation Handler (/install)
 // ------------------------------------------------------------------------------
 /**
+ * GET/POST /
+ * Primary entry point redirects to /install
+ */
+app.all('/', (req, res) => {
+  res.redirect('/install');
+});
+
+/**
  * GET/POST /install
  * Handles initial application installation from Bitrix24
  */
@@ -100,6 +108,10 @@ app.all('/install', async (req, res) => {
       // 1. Register CRM_LEAD_DETAIL_TAB placement
       console.log(`[INSTALL] Binding placement CRM_LEAD_DETAIL_TAB -> ${publicUrl}/tab`);
       await BitrixClient.placementBind('CRM_LEAD_DETAIL_TAB', `${publicUrl}/tab`, 'Lead Details', authData.domain);
+
+      // 1b. Register CRM_DYNAMIC_1062_DETAIL_TAB placement (Matching Listings for Enquiry SPA)
+      console.log(`[INSTALL] Binding placement CRM_DYNAMIC_1062_DETAIL_TAB -> ${publicUrl}/matching-listings`);
+      await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', authData.domain);
 
       // 2. Register ONCRMLEADADD event
       console.log(`[INSTALL] Binding event ONCRMLEADADD -> ${publicUrl}/events`);
@@ -148,6 +160,7 @@ app.post('/api/install-setup', async (req, res) => {
       const activeAuth = StorageManager.getAuth(domain);
       if (activeAuth?.accessToken) {
         await BitrixClient.placementBind('CRM_LEAD_DETAIL_TAB', `${publicUrl}/tab`, 'Lead Details', domain);
+        await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
         await BitrixClient.eventBind('ONCRMLEADADD', `${publicUrl}/events`, domain);
         await BitrixClient.eventBind('ONCRMLEADUPDATE', `${publicUrl}/events`, domain);
         await DiscoveryService.runFullDiscovery(true, domain);
@@ -1198,6 +1211,38 @@ app.post('/api/admin/create-stages', verifyAdminSecret, async (req, res) => {
   try {
     const stageDiscovery = await DiscoveryService.discoverStages(true);
     res.json({ success: true, created: stageDiscovery.createdStages, stages: stageDiscovery });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/bind-placements
+ * Syncs and re-binds all placements (Lead Details & Matching Listings)
+ */
+app.post('/api/admin/bind-placements', verifyAdminSecret, async (req, res) => {
+  try {
+    const publicUrl = config.PUBLIC_URL || `https://${req.get('host')}`;
+    const domain = req.body?.domain || 'latest';
+    const results = [];
+
+    // 1. Lead Details
+    try {
+      await BitrixClient.placementBind('CRM_LEAD_DETAIL_TAB', `${publicUrl}/tab`, 'Lead Details', domain);
+      results.push({ placement: 'CRM_LEAD_DETAIL_TAB', status: 'bound', title: 'Lead Details' });
+    } catch (e) {
+      results.push({ placement: 'CRM_LEAD_DETAIL_TAB', status: 'error', error: e.message });
+    }
+
+    // 2. Matching Listings for Enquiry SPA
+    try {
+      await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
+      results.push({ placement: 'CRM_DYNAMIC_1062_DETAIL_TAB', status: 'bound', title: 'Matching Listings' });
+    } catch (e) {
+      results.push({ placement: 'CRM_DYNAMIC_1062_DETAIL_TAB', status: 'error', error: e.message });
+    }
+
+    res.json({ success: true, results });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

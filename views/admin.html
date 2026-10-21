@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Real Estate App Admin & Field Manager</title>
+  <script src="//api.bitrix24.com/api/v1/"></script>
   <link rel="stylesheet" href="/css/tab.css">
   <link rel="stylesheet" href="/css/admin.css">
 </head>
@@ -30,10 +31,53 @@
         </p>
       </div>
       <div style="display: flex; gap: 10px;">
+        <button id="btn-sync-placements" class="btn btn-secondary">⚡ Sync Placements</button>
         <button id="btn-refresh-discovery" class="btn btn-secondary">↻ Run Schema Discovery</button>
         <button id="btn-open-create-field" class="btn btn-primary">+ Create New Custom Field</button>
       </div>
     </header>
+
+    <!-- Unified App Placements Panel -->
+    <div class="panel" style="margin-bottom: 24px;">
+      <div class="panel-title">
+        <span>Unified App Placements & Detail Tabs</span>
+        <span class="status-tag tag-success">Integrated App</span>
+      </div>
+      <p style="color: var(--b24-text-muted); font-size: 13px; margin: 4px 0 16px;">
+        Both CRM tabs belong to this single application. No separate app registration or install URL is required.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+        <div style="background: #f8fafc; border: 1px solid var(--b24-border); border-radius: 6px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 13px;">1. Lead Details Card Tab</strong>
+            <span class="status-tag tag-success">Active Placement</span>
+          </div>
+          <div style="font-size: 12px; color: var(--b24-text-muted); line-height: 1.7;">
+            <div><strong>Placement:</strong> <code>CRM_LEAD_DETAIL_TAB</code></div>
+            <div><strong>Handler:</strong> <code>/tab</code></div>
+            <div><strong>Target:</strong> CRM Leads (Enquiry & Listing dynamic layout)</div>
+          </div>
+          <div style="margin-top: 10px;">
+            <a href="/tab" target="_blank" class="btn btn-secondary" style="font-size: 11px; padding: 3px 8px; text-decoration: none;">Preview Tab UI ↗</a>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--b24-border); border-radius: 6px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong style="font-size: 13px;">2. Matching Listings SPA Tab</strong>
+            <span class="status-tag tag-success">Active Placement</span>
+          </div>
+          <div style="font-size: 12px; color: var(--b24-text-muted); line-height: 1.7;">
+            <div><strong>Placement:</strong> <code>CRM_DYNAMIC_1062_DETAIL_TAB</code></div>
+            <div><strong>Handler:</strong> <code>/matching-listings</code></div>
+            <div><strong>Target:</strong> Enquiry SPA (#1062) ➔ Matches against Listings (#1058)</div>
+          </div>
+          <div style="margin-top: 10px;">
+            <a href="/matching-listings" target="_blank" class="btn btn-secondary" style="font-size: 11px; padding: 3px 8px; text-decoration: none;">Preview Tab UI ↗</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Row 1: Discovery Status Cards -->
     <div class="grid-2">
