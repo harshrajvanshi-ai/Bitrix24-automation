@@ -270,6 +270,11 @@
             HANDLER: publicUrl + '/matching-listings',
             TITLE: 'Matching Listings'
           });
+          window.BX24.callMethod('placement.bind', {
+            PLACEMENT: 'CRM_DYNAMIC_18_DETAIL_TAB',
+            HANDLER: publicUrl + '/matching-listings',
+            TITLE: 'Matching Listings'
+          });
         }
 
         showToast('App placements synchronized! Lead Details & Matching Listings tabs are active.', 'success');

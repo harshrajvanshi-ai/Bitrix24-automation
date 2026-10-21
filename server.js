@@ -112,6 +112,7 @@ app.all('/install', async (req, res) => {
       // 1b. Register CRM_DYNAMIC_1062_DETAIL_TAB placement (Matching Listings for Enquiry SPA)
       console.log(`[INSTALL] Binding placement CRM_DYNAMIC_1062_DETAIL_TAB -> ${publicUrl}/matching-listings`);
       await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', authData.domain);
+      await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', authData.domain);
 
       // 2. Register ONCRMLEADADD event
       console.log(`[INSTALL] Binding event ONCRMLEADADD -> ${publicUrl}/events`);
@@ -161,6 +162,7 @@ app.post('/api/install-setup', async (req, res) => {
       if (activeAuth?.accessToken) {
         await BitrixClient.placementBind('CRM_LEAD_DETAIL_TAB', `${publicUrl}/tab`, 'Lead Details', domain);
         await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
+        await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
         await BitrixClient.eventBind('ONCRMLEADADD', `${publicUrl}/events`, domain);
         await BitrixClient.eventBind('ONCRMLEADUPDATE', `${publicUrl}/events`, domain);
         await DiscoveryService.runFullDiscovery(true, domain);
@@ -1234,12 +1236,20 @@ app.post('/api/admin/bind-placements', verifyAdminSecret, async (req, res) => {
       results.push({ placement: 'CRM_LEAD_DETAIL_TAB', status: 'error', error: e.message });
     }
 
-    // 2. Matching Listings for Enquiry SPA
+    // 2. Matching Listings for Enquiry SPA (entityTypeId: 1062)
     try {
       await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
       results.push({ placement: 'CRM_DYNAMIC_1062_DETAIL_TAB', status: 'bound', title: 'Matching Listings' });
     } catch (e) {
       results.push({ placement: 'CRM_DYNAMIC_1062_DETAIL_TAB', status: 'error', error: e.message });
+    }
+
+    // 2b. Matching Listings for Enquiry SPA (type id: 18)
+    try {
+      await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
+      results.push({ placement: 'CRM_DYNAMIC_18_DETAIL_TAB', status: 'bound', title: 'Matching Listings' });
+    } catch (e) {
+      results.push({ placement: 'CRM_DYNAMIC_18_DETAIL_TAB', status: 'error', error: e.message });
     }
 
     res.json({ success: true, results });

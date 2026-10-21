@@ -188,6 +188,13 @@
           updateStep('step-placement-matching', 'done');
         }
 
+        // Also bind CRM_DYNAMIC_18_DETAIL_TAB to cover portals referencing type.id (18) vs entityTypeId (1062)
+        await bx24Call('placement.bind', {
+          PLACEMENT: 'CRM_DYNAMIC_18_DETAIL_TAB',
+          HANDLER: publicUrl + '/matching-listings',
+          TITLE: 'Matching Listings'
+        });
+
         // Step 3: Register Events
         updateStep('step-events', 'active');
         statusEl.textContent = 'Subscribing to lead events...';
