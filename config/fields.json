@@ -1348,9 +1348,9 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_ENQUIRY_LOCKED",
+            "code": "UF_CRM_ENQUIRY_LOCKED_2",
             "label": "Enquiry Locked",
-            "bitrixLabel": "Enquiry Locked / Assigned",
+            "bitrixLabel": "Enquiry Locked",
             "type": "boolean",
             "placeholder": "Enquiry Locked"
           },
@@ -3920,9 +3920,9 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_ENQUIRY_LOCKED",
+      "code": "UF_CRM_ENQUIRY_LOCKED_2",
       "label": "Enquiry Locked",
-      "bitrixLabel": "Enquiry Locked / Assigned",
+      "bitrixLabel": "Enquiry Locked",
       "type": "boolean",
       "placeholder": "Enquiry Locked"
     },
