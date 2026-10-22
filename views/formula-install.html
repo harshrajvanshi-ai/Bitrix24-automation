@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Estate Automation — Event & Formula Installer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <style>
+    :root {
+      --primary: #0070ba;
+      --primary-hover: #005a96;
+      --bg: #f8fafb;
+      --card-bg: #ffffff;
+      --text: #202428;
+      --text-muted: #6b7785;
+      --border: #dfe5e9;
+      --success: #2b8a3e;
+      --warning: #f59f00;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    .header {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .title { font-size: 18px; font-weight: 700; }
+    .subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #fff; color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background: #f8f9fa; }
+    .btn-success { background: var(--success); color: #fff; }
+    .actions-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    th { background: #f1f3f5; color: var(--text-muted); font-weight: 600; }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-active { background: #ebfbee; color: #2b8a3e; }
+    .badge-info { background: #e7f5ff; color: #1971c2; }
+    .log-box {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 14px;
+      border-radius: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1 class="title">⚡ Real Estate Formulas & Event Automation</h1>
+        <p class="subtitle">Bitrix24 Event Handlers (ONCRMDYNAMICITEMADD / UPDATE / DELETE) & Daily Recalculations</p>
+      </div>
+      <button type="button" id="btn-install-all" class="btn btn-primary">
+        🚀 Install & Bind All Events
+      </button>
+    </div>
+
+    <!-- Event Handlers Status Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>📡 Bound Event Handlers (event.get)</span>
+      </div>
+      <p style="color: var(--text-muted);">
+        These event handlers listen to additions, updates, and removals of dynamic SPA items and trigger automated formula calculations and units rollups.
+      </p>
+
+      <div class="actions-row">
+        <button type="button" id="btn-refresh-events" class="btn btn-secondary">
+          🔄 Refresh Handlers List
+        </button>
+        <button type="button" id="btn-rebind" class="btn btn-secondary">
+          ♻️ Rebind Formula Events
+        </button>
+        <button type="button" id="btn-run-cron" class="btn btn-secondary">
+          ⏰ Run Daily Recalc Now
+        </button>
+        <button type="button" id="btn-run-backfill" class="btn btn-secondary">
+          📦 Run Formula Backfill
+        </button>
+      </div>
+
+      <table id="events-table">
+        <thead>
+          <tr>
+            <th>Event Name</th>
+            <th>Handler URL</th>
+            <th>Auth Type</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="events-table-body">
+          <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading registered events...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Execution Log Box -->
+    <div class="card">
+      <div class="card-title">📋 Execution Log</div>
+      <div id="log-output" class="log-box">Awaiting command execution...</div>
+    </div>
+  </div>
+
+  <script>
+    const TARGET_EVENTS = [
+      'ONCRMDYNAMICITEMADD',
+      'ONCRMDYNAMICITEMUPDATE',
+      'ONCRMDYNAMICITEMDELETE'
+    ];
+
+    function log(msg) {
+      const el = document.getElementById('log-output');
+      const time = new Date().toLocaleTimeString();
+      el.textContent += `[${time}] ${msg}\n`;
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function call(method, params) {
+      return new Promise((resolve, reject) => {
+        if (window.BX24 && typeof window.BX24.callMethod === 'function') {
+          window.BX24.callMethod(method, params, res => {
+            if (res.error()) reject(new Error(res.error().toString()));
+            else resolve(res.data());
+          });
+        } else {
+          fetch('/api/b24/' + method, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+          }).then(r => r.json()).then(j => {
+            if (j.error) reject(new Error(j.error));
+            else resolve(j.result);
+          }).catch(reject);
+        }
+      });
+    }
+
+    async function loadBoundEvents() {
+      const tbody = document.getElementById('events-table-body');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Querying event.get...</td></tr>';
+      try {
+        const events = await call('event.get', {});
+        const list = Array.isArray(events) ? events : [];
+        if (list.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No events registered currently.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = '';
+        list.forEach(item => {
+          const tr = document.createElement('tr');
+          const isOurEvent = TARGET_EVENTS.includes(item.event) || item.event.includes('LEAD');
+          tr.innerHTML = `
+            <td><strong>${item.event}</strong> ${isOurEvent ? '<span class="badge badge-active">Active</span>' : ''}</td>
+            <td style="font-family: monospace; font-size: 11px;">${item.handler}</td>
+            <td><span class="badge badge-info">${item.auth_type || '0'}</span></td>
+            <td>
+              <button class="btn btn-secondary btn-compact" onclick="unbindSingle('${item.event}', '${item.handler}')">
+                Unbind
+              </button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+        log(`Retrieved ${list.length} bound events via event.get.`);
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color: red;">Error: ${err.message}</td></tr>`;
+        log(`Failed to list events: ${err.message}`);
+      }
+    }
+
+    async function unbindSingle(eventName, handlerUrl) {
+      if (!confirm(`Unbind ${eventName}?`)) return;
+      try {
+        await call('event.unbind', { event: eventName, handler: handlerUrl });
+        log(`✓ Unbound ${eventName}`);
+        loadBoundEvents();
+      } catch (e) {
+        log(`✗ Failed to unbind: ${e.message}`);
+      }
+    }
+
+    async function bindFormulaEvents() {
+      const publicUrl = window.location.origin;
+      const targetHandler = `${publicUrl}/events`;
+      log(`Starting event binding targeting handler: ${targetHandler}`);
+
+      // 1. Unbind existing instances first to guarantee idempotency
+      for (const ev of TARGET_EVENTS) {
+        try {
+          await call('event.unbind', { event: ev, handler: targetHandler });
+          log(`Unbound old handler for ${ev}`);
+        } catch (e) {}
+      }
+
+      // 2. Bind fresh events
+      for (const ev of TARGET_EVENTS) {
+        try {
+          await call('event.bind', { event: ev, handler: targetHandler });
+          log(`✓ Successfully bound ${ev} -> ${targetHandler}`);
+        } catch (err) {
+          log(`✗ Error binding ${ev}: ${err.message}`);
+        }
+      }
+
+      // Finish installation if in installation context
+      if (window.BX24 && typeof window.BX24.installFinish === 'function') {
+        window.BX24.installFinish();
+        log('✓ Called BX24.installFinish()');
+      }
+
+      await loadBoundEvents();
+    }
+
+    // Attach listeners
+    document.getElementById('btn-install-all').addEventListener('click', bindFormulaEvents);
+    document.getElementById('btn-rebind').addEventListener('click', bindFormulaEvents);
+    document.getElementById('btn-refresh-events').addEventListener('click', loadBoundEvents);
+
+    document.getElementById('btn-run-cron').addEventListener('click', async () => {
+      log('Triggering manual daily recalculation run...');
+      try {
+        const res = await fetch('/api/cron/daily-recalc', { method: 'POST' });
+        const json = await res.json();
+        log(`Daily recalc completed: ${JSON.stringify(json, null, 2)}`);
+      } catch (e) {
+        log(`Daily recalc error: ${e.message}`);
+      }
+    });
+
+    document.getElementById('btn-run-backfill').addEventListener('click', async () => {
+      if (!confirm('Run full formula backfill for all existing records?')) return;
+      log('Starting full formula backfill across all SPAs...');
+      try {
+        const res = await fetch('/api/formulas/backfill', { method: 'POST' });
+        const json = await res.json();
+        log(`Backfill completed: ${JSON.stringify(json, null, 2)}`);
+      } catch (e) {
+        log(`Backfill error: ${e.message}`);
+      }
+    });
+
+    // Initialize BX24 SDK
+    if (window.BX24 && typeof window.BX24.init === 'function') {
+      window.BX24.init(loadBoundEvents);
+    } else {
+      document.addEventListener('DOMContentLoaded', loadBoundEvents);
+    }
+  </script>
+</body>
+</html>

@@ -159,11 +159,22 @@ class BitrixClient {
     }, identifier);
   }
 
-  static async eventBind(event, handler, identifier = 'latest') {
-    return this.call('event.bind', {
+  static async callBatch(commands, haltOnError = false, identifier = 'latest') {
+    return this.call('batch', {
+      halt: haltOnError ? 1 : 0,
+      cmd: commands
+    }, identifier);
+  }
+
+  static async eventUnbind(event, handler, identifier = 'latest') {
+    return this.call('event.unbind', {
       event,
       handler
     }, identifier);
+  }
+
+  static async eventGet(identifier = 'latest') {
+    return this.call('event.get', {}, identifier);
   }
 
   static async appInfo(identifier = 'latest') {

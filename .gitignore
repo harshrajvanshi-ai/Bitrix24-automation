@@ -5,3 +5,4 @@ storage/*.json
 .sf/
 npm-debug.log*
 .DS_Store
+spa_fields_dump.json
