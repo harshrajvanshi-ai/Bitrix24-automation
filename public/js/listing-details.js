@@ -1472,12 +1472,15 @@
           }
         }
       });
-    } else if (key === 'parentId1052') {
+    } else if (key === 'parentId1052' || type === 'crm_entity') {
       window.BX24.callMethod('crm.item.get', { entityTypeId: 1052, id: num }, res => {
-        if (!res.error() && (res.data()?.item?.title || res.data()?.TITLE)) {
-          const title = res.data()?.item?.title || res.data()?.TITLE;
-          entityTitleCache[cacheKey] = title;
-          callback(title);
+        if (!res.error()) {
+          const item = res.data()?.item || res.data();
+          const title = item?.title || item?.TITLE || res.data()?.TITLE;
+          if (title) {
+            entityTitleCache[cacheKey] = title;
+            callback(title);
+          }
         }
       });
     }
@@ -1493,101 +1496,96 @@
     input.name = f.key;
     input.type = 'text';
     input.className = 'form-control';
-    input.placeholder = f.placeholder || `Enter ${displayLabel} ID (e.g. 102)...`;
+    input.placeholder = f.placeholder || `Enter ${displayLabel} ID or name...`;
 
-    let stringVal = '';
+    let rawIdStr = '';
     if (Array.isArray(rawVal)) {
-      stringVal = rawVal.map(v => typeof v === 'object' ? (v.id || v.ID || JSON.stringify(v)) : v).join(', ');
+      rawIdStr = rawVal.map(v => typeof v === 'object' ? (v.id || v.ID || JSON.stringify(v)) : v).join(', ');
     } else if (rawVal && typeof rawVal === 'object') {
-      stringVal = rawVal.id || rawVal.ID || rawVal.value || '';
+      rawIdStr = String(rawVal.id || rawVal.ID || rawVal.value || '');
     } else if (rawVal !== null && rawVal !== undefined) {
-      stringVal = String(rawVal);
+      rawIdStr = String(rawVal);
     }
-    input.value = stringVal;
+    input.dataset.id = rawIdStr;
 
+    // Check if known title is already present on listing object
+    let knownTitle = '';
+    if (rawVal && typeof rawVal === 'object' && (rawVal.title || rawVal.name)) {
+      knownTitle = rawVal.title || rawVal.name;
+    } else if (f.key === 'companyId' && currentListing.company?.title) {
+      knownTitle = currentListing.company.title;
+    } else if (f.key === 'contactId' && currentListing.contact?.name) {
+      knownTitle = currentListing.contact.name;
+    } else if (f.key === 'assignedById' && currentListing.assignedBy?.name) {
+      knownTitle = currentListing.assignedBy.name;
+    } else if (f.key === 'parentId1052' && currentListing.parentId1052?.title) {
+      knownTitle = currentListing.parentId1052.title;
+    } else if (currentListing[`${f.key}_TITLE`]) {
+      knownTitle = currentListing[`${f.key}_TITLE`];
+    } else if (currentListing[`${f.key}_NAME`]) {
+      knownTitle = currentListing[`${f.key}_NAME`];
+    }
+
+    const hasValidId = rawIdStr && rawIdStr !== '0';
+
+    // Show title directly inside the input field
+    if (knownTitle) {
+      input.value = knownTitle;
+      input.title = `${knownTitle} (ID: ${rawIdStr})`;
+    } else if (hasValidId) {
+      input.value = `#${rawIdStr}`;
+      input.title = `${meta.label} ID: ${rawIdStr}`;
+    } else {
+      input.value = '';
+    }
+
+    // Open button: arrow only!
     const openBtn = document.createElement('button');
     openBtn.type = 'button';
     openBtn.className = 'lookup-open-btn';
-    openBtn.innerHTML = `<span>↗ Open</span>`;
-    openBtn.title = `Open linked ${meta.label} record in Bitrix24`;
-    openBtn.style.display = stringVal ? 'inline-flex' : 'none';
+    openBtn.innerHTML = `<span>↗</span>`;
+    openBtn.title = `Open linked ${meta.label} in Bitrix24`;
+    openBtn.style.display = hasValidId ? 'inline-flex' : 'none';
 
-    wrap.appendChild(input);
-    wrap.appendChild(openBtn);
-    group.appendChild(wrap);
-
-    const chipsContainer = document.createElement('div');
-    chipsContainer.className = 'linked-records-container';
-    group.appendChild(chipsContainer);
-
-    function refreshChips() {
-      chipsContainer.innerHTML = '';
-      const currentVal = input.value.trim();
-      if (!currentVal) {
-        openBtn.style.display = 'none';
-        return;
-      }
-      openBtn.style.display = 'inline-flex';
-
-      const items = currentVal.includes(',')
-        ? currentVal.split(',').map(s => s.trim()).filter(Boolean)
-        : [currentVal];
-
-      items.forEach(itemId => {
-        const chip = document.createElement('a');
-        chip.href = '#';
-        chip.className = 'linked-record-chip';
-        chip.title = `Click to open ${meta.label} #${itemId} in Bitrix24`;
-
-        let knownTitle = '';
-        if (f.key === 'companyId' && currentListing.company?.title) {
-          knownTitle = currentListing.company.title;
-        } else if (f.key === 'contactId' && currentListing.contact?.name) {
-          knownTitle = currentListing.contact.name;
-        } else if (f.key === 'assignedById' && currentListing.assignedBy?.name) {
-          knownTitle = currentListing.assignedBy.name;
-        } else if (currentListing[`${f.key}_TITLE`]) {
-          knownTitle = currentListing[`${f.key}_TITLE`];
+    // Fetch title in background and display title inside field
+    if (hasValidId && !knownTitle) {
+      fetchEntityTitle(f.type, rawIdStr, f.key, (resolvedTitle) => {
+        if (resolvedTitle && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
+          input.value = resolvedTitle;
+          input.title = `${resolvedTitle} (ID: ${rawIdStr})`;
         }
-
-        const displayText = knownTitle ? `${knownTitle} (#${itemId})` : `${meta.defaultPrefix}${itemId}`;
-
-        chip.innerHTML = `
-          <span class="chip-icon">${meta.icon}</span>
-          <span class="chip-label">${displayText}</span>
-          <span class="chip-arrow">↗</span>
-        `;
-
-        chip.addEventListener('click', (e) => {
-          openLinkedRecord(f.type, itemId, f.key, e);
-        });
-
-        if (!knownTitle) {
-          fetchEntityTitle(f.type, itemId, f.key, (resolvedTitle) => {
-            const labelSpan = chip.querySelector('.chip-label');
-            if (labelSpan) {
-              labelSpan.textContent = `${resolvedTitle} (#${itemId})`;
-            }
-          });
-        }
-
-        chipsContainer.appendChild(chip);
       });
     }
 
     openBtn.addEventListener('click', (e) => {
-      const currentVal = input.value.trim();
-      const firstId = currentVal.includes(',') ? currentVal.split(',')[0].trim() : currentVal;
+      const currentTargetId = input.dataset.id || input.value.trim();
+      const firstId = currentTargetId.includes(',') ? currentTargetId.split(',')[0].trim() : currentTargetId;
       openLinkedRecord(f.type, firstId, f.key, e);
     });
 
     input.addEventListener('input', () => {
+      const val = input.value.trim();
+      input.dataset.id = val;
       setDirty(true);
-      refreshChips();
+      openBtn.style.display = (val && val !== '0') ? 'inline-flex' : 'none';
     });
 
-    refreshChips();
-    initialFormValues[f.key] = input.value;
+    input.addEventListener('blur', () => {
+      const val = input.value.trim();
+      if (val && /^\d+$/.test(val)) {
+        fetchEntityTitle(f.type, val, f.key, (resolvedTitle) => {
+          if (resolvedTitle && input.dataset.id === val) {
+            input.value = resolvedTitle;
+            input.title = `${resolvedTitle} (ID: ${val})`;
+          }
+        });
+      }
+    });
+
+    wrap.appendChild(input);
+    wrap.appendChild(openBtn);
+    group.appendChild(wrap);
+    initialFormValues[f.key] = input.dataset.id || input.value;
   }
 
   // Field element factory
@@ -1877,9 +1875,13 @@
 
       document.querySelectorAll('#sections-container input, #sections-container select, #sections-container textarea').forEach(el => {
         if (el.name && el.type !== 'file') {
-          payload[el.name] = el.value;
+          payload[el.name] = (el.dataset.id !== undefined && el.dataset.id !== '') ? el.dataset.id : el.value;
         }
       });
+
+      if (payload['contactIds'] && typeof payload['contactIds'] === 'string' && payload['contactIds'].includes(',')) {
+        payload['contactIds'] = payload['contactIds'].split(',').map(s => s.trim()).filter(Boolean);
+      }
 
       // Package pending file uploads with { fileData: [name, base64] }
       for (const [fieldKey, fileList] of Object.entries(pendingFileUploads)) {

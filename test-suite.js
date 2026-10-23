@@ -901,8 +901,8 @@ async function runTests() {
   assert(listingJs.includes("isLookupField"), 'Defines isLookupField to recognize CRM lookup types');
   assert(listingJs.includes("openLinkedRecord"), 'Defines openLinkedRecord to navigate directly to linked records');
   assert(listingJs.includes("lookup-open-btn"), 'Renders inline lookup-open-btn for direct 1-click access');
-  assert(listingJs.includes("linked-record-chip"), 'Renders interactive linked-record-chip in layout');
-  assert(listingCss.includes(".linked-record-chip"), 'public/css/listing-details.css contains linked-record-chip styling');
+  assert(listingJs.includes("<span>↗</span>"), 'Renders arrow-only open button next to lookup input');
+  assert(listingJs.includes("input.dataset.id"), 'Preserves underlying entity ID via dataset.id while displaying title inside input');
   assert(listingCss.includes(".lookup-open-btn"), 'public/css/listing-details.css contains lookup-open-btn styling');
 
   // ============================================================================

@@ -1010,14 +1010,21 @@ textarea.form-control {
   width: 100%;
 }
 
+.lookup-input-wrap .form-control {
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+
 .lookup-open-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  width: 42px;
+  min-width: 42px;
   height: 42px;
-  padding: 0 14px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 0;
+  font-size: 17px;
+  font-weight: 700;
   border-radius: 7px;
   background: #f8fafc;
   border: 1px solid var(--border-input);
@@ -1026,12 +1033,14 @@ textarea.form-control {
   white-space: nowrap;
   transition: all 0.15s ease;
   line-height: 1;
+  flex-shrink: 0;
 }
 
 .lookup-open-btn:hover {
   background: var(--primary-light);
   border-color: var(--primary-border);
   color: var(--primary-hover);
+  transform: translateY(-1px);
 }
 
 .linked-records-container {
