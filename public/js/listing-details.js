@@ -1153,17 +1153,28 @@
       let fileName = '';
 
       if (typeof fileItem === 'object') {
-        fileUrl = fileItem.showUrl || fileItem.downloadUrl || fileItem.url || '';
-        fileName = fileItem.name || `${field.label} #${idx + 1}`;
+        fileUrl = fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
+        const fid = fileItem.id || fileItem.ID || fileItem.fileId;
+        if (!fileUrl && fid) {
+          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
+        }
+        fileName = fileItem.name || (fid ? `File #${fid}` : `${field.label} #${idx + 1}`);
+      } else if (typeof fileItem === 'number' || (typeof fileItem === 'string' && /^\d+$/.test(fileItem.trim()))) {
+        const fid = String(fileItem).trim();
+        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
+        fileName = `${field.label} #${idx + 1}`;
       } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
         fileUrl = fileItem;
         fileName = fileItem.split('/').pop().split('?')[0] || 'Attached File';
+      } else if (typeof fileItem === 'string' && fileItem.trim()) {
+        fileUrl = fileItem.trim();
+        fileName = fileItem.split('/').pop().split('?')[0] || `${field.label} #${idx + 1}`;
       }
 
-      if (!fileUrl && !fileName) return;
+      if (!fileUrl) return;
 
       const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
-      const fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl}`;
+      const fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
       const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
       const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
 
@@ -1176,7 +1187,7 @@
         thumb.className = 'thumb-item preview-thumb-wrap';
         thumb.title = `${fileName} - Click to preview`;
         thumb.innerHTML = `
-          <img class="thumb-item-img" src="${fullUrl}" alt="${fileName}">
+          <img class="thumb-item-img" src="${fullUrl}" alt="${fileName}" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'doc-tile-inner\\'><span class=\\'doc-tile-badge img\\'>IMG</span><span class=\\'doc-tile-icon\\'>🖼️</span><span class=\\'doc-tile-name\\'>${fileName}</span></div>';">
           <div class="thumb-zoom-overlay">🔍 Zoom</div>
         `;
         
@@ -1243,7 +1254,7 @@
           <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
         </div>
       </div>
-      <img class="inline-preview-img" src="${url}" alt="${name}">
+      <img class="inline-preview-img" src="${url}" alt="${name}" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;\\'><span>🖼️ Unable to load preview</span><a href=\\'${url}\\' target=\\'_blank\\' style=\\'color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;\\'>Open image link ↗</a></div>');">
     `;
 
     viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, false));
