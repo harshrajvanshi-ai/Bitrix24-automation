@@ -956,14 +956,19 @@
     const card = document.createElement('div');
     card.className = 'file-upload-card';
 
-    // 1. Dropzone Bar (Minimal, single-line)
+    // 1. Dropzone Bar (Clean, single-line icon + text group)
     const dropzone = document.createElement('div');
     dropzone.className = 'dropzone-box';
+    const isMulti = field.isMultiple || field.key.includes('DOCS') || field.key.includes('1791544736052') || field.key.includes('1791881642219');
+    const uploadLabel = field.isImage ? (isMulti ? 'Upload Photos' : 'Upload Image') : (isMulti ? 'Upload Documents' : 'Upload Document');
+
     dropzone.innerHTML = `
       <span class="dropzone-icon">📁</span>
-      <span class="dropzone-title">Upload ${field.label}</span>
-      <span class="dropzone-sub">(Click or drop file)</span>
-      <input type="file" id="file_input_${field.key}" style="display:none" ${field.key.includes('DOCS') || field.key.includes('1791544736052') ? 'multiple' : ''}>
+      <div class="dropzone-text-group">
+        <span class="dropzone-title">${uploadLabel}</span>
+        <span class="dropzone-sub">Click to browse or drop file</span>
+      </div>
+      <input type="file" id="file_input_${field.key}" style="display:none" ${isMulti ? 'multiple' : ''}>
     `;
 
     const fileInput = dropzone.querySelector('input');
@@ -999,6 +1004,10 @@
     const stripWrap = document.createElement('div');
     stripWrap.className = 'thumbnail-strip';
     stripWrap.id = `strip_${field.key}`;
+
+    const docChipsWrap = document.createElement('div');
+    docChipsWrap.className = 'doc-chips-wrap';
+    docChipsWrap.style.display = 'none';
 
     // Collect all existing files
     const existingList = Array.isArray(rawValue) ? rawValue : (rawValue ? [rawValue] : []);
@@ -1052,16 +1061,17 @@
         docChip.className = 'doc-chip-item preview-doc-wrap';
         docChip.innerHTML = `
           <span class="doc-chip-badge">${isPdf ? 'PDF' : 'DOC'}</span>
-          <span title="${fileName}" style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fileName}</span>
+          <span class="doc-chip-name" title="${fileName}">${fileName}</span>
           ${isPdf ? `<button type="button" class="doc-chip-view-btn">View</button>` : ''}
-          <a href="${fullUrl}" download class="doc-chip-view-btn">⬇</a>
+          <a href="${fullUrl}" download class="doc-chip-view-btn" title="Download">⬇</a>
         `;
         if (isPdf) {
           docChip.querySelector('button').addEventListener('click', () => {
             showInWindowPdf(viewportBox, fullUrl, fileName);
           });
         }
-        card.appendChild(docChip);
+        docChipsWrap.appendChild(docChip);
+        docChipsWrap.style.display = 'flex';
       }
     });
 
@@ -1073,6 +1083,7 @@
       }
     }
 
+    card.appendChild(docChipsWrap);
     card.appendChild(viewportBox);
     card.appendChild(stripWrap);
     container.appendChild(card);
@@ -1605,23 +1616,26 @@
     } else if (isLookupField(f)) {
       renderLookupField(f, rawVal, group, displayLabel);
     } else if (f.type === 'tour_url') {
+      const card = document.createElement('div');
+      card.className = 'file-upload-card media-url-card';
+
       const wrap = document.createElement('div');
-      wrap.style.display = 'flex';
-      wrap.style.gap = '4px';
+      wrap.className = 'media-url-input-wrap';
 
       const input = document.createElement('input');
       input.type = 'url';
       input.id = `field_${f.key}`;
       input.name = f.key;
       input.className = 'form-control';
-      input.placeholder = f.placeholder || '360 Tour URL...';
+      input.placeholder = f.placeholder || 'https://my.matterport.com/show/?m=...';
       input.value = rawVal || '';
       input.addEventListener('input', () => setDirty(true));
 
       const launchBtn = document.createElement('button');
       launchBtn.type = 'button';
-      launchBtn.className = 'btn btn-secondary btn-compact';
-      launchBtn.textContent = '🌐 Launch 360';
+      launchBtn.className = 'btn btn-secondary launch-tour-btn';
+      launchBtn.innerHTML = `<span>🌐 Launch 360</span>`;
+      launchBtn.title = 'Open interactive 360 tour preview';
       launchBtn.addEventListener('click', () => {
         if (!input.value) {
           showToast('Please enter a 360 Virtual Tour URL first', 'warning');
@@ -1632,12 +1646,15 @@
 
       wrap.appendChild(input);
       wrap.appendChild(launchBtn);
-      group.appendChild(wrap);
+      card.appendChild(wrap);
+      group.appendChild(card);
       initialFormValues[f.key] = input.value;
     } else if (f.type === 'url') {
+      const card = document.createElement('div');
+      card.className = 'file-upload-card media-url-card';
+
       const wrap = document.createElement('div');
-      wrap.style.display = 'flex';
-      wrap.style.gap = '4px';
+      wrap.className = 'media-url-input-wrap';
 
       const input = document.createElement('input');
       input.type = 'url';
@@ -1651,16 +1668,17 @@
       const testBtn = document.createElement('a');
       testBtn.href = rawVal || '#';
       testBtn.target = '_self';
-      testBtn.className = 'btn btn-secondary btn-compact';
+      testBtn.className = 'btn btn-secondary launch-tour-btn';
       testBtn.textContent = '↗ Open';
       testBtn.addEventListener('click', (e) => {
         if (!input.value) e.preventDefault();
-        else openLightbox('Brochure Preview', input.value, true);
+        else openLightbox('Preview', input.value, true);
       });
 
       wrap.appendChild(input);
       wrap.appendChild(testBtn);
-      group.appendChild(wrap);
+      card.appendChild(wrap);
+      group.appendChild(card);
       initialFormValues[f.key] = input.value;
     } else if (f.type === 'textarea') {
       const textarea = document.createElement('textarea');
