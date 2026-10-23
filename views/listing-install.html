@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listing Details — Placement Installation</title>
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bitrix24 Official JavaScript SDK -->
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <link rel="stylesheet" href="/css/matching-listings.css">
+  <style>
+    .layout-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .layout-card {
+      background: #f8fafc;
+      border: 1px solid var(--b24-border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+    }
+    .layout-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="matching-container" style="max-width: 900px;">
+
+    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <header class="matching-header">
+      <div class="header-left">
+        <div class="header-title-wrap">
+          <h1 class="header-title">
+            <span>⚙️ Listing Details Placement Manager</span>
+          </h1>
+          <span class="header-subtitle">Register and manage the Listing SPA detail card placement</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="placement-status-pill" class="badge badge-count">Checking status...</span>
+      </div>
+    </header>
+
+    <!-- ── Placement Info Card ────────────────────────────────────── -->
+    <div class="install-card">
+      <div style="background: #e7f5ff; border: 1px solid #74c0fc; border-radius: 6px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #1864ab;">
+        <strong>✓ Integrated Component:</strong> This feature is a built-in part of your Bitrix24 Real Estate Application. It registers the <strong>Listing Details</strong> tab into your Listing Smart Process Automation (entityTypeId: 1058), featuring 4 dynamic tailored layouts and rich media/file previews.
+      </div>
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 6px;">Target Placement Configuration</h3>
+      <p style="font-size: 12px; color: var(--b24-text-muted);">
+        This tool registers the <strong>Listing Details</strong> tab into the detail card of your Listing Smart Process Automation (entityTypeId: 1058 / typeId: 16).
+      </p>
+
+      <table class="config-table">
+        <tr>
+          <th style="width: 25%;">Target Placement</th>
+          <td><span class="code-pill">CRM_DYNAMIC_1058_DETAIL_TAB</span> <span class="code-pill" style="margin-left: 6px;">CRM_DYNAMIC_16_DETAIL_TAB</span></td>
+        </tr>
+        <tr>
+          <th>Tab Title</th>
+          <td><strong>Listing Details</strong></td>
+        </tr>
+        <tr>
+          <th>Target Handler URL</th>
+          <td><span id="target-handler-url" class="code-pill">Detecting...</span></td>
+        </tr>
+        <tr>
+          <th>Listing SPA Entity</th>
+          <td>entityTypeId = <strong>1058</strong> (typeId: 16)</td>
+        </tr>
+        <tr>
+          <th>Layout Selector Field</th>
+          <td><code>UF_CRM_16_1790154808</code> (Listing Type enumeration)</td>
+        </tr>
+      </table>
+
+      <!-- 4 Layouts preview -->
+      <h4 style="font-size: 13px; font-weight: 700; margin-top: 16px; margin-bottom: 6px;">4 Dynamic Tailored Layouts</h4>
+      <div class="layout-grid">
+        <div class="layout-card">
+          <strong style="color: #4f46e5;">🏢 External Stock</strong>
+          <span>Mandate period dates, external stock ID (xmlId), partner inventory rules.</span>
+        </div>
+        <div class="layout-card">
+          <strong style="color: #d97706;">🏗️ Off-plan</strong>
+          <span>Master property link, payment plan installments, full portal feeds & brochure.</span>
+        </div>
+        <div class="layout-card">
+          <strong style="color: #0891b2;">🌍 Overseas Sale</strong>
+          <span>Country prominence, international marketing, currency & commission terms.</span>
+        </div>
+        <div class="layout-card">
+          <strong style="color: #059669;">🔑 Rent</strong>
+          <span>Annual rent pricing, security deposit, rental frequency, cheques, tenancy dates.</span>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-top: 20px;">
+        <button type="button" id="btn-bind" class="btn btn-primary">
+          ✓ Bind Placement (Register Tab)
+        </button>
+        <button type="button" id="btn-unbind" class="btn btn-secondary" style="color: var(--b24-danger);">
+          ✕ Unbind Placement (Remove Tab)
+        </button>
+        <button type="button" id="btn-refresh" class="btn btn-secondary">
+          🔄 Refresh Placements (placement.get)
+        </button>
+        <a id="btn-test-tab" href="/listing-details?ID=108" target="_blank" class="btn btn-secondary" style="text-decoration: none;">
+          ↗ Open Tab in Test Mode (Listing #108)
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Active Placements Inspector ────────────────────────────── -->
+    <div class="install-card">
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Active Registered Placements in Portal</h3>
+      <div id="placements-list-container">
+        <div style="font-size: 12px; color: var(--b24-text-muted);">Loading registered placements from Bitrix24...</div>
+      </div>
+    </div>
+
+    <!-- ── Execution Logs ─────────────────────────────────────────── -->
+    <div class="install-card">
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Placement Activity Log</h3>
+      <div id="action-log" class="action-log">Ready. Click 'Refresh Placements' or 'Bind Placement' to begin.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      const TARGET_PLACEMENT_1058 = 'CRM_DYNAMIC_1058_DETAIL_TAB';
+      const TARGET_PLACEMENT_16 = 'CRM_DYNAMIC_16_DETAIL_TAB';
+      const TAB_TITLE = 'Listing Details';
+
+      const publicUrl = window.location.origin;
+      const targetHandlerUrl = publicUrl + '/listing-details';
+
+      document.getElementById('target-handler-url').textContent = targetHandlerUrl;
+      document.getElementById('btn-test-tab').href = '/listing-details?ID=108';
+
+      const statusPill = document.getElementById('placement-status-pill');
+      const placementsListEl = document.getElementById('placements-list-container');
+      const logEl = document.getElementById('action-log');
+      const btnBind = document.getElementById('btn-bind');
+      const btnUnbind = document.getElementById('btn-unbind');
+      const btnRefresh = document.getElementById('btn-refresh');
+
+      function log(msg, type = 'info') {
+        const ts = new Date().toLocaleTimeString();
+        logEl.textContent += `\n[${ts}] ${msg}`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function bxCall(method, params = {}) {
+        return new Promise((resolve) => {
+          if (!window.BX24) {
+            fetch('/api/b24/' + method, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(params)
+            })
+              .then(r => r.json())
+              .then(data => resolve({ result: data.result || data, error: data.error }))
+              .catch(err => resolve({ error: err.message }));
+            return;
+          }
+          window.BX24.callMethod(method, params, (res) => {
+            if (res.error()) {
+              resolve({ error: res.error().toString() });
+            } else {
+              resolve({ result: res.data() });
+            }
+          });
+        });
+      }
+
+      async function checkPlacements() {
+        statusPill.textContent = 'Checking...';
+        statusPill.className = 'badge badge-count';
+        placementsListEl.innerHTML = '<div style="font-size: 12px; color: var(--b24-text-muted);">Fetching placement.get...</div>';
+
+        log('Querying placement.get...');
+        const res = await bxCall('placement.get');
+
+        if (res.error) {
+          log(`Error fetching placements: ${res.error}`, 'error');
+          statusPill.textContent = 'Error: ' + res.error;
+          statusPill.className = 'badge badge-count';
+          placementsListEl.innerHTML = `<div style="color: var(--b24-danger); font-size: 12px;">Failed to load placements: ${res.error}</div>`;
+          return;
+        }
+
+        const placements = res.result || [];
+        const isBound1058 = placements.some(p => p.placement === TARGET_PLACEMENT_1058 && (p.handler || '').includes('listing-details'));
+        const isBound16 = placements.some(p => p.placement === TARGET_PLACEMENT_16 && (p.handler || '').includes('listing-details'));
+
+        if (isBound1058 || isBound16) {
+          statusPill.textContent = '✓ Tab Registered & Active';
+          statusPill.className = 'badge badge-auto';
+        } else {
+          statusPill.textContent = '○ Not Bound in Portal';
+          statusPill.className = 'badge badge-count';
+        }
+
+        if (placements.length === 0) {
+          placementsListEl.innerHTML = '<div style="font-size: 12px; color: var(--b24-text-muted);">No placements registered. Click "Bind Placement" below.</div>';
+          return;
+        }
+
+        let html = '<table class="config-table" style="margin-top: 0;"><thead><tr><th>Placement</th><th>Title</th><th>Handler</th><th>Action</th></tr></thead><tbody>';
+        placements.forEach(p => {
+          const isTarget = (p.placement === TARGET_PLACEMENT_1058 || p.placement === TARGET_PLACEMENT_16);
+          html += `<tr style="${isTarget ? 'background: #eef8ff; font-weight: 600;' : ''}">
+            <td><span class="code-pill">${p.placement}</span></td>
+            <td>${p.title || '—'}</td>
+            <td style="font-size: 11px; word-break: break-all;">${p.handler || '—'}</td>
+            <td>
+              <button class="btn btn-secondary btn-compact unbind-single-btn" data-placement="${p.placement}" data-handler="${p.handler || ''}">
+                ✕ Remove
+              </button>
+            </td>
+          </tr>`;
+        });
+        html += '</tbody></table>';
+        placementsListEl.innerHTML = html;
+
+        document.querySelectorAll('.unbind-single-btn').forEach(btn => {
+          btn.addEventListener('click', async function () {
+            const plc = this.getAttribute('data-placement');
+            const hnd = this.getAttribute('data-handler');
+            log(`Unbinding single placement: ${plc} ...`);
+            const delRes = await bxCall('placement.unbind', { PLACEMENT: plc, HANDLER: hnd });
+            if (delRes.error) {
+              log(`Failed to unbind ${plc}: ${delRes.error}`, 'error');
+            } else {
+              log(`Successfully removed placement ${plc}`);
+            }
+            await checkPlacements();
+          });
+        });
+      }
+
+      btnBind.addEventListener('click', async () => {
+        log(`Binding ${TARGET_PLACEMENT_1058} to ${targetHandlerUrl} ...`);
+        btnBind.disabled = true;
+
+        const res1 = await bxCall('placement.bind', {
+          PLACEMENT: TARGET_PLACEMENT_1058,
+          HANDLER: targetHandlerUrl,
+          TITLE: TAB_TITLE
+        });
+
+        const res2 = await bxCall('placement.bind', {
+          PLACEMENT: TARGET_PLACEMENT_16,
+          HANDLER: targetHandlerUrl,
+          TITLE: TAB_TITLE
+        });
+
+        if (res1.error) log(`Bind 1058 note: ${res1.error}`);
+        else log(`Successfully bound ${TARGET_PLACEMENT_1058}!`);
+
+        if (res2.error) log(`Bind 16 note: ${res2.error}`);
+        else log(`Successfully bound ${TARGET_PLACEMENT_16}!`);
+
+        btnBind.disabled = false;
+        await checkPlacements();
+      });
+
+      btnUnbind.addEventListener('click', async () => {
+        if (!confirm('Remove the Listing Details tab from Listing SPA?')) return;
+        log(`Unbinding ${TARGET_PLACEMENT_1058}...`);
+        btnUnbind.disabled = true;
+
+        await bxCall('placement.unbind', { PLACEMENT: TARGET_PLACEMENT_1058, HANDLER: targetHandlerUrl });
+        await bxCall('placement.unbind', { PLACEMENT: TARGET_PLACEMENT_16, HANDLER: targetHandlerUrl });
+
+        log('Unbind calls executed.');
+        btnUnbind.disabled = false;
+        await checkPlacements();
+      });
+
+      btnRefresh.addEventListener('click', checkPlacements);
+
+      if (window.BX24) {
+        window.BX24.init(checkPlacements);
+      } else {
+        checkPlacements();
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -76,6 +76,7 @@
       <div id="step-auth" class="step-item active">● Authenticating OAuth credentials</div>
       <div id="step-placement" class="step-item">○ Registering 'Lead Details' tab (CRM_LEAD_DETAIL_TAB)</div>
       <div id="step-placement-matching" class="step-item">○ Registering 'Matching Listings' tab (CRM_DYNAMIC_1062_DETAIL_TAB)</div>
+      <div id="step-placement-listing" class="step-item">○ Registering 'Listing Details' tab (CRM_DYNAMIC_1058_DETAIL_TAB)</div>
       <div id="step-events" class="step-item">○ Subscribing to ONCRMLEADADD and ONCRMLEADUPDATE</div>
       <div id="step-discovery" class="step-item">○ Discovering Lead Type field and pipeline stages</div>
     </div>
@@ -193,6 +194,34 @@
           PLACEMENT: 'CRM_DYNAMIC_18_DETAIL_TAB',
           HANDLER: publicUrl + '/matching-listings',
           TITLE: 'Matching Listings'
+        });
+
+        // Step 2c: Register CRM_DYNAMIC_1058_DETAIL_TAB placement (Listing Details for Listing SPA #1058)
+        updateStep('step-placement-listing', 'active');
+        statusEl.textContent = 'Registering Listing Details tab...';
+
+        const listingRes = await bx24Call('placement.bind', {
+          PLACEMENT: 'CRM_DYNAMIC_1058_DETAIL_TAB',
+          HANDLER: publicUrl + '/listing-details',
+          TITLE: 'Listing Details'
+        });
+
+        if (listingRes.error) {
+          if (listingRes.error.toLowerCase().includes('already')) {
+            updateStep('step-placement-listing', 'done', 'Listing Details tab already registered');
+          } else {
+            console.warn('Listing Details placement bind note:', listingRes.error);
+            updateStep('step-placement-listing', 'done', 'Listing Details tab registered');
+          }
+        } else {
+          updateStep('step-placement-listing', 'done');
+        }
+
+        // Also bind CRM_DYNAMIC_16_DETAIL_TAB to cover portals referencing type.id (16) vs entityTypeId (1058)
+        await bx24Call('placement.bind', {
+          PLACEMENT: 'CRM_DYNAMIC_16_DETAIL_TAB',
+          HANDLER: publicUrl + '/listing-details',
+          TITLE: 'Listing Details'
         });
 
         // Step 3: Register Events

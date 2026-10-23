@@ -828,6 +828,61 @@ async function runTests() {
   assert(matchingJs.includes("addRecommendation,"), 'addRecommendation exposed on window.__MATCHING_APP__ for testing');
 
   // ============================================================================
+  // Test Case 18: Listing Details SPA Tab & 4 Dynamic Layouts Verification
+  // ============================================================================
+  console.log('\n--- Case 18: Listing Details SPA Tab & 4 Dynamic Layouts ---');
+
+  // 1. Verify Views and Assets
+  assert(fs.existsSync('views/listing-details.html'), 'views/listing-details.html exists');
+  assert(fs.existsSync('views/listing-install.html'), 'views/listing-install.html exists');
+  assert(fs.existsSync('public/css/listing-details.css'), 'public/css/listing-details.css exists');
+  assert(fs.existsSync('public/js/listing-details.js'), 'public/js/listing-details.js exists');
+
+  // 2. Verify Server Routes & Placement Binding
+  const serverCode = fs.readFileSync('server.js', 'utf8');
+  assert(serverCode.includes("app.all('/listing-details'"), 'server.js defines /listing-details route');
+  assert(serverCode.includes("app.all('/listing-install'"), 'server.js defines /listing-install route');
+  assert(serverCode.includes("app.get('/api/listing/:id'"), 'server.js defines GET /api/listing/:id route');
+  assert(serverCode.includes("app.all('/api/listing/:id/update'"), 'server.js defines /api/listing/:id/update route');
+  assert(serverCode.includes("CRM_DYNAMIC_1058_DETAIL_TAB"), 'server.js registers CRM_DYNAMIC_1058_DETAIL_TAB placement');
+  assert(serverCode.includes("CRM_DYNAMIC_16_DETAIL_TAB"), 'server.js registers CRM_DYNAMIC_16_DETAIL_TAB placement');
+
+  // 3. Verify Dynamic Layout Engine Configurations
+  const listingJs = fs.readFileSync('public/js/listing-details.js', 'utf8');
+  assert(listingJs.includes("entityTypeId: 1058"), 'Listing SPA entityTypeId is 1058');
+  assert(listingJs.includes("placement: 'CRM_DYNAMIC_1058_DETAIL_TAB'"), 'Placement identifier is CRM_DYNAMIC_1058_DETAIL_TAB');
+  assert(listingJs.includes("layoutField: 'ufCrm16_1790154808'"), 'Layout driving field is ufCrm16_1790154808');
+
+  // 4. Verify 4 Layouts and Trigger IDs
+  assert(listingJs.includes("'164': 'external_stock'"), 'Layout External Stock triggered by enum 164');
+  assert(listingJs.includes("'162': 'off_plan'"), 'Layout Off-plan triggered by enum 162');
+  assert(listingJs.includes("'160': 'overseas_sale'"), 'Layout Overseas Sale triggered by enum 160');
+  assert(listingJs.includes("'158': 'rent'"), 'Layout Rent triggered by enum 158');
+
+  // 5. Verify Contextual Label Overrides
+  assert(listingJs.includes("Listing Price (as annual rent)"), 'Contextual label: Rent shows Listing Price (as annual rent)');
+  assert(listingJs.includes("Number of Cheques (payment plan)"), 'Contextual label: Off-plan shows Number of Cheques (payment plan)');
+  assert(listingJs.includes("Started on (mandate period)"), 'Contextual label: External Stock shows Started on (mandate period)');
+  assert(listingJs.includes("Started on (tenancy / availability)"), 'Contextual label: Rent shows Started on (tenancy / availability)');
+
+  // 6. Verify Field Visibility Matrix (✔ = show, opt = opt, — = hide)
+  assert(listingJs.includes("rules: { external_stock: 'hide', off_plan: 'hide', overseas_sale: 'hide', rent: 'show' }"), 'Rental Frequency and Security Deposit only shown on Rent');
+  assert(listingJs.includes("rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'show', rent: 'hide' }"), 'Brochure URL hidden on Rent and shown on Off-plan/Overseas');
+  assert(listingJs.includes("rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }"), 'Furnished Status hidden on Off-plan and shown on Rent');
+
+  // 7. Verify Media & File Preview Engine
+  assert(listingJs.includes("FileReader"), 'Uses FileReader for instant client-side file upload previews');
+  assert(listingJs.includes("openLightbox"), 'openLightbox function defined for image and PDF modal previews');
+  assert(listingJs.includes("{ fileData: ["), 'Normalizes new file uploads to { fileData: [name, base64] } specification for Bitrix24');
+  assert(listingJs.includes("preview-thumb-wrap"), 'Renders preview thumbnail wrap with hover zoom overlay');
+  assert(listingJs.includes("preview-doc-wrap"), 'Renders document preview card with PDF badge and preview action');
+  assert(listingJs.includes("window.__LISTING_DETAILS_APP__"), 'Exposes __LISTING_DETAILS_APP__ for testing');
+
+  const listingCss = fs.readFileSync('public/css/listing-details.css', 'utf8');
+  assert(listingCss.includes(".lightbox-iframe"), 'public/css/listing-details.css contains embedded PDF viewer modal styling');
+  assert(listingCss.includes(".preview-thumb-wrap"), 'public/css/listing-details.css contains preview thumbnail styling');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

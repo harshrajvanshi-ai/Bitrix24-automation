@@ -38,24 +38,20 @@
             "placeholder": "-- Select Listing Type --",
             "options": [
               {
-                "id": "1772",
-                "value": "Rent"
+                "id": "2578",
+                "value": "RENT"
               },
               {
-                "id": "1774",
-                "value": "Sale"
+                "id": "2580",
+                "value": "Overseas Sale"
               },
               {
-                "id": "1776",
-                "value": "Off-Plan"
+                "id": "2582",
+                "value": "Off-plan Listing"
               },
               {
-                "id": "1778",
-                "value": "Commercial Sale"
-              },
-              {
-                "id": "1780",
-                "value": "Commercial Rent"
+                "id": "2584",
+                "value": "External Stock"
               }
             ]
           },
@@ -1334,24 +1330,20 @@
             "placeholder": "-- Select Listing Type --",
             "options": [
               {
-                "id": "1772",
-                "value": "Rent"
+                "id": "2578",
+                "value": "RENT"
               },
               {
-                "id": "1774",
-                "value": "Sale"
+                "id": "2580",
+                "value": "Overseas Sale"
               },
               {
-                "id": "1776",
-                "value": "Off-Plan"
+                "id": "2582",
+                "value": "Off-plan Listing"
               },
               {
-                "id": "1778",
-                "value": "Commercial Sale"
-              },
-              {
-                "id": "1780",
-                "value": "Commercial Rent"
+                "id": "2584",
+                "value": "External Stock"
               }
             ]
           },
@@ -2857,24 +2849,20 @@
       "placeholder": "-- Select Listing Type --",
       "options": [
         {
-          "id": "1772",
-          "value": "Rent"
+          "id": "2578",
+          "value": "RENT"
         },
         {
-          "id": "1774",
-          "value": "Sale"
+          "id": "2580",
+          "value": "Overseas Sale"
         },
         {
-          "id": "1776",
-          "value": "Off-Plan"
+          "id": "2582",
+          "value": "Off-plan Listing"
         },
         {
-          "id": "1778",
-          "value": "Commercial Sale"
-        },
-        {
-          "id": "1780",
-          "value": "Commercial Rent"
+          "id": "2584",
+          "value": "External Stock"
         }
       ]
     },
@@ -4072,24 +4060,20 @@
       "placeholder": "-- Select Listing Type --",
       "options": [
         {
-          "id": "1772",
-          "value": "Rent"
+          "id": "2578",
+          "value": "RENT"
         },
         {
-          "id": "1774",
-          "value": "Sale"
+          "id": "2580",
+          "value": "Overseas Sale"
         },
         {
-          "id": "1776",
-          "value": "Off-Plan"
+          "id": "2582",
+          "value": "Off-plan Listing"
         },
         {
-          "id": "1778",
-          "value": "Commercial Sale"
-        },
-        {
-          "id": "1780",
-          "value": "Commercial Rent"
+          "id": "2584",
+          "value": "External Stock"
         }
       ]
     },

@@ -114,6 +114,11 @@ app.all('/install', async (req, res) => {
       await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', authData.domain);
       await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', authData.domain);
 
+      // 1c. Register CRM_DYNAMIC_1058_DETAIL_TAB placement (Listing Details for Listing SPA)
+      console.log(`[INSTALL] Binding placement CRM_DYNAMIC_1058_DETAIL_TAB -> ${publicUrl}/listing-details`);
+      await BitrixClient.placementBind('CRM_DYNAMIC_1058_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', authData.domain);
+      await BitrixClient.placementBind('CRM_DYNAMIC_16_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', authData.domain);
+
       // 2. Register ONCRMLEADADD event
       console.log(`[INSTALL] Binding event ONCRMLEADADD -> ${publicUrl}/events`);
       await BitrixClient.eventBind('ONCRMLEADADD', `${publicUrl}/events`, authData.domain);
@@ -163,6 +168,8 @@ app.post('/api/install-setup', async (req, res) => {
         await BitrixClient.placementBind('CRM_LEAD_DETAIL_TAB', `${publicUrl}/tab`, 'Lead Details', domain);
         await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
         await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
+        await BitrixClient.placementBind('CRM_DYNAMIC_1058_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
+        await BitrixClient.placementBind('CRM_DYNAMIC_16_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
         await BitrixClient.eventBind('ONCRMLEADADD', `${publicUrl}/events`, domain);
         await BitrixClient.eventBind('ONCRMLEADUPDATE', `${publicUrl}/events`, domain);
         await DiscoveryService.runFullDiscovery(true, domain);
@@ -267,6 +274,81 @@ app.all('/matching-listings', (req, res) => {
 app.all('/matching-install', (req, res) => {
   res.removeHeader('X-Frame-Options');
   res.sendFile(path.join(__dirname, 'views/matching-install.html'));
+});
+
+// ------------------------------------------------------------------------------
+// 2c. Listing Details SPA Tab & Placement Manager
+// ------------------------------------------------------------------------------
+/**
+ * GET/POST /listing-details
+ * Placement handler for Listing SPA (placement: CRM_DYNAMIC_1058_DETAIL_TAB)
+ */
+app.all('/listing-details', (req, res) => {
+  res.removeHeader('X-Frame-Options');
+
+  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
+    StorageManager.saveAuth({
+      access_token: req.body.AUTH_ID,
+      refresh_token: req.body.REFRESH_ID,
+      domain: req.body.DOMAIN,
+      member_id: req.body.member_id
+    });
+  }
+
+  res.sendFile(path.join(__dirname, 'views/listing-details.html'));
+});
+
+/**
+ * GET /listing-install
+ * Installation and management interface for CRM_DYNAMIC_1058_DETAIL_TAB placement
+ */
+app.all('/listing-install', (req, res) => {
+  res.removeHeader('X-Frame-Options');
+  res.sendFile(path.join(__dirname, 'views/listing-install.html'));
+});
+
+/**
+ * GET /api/listing/:id
+ * Fetches Listing SPA item by ID
+ */
+app.get('/api/listing/:id', async (req, res) => {
+  try {
+    const listingId = parseInt(req.params.id, 10);
+    if (!listingId) {
+      return res.status(400).json({ success: false, error: 'Invalid listing ID' });
+    }
+    const result = await BitrixClient.call('crm.item.get', {
+      entityTypeId: 1058,
+      id: listingId
+    });
+    res.json({ success: true, item: result?.item || result });
+  } catch (err) {
+    console.error(`[API] Error fetching listing #${req.params.id}:`, err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST/PUT /api/listing/:id/update
+ * Updates Listing SPA item by ID
+ */
+app.all('/api/listing/:id/update', async (req, res) => {
+  try {
+    const listingId = parseInt(req.params.id, 10);
+    if (!listingId) {
+      return res.status(400).json({ success: false, error: 'Invalid listing ID' });
+    }
+    const fields = req.body?.fields || req.body;
+    const result = await BitrixClient.call('crm.item.update', {
+      entityTypeId: 1058,
+      id: listingId,
+      fields
+    });
+    res.json({ success: true, item: result?.item || result });
+  } catch (err) {
+    console.error(`[API] Error updating listing #${req.params.id}:`, err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 /**
@@ -1252,6 +1334,22 @@ app.post('/api/admin/bind-placements', verifyAdminSecret, async (req, res) => {
       results.push({ placement: 'CRM_DYNAMIC_18_DETAIL_TAB', status: 'error', error: e.message });
     }
 
+    // 3. Listing Details for Listing SPA (entityTypeId: 1058)
+    try {
+      await BitrixClient.placementBind('CRM_DYNAMIC_1058_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
+      results.push({ placement: 'CRM_DYNAMIC_1058_DETAIL_TAB', status: 'bound', title: 'Listing Details' });
+    } catch (e) {
+      results.push({ placement: 'CRM_DYNAMIC_1058_DETAIL_TAB', status: 'error', error: e.message });
+    }
+
+    // 3b. Listing Details for Listing SPA (type id: 16)
+    try {
+      await BitrixClient.placementBind('CRM_DYNAMIC_16_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
+      results.push({ placement: 'CRM_DYNAMIC_16_DETAIL_TAB', status: 'bound', title: 'Listing Details' });
+    } catch (e) {
+      results.push({ placement: 'CRM_DYNAMIC_16_DETAIL_TAB', status: 'error', error: e.message });
+    }
+
     res.json({ success: true, results });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -1385,3 +1483,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+module.exports.app = app;

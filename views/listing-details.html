@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listing Details — Real Estate CRM</title>
+  <meta name="description" content="Bitrix24 Real Estate Listing Details with 4 dynamic tailored layouts and rich media file previews">
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bitrix24 Official JavaScript SDK -->
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/css/listing-details.css">
+</head>
+<body>
+  <div class="listing-tab-container">
+
+    <!-- ── 1. Loading Spinner ─────────────────────────────────────── -->
+    <div id="loading" class="spinner-wrap">
+      <div class="spinner-ring"></div>
+      <div class="spinner-text">
+        <span class="spinner-title">Loading Listing Details</span>
+        <span class="spinner-sub">Fetching fields and media from Bitrix24...</span>
+      </div>
+    </div>
+
+    <!-- ── 2. Active Tab Content ──────────────────────────────────── -->
+    <div id="content" style="display: none;">
+
+      <!-- Top Command Bar -->
+      <header class="b24-toolbar-bar">
+        <div class="toolbar-left-group">
+          <span id="layout-mode-badge" class="layout-pill layout-pill-rent">Detecting Layout…</span>
+          <span id="fields-count-badge" class="b24-count-pill">— fields</span>
+        </div>
+
+        <div class="b24-search-wrap">
+          <span class="b24-search-icon">🔍</span>
+          <input
+            type="text"
+            id="field-search-input"
+            class="b24-search-input"
+            placeholder="Search fields — Price, RERA, Bedrooms, Floor, Deposit…"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button type="button" id="btn-clear-search" class="b24-search-clear" style="display:none" aria-label="Clear search">&times;</button>
+        </div>
+
+        <div class="toolbar-right-actions">
+          <button type="button" id="btn-toggle-all" class="btn btn-secondary btn-compact" title="Expand or collapse all sections">
+            Collapse All
+          </button>
+          <button type="button" id="btn-refresh" class="btn btn-secondary btn-compact" title="Reload listing from Bitrix24">
+            🔄 Refresh
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic Layout Selector Banner -->
+      <div class="layout-selector-banner">
+        <div class="layout-selector-label">
+          <span class="layout-selector-icon">⚡</span>
+          <div class="layout-selector-text">
+            <strong>Listing Layout Mode (UF_CRM_16_1790154808)</strong>
+            <span>Active layout dynamically controls visible fields, sections & contextual rules</span>
+          </div>
+        </div>
+        <div class="layout-switch-buttons">
+          <button type="button" class="btn-layout-switch" data-layout="external_stock" data-enum-id="164">
+            🏢 External Stock
+          </button>
+          <button type="button" class="btn-layout-switch" data-layout="off_plan" data-enum-id="162">
+            🏗️ Off-plan
+          </button>
+          <button type="button" class="btn-layout-switch" data-layout="overseas_sale" data-enum-id="160">
+            🌍 Overseas Sale
+          </button>
+          <button type="button" class="btn-layout-switch" data-layout="rent" data-enum-id="158">
+            🔑 Rent
+          </button>
+        </div>
+      </div>
+
+      <!-- Jump-to Section Anchor Pills -->
+      <nav id="section-nav-pills" class="b24-section-nav" aria-label="Jump to section">
+        <!-- Rendered dynamically by listing-details.js -->
+      </nav>
+
+      <!-- Main Listing Form -->
+      <form id="listing-details-form" novalidate onsubmit="return false;">
+        <div id="sections-container">
+          <!-- Rendered dynamically based on active layout -->
+        </div>
+
+        <!-- Sticky Bottom Action Bar -->
+        <div class="form-actions-bar">
+          <div class="action-bar-left">
+            <div id="dirty-indicator" class="dirty-badge" style="display: none;">
+              <span class="dirty-dot">●</span>
+              <span id="dirty-text">Unsaved changes</span>
+            </div>
+          </div>
+          <div class="action-bar-right">
+            <button type="button" id="btn-cancel" class="btn btn-secondary" style="display: none;">
+              Cancel
+            </button>
+            <button type="submit" id="btn-save" class="btn btn-save-b24">
+              ✓ &nbsp;SAVE CHANGES
+            </button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+
+    <!-- ── 3. Lightbox & Document Preview Modal ────────────────────── -->
+    <div id="lightbox-modal" class="lightbox-modal" style="display: none;">
+      <div class="lightbox-content">
+        <div class="lightbox-header">
+          <span id="lightbox-title" class="lightbox-title">File Preview</span>
+          <div class="lightbox-actions">
+            <a id="lightbox-download-link" href="#" target="_blank" download class="btn btn-secondary btn-compact">
+              ⬇ Download
+            </a>
+            <button type="button" id="lightbox-close-btn" class="btn btn-secondary btn-compact" aria-label="Close preview">
+              ✕ Close
+            </button>
+          </div>
+        </div>
+        <div id="lightbox-body" class="lightbox-body">
+          <!-- Populated dynamically with <img> or <iframe> -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── 4. Toast Alerts Container ──────────────────────────────── -->
+    <div id="toast-container" aria-live="polite"></div>
+
+  </div>
+
+  <script src="/js/listing-details.js"></script>
+</body>
+</html>
