@@ -1217,19 +1217,16 @@
     let totalActiveFieldsCount = 0;
 
     CONFIG.sections.forEach((sec, secIdx) => {
-      const showFields = [];
-      const optFields = [];
+      const activeFields = [];
 
       sec.fields.forEach(f => {
         const rule = f.rules?.[layoutKey] || 'show';
-        if (rule === 'show') {
-          showFields.push(f);
-        } else if (rule === 'opt') {
-          optFields.push(f);
+        if (rule !== 'hide') {
+          activeFields.push(f);
         }
       });
 
-      const sectionActiveCount = showFields.length + optFields.length;
+      const sectionActiveCount = activeFields.length;
       totalActiveFieldsCount += sectionActiveCount;
 
       if (sectionActiveCount === 0) return;
@@ -1278,56 +1275,14 @@
       const body = document.createElement('div');
       body.className = 'section-body';
 
-      // Primary Grid
+      // Primary Grid (renders all active fields in section order)
       const primaryGrid = document.createElement('div');
       primaryGrid.className = 'fields-grid';
 
-      showFields.forEach(f => {
+      activeFields.forEach(f => {
         primaryGrid.appendChild(createFieldElement(f, layoutKey));
       });
       body.appendChild(primaryGrid);
-
-      // Optional Sub-Section
-      if (optFields.length > 0) {
-        const optWrapper = document.createElement('div');
-        optWrapper.className = 'optional-fields-wrapper';
-
-        const hasExistingValue = optFields.some(f => {
-          const val = currentListing[f.key];
-          return val !== null && val !== undefined && val !== '';
-        });
-
-        const toggleBtn = document.createElement('button');
-        toggleBtn.type = 'button';
-        toggleBtn.className = 'optional-toggle-btn';
-        toggleBtn.innerHTML = `
-          <span>${hasExistingValue ? '▾' : '▸'} Optional Fields</span>
-          <span class="optional-badge">${optFields.length}</span>
-        `;
-
-        const optContent = document.createElement('div');
-        optContent.className = `optional-fields-content ${hasExistingValue ? '' : 'collapsed'}`;
-
-        const optGrid = document.createElement('div');
-        optGrid.className = 'fields-grid';
-        optFields.forEach(f => {
-          optGrid.appendChild(createFieldElement(f, layoutKey, true));
-        });
-        optContent.appendChild(optGrid);
-
-        toggleBtn.addEventListener('click', () => {
-          const isCollapsed = optContent.classList.toggle('collapsed');
-          toggleBtn.innerHTML = `
-            <span>${isCollapsed ? '▸' : '▾'} Optional Fields</span>
-            <span class="optional-badge">${optFields.length}</span>
-          `;
-          resizeWindow();
-        });
-
-        optWrapper.appendChild(toggleBtn);
-        optWrapper.appendChild(optContent);
-        body.appendChild(optWrapper);
-      }
 
       card.appendChild(body);
       sectionsContainer.appendChild(card);
@@ -1589,7 +1544,7 @@
   }
 
   // Field element factory
-  function createFieldElement(f, layoutKey, isOptional = false) {
+  function createFieldElement(f, layoutKey) {
     const group = document.createElement('div');
     group.className = `field-group ${f.fullWidth ? 'full-width' : ''}`;
     group.setAttribute('data-field-key', f.key);
@@ -1601,7 +1556,6 @@
     labelEl.innerHTML = `
       <span>${displayLabel}</span>
       ${f.labelOverrides?.[layoutKey] ? `<span class="field-context-hint">${layoutKey.replace('_', ' ')}</span>` : ''}
-      ${isOptional ? `<span style="font-size:9px; color:var(--text-faint); font-weight:400;">(optional)</span>` : ''}
     `;
     group.appendChild(labelEl);
 
