@@ -23,10 +23,6 @@ const BitrixClient = require('./src/bitrixClient');
 const DiscoveryService = require('./src/discovery');
 const EventRouter = require('./src/eventRouter');
 const { syncEnquirySpaFromLead, STATE_ENUM_TO_LABEL, STATE_LABEL_TO_ENUM } = require('./src/spaSync');
-const FormulaEventHandler = require('./src/formulas/eventHandler');
-const DailyCronEngine = require('./src/formulas/dailyCron');
-const { backfillEntity, backfillMasterProjectUnits } = require('./scripts/backfill-formulas');
-const { CONFIG: FORMULA_CONFIG } = require('./src/formulas/config');
 const { verifyBitrixEventToken, verifyAdminSecret } = require('./src/middleware/auth');
 const { apiLimiter, eventLimiter } = require('./src/middleware/rateLimiter');
 
@@ -169,9 +165,6 @@ app.post('/api/install-setup', async (req, res) => {
         await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
         await BitrixClient.eventBind('ONCRMLEADADD', `${publicUrl}/events`, domain);
         await BitrixClient.eventBind('ONCRMLEADUPDATE', `${publicUrl}/events`, domain);
-        await BitrixClient.eventBind('ONCRMDYNAMICITEMADD', `${publicUrl}/events`, domain);
-        await BitrixClient.eventBind('ONCRMDYNAMICITEMUPDATE', `${publicUrl}/events`, domain);
-        await BitrixClient.eventBind('ONCRMDYNAMICITEMDELETE', `${publicUrl}/events`, domain);
         await DiscoveryService.runFullDiscovery(true, domain);
       }
     } catch (bindErr) {
@@ -332,25 +325,16 @@ app.post('/events', eventLimiter, verifyBitrixEventToken, async (req, res) => {
     id: rawId
   });
 
-  // Handle Smart Process Item events (1040 Master Project, 1044 Project, 1058 Listing, 1062 Enquiry, 1070 Offer)
-  if (event.startsWith('ONCRMDYNAMICITEM') || (entityTypeId && String(entityTypeId) !== 'LEAD')) {
+  // Handle Smart Process Item events (specifically Enquiry SPA 1062)
+  if (String(entityTypeId) === '1062' || event.startsWith('ONCRMDYNAMICITEM')) {
     try {
-      await FormulaEventHandler.handleEvent(event, entityTypeId, rawId, req.body, domain);
-    } catch (formulaErr) {
-      console.warn(`[EVENT] Error executing formula automation for ${event} #${rawId}:`, formulaErr.message);
-    }
-
-    // Preserve existing Enquiry SPA lead companion sync if applicable
-    if (String(entityTypeId) === '1062') {
-      try {
-        const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1062, id: rawId }, domain);
-        const linkedLeadId = itemRes?.item?.xmlId || itemRes?.item?.ufCrm18Lead;
-        if (linkedLeadId) {
-          await syncEnquirySpaFromLead(linkedLeadId, domain);
-        }
-      } catch (spaErr) {
-        console.warn(`[EVENT] Error handling Enquiry SPA lead sync for #${rawId}:`, spaErr.message);
+      const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1062, id: rawId }, domain);
+      const linkedLeadId = itemRes?.item?.xmlId || itemRes?.item?.ufCrm18Lead;
+      if (linkedLeadId) {
+        await syncEnquirySpaFromLead(linkedLeadId, domain);
       }
+    } catch (spaErr) {
+      console.warn(`[EVENT] Error handling Enquiry SPA event for #${rawId}:`, spaErr.message);
     }
     return;
   }
@@ -1357,82 +1341,20 @@ app.get('/health', (req, res) => {
   });
 });
 
-// ------------------------------------------------------------------------------
-// Formula & Event Automation Endpoints
-// ------------------------------------------------------------------------------
-/**
- * GET/POST /formula-install
- * Event registration and formula automation management view
- */
-app.all('/formula-install', (req, res) => {
-  res.removeHeader('X-Frame-Options');
-  res.sendFile(path.join(__dirname, 'views/formula-install.html'));
-});
-
-/**
- * GET /api/formulas/config
- * Returns formula entities, field mapping schema, and enumeration dictionaries
- */
-app.get('/api/formulas/config', (req, res) => {
-  res.json({
-    success: true,
-    config: FORMULA_CONFIG
-  });
-});
-
-/**
- * POST /api/cron/daily-recalc
- * Triggers daily recalculation for "days since" fields (#1, #4, #5)
- */
-app.post('/api/cron/daily-recalc', async (req, res) => {
-  try {
-    const domain = req.query?.domain || req.body?.domain || 'latest';
-    const summary = await DailyCronEngine.runDailyRecalc(domain);
-    res.json({ success: true, summary });
-  } catch (err) {
-    console.error('[API-CRON] Daily recalculation failed:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-/**
- * POST /api/formulas/backfill
- * Runs one-time backfill of all formula fields across existing records
- */
-app.post('/api/formulas/backfill', async (req, res) => {
-  try {
-    const domain = req.query?.domain || req.body?.domain || 'latest';
-    const results = [];
-    results.push(await backfillEntity(FORMULA_CONFIG.ENTITIES.LISTING, domain));
-    results.push(await backfillEntity(FORMULA_CONFIG.ENTITIES.ENQUIRY, domain));
-    results.push(await backfillEntity(FORMULA_CONFIG.ENTITIES.MASTER_PROJECT, domain));
-    results.push(await backfillMasterProjectUnits(domain));
-    res.json({ success: true, results });
-  } catch (err) {
-    console.error('[API-BACKFILL] Backfill failed:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 /**
  * GET /
  * Welcome & Service Overview
  */
 app.get('/', (req, res) => {
   res.json({
-    name: 'Bitrix24 Real Estate Automation & Formulas Application',
-    version: '2.0.0',
+    name: 'Bitrix24 Real Estate Lead Application',
+    version: '1.0.0',
     endpoints: {
       install: '/install',
       tab: '/tab',
-      matchingListings: '/matching-listings',
-      formulaInstall: '/formula-install',
       events: 'POST /events',
       admin: '/admin',
       config: 'GET /api/config',
-      formulaConfig: 'GET /api/formulas/config',
-      cronDailyRecalc: 'POST /api/cron/daily-recalc',
-      formulaBackfill: 'POST /api/formulas/backfill',
       health: 'GET /health'
     }
   });
