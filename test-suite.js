@@ -897,6 +897,14 @@ async function runTests() {
   assert(listingJs.includes("id: '836', value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
   assert(listingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');
 
+  // 9. Verify Lookup Fields & Linked Record Accessibility from Layout
+  assert(listingJs.includes("isLookupField"), 'Defines isLookupField to recognize CRM lookup types');
+  assert(listingJs.includes("openLinkedRecord"), 'Defines openLinkedRecord to navigate directly to linked records');
+  assert(listingJs.includes("lookup-open-btn"), 'Renders inline lookup-open-btn for direct 1-click access');
+  assert(listingJs.includes("linked-record-chip"), 'Renders interactive linked-record-chip in layout');
+  assert(listingCss.includes(".linked-record-chip"), 'public/css/listing-details.css contains linked-record-chip styling');
+  assert(listingCss.includes(".lookup-open-btn"), 'public/css/listing-details.css contains lookup-open-btn styling');
+
   // ============================================================================
   // Summary
   // ============================================================================

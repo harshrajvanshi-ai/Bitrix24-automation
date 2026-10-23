@@ -1326,6 +1326,259 @@
     resizeWindow();
   }
 
+  // ============================================================================
+  // 6b. LOOKUP FIELDS & LINKED RECORD ACCESSIBILITY
+  // ============================================================================
+  const entityTitleCache = {};
+
+  function isLookupField(f) {
+    if (!f) return false;
+    const lookupTypes = ['crm_company', 'crm_contact', 'crm_contact_multi', 'crm_entity', 'user', 'crm'];
+    if (lookupTypes.includes(f.type)) return true;
+    if (f.key === 'companyId' || f.key === 'contactId' || f.key === 'contactIds' || f.key === 'assignedById') return true;
+    if (f.key && f.key.startsWith('parentId')) return true;
+    return false;
+  }
+
+  function getEntityMeta(type, key) {
+    if (type === 'crm_company' || key === 'companyId') {
+      return { icon: '🏢', label: 'Company', defaultPrefix: 'Company #' };
+    }
+    if (type === 'crm_contact' || key === 'contactId') {
+      return { icon: '👤', label: 'Contact', defaultPrefix: 'Contact #' };
+    }
+    if (type === 'crm_contact_multi' || key === 'contactIds') {
+      return { icon: '👥', label: 'Contact', defaultPrefix: 'Contact #' };
+    }
+    if (type === 'user' || key === 'assignedById') {
+      return { icon: '👤', label: 'Responsible Person', defaultPrefix: 'User #' };
+    }
+    if (key === 'parentId1052') {
+      return { icon: '🏗️', label: 'Master Property', defaultPrefix: 'Master Property #' };
+    }
+    return { icon: '🔗', label: 'CRM Entity', defaultPrefix: 'Record #' };
+  }
+
+  function getEntityPath(type, rawId, key) {
+    if (!rawId) return '';
+    const idStr = String(rawId).trim();
+
+    if (idStr.startsWith('CO_')) {
+      return `/crm/company/details/${idStr.replace(/^CO_/, '')}/`;
+    }
+    if (idStr.startsWith('C_')) {
+      return `/crm/contact/details/${idStr.replace(/^C_/, '')}/`;
+    }
+    if (idStr.startsWith('D_')) {
+      return `/crm/deal/details/${idStr.replace(/^D_/, '')}/`;
+    }
+    if (idStr.startsWith('L_')) {
+      return `/crm/lead/details/${idStr.replace(/^L_/, '')}/`;
+    }
+    if (/^T[0-9a-fA-F]+_(\d+)$/.test(idStr)) {
+      const parts = idStr.split('_');
+      const hex = parts[0].substring(1);
+      const spTypeId = parseInt(hex, 16) || 1052;
+      return `/crm/type/${spTypeId}/details/${parts[1]}/`;
+    }
+
+    const num = idStr.replace(/[^\d]/g, '');
+    if (!num) return '';
+
+    if (type === 'crm_company' || key === 'companyId') {
+      return `/crm/company/details/${num}/`;
+    }
+    if (type === 'crm_contact' || type === 'crm_contact_multi' || key === 'contactId' || key === 'contactIds') {
+      return `/crm/contact/details/${num}/`;
+    }
+    if (type === 'user' || key === 'assignedById') {
+      return `/company/personal/user/${num}/`;
+    }
+    if (key === 'parentId1052' || type === 'crm_entity') {
+      return `/crm/type/1052/details/${num}/`;
+    }
+    return `/crm/type/1052/details/${num}/`;
+  }
+
+  function openLinkedRecord(type, rawId, key, ev) {
+    if (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+    const path = getEntityPath(type, rawId, key);
+    if (!path) {
+      showToast('No valid linked record ID to open', 'warning');
+      return;
+    }
+
+    if (window.BX24 && typeof window.BX24.openPath === 'function') {
+      window.BX24.openPath(path);
+    } else {
+      const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
+      const fullUrl = path.startsWith('http') ? path : `https://${domain}${path}`;
+      window.open(fullUrl, '_blank');
+    }
+  }
+
+  function fetchEntityTitle(type, id, key, callback) {
+    if (!id) return;
+    const cacheKey = `${type}_${id}`;
+    if (entityTitleCache[cacheKey]) {
+      callback(entityTitleCache[cacheKey]);
+      return;
+    }
+    if (!window.BX24 || typeof window.BX24.callMethod !== 'function') return;
+
+    const num = String(id).replace(/[^\d]/g, '');
+    if (!num) return;
+
+    if (type === 'crm_company' || key === 'companyId') {
+      window.BX24.callMethod('crm.company.get', { id: num }, res => {
+        if (!res.error() && res.data()?.TITLE) {
+          entityTitleCache[cacheKey] = res.data().TITLE;
+          callback(res.data().TITLE);
+        }
+      });
+    } else if (type === 'crm_contact' || type === 'crm_contact_multi' || key === 'contactId' || key === 'contactIds') {
+      window.BX24.callMethod('crm.contact.get', { id: num }, res => {
+        if (!res.error()) {
+          const d = res.data();
+          const name = [d?.NAME, d?.LAST_NAME].filter(Boolean).join(' ') || d?.NAME;
+          if (name) {
+            entityTitleCache[cacheKey] = name;
+            callback(name);
+          }
+        }
+      });
+    } else if (type === 'user' || key === 'assignedById') {
+      window.BX24.callMethod('user.get', { ID: num }, res => {
+        if (!res.error() && res.data()?.[0]) {
+          const u = res.data()[0];
+          const name = [u.NAME, u.LAST_NAME].filter(Boolean).join(' ') || u.LOGIN;
+          if (name) {
+            entityTitleCache[cacheKey] = name;
+            callback(name);
+          }
+        }
+      });
+    } else if (key === 'parentId1052') {
+      window.BX24.callMethod('crm.item.get', { entityTypeId: 1052, id: num }, res => {
+        if (!res.error() && (res.data()?.item?.title || res.data()?.TITLE)) {
+          const title = res.data()?.item?.title || res.data()?.TITLE;
+          entityTitleCache[cacheKey] = title;
+          callback(title);
+        }
+      });
+    }
+  }
+
+  function renderLookupField(f, rawVal, group, displayLabel) {
+    const meta = getEntityMeta(f.type, f.key);
+    const wrap = document.createElement('div');
+    wrap.className = 'lookup-input-wrap';
+
+    const input = document.createElement('input');
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.type = 'text';
+    input.className = 'form-control';
+    input.placeholder = f.placeholder || `Enter ${displayLabel} ID (e.g. 102)...`;
+
+    let stringVal = '';
+    if (Array.isArray(rawVal)) {
+      stringVal = rawVal.map(v => typeof v === 'object' ? (v.id || v.ID || JSON.stringify(v)) : v).join(', ');
+    } else if (rawVal && typeof rawVal === 'object') {
+      stringVal = rawVal.id || rawVal.ID || rawVal.value || '';
+    } else if (rawVal !== null && rawVal !== undefined) {
+      stringVal = String(rawVal);
+    }
+    input.value = stringVal;
+
+    const openBtn = document.createElement('button');
+    openBtn.type = 'button';
+    openBtn.className = 'lookup-open-btn';
+    openBtn.innerHTML = `<span>↗ Open</span>`;
+    openBtn.title = `Open linked ${meta.label} record in Bitrix24`;
+    openBtn.style.display = stringVal ? 'inline-flex' : 'none';
+
+    wrap.appendChild(input);
+    wrap.appendChild(openBtn);
+    group.appendChild(wrap);
+
+    const chipsContainer = document.createElement('div');
+    chipsContainer.className = 'linked-records-container';
+    group.appendChild(chipsContainer);
+
+    function refreshChips() {
+      chipsContainer.innerHTML = '';
+      const currentVal = input.value.trim();
+      if (!currentVal) {
+        openBtn.style.display = 'none';
+        return;
+      }
+      openBtn.style.display = 'inline-flex';
+
+      const items = currentVal.includes(',')
+        ? currentVal.split(',').map(s => s.trim()).filter(Boolean)
+        : [currentVal];
+
+      items.forEach(itemId => {
+        const chip = document.createElement('a');
+        chip.href = '#';
+        chip.className = 'linked-record-chip';
+        chip.title = `Click to open ${meta.label} #${itemId} in Bitrix24`;
+
+        let knownTitle = '';
+        if (f.key === 'companyId' && currentListing.company?.title) {
+          knownTitle = currentListing.company.title;
+        } else if (f.key === 'contactId' && currentListing.contact?.name) {
+          knownTitle = currentListing.contact.name;
+        } else if (f.key === 'assignedById' && currentListing.assignedBy?.name) {
+          knownTitle = currentListing.assignedBy.name;
+        } else if (currentListing[`${f.key}_TITLE`]) {
+          knownTitle = currentListing[`${f.key}_TITLE`];
+        }
+
+        const displayText = knownTitle ? `${knownTitle} (#${itemId})` : `${meta.defaultPrefix}${itemId}`;
+
+        chip.innerHTML = `
+          <span class="chip-icon">${meta.icon}</span>
+          <span class="chip-label">${displayText}</span>
+          <span class="chip-arrow">↗</span>
+        `;
+
+        chip.addEventListener('click', (e) => {
+          openLinkedRecord(f.type, itemId, f.key, e);
+        });
+
+        if (!knownTitle) {
+          fetchEntityTitle(f.type, itemId, f.key, (resolvedTitle) => {
+            const labelSpan = chip.querySelector('.chip-label');
+            if (labelSpan) {
+              labelSpan.textContent = `${resolvedTitle} (#${itemId})`;
+            }
+          });
+        }
+
+        chipsContainer.appendChild(chip);
+      });
+    }
+
+    openBtn.addEventListener('click', (e) => {
+      const currentVal = input.value.trim();
+      const firstId = currentVal.includes(',') ? currentVal.split(',')[0].trim() : currentVal;
+      openLinkedRecord(f.type, firstId, f.key, e);
+    });
+
+    input.addEventListener('input', () => {
+      setDirty(true);
+      refreshChips();
+    });
+
+    refreshChips();
+    initialFormValues[f.key] = input.value;
+  }
+
   // Field element factory
   function createFieldElement(f, layoutKey, isOptional = false) {
     const group = document.createElement('div');
@@ -1349,6 +1602,8 @@
 
     if (f.type === 'file') {
       renderMediaField(f, rawVal, group);
+    } else if (isLookupField(f)) {
+      renderLookupField(f, rawVal, group, displayLabel);
     } else if (f.type === 'tour_url') {
       const wrap = document.createElement('div');
       wrap.style.display = 'flex';
@@ -1688,7 +1943,11 @@
     openLightbox,
     closeLightbox,
     showInWindowImage,
-    showInWindowPdf
+    showInWindowPdf,
+    openLinkedRecord,
+    getEntityPath,
+    isLookupField,
+    getEntityMeta
   };
 
   if (window.BX24) {

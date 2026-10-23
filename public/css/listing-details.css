@@ -922,3 +922,85 @@ textarea.form-control {
 .toast.toast-success { border-left-color: #10b981; }
 .toast.toast-error { border-left-color: #ef4444; }
 .toast.toast-warning { border-left-color: #f59e0b; }
+
+/* =========================================================================
+   10. LOOKUP & LINKED RECORD ACCESSIBILITY
+   ========================================================================= */
+.lookup-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.lookup-open-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 7px;
+  background: #f8fafc;
+  border: 1px solid var(--border-input);
+  color: var(--primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.lookup-open-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+  color: var(--primary-hover);
+}
+
+.linked-records-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.linked-record-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #0369a1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.linked-record-chip:hover {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0284c7;
+  transform: translateY(-1px);
+}
+
+.linked-record-chip .chip-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.linked-record-chip .chip-label {
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linked-record-chip .chip-arrow {
+  font-size: 11px;
+  opacity: 0.85;
+}
+
