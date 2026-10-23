@@ -904,7 +904,14 @@
   // ============================================================================
   // 4. LIGHTBOX & DOCUMENT MODAL VIEWER (STRICTLY IN SAME IFRAME WINDOW)
   // ============================================================================
+  let lightboxCleanup = null;
+
   function openLightbox(title, url, isPdf = false) {
+    if (lightboxCleanup) {
+      lightboxCleanup();
+      lightboxCleanup = null;
+    }
+
     lightboxTitle.textContent = title || 'File Preview';
     lightboxDownloadLink.href = url;
     lightboxDownloadLink.setAttribute('download', title || 'download');
@@ -933,37 +940,110 @@
     } else {
       if (zoomToggleBtn) {
         zoomToggleBtn.style.display = 'inline-flex';
-        zoomToggleBtn.innerHTML = '🔍 100%';
-        zoomToggleBtn.title = 'Zoom in to actual size';
+        zoomToggleBtn.innerHTML = '🔍 5x Zoom';
+        zoomToggleBtn.title = 'Zoom in 5 times smoothly';
       }
 
       const img = document.createElement('img');
       img.className = 'lightbox-img';
       img.src = url;
       img.alt = title;
-      img.style.cursor = 'zoom-in';
+
+      let currentX = 0;
+      let currentY = 0;
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let hasDragged = false;
+
+      const setTransform = (x, y, scale, smooth = true) => {
+        img.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)' : 'none';
+        img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      };
 
       const toggleZoom = () => {
         isZoomed = !isZoomed;
         if (isZoomed) {
+          currentX = 0;
+          currentY = 0;
           img.classList.add('zoomed-in');
+          setTransform(0, 0, 5, true);
           if (zoomToggleBtn) {
             zoomToggleBtn.innerHTML = '🔍 Fit Screen';
-            zoomToggleBtn.title = 'Fit to window';
+            zoomToggleBtn.title = 'Reset to fit window';
           }
         } else {
+          currentX = 0;
+          currentY = 0;
           img.classList.remove('zoomed-in');
+          setTransform(0, 0, 1, true);
           if (zoomToggleBtn) {
-            zoomToggleBtn.innerHTML = '🔍 100%';
-            zoomToggleBtn.title = 'Zoom in to actual size';
+            zoomToggleBtn.innerHTML = '🔍 5x Zoom';
+            zoomToggleBtn.title = 'Zoom in 5 times smoothly';
           }
         }
       };
 
-      img.addEventListener('click', toggleZoom);
+      // Mouse drag to smoothly pan around the 5x zoomed image
+      img.addEventListener('mousedown', (e) => {
+        if (!isZoomed) return;
+        isDragging = true;
+        hasDragged = false;
+        dragStartX = e.clientX - currentX;
+        dragStartY = e.clientY - currentY;
+        img.classList.add('grabbing');
+        e.preventDefault();
+      });
+
+      const onMouseMove = (e) => {
+        if (!isDragging || !isZoomed) return;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        if (Math.abs(dx - currentX) > 3 || Math.abs(dy - currentY) > 3) {
+          hasDragged = true;
+        }
+        currentX = dx;
+        currentY = dy;
+        setTransform(currentX, currentY, 5, false);
+      };
+
+      const onMouseUp = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        img.classList.remove('grabbing');
+      };
+
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
+
+      // Wheel zoom smoothly toggles between 1x and 5x
+      const onWheel = (e) => {
+        e.preventDefault();
+        if (e.deltaY < 0 && !isZoomed) {
+          toggleZoom();
+        } else if (e.deltaY > 0 && isZoomed) {
+          toggleZoom();
+        }
+      };
+      lightboxBody.addEventListener('wheel', onWheel, { passive: false });
+
+      img.addEventListener('click', () => {
+        if (hasDragged) {
+          hasDragged = false;
+          return;
+        }
+        toggleZoom();
+      });
+
       if (zoomToggleBtn) {
         zoomToggleBtn.onclick = toggleZoom;
       }
+
+      lightboxCleanup = () => {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('mouseup', onMouseUp);
+        lightboxBody.removeEventListener('wheel', onWheel);
+      };
 
       lightboxBody.appendChild(img);
     }
@@ -973,6 +1053,10 @@
   }
 
   function closeLightbox() {
+    if (lightboxCleanup) {
+      lightboxCleanup();
+      lightboxCleanup = null;
+    }
     lightboxModal.style.display = 'none';
     lightboxBody.innerHTML = '';
     document.body.style.overflow = '';

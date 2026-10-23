@@ -945,9 +945,10 @@ textarea.form-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
   background: #090d16;
   position: relative;
+  box-sizing: border-box;
 }
 
 .lightbox-img {
@@ -959,17 +960,21 @@ textarea.form-control {
   display: block;
   border-radius: 6px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
   user-select: none;
+  -webkit-user-drag: none;
+  cursor: zoom-in;
+  will-change: transform;
+  transform-origin: center center;
 }
 
 .lightbox-img.zoomed-in {
-  width: auto;
-  height: auto;
-  max-width: none;
-  max-height: none;
-  transform: scale(1.6);
-  cursor: zoom-out !important;
+  cursor: grab !important;
+}
+
+.lightbox-img.zoomed-in.grabbing {
+  cursor: grabbing !important;
+  transition: none !important;
 }
 
 .lightbox-iframe {
