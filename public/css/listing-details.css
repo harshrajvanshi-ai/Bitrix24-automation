@@ -655,7 +655,9 @@ textarea.form-control {
 .inline-preview-viewport {
   position: relative;
   width: 100%;
-  max-height: 420px;
+  height: 320px;
+  min-height: 320px;
+  max-height: 320px;
   background: #0f172a;
   border-radius: 8px;
   overflow: hidden;
@@ -664,18 +666,20 @@ textarea.form-control {
   align-items: center;
   justify-content: center;
   border: 1px solid #1e293b;
+  box-sizing: border-box;
 }
 
 .inline-preview-img {
   max-width: 100%;
-  max-height: 410px;
+  max-height: 270px;
   object-fit: contain;
   display: block;
+  cursor: zoom-in;
 }
 
 .inline-preview-iframe {
   width: 100%;
-  height: 410px;
+  height: 270px;
   border: none;
   background: #ffffff;
 }
@@ -714,190 +718,206 @@ textarea.form-control {
   line-height: 1;
 }
 
-/* Horizontal Thumbnail Strip */
+/* Horizontal / Wrapping Preview Tiles Strip */
 .thumbnail-strip {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 10px;
-  overflow-x: auto;
   margin-top: 10px;
-  padding: 6px 0 8px;
+  padding: 4px 0 6px;
 }
 
-.thumb-item, .preview-thumb-wrap {
+/* FIXED UNIFORM SIZE FOR EACH PREVIEW TILE (PHOTO AND DOC DO NOT DIFFER) */
+.thumb-item, .preview-thumb-wrap, .preview-doc-wrap {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 88px;
+  height: 88px;
+  min-width: 88px;
+  min-height: 88px;
+  max-width: 88px;
+  max-height: 88px;
+  flex: 0 0 88px;
   border-radius: 8px;
-  border: 1px solid var(--border-subtle);
+  border: 1.5px solid var(--border-subtle);
   overflow: hidden;
   cursor: pointer;
-  background: #f1f5f9;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
-}
-
-.thumb-item:hover, .preview-thumb-wrap:hover {
-  border-color: var(--primary);
-  transform: translateY(-1px);
-}
-
-.thumb-item.active, .preview-thumb-wrap.active {
-  border: 2px solid var(--primary);
-  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.25);
-}
-
-.thumb-zoom-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  background: #f8fafc;
+  box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  font-size: 16px;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  pointer-events: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.thumb-item:hover .thumb-zoom-overlay,
-.preview-thumb-wrap:hover .thumb-zoom-overlay {
-  opacity: 1;
+.thumb-item:hover, .preview-thumb-wrap:hover, .preview-doc-wrap:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.thumb-item.active, .preview-thumb-wrap.active, .preview-doc-wrap.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.3);
 }
 
 .thumb-item-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-.thumb-item-doc {
+/* Document tile inner layout (exact same 88x88px tile) */
+.doc-tile-inner {
   width: 100%;
   height: 100%;
+  padding: 7px 6px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  color: #ef4444;
+  justify-content: space-between;
+  background: #f8fafc;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+.doc-tile-badge {
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 4px;
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.doc-tile-badge.pdf {
   background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.doc-tile-badge.doc {
+  background: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.doc-tile-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.doc-tile-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-body);
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 2px;
+}
+
+.thumb-zoom-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(1px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  gap: 4px;
+}
+
+.thumb-item:hover .thumb-zoom-overlay,
+.preview-thumb-wrap:hover .thumb-zoom-overlay,
+.preview-doc-wrap:hover .thumb-zoom-overlay {
+  opacity: 1;
 }
 
 .thumb-remove-btn {
   position: absolute;
   top: 3px;
   right: 3px;
-  background: rgba(15, 23, 42, 0.75);
+  background: rgba(15, 23, 42, 0.8);
   color: #ffffff;
   border: none;
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  font-size: 12px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  z-index: 3;
+  transition: background 0.15s;
 }
 
-/* Document Chips */
-.doc-chips-wrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-  padding-top: 8px;
-  border-top: 1px solid #f1f5f9;
-}
-
-.doc-chip-item, .preview-doc-wrap {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #f8fafc;
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 12px;
-  max-width: 100%;
-}
-
-.doc-chip-name {
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-weight: 500;
-  color: var(--text-body);
-}
-
-.doc-chip-badge {
+.thumb-remove-btn:hover {
   background: #ef4444;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 3px;
-  flex-shrink: 0;
-}
-
-.doc-chip-view-btn {
-  color: var(--primary);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 0;
-  text-decoration: underline;
-  flex-shrink: 0;
 }
 
 /* =========================================================================
-   8. LIGHTBOX MODAL (WITHIN SAME IFRAME WINDOW)
+   8. LIGHTBOX MODAL (WITHIN SAME IFRAME WINDOW - OPTIMIZED ZOOM WINDOW)
    ========================================================================= */
 .lightbox-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(2px);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(4px);
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .lightbox-content {
   position: relative;
-  background: #ffffff;
-  border-radius: 10px;
-  max-width: 92vw;
-  max-height: 90vh;
-  width: 860px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  width: min(94vw, 1120px);
+  height: 86vh;
+  max-height: 86vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .lightbox-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 18px;
-  background: #f8fafc;
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 12px 20px;
+  background: #1e293b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
 }
 
 .lightbox-title {
   font-size: 14px;
-  font-weight: 700;
-  color: var(--text-title);
+  font-weight: 600;
+  color: #f8fafc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
 }
 
 .lightbox-actions {
@@ -907,25 +927,40 @@ textarea.form-control {
 }
 
 .lightbox-body {
-  padding: 10px;
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: auto;
-  max-height: calc(88vh - 50px);
-  background: #0f172a;
+  background: #090d16;
+  position: relative;
 }
 
 .lightbox-img {
   max-width: 100%;
-  max-height: calc(82vh - 60px);
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.lightbox-img.zoomed-in {
+  max-width: none;
+  max-height: none;
+  transform: scale(1.6);
+  cursor: zoom-out !important;
 }
 
 .lightbox-iframe {
   width: 100%;
-  height: 70vh;
+  height: 100%;
+  min-height: 100%;
   border: none;
   background: #ffffff;
   border-radius: 6px;

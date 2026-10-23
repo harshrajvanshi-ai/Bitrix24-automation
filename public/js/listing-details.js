@@ -910,16 +910,61 @@
     lightboxDownloadLink.setAttribute('download', title || 'download');
 
     lightboxBody.innerHTML = '';
+    let isZoomed = false;
+
+    let zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
+    if (!zoomToggleBtn) {
+      zoomToggleBtn = document.createElement('button');
+      zoomToggleBtn.id = 'lightbox-zoom-toggle-btn';
+      zoomToggleBtn.type = 'button';
+      zoomToggleBtn.className = 'btn btn-secondary btn-compact';
+      const actions = document.querySelector('.lightbox-actions');
+      if (actions) {
+        actions.insertBefore(zoomToggleBtn, lightboxCloseBtn);
+      }
+    }
+
     if (isPdf) {
+      if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
       const iframe = document.createElement('iframe');
       iframe.className = 'lightbox-iframe';
       iframe.src = url;
       lightboxBody.appendChild(iframe);
     } else {
+      if (zoomToggleBtn) {
+        zoomToggleBtn.style.display = 'inline-flex';
+        zoomToggleBtn.innerHTML = '🔍 100%';
+        zoomToggleBtn.title = 'Zoom in to actual size';
+      }
+
       const img = document.createElement('img');
       img.className = 'lightbox-img';
       img.src = url;
       img.alt = title;
+      img.style.cursor = 'zoom-in';
+
+      const toggleZoom = () => {
+        isZoomed = !isZoomed;
+        if (isZoomed) {
+          img.classList.add('zoomed-in');
+          if (zoomToggleBtn) {
+            zoomToggleBtn.innerHTML = '🔍 Fit Screen';
+            zoomToggleBtn.title = 'Fit to window';
+          }
+        } else {
+          img.classList.remove('zoomed-in');
+          if (zoomToggleBtn) {
+            zoomToggleBtn.innerHTML = '🔍 100%';
+            zoomToggleBtn.title = 'Zoom in to actual size';
+          }
+        }
+      };
+
+      img.addEventListener('click', toggleZoom);
+      if (zoomToggleBtn) {
+        zoomToggleBtn.onclick = toggleZoom;
+      }
+
       lightboxBody.appendChild(img);
     }
 
@@ -929,6 +974,11 @@
   function closeLightbox() {
     lightboxModal.style.display = 'none';
     lightboxBody.innerHTML = '';
+    const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
+    if (zoomToggleBtn) {
+      zoomToggleBtn.onclick = null;
+      zoomToggleBtn.style.display = 'none';
+    }
   }
 
   lightboxCloseBtn.addEventListener('click', closeLightbox);
@@ -995,23 +1045,20 @@
 
     card.appendChild(dropzone);
 
-    // 2. In-Window Inline Preview Viewport (Shows image in the same window!)
+    // 2. In-Window Inline Preview Viewport (Shows image in the same window at stable fixed height!)
     const viewportBox = document.createElement('div');
     viewportBox.className = 'inline-preview-viewport';
     viewportBox.id = `viewport_${field.key}`;
-    viewportBox.style.display = 'none'; // hidden initially until an image is loaded or selected
+    viewportBox.style.display = 'none';
 
+    // 3. Unified Preview Tiles Strip (Fixed identical 88x88px size for both images & docs)
     const stripWrap = document.createElement('div');
     stripWrap.className = 'thumbnail-strip';
     stripWrap.id = `strip_${field.key}`;
 
-    const docChipsWrap = document.createElement('div');
-    docChipsWrap.className = 'doc-chips-wrap';
-    docChipsWrap.style.display = 'none';
-
     // Collect all existing files
     const existingList = Array.isArray(rawValue) ? rawValue : (rawValue ? [rawValue] : []);
-    let firstImageFound = null;
+    let firstItemFound = null;
 
     existingList.forEach((fileItem, idx) => {
       if (!fileItem) return;
@@ -1034,20 +1081,19 @@
       const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
       const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
 
-      if (isImage) {
-        if (!firstImageFound) {
-          firstImageFound = { url: fullUrl, name: fileName };
-        }
+      if (!firstItemFound) {
+        firstItemFound = { url: fullUrl, name: fileName, isImage, isPdf };
+      }
 
+      if (isImage) {
         const thumb = document.createElement('div');
         thumb.className = 'thumb-item preview-thumb-wrap';
-        thumb.title = fileName;
+        thumb.title = `${fileName} - Click to preview`;
         thumb.innerHTML = `
           <img class="thumb-item-img" src="${fullUrl}" alt="${fileName}">
-          <div class="thumb-zoom-overlay">🔍</div>
+          <div class="thumb-zoom-overlay">🔍 Zoom</div>
         `;
         
-        // Clicking thumbnail swaps image in the same window viewport!
         thumb.addEventListener('click', () => {
           showInWindowImage(viewportBox, fullUrl, fileName);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
@@ -1056,34 +1102,45 @@
 
         stripWrap.appendChild(thumb);
       } else {
-        // Document chip
-        const docChip = document.createElement('div');
-        docChip.className = 'doc-chip-item preview-doc-wrap';
-        docChip.innerHTML = `
-          <span class="doc-chip-badge">${isPdf ? 'PDF' : 'DOC'}</span>
-          <span class="doc-chip-name" title="${fileName}">${fileName}</span>
-          ${isPdf ? `<button type="button" class="doc-chip-view-btn">View</button>` : ''}
-          <a href="${fullUrl}" download class="doc-chip-view-btn" title="Download">⬇</a>
+        // Uniform Document Preview Tile (exact same 88x88px dimensions as photo tile)
+        const docThumb = document.createElement('div');
+        docThumb.className = 'thumb-item preview-doc-wrap';
+        docThumb.title = `${fileName} - Click to preview`;
+        docThumb.innerHTML = `
+          <div class="doc-tile-inner">
+            <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
+            <span class="doc-tile-icon">📄</span>
+            <span class="doc-tile-name" title="${fileName}">${fileName}</span>
+          </div>
+          <div class="thumb-zoom-overlay">🔍 View</div>
         `;
-        if (isPdf) {
-          docChip.querySelector('button').addEventListener('click', () => {
+
+        docThumb.addEventListener('click', () => {
+          if (isPdf) {
             showInWindowPdf(viewportBox, fullUrl, fileName);
-          });
-        }
-        docChipsWrap.appendChild(docChip);
-        docChipsWrap.style.display = 'flex';
+          } else {
+            openLightbox(fileName, fullUrl, false);
+          }
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          docThumb.classList.add('active');
+        });
+
+        stripWrap.appendChild(docThumb);
       }
     });
 
-    // Automatically display first image in the same window viewport on load!
-    if (firstImageFound) {
-      showInWindowImage(viewportBox, firstImageFound.url, firstImageFound.name);
+    // Automatically display first item in inline viewport on load!
+    if (firstItemFound) {
+      if (firstItemFound.isImage) {
+        showInWindowImage(viewportBox, firstItemFound.url, firstItemFound.name);
+      } else if (firstItemFound.isPdf) {
+        showInWindowPdf(viewportBox, firstItemFound.url, firstItemFound.name);
+      }
       if (stripWrap.firstChild) {
         stripWrap.firstChild.classList.add('active');
       }
     }
 
-    card.appendChild(docChipsWrap);
     card.appendChild(viewportBox);
     card.appendChild(stripWrap);
     container.appendChild(card);
@@ -1096,7 +1153,7 @@
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">👁 Preview: ${name}</span>
         <div style="display:flex; gap:6px; align-items:center;">
-          <button type="button" class="btn btn-secondary btn-compact zoom-btn" style="height:20px; font-size:10px; padding:0 6px;">🔍 Zoom</button>
+          <button type="button" class="btn btn-secondary btn-compact zoom-btn" style="height:24px; font-size:11px; padding:0 8px;">🔍 Zoom</button>
           <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
         </div>
       </div>
@@ -1104,6 +1161,7 @@
     `;
 
     viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, false));
+    viewportBox.querySelector('.inline-preview-img').addEventListener('click', () => openLightbox(name, url, false));
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';
@@ -1118,11 +1176,15 @@
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
-        <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button type="button" class="btn btn-secondary btn-compact zoom-btn" style="height:24px; font-size:11px; padding:0 8px;">🔍 Zoom</button>
+          <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
+        </div>
       </div>
       <iframe class="inline-preview-iframe" src="${url}"></iframe>
     `;
 
+    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, true));
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';
@@ -1138,7 +1200,7 @@
     }
 
     Array.from(files).forEach(file => {
-      const isImage = file.type.startsWith('image/');
+      const isImage = file.type.startsWith('image/') || /\.(png|jpe?g|webp|gif|svg)$/i.test(file.name);
       const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf');
       const reader = new FileReader();
 
@@ -1159,13 +1221,13 @@
           // Immediately show newly selected image in the same window viewport!
           showInWindowImage(viewportBox, dataUrl, `${file.name} (New)`);
 
-          // Append thumbnail to strip
+          // Append thumbnail tile to strip (fixed 88x88px size)
           const thumb = document.createElement('div');
           thumb.className = 'thumb-item preview-thumb-wrap active';
           thumb.title = `${file.name} (Ready to upload)`;
           thumb.innerHTML = `
             <img class="thumb-item-img" src="${dataUrl}" alt="${file.name}">
-            <div class="thumb-zoom-overlay">🔍</div>
+            <div class="thumb-zoom-overlay">🔍 Zoom</div>
             <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
           `;
 
@@ -1189,8 +1251,49 @@
 
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           stripWrap.appendChild(thumb);
-        } else if (isPdf) {
-          showInWindowPdf(viewportBox, dataUrl, `${file.name} (New)`);
+        } else {
+          // Document tile of exact same fixed 88x88px size!
+          if (isPdf) {
+            showInWindowPdf(viewportBox, dataUrl, `${file.name} (New)`);
+          }
+
+          const docThumb = document.createElement('div');
+          docThumb.className = 'thumb-item preview-doc-wrap active';
+          docThumb.title = `${file.name} (Ready to upload)`;
+          docThumb.innerHTML = `
+            <div class="doc-tile-inner">
+              <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
+              <span class="doc-tile-icon">📄</span>
+              <span class="doc-tile-name" title="${file.name}">${file.name}</span>
+            </div>
+            <div class="thumb-zoom-overlay">🔍 View</div>
+            <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+          `;
+
+          docThumb.addEventListener('click', (ev) => {
+            if (ev.target.classList.contains('thumb-remove-btn')) return;
+            if (isPdf) {
+              showInWindowPdf(viewportBox, dataUrl, file.name);
+            } else {
+              openLightbox(file.name, dataUrl, false);
+            }
+            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            docThumb.classList.add('active');
+          });
+
+          docThumb.querySelector('.thumb-remove-btn').addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
+            if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
+            docThumb.remove();
+            viewportBox.style.display = 'none';
+            viewportBox.innerHTML = '';
+            setDirty(true);
+            resizeWindow();
+          });
+
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          stripWrap.appendChild(docThumb);
         }
       };
 
