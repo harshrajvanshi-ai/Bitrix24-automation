@@ -1,25 +1,22 @@
 /**
  * public/js/listing-details.js
  * Bitrix24 Listing Details Tab Engine for Listing Smart Process Automation (SPA 1058)
+ * Minimalist, Compact & In-Window File Previews
  * 
  * Capabilities:
  *  1. Automatic entity loading via Bitrix24 SDK or REST fallback
- *  2. 4 Dynamic Tailored Layouts driven by UF_CRM_16_1790154808:
+ *  2. 4 Dynamic Tailored Layouts driven strictly by UF_CRM_16_1790154808:
  *     - External Stock
  *     - Off-plan
  *     - Overseas Sale
  *     - Rent
- *  3. Precise field visibility matrix:
- *     - 'show': rendered in main section grid
- *     - 'opt': collapsed inside expandable "Optional Fields" sub-section with count badge
- *     - 'hide': completely hidden
- *  4. Contextual label overrides per layout (annual rent, payment plan, mandate period)
- *  5. Rich Interactive Media & File Previews:
- *     - Existing image thumbnails with full-screen Lightbox zoom
- *     - PDF & document preview cards with embedded viewer modal
- *     - Local FileReader instant previews for newly dropped/selected files before saving
- *     - 360 Virtual Tour interactive iframe viewer
- *  6. Dirty state tracking and Bitrix24 save normalization ({ fileData: [name, base64] })
+ *  3. Precise field visibility matrix (show / opt / hide) and contextual labels
+ *  4. In-Window Interactive Media & File Previews (rendered right in the page):
+ *     - Inline image viewer viewport right in the card (no external tabs or windows)
+ *     - Instant FileReader client previews for newly uploaded files before saving
+ *     - Compact thumbnail strip with instant image swapping in the same window
+ *     - Inline PDF & document viewer
+ *  5. Dirty state tracking and Bitrix24 save normalization ({ fileData: [name, base64] })
  */
 
 (function () {
@@ -88,7 +85,7 @@
         fields: [
           {
             key: 'title',
-            label: 'Listing Title / Headline',
+            label: 'Listing Title',
             type: 'string',
             placeholder: 'e.g. Luxury 4BR Penthouse in Downtown Dubai...',
             fullWidth: true,
@@ -96,19 +93,19 @@
           },
           {
             key: 'stageId',
-            label: 'Listing Stage',
+            label: 'Stage',
             type: 'stage',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'assignedById',
-            label: 'Responsible Person / Agent',
+            label: 'Responsible Person',
             type: 'user',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16_1790154808',
-            label: 'Listing Type / Operation',
+            label: 'Listing Type (Layout Driver)',
             type: 'enumeration',
             options: [
               { id: '164', value: 'External Stock' },
@@ -120,7 +117,7 @@
           },
           {
             key: 'ufCrm16Exclusive',
-            label: 'Listing Agreement Type (Exclusive / Non-Exclusive)',
+            label: 'Listing Agreement (Exclusive / Non-Exclusive)',
             type: 'boolean',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
@@ -147,13 +144,13 @@
           },
           {
             key: 'contactId',
-            label: 'Primary Contact',
+            label: 'Contact',
             type: 'crm_contact',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'contactIds',
-            label: 'Associated Contacts',
+            label: 'Contacts',
             type: 'crm_contact_multi',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
@@ -161,7 +158,7 @@
             key: 'parentId1052',
             label: 'Master Property (parentId1052)',
             type: 'crm_entity',
-            placeholder: 'Link to parent Property SPA (1052)...',
+            placeholder: 'Property SPA reference...',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           }
         ]
@@ -269,7 +266,7 @@
       },
       {
         id: 'pricing',
-        title: 'Commercial Terms & Pricing',
+        title: 'Pricing & Terms',
         icon: '💰',
         desc: 'Asking price, rent frequency, commission, and payment plans',
         fields: [
@@ -340,7 +337,7 @@
       },
       {
         id: 'dates',
-        title: 'Dates & Operational Timeline',
+        title: 'Dates & Timeline',
         icon: '📅',
         desc: 'Mandate duration, availability, and tenancy start/finish dates',
         fields: [
@@ -390,7 +387,7 @@
             key: 'ufCrm16_1791173032',
             label: 'Neighborhood / Community',
             type: 'string',
-            placeholder: 'e.g. Downtown Dubai, Palm Jumeirah, Dubai Marina...',
+            placeholder: 'e.g. Downtown Dubai, Palm Jumeirah...',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
@@ -432,7 +429,7 @@
       },
       {
         id: 'marketing',
-        title: 'Portals & Digital Marketing',
+        title: 'Portals & Marketing',
         icon: '🚀',
         desc: 'Bayut, Propertyfinder, Dubizzle IDs, feed toggles, RERA permit, and descriptions',
         fields: [
@@ -467,15 +464,15 @@
             key: 'ufCrm16SummaryDescription',
             label: 'Portal Title',
             type: 'string',
-            placeholder: 'SEO Listing Headline for Real Estate Portals...',
+            placeholder: 'SEO Headline for Portals...',
             fullWidth: true,
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
           },
           {
             key: 'ufCrm16Description',
-            label: 'Portal Description / Amenities Text',
+            label: 'Portal Description',
             type: 'textarea',
-            placeholder: 'Detailed marketing description, bullet points, key features...',
+            placeholder: 'Marketing description, key amenities...',
             fullWidth: true,
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
           },
@@ -490,9 +487,9 @@
       },
       {
         id: 'media',
-        title: 'Media, Files & Rich Previews',
+        title: 'Media & Documents',
         icon: '📸',
-        desc: 'Primary images, deeds, brochures, floor plans, and 360 virtual tours with instant preview',
+        desc: 'Primary images, title deeds, brochures, floor plans, and 360 virtual tours',
         fields: [
           {
             key: 'ufCrm16_1791173118',
@@ -503,20 +500,20 @@
           },
           {
             key: 'ufCrm16_1791172957',
-            label: 'Property Docs & Title Deed',
+            label: 'Docs & Title Deed',
             type: 'file',
             isDoc: true,
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16_1791544736052',
-            label: 'Floor Plan (Image or PDF)',
+            label: 'Floor Plan',
             type: 'file',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           },
           {
             key: 'ufCrm16WebsiteUrl',
-            label: 'Brochure URL / File Link',
+            label: 'Brochure URL / File',
             type: 'url',
             placeholder: 'https://cdn.example.com/brochures/listing.pdf',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'show', rent: 'hide' }
@@ -536,7 +533,7 @@
   // State Management
   let currentListingId = null;
   let currentListing = {};
-  let currentLayout = 'rent'; // Default fallback
+  let currentLayout = 'rent'; // Driven strictly by ufCrm16_1790154808
   let initialFormValues = {};
   let pendingFileUploads = {}; // fieldKey -> Array of { file, dataUrl, name, size }
   let isDirty = false;
@@ -559,7 +556,7 @@
   const dirtyIndicator = document.getElementById('dirty-indicator');
   const dirtyText = document.getElementById('dirty-text');
 
-  // Lightbox Elements
+  // Lightbox Modal Elements (In same window)
   const lightboxModal = document.getElementById('lightbox-modal');
   const lightboxTitle = document.getElementById('lightbox-title');
   const lightboxBody = document.getElementById('lightbox-body');
@@ -578,8 +575,8 @@
 
     setTimeout(() => {
       toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
+      setTimeout(() => toast.remove(), 250);
+    }, 3500);
   }
 
   function resizeWindow() {
@@ -593,7 +590,7 @@
     if (dirtyIndicator) {
       dirtyIndicator.style.display = state ? 'inline-flex' : 'none';
       const pendingCount = Object.values(pendingFileUploads).reduce((acc, arr) => acc + arr.length, 0);
-      dirtyText.textContent = pendingCount > 0 ? `Unsaved changes (${pendingCount} pending files)` : 'Unsaved changes';
+      dirtyText.textContent = pendingCount > 0 ? `Unsaved (${pendingCount} new files)` : 'Unsaved changes';
     }
     if (cancelBtn) {
       cancelBtn.style.display = state ? 'inline-flex' : 'none';
@@ -620,6 +617,7 @@
     return urlParams.get('ID') || urlParams.get('id') || urlParams.get('listingId') || '108';
   }
 
+  // Detects the layout strictly from the listing entity field
   function detectLayoutFromListing(listing) {
     const rawVal = listing?.[CONFIG.layoutField] || listing?.[CONFIG.layoutFieldCrm];
     if (!rawVal) return 'rent'; // default
@@ -637,7 +635,6 @@
   function fetchListing(listingId) {
     return new Promise((resolve, reject) => {
       if (!window.BX24) {
-        // Fallback to local server proxy
         fetch(`/api/listing/${listingId}`)
           .then(r => r.json())
           .then(data => {
@@ -694,7 +691,7 @@
   }
 
   // ============================================================================
-  // 4. LIGHTBOX & DOCUMENT MODAL VIEWER
+  // 4. LIGHTBOX & DOCUMENT MODAL VIEWER (STRICTLY IN SAME IFRAME WINDOW)
   // ============================================================================
   function openLightbox(title, url, isPdf = false) {
     lightboxTitle.textContent = title || 'File Preview';
@@ -734,102 +731,27 @@
   });
 
   // ============================================================================
-  // 5. RICH MEDIA & FILE PREVIEW COMPONENT
+  // 5. IN-WINDOW MEDIA & FILE PREVIEW COMPONENT
   // ============================================================================
-  function formatBytes(bytes, decimals = 1) {
+  function formatBytes(bytes) {
     if (!bytes || bytes === 0) return '';
     const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
   function renderMediaField(field, rawValue, container) {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'file-upload-card';
+    const card = document.createElement('div');
+    card.className = 'file-upload-card';
 
-    // 1. Existing Attachments List
-    const existingList = Array.isArray(rawValue) ? rawValue : (rawValue ? [rawValue] : []);
-    const previewGrid = document.createElement('div');
-    previewGrid.className = 'previews-grid';
-    previewGrid.id = `previews_grid_${field.key}`;
-
-    existingList.forEach((fileItem, idx) => {
-      if (!fileItem) return;
-
-      let fileUrl = '';
-      let fileName = '';
-
-      if (typeof fileItem === 'object') {
-        fileUrl = fileItem.showUrl || fileItem.downloadUrl || fileItem.url || '';
-        fileName = fileItem.name || `${field.label}${existingList.length > 1 ? ` #${idx + 1}` : ''}`;
-      } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
-        fileUrl = fileItem;
-        fileName = fileItem.split('/').pop().split('?')[0] || 'Attached File';
-      }
-
-      if (!fileUrl && !fileName) return;
-
-      const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
-      const fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl}`;
-      const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
-      const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
-
-      const card = document.createElement('div');
-      card.className = 'preview-card';
-
-      if (isImage) {
-        card.innerHTML = `
-          <div class="preview-thumb-wrap">
-            <img class="preview-thumb-img" src="${fullUrl}" alt="${fileName}" loading="lazy">
-            <div class="preview-overlay">
-              <button type="button" class="btn-preview-action view-btn" title="Zoom Preview">🔍</button>
-              <a href="${fullUrl}" target="_blank" download class="btn-preview-action download-btn" title="Download File">⬇</a>
-            </div>
-          </div>
-          <div class="preview-info">
-            <span class="preview-filename" title="${fileName}">${fileName}</span>
-            <div class="preview-meta">
-              <span class="preview-tag">${field.label}</span>
-              <span>Saved</span>
-            </div>
-          </div>
-        `;
-        card.querySelector('.view-btn').addEventListener('click', () => openLightbox(fileName, fullUrl, false));
-      } else {
-        const ext = fileName.split('.').pop().toUpperCase() || 'DOC';
-        card.innerHTML = `
-          <div class="preview-doc-wrap">
-            <span class="doc-format-badge ${isPdf ? 'pdf' : 'generic'}">${ext}</span>
-            <div style="display:flex; gap: 8px; margin-top: 6px;">
-              ${isPdf ? `<button type="button" class="btn btn-secondary btn-compact view-btn">👁 Preview</button>` : ''}
-              <a href="${fullUrl}" target="_blank" download class="btn btn-secondary btn-compact">⬇ Download</a>
-            </div>
-          </div>
-          <div class="preview-info">
-            <span class="preview-filename" title="${fileName}">${fileName}</span>
-            <div class="preview-meta">
-              <span class="preview-tag">${field.label}</span>
-              <span>Saved</span>
-            </div>
-          </div>
-        `;
-        if (isPdf) {
-          card.querySelector('.view-btn').addEventListener('click', () => openLightbox(fileName, fullUrl, true));
-        }
-      }
-
-      previewGrid.appendChild(card);
-    });
-
-    // 2. Drag & Drop Upload Dropzone
+    // 1. Dropzone Bar (Minimal, single-line)
     const dropzone = document.createElement('div');
     dropzone.className = 'dropzone-box';
     dropzone.innerHTML = `
       <span class="dropzone-icon">📁</span>
-      <div class="dropzone-title">Click to upload or drag & drop ${field.label}</div>
-      <div class="dropzone-sub">Supports JPG, PNG, WEBP, PDF, and Documents (up to 25MB)</div>
+      <span class="dropzone-title">Upload ${field.label}</span>
+      <span class="dropzone-sub">(Click or drop file)</span>
       <input type="file" id="file_input_${field.key}" style="display:none" ${field.key.includes('DOCS') || field.key.includes('1791544736052') ? 'multiple' : ''}>
     `;
 
@@ -845,23 +767,150 @@
       e.preventDefault();
       dropzone.classList.remove('dragover');
       if (e.dataTransfer.files?.length) {
-        handleLocalFiles(field.key, e.dataTransfer.files, previewGrid);
+        handleLocalFiles(field.key, e.dataTransfer.files, viewportBox, stripWrap);
       }
     });
 
     fileInput.addEventListener('change', () => {
       if (fileInput.files?.length) {
-        handleLocalFiles(field.key, fileInput.files, previewGrid);
+        handleLocalFiles(field.key, fileInput.files, viewportBox, stripWrap);
       }
     });
 
-    wrapper.appendChild(dropzone);
-    wrapper.appendChild(previewGrid);
-    container.appendChild(wrapper);
+    card.appendChild(dropzone);
+
+    // 2. In-Window Inline Preview Viewport (Shows image in the same window!)
+    const viewportBox = document.createElement('div');
+    viewportBox.className = 'inline-preview-viewport';
+    viewportBox.id = `viewport_${field.key}`;
+    viewportBox.style.display = 'none'; // hidden initially until an image is loaded or selected
+
+    const stripWrap = document.createElement('div');
+    stripWrap.className = 'thumbnail-strip';
+    stripWrap.id = `strip_${field.key}`;
+
+    // Collect all existing files
+    const existingList = Array.isArray(rawValue) ? rawValue : (rawValue ? [rawValue] : []);
+    let firstImageFound = null;
+
+    existingList.forEach((fileItem, idx) => {
+      if (!fileItem) return;
+
+      let fileUrl = '';
+      let fileName = '';
+
+      if (typeof fileItem === 'object') {
+        fileUrl = fileItem.showUrl || fileItem.downloadUrl || fileItem.url || '';
+        fileName = fileItem.name || `${field.label} #${idx + 1}`;
+      } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
+        fileUrl = fileItem;
+        fileName = fileItem.split('/').pop().split('?')[0] || 'Attached File';
+      }
+
+      if (!fileUrl && !fileName) return;
+
+      const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
+      const fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl}`;
+      const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
+      const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
+
+      if (isImage) {
+        if (!firstImageFound) {
+          firstImageFound = { url: fullUrl, name: fileName };
+        }
+
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb-item preview-thumb-wrap';
+        thumb.title = fileName;
+        thumb.innerHTML = `
+          <img class="thumb-item-img" src="${fullUrl}" alt="${fileName}">
+          <div class="thumb-zoom-overlay">🔍</div>
+        `;
+        
+        // Clicking thumbnail swaps image in the same window viewport!
+        thumb.addEventListener('click', () => {
+          showInWindowImage(viewportBox, fullUrl, fileName);
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+
+        stripWrap.appendChild(thumb);
+      } else {
+        // Document chip
+        const docChip = document.createElement('div');
+        docChip.className = 'doc-chip-item preview-doc-wrap';
+        docChip.innerHTML = `
+          <span class="doc-chip-badge">${isPdf ? 'PDF' : 'DOC'}</span>
+          <span title="${fileName}" style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${fileName}</span>
+          ${isPdf ? `<button type="button" class="doc-chip-view-btn">View</button>` : ''}
+          <a href="${fullUrl}" download class="doc-chip-view-btn">⬇</a>
+        `;
+        if (isPdf) {
+          docChip.querySelector('button').addEventListener('click', () => {
+            showInWindowPdf(viewportBox, fullUrl, fileName);
+          });
+        }
+        card.appendChild(docChip);
+      }
+    });
+
+    // Automatically display first image in the same window viewport on load!
+    if (firstImageFound) {
+      showInWindowImage(viewportBox, firstImageFound.url, firstImageFound.name);
+      if (stripWrap.firstChild) {
+        stripWrap.firstChild.classList.add('active');
+      }
+    }
+
+    card.appendChild(viewportBox);
+    card.appendChild(stripWrap);
+    container.appendChild(card);
   }
 
-  // Handle newly selected/dropped files with instant FileReader client preview
-  function handleLocalFiles(fieldKey, files, previewGrid) {
+  // Shows an image directly inside the inline viewport in the same window
+  function showInWindowImage(viewportBox, url, name) {
+    viewportBox.style.display = 'flex';
+    viewportBox.innerHTML = `
+      <div class="inline-preview-topbar">
+        <span class="inline-preview-name">👁 Preview: ${name}</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button type="button" class="btn btn-secondary btn-compact zoom-btn" style="height:20px; font-size:10px; padding:0 6px;">🔍 Zoom</button>
+          <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
+        </div>
+      </div>
+      <img class="inline-preview-img" src="${url}" alt="${name}">
+    `;
+
+    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, false));
+    viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
+      viewportBox.style.display = 'none';
+      viewportBox.innerHTML = '';
+      resizeWindow();
+    });
+    resizeWindow();
+  }
+
+  // Shows a PDF directly inside the inline viewport in the same window
+  function showInWindowPdf(viewportBox, url, name) {
+    viewportBox.style.display = 'flex';
+    viewportBox.innerHTML = `
+      <div class="inline-preview-topbar">
+        <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
+        <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
+      </div>
+      <iframe class="inline-preview-iframe" src="${url}"></iframe>
+    `;
+
+    viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
+      viewportBox.style.display = 'none';
+      viewportBox.innerHTML = '';
+      resizeWindow();
+    });
+    resizeWindow();
+  }
+
+  // Handle local newly selected files with instant in-window FileReader preview
+  function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
     if (!pendingFileUploads[fieldKey]) {
       pendingFileUploads[fieldKey] = [];
     }
@@ -884,58 +933,43 @@
         pendingFileUploads[fieldKey].push(pendingItem);
         setDirty(true);
 
-        // Render Pending Preview Card
-        const card = document.createElement('div');
-        card.className = 'preview-card pending';
-
         if (isImage) {
-          card.innerHTML = `
-            <div class="preview-thumb-wrap">
-              <img class="preview-thumb-img" src="${dataUrl}" alt="${file.name}">
-              <div class="preview-overlay">
-                <button type="button" class="btn-preview-action view-btn" title="Zoom Preview">🔍</button>
-              </div>
-            </div>
-            <div class="preview-info">
-              <span class="preview-filename" title="${file.name}">${file.name}</span>
-              <div class="preview-meta">
-                <span class="preview-tag" style="background:#dcfce7; color:#15803d;">New (Pending)</span>
-                <button type="button" class="btn-remove-preview" title="Cancel upload">✕</button>
-              </div>
-            </div>
+          // Immediately show newly selected image in the same window viewport!
+          showInWindowImage(viewportBox, dataUrl, `${file.name} (New)`);
+
+          // Append thumbnail to strip
+          const thumb = document.createElement('div');
+          thumb.className = 'thumb-item preview-thumb-wrap active';
+          thumb.title = `${file.name} (Ready to upload)`;
+          thumb.innerHTML = `
+            <img class="thumb-item-img" src="${dataUrl}" alt="${file.name}">
+            <div class="thumb-zoom-overlay">🔍</div>
+            <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
           `;
-          card.querySelector('.view-btn').addEventListener('click', () => openLightbox(file.name, dataUrl, false));
-        } else {
-          card.innerHTML = `
-            <div class="preview-doc-wrap">
-              <span class="doc-format-badge ${isPdf ? 'pdf' : 'generic'}">${isPdf ? 'PDF' : 'DOC'}</span>
-              <span style="font-size:10px; color:var(--text-muted);">${formatBytes(file.size)}</span>
-              ${isPdf ? `<button type="button" class="btn btn-secondary btn-compact view-btn" style="margin-top:4px;">👁 Preview</button>` : ''}
-            </div>
-            <div class="preview-info">
-              <span class="preview-filename" title="${file.name}">${file.name}</span>
-              <div class="preview-meta">
-                <span class="preview-tag" style="background:#dcfce7; color:#15803d;">New (Pending)</span>
-                <button type="button" class="btn-remove-preview" title="Cancel upload">✕</button>
-              </div>
-            </div>
-          `;
-          if (isPdf) {
-            card.querySelector('.view-btn').addEventListener('click', () => openLightbox(file.name, dataUrl, true));
-          }
+
+          thumb.addEventListener('click', (ev) => {
+            if (ev.target.classList.contains('thumb-remove-btn')) return;
+            showInWindowImage(viewportBox, dataUrl, file.name);
+            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+          });
+
+          thumb.querySelector('.thumb-remove-btn').addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
+            if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
+            thumb.remove();
+            viewportBox.style.display = 'none';
+            viewportBox.innerHTML = '';
+            setDirty(true);
+            resizeWindow();
+          });
+
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          stripWrap.appendChild(thumb);
+        } else if (isPdf) {
+          showInWindowPdf(viewportBox, dataUrl, `${file.name} (New)`);
         }
-
-        // Remove button
-        card.querySelector('.btn-remove-preview').addEventListener('click', () => {
-          const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
-          if (idx > -1) {
-            pendingFileUploads[fieldKey].splice(idx, 1);
-          }
-          card.remove();
-          setDirty(true);
-        });
-
-        previewGrid.appendChild(card);
       };
 
       reader.readAsDataURL(file);
@@ -949,16 +983,11 @@
     currentLayout = layoutKey;
     const meta = CONFIG.layoutMeta[layoutKey] || CONFIG.layoutMeta.rent;
 
-    // 1. Update Layout Mode Pill
+    // 1. Update Layout Mode Pill in Toolbar
     layoutModeBadge.className = `layout-pill ${meta.pillClass}`;
     layoutModeBadge.innerHTML = `${meta.icon} ${meta.title}`;
 
-    // 2. Update Layout Switcher Buttons active state
-    document.querySelectorAll('.btn-layout-switch').forEach(btn => {
-      btn.classList.toggle('active', btn.getAttribute('data-layout') === layoutKey);
-    });
-
-    // 3. Clear container
+    // 2. Clear container
     sectionsContainer.innerHTML = '';
     sectionNavPills.innerHTML = '';
     initialFormValues = {};
@@ -966,7 +995,6 @@
     let totalActiveFieldsCount = 0;
 
     CONFIG.sections.forEach((sec, secIdx) => {
-      // Filter fields by layout visibility
       const showFields = [];
       const optFields = [];
 
@@ -977,13 +1005,12 @@
         } else if (rule === 'opt') {
           optFields.push(f);
         }
-        // 'hide' fields are ignored
       });
 
       const sectionActiveCount = showFields.length + optFields.length;
       totalActiveFieldsCount += sectionActiveCount;
 
-      if (sectionActiveCount === 0) return; // Skip empty sections
+      if (sectionActiveCount === 0) return;
 
       // Jump-to Navigation Pill
       const pill = document.createElement('button');
@@ -1006,7 +1033,7 @@
       card.className = 'section-card';
       card.id = `sec_${sec.id}`;
 
-      // Card Header
+      // Card Header (Minimal)
       const header = document.createElement('div');
       header.className = 'section-header';
       header.innerHTML = `
@@ -1016,7 +1043,7 @@
           <span class="section-desc">${sec.desc}</span>
         </div>
         <div class="section-header-right">
-          <span class="section-count-badge">${sectionActiveCount} fields</span>
+          <span class="section-count-badge">${sectionActiveCount}</span>
           <span class="section-chevron">▼</span>
         </div>
       `;
@@ -1029,7 +1056,7 @@
       const body = document.createElement('div');
       body.className = 'section-body';
 
-      // Primary Show Grid
+      // Primary Grid
       const primaryGrid = document.createElement('div');
       primaryGrid.className = 'fields-grid';
 
@@ -1043,7 +1070,6 @@
         const optWrapper = document.createElement('div');
         optWrapper.className = 'optional-fields-wrapper';
 
-        // Check if any opt field has existing value
         const hasExistingValue = optFields.some(f => {
           const val = currentListing[f.key];
           return val !== null && val !== undefined && val !== '';
@@ -1053,11 +1079,8 @@
         toggleBtn.type = 'button';
         toggleBtn.className = 'optional-toggle-btn';
         toggleBtn.innerHTML = `
-          <div class="optional-toggle-left">
-            <span>⚙️ Optional & Additional Fields</span>
-            <span class="optional-badge">${optFields.length}</span>
-          </div>
-          <span class="opt-chevron">${hasExistingValue ? '▲ Collapse' : '▼ Expand'}</span>
+          <span>${hasExistingValue ? '▾' : '▸'} Optional Fields</span>
+          <span class="optional-badge">${optFields.length}</span>
         `;
 
         const optContent = document.createElement('div');
@@ -1072,7 +1095,11 @@
 
         toggleBtn.addEventListener('click', () => {
           const isCollapsed = optContent.classList.toggle('collapsed');
-          toggleBtn.querySelector('.opt-chevron').textContent = isCollapsed ? '▼ Expand' : '▲ Collapse';
+          toggleBtn.innerHTML = `
+            <span>${isCollapsed ? '▸' : '▾'} Optional Fields</span>
+            <span class="optional-badge">${optFields.length}</span>
+          `;
+          resizeWindow();
         });
 
         optWrapper.appendChild(toggleBtn);
@@ -1094,7 +1121,6 @@
     group.className = `field-group ${f.fullWidth ? 'full-width' : ''}`;
     group.setAttribute('data-field-key', f.key);
 
-    // Label & Contextual Override
     const displayLabel = f.labelOverrides?.[layoutKey] || f.label;
     const labelEl = document.createElement('label');
     labelEl.className = 'field-label';
@@ -1102,20 +1128,18 @@
     labelEl.innerHTML = `
       <span>${displayLabel}</span>
       ${f.labelOverrides?.[layoutKey] ? `<span class="field-context-hint">${layoutKey.replace('_', ' ')}</span>` : ''}
-      ${isOptional ? `<span style="font-size:10px; color:var(--text-faint); font-weight:400;">(optional)</span>` : ''}
+      ${isOptional ? `<span style="font-size:9px; color:var(--text-faint); font-weight:400;">(optional)</span>` : ''}
     `;
     group.appendChild(labelEl);
 
     const rawVal = currentListing[f.key];
 
-    // Render by type
     if (f.type === 'file') {
       renderMediaField(f, rawVal, group);
     } else if (f.type === 'tour_url') {
-      // 360 Tour with interactive Launch preview button
       const wrap = document.createElement('div');
       wrap.style.display = 'flex';
-      wrap.style.gap = '6px';
+      wrap.style.gap = '4px';
 
       const input = document.createElement('input');
       input.type = 'url';
@@ -1128,7 +1152,7 @@
 
       const launchBtn = document.createElement('button');
       launchBtn.type = 'button';
-      launchBtn.className = 'btn btn-secondary';
+      launchBtn.className = 'btn btn-secondary btn-compact';
       launchBtn.textContent = '🌐 Launch 360';
       launchBtn.addEventListener('click', () => {
         if (!input.value) {
@@ -1145,7 +1169,7 @@
     } else if (f.type === 'url') {
       const wrap = document.createElement('div');
       wrap.style.display = 'flex';
-      wrap.style.gap = '6px';
+      wrap.style.gap = '4px';
 
       const input = document.createElement('input');
       input.type = 'url';
@@ -1158,11 +1182,12 @@
 
       const testBtn = document.createElement('a');
       testBtn.href = rawVal || '#';
-      testBtn.target = '_blank';
-      testBtn.className = 'btn btn-secondary';
-      testBtn.textContent = '↗ Open Link';
-      input.addEventListener('input', () => {
-        testBtn.href = input.value || '#';
+      testBtn.target = '_self';
+      testBtn.className = 'btn btn-secondary btn-compact';
+      testBtn.textContent = '↗ Open';
+      testBtn.addEventListener('click', (e) => {
+        if (!input.value) e.preventDefault();
+        else openLightbox('Brochure Preview', input.value, true);
       });
 
       wrap.appendChild(input);
@@ -1176,7 +1201,7 @@
       textarea.className = 'form-control';
       textarea.placeholder = f.placeholder || '';
       textarea.value = rawVal || '';
-      textarea.rows = 3;
+      textarea.rows = 2;
       textarea.addEventListener('input', () => setDirty(true));
       group.appendChild(textarea);
       initialFormValues[f.key] = textarea.value;
@@ -1202,12 +1227,12 @@
         select.appendChild(optionEl);
       });
 
-      // Special Listener: If user changes the Layout Field in the General section
+      // Special: When Listing Type is changed in General section, adapt layout dynamically!
       if (f.key === CONFIG.layoutField) {
         select.addEventListener('change', () => {
           const selectedEnumId = select.value;
           const mappedLayout = CONFIG.layoutEnumMap[selectedEnumId] || 'rent';
-          showToast(`Switched layout to ${CONFIG.layoutMeta[mappedLayout].title}`, 'info');
+          showToast(`Layout updated to ${CONFIG.layoutMeta[mappedLayout].title}`, 'info');
           currentListing[f.key] = selectedEnumId;
           renderLayout(mappedLayout);
           setDirty(true);
@@ -1232,7 +1257,6 @@
       group.appendChild(select);
       initialFormValues[f.key] = select.value;
     } else {
-      // text, number, date, money
       const isAddon = !!f.addon;
       const input = document.createElement('input');
       input.id = `field_${f.key}`;
@@ -1246,7 +1270,6 @@
         input.step = f.type === 'integer' ? '1' : 'any';
       } else if (f.type === 'date') {
         input.type = 'date';
-        // Normalize bitrix date (YYYY-MM-DD)
         if (rawVal && typeof rawVal === 'string' && rawVal.length >= 10) {
           input.value = rawVal.slice(0, 10);
         }
@@ -1276,22 +1299,8 @@
   }
 
   // ============================================================================
-  // 7. EVENT LISTENERS & LIFECYCLE
+  // 7. EVENT LISTENERS
   // ============================================================================
-  // Switch layout via banner buttons
-  document.querySelectorAll('.btn-layout-switch').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const targetLayout = this.getAttribute('data-layout');
-      const targetEnumId = this.getAttribute('data-enum-id');
-      if (targetLayout === currentLayout) return;
-
-      currentListing[CONFIG.layoutField] = targetEnumId;
-      showToast(`Layout changed to ${CONFIG.layoutMeta[targetLayout].title}`, 'info');
-      renderLayout(targetLayout);
-      setDirty(true);
-    });
-  });
-
   // Search Filter
   searchInput.addEventListener('input', () => {
     const q = searchInput.value.toLowerCase().trim();
@@ -1343,20 +1352,18 @@
     try {
       const payload = {};
 
-      // 1. Collect standard inputs
       const formData = new FormData(formEl);
       for (const [key, val] of formData.entries()) {
         payload[key] = val;
       }
 
-      // Also grab non-FormData controlled inputs
       document.querySelectorAll('#sections-container input, #sections-container select, #sections-container textarea').forEach(el => {
         if (el.name && el.type !== 'file') {
           payload[el.name] = el.value;
         }
       });
 
-      // 2. Package pending file uploads with { fileData: [name, base64] }
+      // Package pending file uploads with { fileData: [name, base64] }
       for (const [fieldKey, fileList] of Object.entries(pendingFileUploads)) {
         if (fileList.length === 1) {
           const item = fileList[0];
@@ -1376,7 +1383,6 @@
       pendingFileUploads = {};
       setDirty(false);
 
-      // Reload fresh listing data
       await loadListingDetails(false);
     } catch (err) {
       console.error('Failed to save listing:', err);
@@ -1406,6 +1412,7 @@
       currentListing = await fetchListing(currentListingId);
       console.log('[LISTING] Loaded item data:', currentListing);
 
+      // Render strictly driven by the field value
       const layoutKey = detectLayoutFromListing(currentListing);
       renderLayout(layoutKey);
 
@@ -1416,16 +1423,16 @@
       console.error('[LISTING] Init error:', err);
       loadingEl.innerHTML = `
         <div style="text-align: center; color: var(--danger); max-width: 450px;">
-          <div style="font-size: 32px; margin-bottom: 8px;">⚠️</div>
-          <strong style="font-size: 15px; display: block; margin-bottom: 6px;">Unable to Load Listing</strong>
-          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">${err.message}</p>
+          <div style="font-size: 28px; margin-bottom: 6px;">⚠️</div>
+          <strong style="font-size: 13px; display: block; margin-bottom: 4px;">Unable to Load Listing</strong>
+          <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">${err.message}</p>
           <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Retry</button>
         </div>
       `;
     }
   }
 
-  // Export app instance for external validation and testing
+  // Export app instance for validation and testing
   window.__LISTING_DETAILS_APP__ = {
     CONFIG,
     detectLayoutFromListing,
@@ -1434,10 +1441,11 @@
     setLayout: (key) => renderLayout(key),
     getPendingUploads: () => pendingFileUploads,
     openLightbox,
-    closeLightbox
+    closeLightbox,
+    showInWindowImage,
+    showInWindowPdf
   };
 
-  // Run on BX24 ready or window load
   if (window.BX24) {
     window.BX24.init(() => loadListingDetails(true));
   } else {
