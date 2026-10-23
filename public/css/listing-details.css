@@ -874,15 +874,23 @@ textarea.form-control {
    ========================================================================= */
 .lightbox-modal {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
   background: rgba(15, 23, 42, 0.88);
   backdrop-filter: blur(4px);
-  z-index: 99999;
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .lightbox-content {
@@ -890,8 +898,8 @@ textarea.form-control {
   background: #0f172a;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
-  width: min(94vw, 1120px);
-  height: 86vh;
+  width: min(94vw, 1080px);
+  height: clamp(480px, 82vh, 800px);
   max-height: 86vh;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
   overflow: hidden;
@@ -908,6 +916,8 @@ textarea.form-control {
   background: #1e293b;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-shrink: 0;
+  height: 52px;
+  box-sizing: border-box;
 }
 
 .lightbox-title {
@@ -928,6 +938,7 @@ textarea.form-control {
 
 .lightbox-body {
   flex: 1;
+  height: calc(100% - 52px);
   min-height: 0;
   padding: 12px;
   display: flex;

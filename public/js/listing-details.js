@@ -969,11 +969,13 @@
     }
 
     lightboxModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
   }
 
   function closeLightbox() {
     lightboxModal.style.display = 'none';
     lightboxBody.innerHTML = '';
+    document.body.style.overflow = '';
     const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
     if (zoomToggleBtn) {
       zoomToggleBtn.onclick = null;

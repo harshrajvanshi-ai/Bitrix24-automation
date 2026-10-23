@@ -88,33 +88,31 @@
           </div>
         </div>
       </form>
-
     </div>
+  </div>
 
-    <!-- ── 3. Lightbox & Document Preview Modal ────────────────────── -->
-    <div id="lightbox-modal" class="lightbox-modal" style="display: none;">
-      <div class="lightbox-content">
-        <div class="lightbox-header">
-          <span id="lightbox-title" class="lightbox-title">File Preview</span>
-          <div class="lightbox-actions">
-            <a id="lightbox-download-link" href="#" target="_blank" download class="btn btn-secondary btn-compact">
-              ⬇ Download
-            </a>
-            <button type="button" id="lightbox-close-btn" class="btn btn-secondary btn-compact" aria-label="Close preview">
-              ✕ Close
-            </button>
-          </div>
-        </div>
-        <div id="lightbox-body" class="lightbox-body">
-          <!-- Populated dynamically with <img> or <iframe> -->
+  <!-- ── 3. Lightbox & Document Preview Modal (Direct child of body to guarantee viewport bounds) ── -->
+  <div id="lightbox-modal" class="lightbox-modal" style="display: none;">
+    <div class="lightbox-content">
+      <div class="lightbox-header">
+        <span id="lightbox-title" class="lightbox-title">File Preview</span>
+        <div class="lightbox-actions">
+          <a id="lightbox-download-link" href="#" target="_blank" download class="btn btn-secondary btn-compact">
+            ⬇ Download
+          </a>
+          <button type="button" id="lightbox-close-btn" class="btn btn-secondary btn-compact" aria-label="Close preview">
+            ✕ Close
+          </button>
         </div>
       </div>
+      <div id="lightbox-body" class="lightbox-body">
+        <!-- Populated dynamically with <img> or <iframe> -->
+      </div>
     </div>
-
-    <!-- ── 4. Toast Alerts Container ──────────────────────────────── -->
-    <div id="toast-container" aria-live="polite"></div>
-
   </div>
+
+  <!-- ── 4. Toast Alerts Container ──────────────────────────────── -->
+  <div id="toast-container" aria-live="polite"></div>
 
   <script src="/js/listing-details.js"></script>
 </body>
