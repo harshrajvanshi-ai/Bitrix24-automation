@@ -75,7 +75,7 @@
       }
     },
 
-    // 8 Structured Sections according to User Specification
+    // 8 Structured Sections according to User Specification synchronized with Listing SPA (1058 / CRM_16)
     sections: [
       {
         id: 'general',
@@ -85,6 +85,7 @@
         fields: [
           {
             key: 'title',
+            crmCode: 'TITLE',
             label: 'Listing Title',
             type: 'string',
             placeholder: 'e.g. Luxury 4BR Penthouse in Downtown Dubai...',
@@ -93,18 +94,21 @@
           },
           {
             key: 'stageId',
+            crmCode: 'STAGE_ID',
             label: 'Stage',
             type: 'stage',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'assignedById',
+            crmCode: 'ASSIGNED_BY_ID',
             label: 'Responsible Person',
             type: 'user',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16_1790154808',
+            crmCode: 'UF_CRM_16_1790154808',
             label: 'Listing Type (Layout Driver)',
             type: 'enumeration',
             options: [
@@ -117,12 +121,14 @@
           },
           {
             key: 'ufCrm16Exclusive',
+            crmCode: 'UF_CRM_16_EXCLUSIVE',
             label: 'Listing Agreement (Exclusive / Non-Exclusive)',
             type: 'boolean',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'xmlId',
+            crmCode: 'XML_ID',
             label: 'External ID (xmlId)',
             type: 'string',
             placeholder: 'e.g. EXT-984210',
@@ -138,27 +144,46 @@
         fields: [
           {
             key: 'companyId',
+            crmCode: 'COMPANY_ID',
             label: 'Company (Agency or Developer)',
             type: 'crm_company',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'contactId',
+            crmCode: 'CONTACT_ID',
             label: 'Contact',
             type: 'crm_contact',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'contactIds',
+            crmCode: 'CONTACT_IDS',
             label: 'Contacts',
             type: 'crm_contact_multi',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'parentId1052',
+            crmCode: 'PARENT_ID_1052',
             label: 'Master Property (parentId1052)',
             type: 'crm_entity',
             placeholder: 'Property SPA reference...',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
+          },
+          {
+            key: 'ufCrm16DeveloperName',
+            crmCode: 'UF_CRM_16_DEVELOPER_NAME',
+            label: 'Developer Name',
+            type: 'string',
+            placeholder: 'e.g. Emaar, Damac, Sobha...',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
+          },
+          {
+            key: 'ufCrm16_1791172932',
+            crmCode: 'UF_CRM_16_1791172932',
+            label: 'Developer CRM Entity',
+            type: 'crm_entity',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           }
         ]
@@ -171,6 +196,7 @@
         fields: [
           {
             key: 'ufCrm16PropertyType',
+            crmCode: 'UF_CRM_16_PROPERTY_TYPE',
             label: 'Property Type',
             type: 'enumeration',
             options: [
@@ -188,20 +214,23 @@
           },
           {
             key: 'ufCrm16PropertySubType',
+            crmCode: 'UF_CRM_16_PROPERTY_SUB_TYPE',
             label: 'Property Sub-type',
             type: 'enumeration',
             options: [
-              { id: '1', value: 'Standard' },
-              { id: '2', value: 'Duplex' },
-              { id: '3', value: 'Triplex' },
-              { id: '4', value: 'Loft' },
-              { id: '5', value: 'Whole Building' },
-              { id: '6', value: 'Full Floor' }
+              { id: '872', value: 'Standard' },
+              { id: '874', value: 'Luxury' },
+              { id: '876', value: 'Ultra Luxury' },
+              { id: '878', value: 'Simplex' },
+              { id: '880', value: 'Duplex' },
+              { id: '882', value: 'Triplex' },
+              { id: '884', value: 'Penthouse' }
             ],
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16_1791172802',
+            crmCode: 'UF_CRM_16_1791172802',
             label: 'Bedrooms',
             type: 'number',
             placeholder: 'e.g. 3',
@@ -209,6 +238,7 @@
           },
           {
             key: 'ufCrm16_1791172787',
+            crmCode: 'UF_CRM_16_1791172787',
             label: 'Bathrooms',
             type: 'number',
             placeholder: 'e.g. 4',
@@ -216,6 +246,7 @@
           },
           {
             key: 'ufCrm16SqFt',
+            crmCode: 'UF_CRM_16_SQ_FT',
             label: 'Built-up Area (Sq Ft)',
             type: 'number',
             addon: 'Sq Ft',
@@ -224,6 +255,7 @@
           },
           {
             key: 'ufCrm16PlotSize',
+            crmCode: 'UF_CRM_16_PLOT_SIZE',
             label: 'Plot Area (Sq Ft)',
             type: 'number',
             addon: 'Sq Ft',
@@ -232,6 +264,7 @@
           },
           {
             key: 'ufCrm16UnitNumber',
+            crmCode: 'UF_CRM_16_UNIT_NUMBER',
             label: 'Unit Number',
             type: 'string',
             placeholder: 'e.g. 1402',
@@ -239,6 +272,7 @@
           },
           {
             key: 'ufCrm16Floor',
+            crmCode: 'UF_CRM_16_FLOOR',
             label: 'Floor Number',
             type: 'integer',
             placeholder: 'e.g. 14',
@@ -246,6 +280,7 @@
           },
           {
             key: 'ufCrm16Furnished',
+            crmCode: 'UF_CRM_16_FURNISHED',
             label: 'Furnished Status',
             type: 'enumeration',
             options: [
@@ -256,11 +291,123 @@
             rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }
           },
           {
+            key: 'ufCrm16RecordType',
+            crmCode: 'UF_CRM_16_RECORD_TYPE',
+            label: 'Offering / Record Type',
+            type: 'enumeration',
+            options: [
+              { id: '1070', value: 'Residential' },
+              { id: '1072', value: 'Commercial' },
+              { id: '1074', value: 'Off-Plan' },
+              { id: '1076', value: 'Secondary / Resale' },
+              { id: '1078', value: 'Rental' },
+              { id: '1080', value: 'Land / Plot' }
+            ],
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
             key: 'ufCrm16ParkingSpaces',
+            crmCode: 'UF_CRM_16_PARKING_SPACES',
             label: 'Parking Spaces',
             type: 'integer',
             placeholder: 'e.g. 2',
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
+          }
+        ]
+      },
+      {
+        id: 'location',
+        title: 'Location & Geography',
+        icon: '📍',
+        desc: 'Country, city, community, tower, and coordinates',
+        fields: [
+          {
+            key: 'ufCrm16ProjectName',
+            crmCode: 'UF_CRM_16_PROJECT_NAME',
+            label: 'Project / Building Name',
+            type: 'string',
+            placeholder: 'e.g. Downtown Views II, Creek Horizon...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16BuildingBayut',
+            crmCode: 'UF_CRM_16_BUILDING_BAYUT',
+            label: 'Building / Tower Name (Bayut)',
+            type: 'string',
+            placeholder: 'e.g. Tower A, East Wing...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16CommunityPropertyfinder',
+            crmCode: 'UF_CRM_16_COMMUNITY_PROPERTYFINDER',
+            label: 'Community - Propertyfinder',
+            type: 'string',
+            placeholder: 'e.g. Downtown Dubai, Palm Jumeirah...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16SubCommunityPropertyfinder',
+            crmCode: 'UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER',
+            label: 'Sub-Community',
+            type: 'string',
+            placeholder: 'e.g. Burj Crown, Marina Gate 2...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16_1791173032',
+            crmCode: 'UF_CRM_16_1791173032',
+            label: 'Neighborhood / Community',
+            type: 'string',
+            placeholder: 'e.g. Business Bay, Dubai Marina...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16_1791172815',
+            crmCode: 'UF_CRM_16_1791172815',
+            label: 'City',
+            type: 'string',
+            placeholder: 'e.g. Dubai, London, Abu Dhabi...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16_1791172854',
+            crmCode: 'UF_CRM_16_1791172854',
+            label: 'Country',
+            type: 'string',
+            placeholder: 'e.g. United Arab Emirates, UK, France...',
+            rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'show', rent: 'opt' }
+          },
+          {
+            key: 'ufCrm16Street',
+            crmCode: 'UF_CRM_16_STREET',
+            label: 'Street',
+            type: 'string',
+            placeholder: 'e.g. Sheikh Mohammed bin Rashid Blvd...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16_1791172676',
+            crmCode: 'UF_CRM_16_1791172676',
+            label: 'Address',
+            type: 'address',
+            placeholder: 'Street, building, unit number...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16Latitude',
+            crmCode: 'UF_CRM_16_LATITUDE',
+            label: 'Latitude',
+            type: 'number',
+            placeholder: 'e.g. 25.1972',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16Longitude',
+            crmCode: 'UF_CRM_16_LONGITUDE',
+            label: 'Longitude',
+            type: 'number',
+            placeholder: 'e.g. 55.2744',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           }
         ]
       },
@@ -272,6 +419,7 @@
         fields: [
           {
             key: 'ufCrm16_1790154936',
+            crmCode: 'UF_CRM_16_1790154936',
             label: 'Listing Price (AED)',
             type: 'money',
             addon: 'AED',
@@ -283,6 +431,7 @@
           },
           {
             key: 'ufCrm16ListPricePerSqFt',
+            crmCode: 'UF_CRM_16_LIST_PRICE_PER_SQ_FT',
             label: 'Price Per Sq Ft',
             type: 'money',
             addon: 'AED/SqFt',
@@ -291,6 +440,7 @@
           },
           {
             key: 'ufCrm16BuyersAgentCommission',
+            crmCode: 'UF_CRM_16_BUYERS_AGENT_COMMISSION',
             label: 'Agency Commission (%)',
             type: 'number',
             addon: '%',
@@ -298,19 +448,32 @@
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
+            key: 'ufCrm16ServiceCharge',
+            crmCode: 'UF_CRM_16_SERVICE_CHARGE',
+            label: 'Service Charges (Annual)',
+            type: 'money',
+            addon: 'AED',
+            placeholder: 'e.g. 15,000',
+            rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
+          },
+          {
             key: 'ufCrm16HoaFrequency',
+            crmCode: 'UF_CRM_16_HOA_FREQUENCY',
             label: 'Rental Frequency',
             type: 'enumeration',
             options: [
-              { id: '1', value: 'Yearly' },
-              { id: '2', value: 'Bi-Yearly' },
-              { id: '3', value: 'Quarterly' },
-              { id: '4', value: 'Monthly' }
+              { id: '762', value: 'Monthly' },
+              { id: '764', value: 'Quarterly' },
+              { id: '766', value: 'Semi-Annually' },
+              { id: '768', value: 'Annually' },
+              { id: '770', value: 'Included in Rent' },
+              { id: '772', value: 'None' }
             ],
             rules: { external_stock: 'hide', off_plan: 'hide', overseas_sale: 'hide', rent: 'show' }
           },
           {
             key: 'ufCrm16PetDeposit',
+            crmCode: 'UF_CRM_16_PET_DEPOSIT',
             label: 'Security Deposit (AED)',
             type: 'money',
             addon: 'AED',
@@ -319,14 +482,15 @@
           },
           {
             key: 'ufCrm16_1792127520',
+            crmCode: 'UF_CRM_16_1792127520',
             label: 'Number of Cheques',
             type: 'enumeration',
             options: [
-              { id: '2440', value: '1 Cheque' },
-              { id: '2442', value: '2 Cheques' },
-              { id: '2444', value: '3 Cheques' },
-              { id: '2446', value: '4 Cheques' },
-              { id: '2448', value: '6 Cheques' }
+              { id: '2432', value: '1 Cheque' },
+              { id: '2434', value: '2 Cheque' },
+              { id: '2436', value: '4 Cheque' },
+              { id: '2438', value: '6 Cheque' },
+              { id: '2440', value: '12 Cheque' }
             ],
             rules: { external_stock: 'hide', off_plan: 'opt', overseas_sale: 'hide', rent: 'show' },
             labelOverrides: {
@@ -343,6 +507,7 @@
         fields: [
           {
             key: 'begindate',
+            crmCode: 'BEGINDATE',
             label: 'Started on',
             type: 'date',
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' },
@@ -353,6 +518,7 @@
           },
           {
             key: 'closedate',
+            crmCode: 'CLOSEDATE',
             label: 'Finished on',
             type: 'date',
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' },
@@ -360,70 +526,55 @@
               external_stock: 'Finished on (mandate period)',
               rent: 'Finished on (tenancy / availability)'
             }
-          }
-        ]
-      },
-      {
-        id: 'location',
-        title: 'Location & Geography',
-        icon: '📍',
-        desc: 'Country, city, community, tower, and coordinates',
-        fields: [
-          {
-            key: 'ufCrm16_1791172854',
-            label: 'Country',
-            type: 'string',
-            placeholder: 'e.g. United Arab Emirates, UK, France...',
-            rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'show', rent: 'opt' }
           },
           {
-            key: 'ufCrm16_1791172815',
-            label: 'City',
-            type: 'string',
-            placeholder: 'e.g. Dubai, London, Abu Dhabi...',
+            key: 'ufCrm16_1790155057',
+            crmCode: 'UF_CRM_16_1790155057',
+            label: 'Available From',
+            type: 'date',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
-            key: 'ufCrm16_1791173032',
-            label: 'Neighborhood / Community',
-            type: 'string',
-            placeholder: 'e.g. Downtown Dubai, Palm Jumeirah...',
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+            key: 'ufCrm16CompletionDate',
+            crmCode: 'UF_CRM_16_COMPLETION_DATE',
+            label: 'Handover / Completion Date',
+            type: 'date',
+            rules: { external_stock: 'hide', off_plan: 'show', overseas_sale: 'opt', rent: 'hide' }
           },
           {
-            key: 'ufCrm16SubCommunityPropertyfinder',
-            label: 'Sub-Community',
-            type: 'string',
-            placeholder: 'e.g. Burj Crown, Marina Gate 2...',
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+            key: 'ufCrm16CompletionStatus',
+            crmCode: 'UF_CRM_16_COMPLETION_STATUS',
+            label: 'Completion Status',
+            type: 'enumeration',
+            options: [
+              { id: '702', value: 'Off-Plan' },
+              { id: '704', value: 'Under Construction' },
+              { id: '706', value: 'Completed' },
+              { id: '708', value: 'Handover' },
+              { id: '710', value: 'Ready' }
+            ],
+            rules: { external_stock: 'hide', off_plan: 'show', overseas_sale: 'opt', rent: 'hide' }
           },
           {
-            key: 'ufCrm16BuildingBayut',
-            label: 'Building / Tower Name',
-            type: 'string',
-            placeholder: 'e.g. Tower A, East Wing...',
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+            key: 'ufCrm16Occupancy',
+            crmCode: 'UF_CRM_16_OCCUPANCY',
+            label: 'Tenancy Status',
+            type: 'enumeration',
+            options: [
+              { id: '836', value: 'Vacant on Transfer' },
+              { id: '838', value: 'Owner Occupied' },
+              { id: '840', value: 'Rented' },
+              { id: '842', value: 'Under Notice' },
+              { id: '844', value: 'Vacant' }
+            ],
+            rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }
           },
           {
-            key: 'ufCrm16_1791172676',
-            label: 'Address',
-            type: 'string',
-            placeholder: 'Street, building, unit number...',
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-          },
-          {
-            key: 'ufCrm16Latitude',
-            label: 'Latitude',
-            type: 'number',
-            placeholder: 'e.g. 25.1972',
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-          },
-          {
-            key: 'ufCrm16Longitude',
-            label: 'Longitude',
-            type: 'number',
-            placeholder: 'e.g. 55.2744',
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+            key: 'ufCrm16ExpirationDate',
+            crmCode: 'UF_CRM_16_EXPIRATION_DATE',
+            label: 'Tenancy End / Mandate Expiry Date',
+            type: 'date',
+            rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }
           }
         ]
       },
@@ -434,7 +585,39 @@
         desc: 'Bayut, Propertyfinder, Dubizzle IDs, feed toggles, RERA permit, and descriptions',
         fields: [
           {
+            key: 'ufCrm16ReraPermitNumber',
+            crmCode: 'UF_CRM_16_RERA_PERMIT_NUMBER',
+            label: 'RERA Permit Number',
+            type: 'string',
+            placeholder: 'e.g. 7114829100',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16_1791787455285',
+            crmCode: 'UF_CRM_16_1791787455285',
+            label: 'Trakheesi Permit No',
+            type: 'string',
+            placeholder: 'e.g. TRK-982145',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16_1791787502111',
+            crmCode: 'UF_CRM_16_1791787502111',
+            label: 'Trakheesi Permit Expiry Date',
+            type: 'date',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16QrCodeLink',
+            crmCode: 'UF_CRM_16_QR_CODE_LINK',
+            label: 'DLD QR / Permit URL',
+            type: 'url',
+            placeholder: 'https://dubailand.gov.ae/en/eservices/licensing/...',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
+          },
+          {
             key: 'ufCrm16_1790155092',
+            crmCode: 'UF_CRM_16_1790155092',
             label: 'Bayut Listing ID',
             type: 'string',
             placeholder: 'e.g. BYT-481902',
@@ -442,6 +625,7 @@
           },
           {
             key: 'ufCrm16PropertyFinderListingId',
+            crmCode: 'UF_CRM_16_PROPERTY_FINDER_LISTING_ID',
             label: 'Propertyfinder Listing ID',
             type: 'string',
             placeholder: 'e.g. PF-981273',
@@ -449,6 +633,7 @@
           },
           {
             key: 'ufCrm16DubizzleRegion',
+            crmCode: 'UF_CRM_16_DUBIZZLE_REGION',
             label: 'Dubizzle Listing ID / Region',
             type: 'string',
             placeholder: 'e.g. DBZ-558291',
@@ -456,12 +641,14 @@
           },
           {
             key: 'ufCrm16SystemAllowedForPortals',
+            crmCode: 'UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS',
             label: 'Bayut / Dubizzle Feed Toggle',
             type: 'boolean',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
           },
           {
             key: 'ufCrm16SummaryDescription',
+            crmCode: 'UF_CRM_16_SUMMARY_DESCRIPTION',
             label: 'Portal Title',
             type: 'string',
             placeholder: 'SEO Headline for Portals...',
@@ -470,18 +657,12 @@
           },
           {
             key: 'ufCrm16Description',
+            crmCode: 'UF_CRM_16_DESCRIPTION',
             label: 'Portal Description',
             type: 'textarea',
             placeholder: 'Marketing description, key amenities...',
             fullWidth: true,
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
-          },
-          {
-            key: 'ufCrm16ReraPermitNumber',
-            label: 'RERA Permit Number',
-            type: 'string',
-            placeholder: 'e.g. 7114829100',
-            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
           }
         ]
       },
@@ -493,26 +674,55 @@
         fields: [
           {
             key: 'ufCrm16_1791173118',
+            crmCode: 'UF_CRM_16_1791173118',
             label: 'Primary Listing Image',
             type: 'file',
             isImage: true,
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
+            key: 'ufCrm16_1791881642219',
+            crmCode: 'UF_CRM_16_1791881642219',
+            label: 'Photos (Gallery)',
+            type: 'file',
+            isImage: true,
+            isMultiple: true,
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+          },
+          {
             key: 'ufCrm16_1791172957',
-            label: 'Docs & Title Deed',
+            crmCode: 'UF_CRM_16_1791172957',
+            label: 'Docs & Attachments',
             type: 'file',
             isDoc: true,
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16_1791544736052',
+            crmCode: 'UF_CRM_16_1791544736052',
             label: 'Floor Plan',
             type: 'file',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           },
           {
+            key: 'ufCrm16TitleDeed',
+            crmCode: 'UF_CRM_16_TITLE_DEED',
+            label: 'Title Deed / Ownership Proof',
+            type: 'file',
+            isDoc: true,
+            rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'show', rent: 'opt' }
+          },
+          {
+            key: 'ufCrm16_1791787381785',
+            crmCode: 'UF_CRM_16_1791787381785',
+            label: 'Form A Document (Mandate Agreement)',
+            type: 'file',
+            isDoc: true,
+            rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
             key: 'ufCrm16WebsiteUrl',
+            crmCode: 'UF_CRM_16_WEBSITE_URL',
             label: 'Brochure URL / File',
             type: 'url',
             placeholder: 'https://cdn.example.com/brochures/listing.pdf',
@@ -520,6 +730,7 @@
           },
           {
             key: 'ufCrm16ListingWebsite',
+            crmCode: 'UF_CRM_16_LISTING_WEBSITE',
             label: '360 Virtual Tour Link',
             type: 'tour_url',
             placeholder: 'https://my.matterport.com/show/?m=... or Kuula / YouTube 360',
@@ -1132,7 +1343,9 @@
     `;
     group.appendChild(labelEl);
 
-    const rawVal = currentListing[f.key];
+    const rawVal = (currentListing[f.key] !== undefined && currentListing[f.key] !== null)
+      ? currentListing[f.key]
+      : (f.crmCode && currentListing[f.crmCode] !== undefined ? currentListing[f.crmCode] : undefined);
 
     if (f.type === 'file') {
       renderMediaField(f, rawVal, group);
@@ -1216,12 +1429,15 @@
       defOpt.textContent = `-- Select ${displayLabel} --`;
       select.appendChild(defOpt);
 
+      const rawStr = (rawVal !== null && rawVal !== undefined) ? String(rawVal).trim().toLowerCase() : '';
       const options = f.options || [];
       options.forEach(opt => {
         const optionEl = document.createElement('option');
         optionEl.value = opt.id;
         optionEl.textContent = opt.value;
-        if (String(rawVal) === String(opt.id) || String(rawVal) === String(opt.value)) {
+        const optIdStr = String(opt.id).trim().toLowerCase();
+        const optValStr = String(opt.value).trim().toLowerCase();
+        if (rawStr && (rawStr === optIdStr || rawStr === optValStr)) {
           optionEl.selected = true;
         }
         select.appendChild(optionEl);
@@ -1256,6 +1472,21 @@
       select.addEventListener('change', () => setDirty(true));
       group.appendChild(select);
       initialFormValues[f.key] = select.value;
+    } else if (f.type === 'address') {
+      const input = document.createElement('input');
+      input.id = `field_${f.key}`;
+      input.name = f.key;
+      input.type = 'text';
+      input.className = 'form-control';
+      input.placeholder = f.placeholder || 'Street, building, area...';
+      if (rawVal && typeof rawVal === 'object') {
+        input.value = rawVal.text || rawVal.street || Object.values(rawVal).filter(v => typeof v === 'string').join(', ') || '';
+      } else {
+        input.value = (rawVal !== null && rawVal !== undefined) ? rawVal : '';
+      }
+      input.addEventListener('input', () => setDirty(true));
+      group.appendChild(input);
+      initialFormValues[f.key] = input.value;
     } else {
       const isAddon = !!f.addon;
       const input = document.createElement('input');
@@ -1263,15 +1494,29 @@
       input.name = f.key;
       input.className = 'form-control';
       input.placeholder = f.placeholder || '';
-      input.value = rawVal || '';
+
+      let displayVal = rawVal;
+      if (displayVal !== null && displayVal !== undefined && typeof displayVal === 'object') {
+        displayVal = displayVal.title || displayVal.name || displayVal.id || displayVal.value || '';
+      }
+      input.value = (displayVal !== null && displayVal !== undefined) ? displayVal : '';
 
       if (f.type === 'number' || f.type === 'money' || f.type === 'integer') {
         input.type = 'number';
         input.step = f.type === 'integer' ? '1' : 'any';
       } else if (f.type === 'date') {
         input.type = 'date';
-        if (rawVal && typeof rawVal === 'string' && rawVal.length >= 10) {
-          input.value = rawVal.slice(0, 10);
+        if (displayVal && typeof displayVal === 'string' && displayVal.length >= 10) {
+          if (displayVal.includes('.')) {
+            const parts = displayVal.split('.');
+            if (parts.length === 3) {
+              input.value = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            } else {
+              input.value = displayVal.slice(0, 10);
+            }
+          } else {
+            input.value = displayVal.slice(0, 10);
+          }
         }
       } else {
         input.type = 'text';

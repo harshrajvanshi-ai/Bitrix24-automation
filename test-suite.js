@@ -882,6 +882,21 @@ async function runTests() {
   assert(listingCss.includes(".lightbox-iframe"), 'public/css/listing-details.css contains embedded PDF viewer modal styling');
   assert(listingCss.includes(".preview-thumb-wrap"), 'public/css/listing-details.css contains preview thumbnail styling');
 
+  // 8. Verify Synchronization with Listing SPA Datatypes and Actual Enum Values
+  const fieldsCfg = JSON.parse(fs.readFileSync('config/fields.json', 'utf8'));
+  assert(fieldsCfg.listingDynamicLayout, 'config/fields.json defines listingDynamicLayout');
+  assert(fieldsCfg.listingDynamicLayout.sections.length === 8, 'listingDynamicLayout has 8 structured sections');
+  assert(listingJs.includes("id: '872', value: 'Standard'"), 'Property Sub-type includes actual SPA enum 872 Standard');
+  assert(listingJs.includes("id: '884', value: 'Penthouse'"), 'Property Sub-type includes actual SPA enum 884 Penthouse');
+  assert(listingJs.includes("id: '762', value: 'Monthly'"), 'Rental Frequency includes actual SPA enum 762 Monthly');
+  assert(listingJs.includes("id: '768', value: 'Annually'"), 'Rental Frequency includes actual SPA enum 768 Annually');
+  assert(listingJs.includes("id: '2432', value: '1 Cheque'"), 'Number of Cheques includes actual SPA enum 2432 1 Cheque');
+  assert(listingJs.includes("id: '2440', value: '12 Cheque'"), 'Number of Cheques includes actual SPA enum 2440 12 Cheque');
+  assert(listingJs.includes("id: '1070', value: 'Residential'"), 'Record Type includes actual SPA enum 1070 Residential');
+  assert(listingJs.includes("id: '702', value: 'Off-Plan'"), 'Completion Status includes actual SPA enum 702 Off-Plan');
+  assert(listingJs.includes("id: '836', value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
+  assert(listingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');
+
   // ============================================================================
   // Summary
   // ============================================================================
