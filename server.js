@@ -427,6 +427,8 @@ app.post('/api/b24/:method', apiLimiter, async (req, res) => {
       success: false,
       error: err.message,
       error_description: err.response?.data?.error_description || err.message
+    });
+  }
 });
 
 /**
