@@ -145,6 +145,7 @@
           {
             key: 'companyId',
             crmCode: 'COMPANY_ID',
+            fallbackKeys: ['mycompanyId', 'ufCrm16_1791172932'],
             label: 'Company (Agency or Developer)',
             type: 'crm_company',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
@@ -174,6 +175,7 @@
           {
             key: 'ufCrm16DeveloperName',
             crmCode: 'UF_CRM_16_DEVELOPER_NAME',
+            fallbackKeys: ['ufCrm16Developer'],
             label: 'Developer Name',
             type: 'string',
             placeholder: 'e.g. Emaar, Damac, Sobha...',
@@ -247,6 +249,7 @@
           {
             key: 'ufCrm16SqFt',
             crmCode: 'UF_CRM_16_SQ_FT',
+            fallbackKeys: ['ufCrm16Size'],
             label: 'Built-up Area (Sq Ft)',
             type: 'number',
             addon: 'Sq Ft',
@@ -256,6 +259,7 @@
           {
             key: 'ufCrm16PlotSize',
             crmCode: 'UF_CRM_16_PLOT_SIZE',
+            fallbackKeys: ['ufCrm16LotSize'],
             label: 'Plot Area (Sq Ft)',
             type: 'number',
             addon: 'Sq Ft',
@@ -324,6 +328,7 @@
           {
             key: 'ufCrm16ProjectName',
             crmCode: 'UF_CRM_16_PROJECT_NAME',
+            fallbackKeys: ['ufCrm16BuildingBayut', 'ufCrm16MasterProjectInfo', 'ufCrm16ProjectInfo'],
             label: 'Project / Building Name',
             type: 'string',
             placeholder: 'e.g. Downtown Views II, Creek Horizon...',
@@ -356,6 +361,7 @@
           {
             key: 'ufCrm16_1791173032',
             crmCode: 'UF_CRM_16_1791173032',
+            fallbackKeys: ['ufCrm16CommunityPropertyfinder', 'ufCrm16_1791172692', 'ufCrm16SubCommunityPropertyfinder'],
             label: 'Neighborhood / Community',
             type: 'string',
             placeholder: 'e.g. Business Bay, Dubai Marina...',
@@ -364,6 +370,7 @@
           {
             key: 'ufCrm16_1791172815',
             crmCode: 'UF_CRM_16_1791172815',
+            fallbackKeys: ['ufCrm16_1791172830', 'ufCrm16_1791172841'],
             label: 'City',
             type: 'string',
             placeholder: 'e.g. Dubai, London, Abu Dhabi...',
@@ -372,6 +379,7 @@
           {
             key: 'ufCrm16_1791172854',
             crmCode: 'UF_CRM_16_1791172854',
+            fallbackKeys: ['ufCrm16CountryCode'],
             label: 'Country',
             type: 'string',
             placeholder: 'e.g. United Arab Emirates, UK, France...',
@@ -380,6 +388,7 @@
           {
             key: 'ufCrm16Street',
             crmCode: 'UF_CRM_16_STREET',
+            fallbackKeys: ['ufCrm16DisplayAddress', 'ufCrm16DisplayedAddress'],
             label: 'Street',
             type: 'string',
             placeholder: 'e.g. Sheikh Mohammed bin Rashid Blvd...',
@@ -420,6 +429,7 @@
           {
             key: 'ufCrm16_1790154936',
             crmCode: 'UF_CRM_16_1790154936',
+            fallbackKeys: ['ufCrm16Price', 'ufCrm16YearlyRental'],
             label: 'Listing Price (AED)',
             type: 'money',
             addon: 'AED',
@@ -432,6 +442,7 @@
           {
             key: 'ufCrm16ListPricePerSqFt',
             crmCode: 'UF_CRM_16_LIST_PRICE_PER_SQ_FT',
+            fallbackKeys: ['ufCrm16_1792611299625'],
             label: 'Price Per Sq Ft',
             type: 'money',
             addon: 'AED/SqFt',
@@ -461,6 +472,7 @@
             crmCode: 'UF_CRM_16_HOA_FREQUENCY',
             label: 'Rental Frequency',
             type: 'enumeration',
+            placeholder: '-- Select Rental Frequency --',
             options: [
               { id: '762', value: 'Monthly' },
               { id: '764', value: 'Quarterly' },
@@ -595,6 +607,7 @@
           {
             key: 'ufCrm16_1791787455285',
             crmCode: 'UF_CRM_16_1791787455285',
+            fallbackKeys: ['ufCrm16DtcmPermitNumber', 'ufCrm16ReraPermitNumber'],
             label: 'Trakheesi Permit No',
             type: 'string',
             placeholder: 'e.g. TRK-982145',
@@ -603,6 +616,7 @@
           {
             key: 'ufCrm16_1791787502111',
             crmCode: 'UF_CRM_16_1791787502111',
+            fallbackKeys: ['ufCrm16FormAExpiryDate'],
             label: 'Trakheesi Permit Expiry Date',
             type: 'date',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
@@ -610,6 +624,7 @@
           {
             key: 'ufCrm16QrCodeLink',
             crmCode: 'UF_CRM_16_QR_CODE_LINK',
+            fallbackKeys: ['ufCrm16QrCode'],
             label: 'DLD QR / Permit URL',
             type: 'url',
             placeholder: 'https://dubailand.gov.ae/en/eservices/licensing/...',
@@ -634,6 +649,7 @@
           {
             key: 'ufCrm16DubizzleRegion',
             crmCode: 'UF_CRM_16_DUBIZZLE_REGION',
+            fallbackKeys: ['ufCrm16LocationtextBayut', 'ufCrm16PropertyfinderRegion'],
             label: 'Dubizzle Listing ID / Region',
             type: 'string',
             placeholder: 'e.g. DBZ-558291',
@@ -649,6 +665,7 @@
           {
             key: 'ufCrm16SummaryDescription',
             crmCode: 'UF_CRM_16_SUMMARY_DESCRIPTION',
+            fallbackKeys: ['ufCrm16Summary', 'ufCrm16Combinedtitle', 'title'],
             label: 'Portal Title',
             type: 'string',
             placeholder: 'SEO Headline for Portals...',
@@ -658,6 +675,7 @@
           {
             key: 'ufCrm16Description',
             crmCode: 'UF_CRM_16_DESCRIPTION',
+            fallbackKeys: ['ufCrm16DescriptionIntroText', 'ufCrm16DescriptionAuto', 'sourceDescription'],
             label: 'Portal Description',
             type: 'textarea',
             placeholder: 'Marketing description, key amenities...',
@@ -1595,17 +1613,18 @@
     }
     if (!window.BX24 || typeof window.BX24.callMethod !== 'function') return;
 
-    const num = String(id).replace(/[^\d]/g, '');
+    const idStr = String(id).trim();
+    const num = idStr.replace(/[^\d]/g, '');
     if (!num) return;
 
-    if (type === 'crm_company' || key === 'companyId') {
+    if (idStr.startsWith('CO_') || type === 'crm_company' || key === 'companyId') {
       window.BX24.callMethod('crm.company.get', { id: num }, res => {
         if (!res.error() && res.data()?.TITLE) {
           entityTitleCache[cacheKey] = res.data().TITLE;
           callback(res.data().TITLE);
         }
       });
-    } else if (type === 'crm_contact' || type === 'crm_contact_multi' || key === 'contactId' || key === 'contactIds') {
+    } else if (idStr.startsWith('C_') || type === 'crm_contact' || type === 'crm_contact_multi' || key === 'contactId' || key === 'contactIds') {
       window.BX24.callMethod('crm.contact.get', { id: num }, res => {
         if (!res.error()) {
           const d = res.data();
@@ -1641,6 +1660,215 @@
     }
   }
 
+  function findFieldConfig(key) {
+    if (!CONFIG.sections) return null;
+    for (const sec of CONFIG.sections) {
+      const found = sec.fields.find(f => f.key === key || f.crmCode === key);
+      if (found) return found;
+    }
+    return null;
+  }
+
+  function getFieldValue(f, item) {
+    if (!item) return undefined;
+    const candidates = [
+      f.key,
+      f.crmCode,
+      ...(f.fallbackKeys || [])
+    ].filter(Boolean);
+
+    for (const key of candidates) {
+      if (item[key] !== undefined && item[key] !== null && item[key] !== '') {
+        const val = item[key];
+        // If lookup field has '0' or 0, continue to fallback
+        if ((f.type === 'crm_company' || f.key === 'companyId') && (val === 0 || val === '0')) {
+          continue;
+        }
+        if (typeof val === 'object' && val !== null) {
+          if (f.type === 'url' || f.key === 'ufCrm16QrCodeLink') {
+            const u = val.url || val.showUrl || val.src || val.defaultUrl;
+            if (u) return u;
+          }
+          if (val.title || val.name || val.value) {
+            return val.title || val.name || val.value;
+          }
+        }
+        return val;
+      }
+      // Case-insensitive match fallback
+      const lower = key.toLowerCase();
+      const matchKey = Object.keys(item).find(k => k.toLowerCase() === lower);
+      if (matchKey && item[matchKey] !== undefined && item[matchKey] !== null && item[matchKey] !== '') {
+        const val = item[matchKey];
+        if ((f.type === 'crm_company' || f.key === 'companyId') && (val === 0 || val === '0')) {
+          continue;
+        }
+        if (typeof val === 'object' && val !== null) {
+          if (f.type === 'url' || f.key === 'ufCrm16QrCodeLink') {
+            const u = val.url || val.showUrl || val.src || val.defaultUrl;
+            if (u) return u;
+          }
+          if (val.title || val.name || val.value) {
+            return val.title || val.name || val.value;
+          }
+        }
+        return val;
+      }
+    }
+    return undefined;
+  }
+
+  function cleanNumericValue(val) {
+    if (val === null || val === undefined || val === '') return '';
+    if (typeof val === 'number') return val;
+    const str = String(val).split('|')[0].trim();
+    return str.replace(/[^\d.-]/g, '');
+  }
+
+  function formatDateForInput(val) {
+    if (!val) return '';
+    const str = String(val).trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+      return str.slice(0, 10);
+    }
+    if (/^\d{2}\.\d{2}\.\d{4}/.test(str)) {
+      const parts = str.split('.');
+      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+    if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+      const parts = str.split('/');
+      return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+    if (/^\d{10,13}$/.test(str)) 
+    {
+      const d = new Date(Number(str.length === 10 ? str * 1000 : str));
+      if (!isNaN(d.getTime())) {
+  // ============================================================================
+  // 6c. AUTO-CALCULATION & FIELD AUTOMATION ENGINE
+  // ============================================================================
+  function runListingAutomations(options = {}) {
+    const isInitialLoad = !!options.isInitialLoad;
+    const trigger = options.triggerField || '';
+
+    const getEl = (id) => document.getElementById(`field_${id}`);
+    const getVal = (id) => {
+      const el = getEl(id);
+      if (!el) return '';
+      if (el.dataset && el.dataset.id !== undefined && el.dataset.id !== '') return el.dataset.id;
+      return el.value !== undefined ? String(el.value).trim() : '';
+    };
+
+    const getNum = (id) => {
+      const val = getVal(id);
+      if (!val) return 0;
+      const clean = String(val).split('|')[0].replace(/[^\d.-]/g, '');
+      const num = parseFloat(clean);
+      return isNaN(num) ? 0 : num;
+    };
+
+    const getText = (id) => {
+      const el = getEl(id);
+      if (!el) return '';
+      if (el.tagName === 'SELECT') {
+        const selected = el.options[el.selectedIndex];
+        return selected && selected.value ? selected.textContent.trim() : '';
+      }
+      return el.value !== undefined ? String(el.value).trim() : '';
+    };
+
+    const setVal = (id, newVal, markDirty = true) => {
+      const el = getEl(id);
+      if (!el) return false;
+      const currentVal = el.value !== undefined ? String(el.value).trim() : '';
+      const formattedNew = String(newVal !== null && newVal !== undefined ? newVal : '').trim();
+      if (currentVal !== formattedNew) {
+        el.value = formattedNew;
+        if (el.dataset) el.dataset.id = formattedNew;
+        if (isInitialLoad) {
+          initialFormValues[id] = formattedNew;
+        } else if (markDirty) {
+          setDirty(true);
+        }
+        return true;
+      }
+      return false;
+    };
+  
+    // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area
+    const price = getNum('ufCrm16_1790154936');
+    const sqft = getNum('ufCrm16SqFt');
+    const pricePerSqFt = getNum('ufCrm16ListPricePerSqFt');
+
+    if (price > 0 && sqft > 0) {
+      if (!pricePerSqFt || isInitialLoad || trigger === 'ufCrm16_1790154936' || trigger === 'ufCrm16SqFt') {
+        const calcPricePerSqFt = (price / sqft).toFixed(2);
+        setVal('ufCrm16ListPricePerSqFt', calcPricePerSqFt, !isInitialLoad);
+      }
+    } else if (trigger === 'ufCrm16ListPricePerSqFt' && pricePerSqFt > 0 && sqft > 0 && (!price || price === 0)) {
+      const calcPrice = Math.round(pricePerSqFt * sqft);
+      setVal('ufCrm16_1790154936', calcPrice, true);
+    }
+
+    // 2. FIELD MIRRORING: Project Name <-> Bayut Building Name
+    const projName = getVal('ufCrm16ProjectName');
+    const bayutBuilding = getVal('ufCrm16BuildingBayut');
+    if (projName && !bayutBuilding) {
+      setVal('ufCrm16BuildingBayut', projName, !isInitialLoad);
+    } else if (bayutBuilding && !projName) {
+      setVal('ufCrm16ProjectName', bayutBuilding, !isInitialLoad);
+    }
+
+    // 3. FIELD MIRRORING: Community <-> Propertyfinder Community
+    const community = getVal('ufCrm16_1791173032');
+    const pfCommunity = getVal('ufCrm16CommunityPropertyfinder');
+    if (community && !pfCommunity) {
+      setVal('ufCrm16CommunityPropertyfinder', community, !isInitialLoad);
+    } else if (pfCommunity && !community) {
+      setVal('ufCrm16_1791173032', pfCommunity, !isInitialLoad);
+    }
+
+    // 4. FIELD DERIVATION: Composite Title strictly from actual non-empty record fields
+    const beds = getVal('ufCrm16_1791172802');
+    const propType = getText('ufCrm16PropertyType');
+    const activeProject = getVal('ufCrm16ProjectName') || getVal('ufCrm16BuildingBayut');
+    const activeCommunity = getVal('ufCrm16_1791173032') || getVal('ufCrm16CommunityPropertyfinder');
+    const city = getVal('ufCrm16_1791172815');
+
+    if (propType) {
+      let bedPrefix = '';
+      if (beds === '0' || String(beds).toLowerCase() === 'studio') {
+        bedPrefix = 'Studio';
+      } else if (beds) {
+        bedPrefix = `${beds} BR`;
+      }
+
+      const locParts = [activeProject, activeCommunity, city].filter(Boolean);
+      const locStr = locParts.length > 0 ? ` in ${locParts.join(', ')}` : '';
+      const autoTitle = [bedPrefix, propType].filter(Boolean).join(' ') + locStr;
+
+      const currentTitle = getVal('title');
+      const currentPortalTitle = getVal('ufCrm16SummaryDescription');
+
+      if (!currentTitle || currentTitle.toLowerCase().startsWith('untitled')) {
+        setVal('title', autoTitle, !isInitialLoad);
+      }
+      if (!currentPortalTitle) {
+        setVal('ufCrm16SummaryDescription', autoTitle, !isInitialLoad);
+      }
+    }
+
+    // 5. FIELD DERIVATION: Address strictly from actual non-empty record fields
+    const currentAddress = getVal('ufCrm16_1791172676');
+    const unitNo = getVal('ufCrm16UnitNumber');
+    const street = getVal('ufCrm16Street');
+    if (!currentAddress && (unitNo || activeProject || activeCommunity || street)) {
+      const addrParts = [unitNo ? `Unit ${unitNo}` : '', activeProject, street, activeCommunity, city].filter(Boolean);
+      if (addrParts.length > 0) {
+        setVal('ufCrm16_1791172676', addrParts.join(', '), !isInitialLoad);
+      }
+    }
+  }
+
   function renderLookupField(f, rawVal, group, displayLabel) {
     const meta = getEntityMeta(f.type, f.key);
     const wrap = document.createElement('div');
@@ -1659,7 +1887,7 @@
     } else if (rawVal && typeof rawVal === 'object') {
       rawIdStr = String(rawVal.id || rawVal.ID || rawVal.value || '');
     } else if (rawVal !== null && rawVal !== undefined) {
-      rawIdStr = String(rawVal);
+      rawIdStr = String(rawVal).replace(/^#/, '');
     }
     input.dataset.id = rawIdStr;
 
@@ -1708,6 +1936,12 @@
         if (resolvedTitle && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
           input.value = resolvedTitle;
           input.title = `${resolvedTitle} (ID: ${rawIdStr})`;
+          if (f.key === 'ufCrm16_1791172932' || f.key === 'companyId') {
+            const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
+            if (devNameInput && !devNameInput.value) {
+              devNameInput.value = resolvedTitle;
+            }
+          }
         }
       });
     }
@@ -1727,11 +1961,17 @@
 
     input.addEventListener('blur', () => {
       const val = input.value.trim();
-      if (val && /^\d+$/.test(val)) {
+      if (val && (/^\d+$/.test(val) || /^CO_\d+$/i.test(val) || /^C_\d+$/i.test(val))) {
         fetchEntityTitle(f.type, val, f.key, (resolvedTitle) => {
           if (resolvedTitle && input.dataset.id === val) {
             input.value = resolvedTitle;
             input.title = `${resolvedTitle} (ID: ${val})`;
+            if (f.key === 'ufCrm16_1791172932' || f.key === 'companyId') {
+              const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
+              if (devNameInput && !devNameInput.value) {
+                devNameInput.value = resolvedTitle;
+              }
+            }
           }
         });
       }
@@ -1759,9 +1999,7 @@
     `;
     group.appendChild(labelEl);
 
-    const rawVal = (currentListing[f.key] !== undefined && currentListing[f.key] !== null)
-      ? currentListing[f.key]
-      : (f.crmCode && currentListing[f.crmCode] !== undefined ? currentListing[f.crmCode] : undefined);
+    const rawVal = getFieldValue(f, currentListing);
 
     if (f.type === 'file') {
       renderMediaField(f, rawVal, group);
@@ -1781,7 +2019,10 @@
       input.className = 'form-control';
       input.placeholder = f.placeholder || 'https://my.matterport.com/show/?m=...';
       input.value = rawVal || '';
-      input.addEventListener('input', () => setDirty(true));
+      input.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
 
       const launchBtn = document.createElement('button');
       launchBtn.type = 'button';
@@ -1815,7 +2056,10 @@
       input.className = 'form-control';
       input.placeholder = f.placeholder || 'https://...';
       input.value = rawVal || '';
-      input.addEventListener('input', () => setDirty(true));
+      input.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
 
       const testBtn = document.createElement('a');
       testBtn.href = rawVal || '#';
@@ -1838,9 +2082,12 @@
       textarea.name = f.key;
       textarea.className = 'form-control';
       textarea.placeholder = f.placeholder || '';
-      textarea.value = rawVal || '';
+      textarea.value = (rawVal !== null && rawVal !== undefined) ? rawVal : '';
       textarea.rows = 2;
-      textarea.addEventListener('input', () => setDirty(true));
+      textarea.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
       group.appendChild(textarea);
       initialFormValues[f.key] = textarea.value;
     } else if (f.type === 'enumeration') {
@@ -1877,9 +2124,13 @@
           currentListing[f.key] = selectedEnumId;
           renderLayout(mappedLayout);
           setDirty(true);
+          runListingAutomations({ isInitialLoad: false, triggerField: f.key });
         });
       } else {
-        select.addEventListener('change', () => setDirty(true));
+        select.addEventListener('change', () => {
+          setDirty(true);
+          runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+        });
       }
 
       group.appendChild(select);
@@ -1894,7 +2145,10 @@
         <option value="Y" ${rawVal === 'Y' || rawVal === true || rawVal === 1 ? 'selected' : ''}>Yes</option>
         <option value="N" ${rawVal === 'N' || rawVal === false || rawVal === 0 ? 'selected' : ''}>No</option>
       `;
-      select.addEventListener('change', () => setDirty(true));
+      select.addEventListener('change', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
       group.appendChild(select);
       initialFormValues[f.key] = select.value;
     } else if (f.type === 'address') {
@@ -1909,45 +2163,30 @@
       } else {
         input.value = (rawVal !== null && rawVal !== undefined) ? rawVal : '';
       }
-      input.addEventListener('input', () => setDirty(true));
+      input.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
       group.appendChild(input);
       initialFormValues[f.key] = input.value;
-    } else {
+    } else if (f.type === 'number' || f.type === 'money' || f.type === 'integer') {
       const isAddon = !!f.addon;
       const input = document.createElement('input');
       input.id = `field_${f.key}`;
       input.name = f.key;
+      input.type = 'number';
+      input.step = f.type === 'integer' ? '1' : 'any';
       input.className = 'form-control';
       input.placeholder = f.placeholder || '';
-
-      let displayVal = rawVal;
-      if (displayVal !== null && displayVal !== undefined && typeof displayVal === 'object') {
-        displayVal = displayVal.title || displayVal.name || displayVal.id || displayVal.value || '';
-      }
-      input.value = (displayVal !== null && displayVal !== undefined) ? displayVal : '';
-
-      if (f.type === 'number' || f.type === 'money' || f.type === 'integer') {
-        input.type = 'number';
-        input.step = f.type === 'integer' ? '1' : 'any';
-      } else if (f.type === 'date') {
-        input.type = 'date';
-        if (displayVal && typeof displayVal === 'string' && displayVal.length >= 10) {
-          if (displayVal.includes('.')) {
-            const parts = displayVal.split('.');
-            if (parts.length === 3) {
-              input.value = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            } else {
-              input.value = displayVal.slice(0, 10);
-            }
-          } else {
-            input.value = displayVal.slice(0, 10);
-          }
-        }
-      } else {
-        input.type = 'text';
-      }
-
-      input.addEventListener('input', () => setDirty(true));
+      input.value = cleanNumericValue(rawVal);
+      input.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
+      input.addEventListener('change', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
 
       if (isAddon) {
         const addonWrap = document.createElement('div');
@@ -1961,7 +2200,59 @@
       } else {
         group.appendChild(input);
       }
+      initialFormValues[f.key] = input.value;
+    } else if (f.type === 'date') {
+      const input = document.createElement('input');
+      input.id = `field_${f.key}`;
+      input.name = f.key;
+      input.type = 'date';
+      input.className = 'form-control';
+      input.value = formatDateForInput(rawVal);
+      input.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
+      input.addEventListener('change', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
+      group.appendChild(input);
+      initialFormValues[f.key] = input.value;
+    } else {
+      const isAddon = !!f.addon;
+      const input = document.createElement('input');
+      input.id = `field_${f.key}`;
+      input.name = f.key;
+      input.type = 'text';
+      input.className = 'form-control';
+      input.placeholder = f.placeholder || '';
 
+      let displayVal = rawVal;
+      if (displayVal !== null && displayVal !== undefined && typeof displayVal === 'object') {
+        displayVal = displayVal.title || displayVal.name || displayVal.id || displayVal.value || '';
+      }
+      input.value = (displayVal !== null && displayVal !== undefined) ? displayVal : '';
+      input.addEventListener('input', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
+      input.addEventListener('change', () => {
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
+
+      if (isAddon) {
+        const addonWrap = document.createElement('div');
+        addonWrap.className = 'input-addon-group';
+        addonWrap.appendChild(input);
+        const addonSpan = document.createElement('span');
+        addonSpan.className = 'input-addon';
+        addonSpan.textContent = f.addon;
+        addonWrap.appendChild(addonSpan);
+        group.appendChild(addonWrap);
+      } else {
+        group.appendChild(input);
+      }
       initialFormValues[f.key] = input.value;
     }
 
@@ -2029,7 +2320,13 @@
 
       document.querySelectorAll('#sections-container input, #sections-container select, #sections-container textarea').forEach(el => {
         if (el.name && el.type !== 'file') {
-          payload[el.name] = (el.dataset.id !== undefined && el.dataset.id !== '') ? el.dataset.id : el.value;
+          let fieldVal = (el.dataset.id !== undefined && el.dataset.id !== '') ? el.dataset.id : el.value;
+          const fConfig = findFieldConfig(el.name);
+          if (fConfig && fConfig.type === 'money' && fieldVal && !String(fieldVal).includes('|')) {
+            const numPart = String(fieldVal).replace(/[^\d.-]/g, '');
+            fieldVal = numPart ? `${numPart}|AED` : '';
+          }
+          payload[el.name] = fieldVal;
         }
       });
 
@@ -2090,6 +2387,9 @@
       const layoutKey = detectLayoutFromListing(currentListing);
       renderLayout(layoutKey);
 
+      // Execute auto-calculations and field automations each time record is opened!
+      runListingAutomations({ isInitialLoad: true });
+
       setDirty(false);
       loadingEl.style.display = 'none';
       contentEl.style.display = 'block';
@@ -2121,7 +2421,8 @@
     openLinkedRecord,
     getEntityPath,
     isLookupField,
-    getEntityMeta
+    getEntityMeta,
+    runListingAutomations
   };
 
   if (window.BX24) {

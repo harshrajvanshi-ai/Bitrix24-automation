@@ -648,6 +648,117 @@
     resizeWindow();
   }
 
+  // ============================================================================
+  // AUTO-CALCULATION & FIELD AUTOMATION ENGINE (LEAD LISTING LAYOUT)
+  // ============================================================================
+  function runLeadListingAutomations(options = {}) {
+    const isInitialLoad = !!options.isInitialLoad;
+    const trigger = options.triggerField || '';
+
+    const findEl = (codes) => {
+      const codeList = Array.isArray(codes) ? codes : [codes];
+      for (const c of codeList) {
+        const el = document.getElementById(`field_${c}`) || document.querySelector(`[name="${c}"]`);
+        if (el) return el;
+      }
+      return null;
+    };
+
+    const getVal = (codes) => {
+      const el = findEl(codes);
+      if (!el) return '';
+      if (el.dataset && el.dataset.selectedRef) return el.dataset.selectedRef;
+      return el.value !== undefined ? String(el.value).trim() : '';
+    };
+
+    const getNum = (codes) => {
+      const val = getVal(codes);
+      if (!val) return 0;
+      const clean = String(val).split('|')[0].replace(/[^\d.-]/g, '');
+      const n = parseFloat(clean);
+      return isNaN(n) ? 0 : n;
+    };
+
+    const getText = (codes) => {
+      const el = findEl(codes);
+      if (!el) return '';
+      if (el.tagName === 'SELECT') {
+        const sel = el.options[el.selectedIndex];
+        return sel && sel.value ? sel.textContent.trim() : '';
+      }
+      return el.value !== undefined ? String(el.value).trim() : '';
+    };
+
+    const setVal = (codes, newVal, markDirty = true) => {
+      const el = findEl(codes);
+      if (!el) return false;
+      const currentVal = el.value !== undefined ? String(el.value).trim() : '';
+      const formattedNew = String(newVal !== null && newVal !== undefined ? newVal : '').trim();
+      if (currentVal !== formattedNew) {
+        el.value = formattedNew;
+        if (isInitialLoad) {
+          if (el.name) initialFormValues[el.name] = formattedNew;
+        } else if (markDirty) {
+          setDirty(true);
+        }
+        return true;
+      }
+      return false;
+    };
+
+    // 1. Price Per Sq Ft = Listing Price / Built-up Area
+    const priceCodes = ['UF_CRM_1791952467551', 'UF_CRM_LISTINGPRICE', 'UF_CRM_LISTING_PRICE', 'OPPORTUNITY'];
+    const sqftCodes = ['UF_CRM_1791952136007', 'UF_CRM_BUA', 'UF_CRM_TOTALAREA'];
+    const ppsqftCodes = ['UF_CRM_PRICE_PER_SQUARE_FOOT', 'UF_CRM_LISTINGPRICEPERSQFT'];
+
+    const price = getNum(priceCodes);
+    const sqft = getNum(sqftCodes);
+    const ppsqft = getNum(ppsqftCodes);
+
+    if (price > 0 && sqft > 0) {
+      if (!ppsqft || isInitialLoad || priceCodes.includes(trigger) || sqftCodes.includes(trigger)) {
+        const calcPpsqft = (price / sqft).toFixed(2);
+        setVal(ppsqftCodes, calcPpsqft, !isInitialLoad);
+      }
+    } else if (ppsqftCodes.includes(trigger) && ppsqft > 0 && sqft > 0 && (!price || price === 0)) {
+      const calcPrice = Math.round(ppsqft * sqft);
+      setVal(priceCodes, calcPrice, true);
+    }
+
+    // 2. Composite Title & Portal Title from actual non-empty record fields
+    const beds = getVal(['UF_CRM_1791952093551', 'UF_CRM_BEDROOM']);
+    const propType = getText(['UF_CRM_1791952050535', 'UF_CRM_PROPERTY_TYPE']);
+    const project = getVal(['UF_CRM_1791952285159', 'UF_CRM_PROJECT_NAME']);
+    const community = getVal(['UF_CRM_1791952328751', 'UF_CRM_COMMUNITY']);
+    const city = getVal(['UF_CRM_1791952345511', 'UF_CRM_CITY']);
+
+    if (propType) {
+      let bedPrefix = '';
+      if (beds === '0' || String(beds).toLowerCase() === 'studio') {
+        bedPrefix = 'Studio';
+      } else if (beds) {
+        bedPrefix = `${beds} BR`;
+      }
+      const locParts = [project, community, city].filter(Boolean);
+      const locStr = locParts.length > 0 ? ` in ${locParts.join(', ')}` : '';
+      const autoTitle = [bedPrefix, propType].filter(Boolean).join(' ') + locStr;
+
+      const titleCodes = ['UF_CRM_1791952409183', 'UF_CRM_LISTING_NAME', 'TITLE'];
+      const portalTitleCodes = ['UF_CRM_SUMMARY_DESCRIPTION'];
+
+      const curTitle = getVal(titleCodes);
+      const curPortalTitle = getVal(portalTitleCodes);
+
+      if (!curTitle || curTitle.toLowerCase().startsWith('untitled')) {
+        setVal(titleCodes, autoTitle, !isInitialLoad);
+      }
+      if (!curPortalTitle) {
+        setVal(portalTitleCodes, autoTitle, !isInitialLoad);
+      }
+    }
+  }
+  }
+
   /**
    * Create standard form-group wrapper with label & validation feedback
    */
@@ -692,6 +803,9 @@
       setDirty(true);
       if (inputObj.inputElement) inputObj.inputElement.classList.remove('is-invalid');
       feedback.style.display = 'none';
+      if (currentLayout === 'listing') {
+        runLeadListingAutomations({ isInitialLoad: false, triggerField: f.code });
+      }
     };
 
     const inputObj = createFieldInput(f, currentVal, markFieldDirty);
@@ -919,6 +1033,10 @@
       sectionCard.appendChild(bodyEl);
       fieldsContainer.appendChild(sectionCard);
     });
+
+    if (layout === 'listing') {
+      runLeadListingAutomations({ isInitialLoad: true });
+    }
 
     resizeWindow();
   }
@@ -1291,6 +1409,13 @@
     initialized = true;
     init();
   }
+
+  window.__TAB_APP__ = {
+    detectListingSubLayout,
+    applyListingSubLayout,
+    runLeadListingAutomations,
+    getCurrentLead: () => currentLead
+  };
 
   if (window.BX24 && typeof window.BX24.init === 'function') {
     window.BX24.init(safeInit);

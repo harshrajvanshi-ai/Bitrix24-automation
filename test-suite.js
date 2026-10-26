@@ -971,7 +971,23 @@ async function runTests() {
   const serverContent = fs.readFileSync(path.resolve(__dirname, 'server.js'), 'utf-8');
   assert(serverContent.includes("app.get('/api/mapping/listing'"), 'server.js defines GET /api/mapping/listing endpoint');
   assert(serverContent.includes("app.post('/api/lead/:id/sync-listing'"), 'server.js defines POST /api/lead/:id/sync-listing endpoint');
-  assert(serverContent.includes('syncListingSpaFromLead(leadId)'), 'server.js automatically syncs Listing SPA upon Lead update');
+  // ============================================================================
+  // Case 20: Layout Field Automations & Auto-Calculations
+  // ============================================================================
+  console.log('\n--- Case 20: Layout Field Automations & Auto-Calculations ---');
+  const listingDetailsContent = fs.readFileSync(path.resolve(__dirname, 'public/js/listing-details.js'), 'utf-8');
+  assert(listingDetailsContent.includes('runListingAutomations'), 'listing-details.js defines runListingAutomations engine');
+  assert(listingDetailsContent.includes('calcPricePerSqFt = (price / sqft).toFixed(2)'), 'listing-details.js auto-calculates Price Per Sq Ft from Price & BUA');
+  assert(listingDetailsContent.includes('runListingAutomations({ isInitialLoad: true })'), 'listing-details.js executes automations on record opening');
+  assert(listingDetailsContent.includes("runListingAutomations({ isInitialLoad: false, triggerField: f.key })"), 'listing-details.js triggers automations in real-time on field edits');
+  assert(listingDetailsContent.includes('bayutBuilding') && listingDetailsContent.includes('projName'), 'listing-details.js mirrors Project Name and Building Bayut');
+  assert(listingDetailsContent.includes('pfCommunity') && listingDetailsContent.includes('community'), 'listing-details.js mirrors Community and PF Community');
+  assert(tabJsContent.includes('runLeadListingAutomations'), 'public/js/tab.js defines runLeadListingAutomations engine');
+  assert(tabJsContent.includes('calcPpsqft = (price / sqft).toFixed(2)'), 'public/js/tab.js auto-calculates Price Per Sq Ft for Lead listing layout');
+  assert(tabJsContent.includes('runLeadListingAutomations({ isInitialLoad: true })'), 'public/js/tab.js executes automations on lead listing record opening');
+  assert(tabJsContent.includes("runLeadListingAutomations({ isInitialLoad: false, triggerField: f.code })"), 'public/js/tab.js triggers automations in real-time on lead field edits');
+  const spaSyncContent = fs.readFileSync(path.resolve(__dirname, 'src/spaSync.js'), 'utf-8');
+  assert(spaSyncContent.includes('effPrice && effSqft && !updates.ufCrm16ListPricePerSqFt'), 'src/spaSync.js auto-calculates Price Per Sq Ft during cross-entity sync');
 
   // ============================================================================
   // Summary

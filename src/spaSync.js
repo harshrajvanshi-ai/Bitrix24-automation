@@ -473,11 +473,11 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'XML_ID', leadAltCodes: ['UF_CRM_LISTING_ID', 'ID'], spaKey: 'xmlId', spaCrmCode: 'XML_ID', type: 'string', label: 'External ID' },
 
   // 2. Seller & Source
-  { leadCode: 'COMPANY_ID', leadAltCodes: ['UF_CRM_DEVELOPER_1'], spaKey: 'companyId', spaCrmCode: 'COMPANY_ID', type: 'crm_company', label: 'Company' },
+  { leadCode: 'COMPANY_ID', leadAltCodes: ['UF_CRM_DEVELOPER_1', 'UF_CRM_YOUR_COMPANY_DETAILS'], spaKey: 'companyId', spaCrmCode: 'COMPANY_ID', spaAltKeys: ['ufCrm16_1791172932', 'mycompanyId'], type: 'crm_company', label: 'Company' },
   { leadCode: 'CONTACT_ID', spaKey: 'contactId', spaCrmCode: 'CONTACT_ID', type: 'crm_contact', label: 'Contact' },
   { leadCode: 'UF_CRM_CONTACTS', spaKey: 'contactIds', spaCrmCode: 'CONTACT_IDS', type: 'crm_contact_multi', label: 'Contacts' },
   { leadCode: 'UF_CRM_PROPERTY', spaKey: 'parentId1052', spaCrmCode: 'PARENT_ID_1052', type: 'crm_entity', label: 'Master Property' },
-  { leadCode: 'UF_CRM_DEVELOPER_NAME', spaKey: 'ufCrm16DeveloperName', spaCrmCode: 'UF_CRM_16_DEVELOPER_NAME', type: 'string', label: 'Developer Name' },
+  { leadCode: 'UF_CRM_DEVELOPER_NAME', leadAltCodes: ['UF_CRM_DEVELOPER'], spaKey: 'ufCrm16DeveloperName', spaCrmCode: 'UF_CRM_16_DEVELOPER_NAME', spaAltKeys: ['ufCrm16Developer'], type: 'string', label: 'Developer Name' },
   { leadCode: 'UF_CRM_DEVELOPER_1', spaKey: 'ufCrm16_1791172932', spaCrmCode: 'UF_CRM_16_1791172932', type: 'crm_entity', label: 'Developer CRM Entity' },
 
   // 3. Property Specifications
@@ -485,8 +485,8 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_PROPERTY_SUB_TYPE', spaKey: 'ufCrm16PropertySubType', spaCrmCode: 'UF_CRM_16_PROPERTY_SUB_TYPE', type: 'enumeration', enumCategory: 'propertySubType', label: 'Property Sub-type' },
   { leadCode: 'UF_CRM_BEDROOMS', leadAltCodes: ['UF_CRM_1791966366775'], spaKey: 'ufCrm16_1791172802', spaCrmCode: 'UF_CRM_16_1791172802', type: 'number', label: 'Bedrooms' },
   { leadCode: 'UF_CRM_BATHROOMS', leadAltCodes: ['UF_CRM_1791966408374'], spaKey: 'ufCrm16_1791172787', spaCrmCode: 'UF_CRM_16_1791172787', type: 'number', label: 'Bathrooms' },
-  { leadCode: 'UF_CRM_BUA', spaKey: 'ufCrm16SqFt', spaCrmCode: 'UF_CRM_16_SQ_FT', type: 'number', label: 'Built-up Area (Sq Ft)' },
-  { leadCode: 'UF_CRM_PLOT_AREA', spaKey: 'ufCrm16PlotSize', spaCrmCode: 'UF_CRM_16_PLOT_SIZE', type: 'number', label: 'Plot Area (Sq Ft)' },
+  { leadCode: 'UF_CRM_BUA', leadAltCodes: ['UF_CRM_TOTALAREA'], spaKey: 'ufCrm16SqFt', spaCrmCode: 'UF_CRM_16_SQ_FT', spaAltKeys: ['ufCrm16Size'], type: 'number', label: 'Built-up Area (Sq Ft)' },
+  { leadCode: 'UF_CRM_PLOT_AREA', leadAltCodes: ['UF_CRM_PLOT_SIZE'], spaKey: 'ufCrm16PlotSize', spaCrmCode: 'UF_CRM_16_PLOT_SIZE', spaAltKeys: ['ufCrm16LotSize'], type: 'number', label: 'Plot Area (Sq Ft)' },
   { leadCode: 'UF_CRM_UNIT_NO', spaKey: 'ufCrm16UnitNumber', spaCrmCode: 'UF_CRM_16_UNIT_NUMBER', type: 'string', label: 'Unit Number' },
   { leadCode: 'UF_CRM_FLOOR', spaKey: 'ufCrm16Floor', spaCrmCode: 'UF_CRM_16_FLOOR', type: 'integer', label: 'Floor Number' },
   { leadCode: 'UF_CRM_1791969936048', spaKey: 'ufCrm16Furnished', spaCrmCode: 'UF_CRM_16_FURNISHED', type: 'enumeration', enumCategory: 'furnished', label: 'Furnished Status' },
@@ -494,21 +494,21 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_NUMBEROFPARKINGSPACES', leadAltCodes: ['UF_CRM_PARKING'], spaKey: 'ufCrm16ParkingSpaces', spaCrmCode: 'UF_CRM_16_PARKING_SPACES', type: 'integer', label: 'Parking Spaces' },
 
   // 4. Location & Geography
-  { leadCode: 'UF_CRM_PROJECT_NAME', leadAltCodes: ['UF_CRM_PROJECT_1'], spaKey: 'ufCrm16ProjectName', spaCrmCode: 'UF_CRM_16_PROJECT_NAME', type: 'string', label: 'Project / Building Name' },
-  { leadCode: 'UF_CRM_BUILDING_DUBIZZLE', leadAltCodes: ['UF_CRM_BUILDING_BAYUT'], spaKey: 'ufCrm16BuildingBayut', spaCrmCode: 'UF_CRM_16_BUILDING_BAYUT', type: 'string', label: 'Building / Tower Name (Bayut)' },
+  { leadCode: 'UF_CRM_PROJECT_NAME', leadAltCodes: ['UF_CRM_BUILDING', 'UF_CRM_BUILDING_DUBIZZLE', 'UF_CRM_PROJECT', 'UF_CRM_PROJECT_1', 'UF_CRM_1791794196'], spaKey: 'ufCrm16ProjectName', spaCrmCode: 'UF_CRM_16_PROJECT_NAME', spaAltKeys: ['ufCrm16BuildingBayut', 'ufCrm16MasterProjectInfo', 'ufCrm16ProjectInfo'], type: 'string', label: 'Project / Building Name' },
+  { leadCode: 'UF_CRM_BUILDING_DUBIZZLE', leadAltCodes: ['UF_CRM_BUILDING_BAYUT', 'UF_CRM_BUILDING'], spaKey: 'ufCrm16BuildingBayut', spaCrmCode: 'UF_CRM_16_BUILDING_BAYUT', type: 'string', label: 'Building / Tower Name (Bayut)' },
   { leadCode: 'UF_CRM_COMMUNITY_PROPERTYFINDER', spaKey: 'ufCrm16CommunityPropertyfinder', spaCrmCode: 'UF_CRM_16_COMMUNITY_PROPERTYFINDER', type: 'string', label: 'Community - Propertyfinder' },
   { leadCode: 'UF_CRM_SUB_COMMUNITY_PROPERTYFINDER', spaKey: 'ufCrm16SubCommunityPropertyfinder', spaCrmCode: 'UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER', type: 'string', label: 'Sub-Community' },
-  { leadCode: 'UF_CRM_NEIGHBORHOOD', spaKey: 'ufCrm16_1791173032', spaCrmCode: 'UF_CRM_16_1791173032', type: 'string', label: 'Neighborhood / Community' },
-  { leadCode: 'UF_CRM_CITY', spaKey: 'ufCrm16_1791172815', spaCrmCode: 'UF_CRM_16_1791172815', type: 'string', label: 'City' },
-  { leadCode: 'UF_CRM_COUNTRY', spaKey: 'ufCrm16_1791172854', spaCrmCode: 'UF_CRM_16_1791172854', type: 'string', label: 'Country' },
-  { leadCode: 'UF_CRM_STREET', spaKey: 'ufCrm16Street', spaCrmCode: 'UF_CRM_16_STREET', type: 'string', label: 'Street' },
+  { leadCode: 'UF_CRM_NEIGHBORHOOD', leadAltCodes: ['UF_CRM_COMMUNITY', 'UF_CRM_COMMUNITY_PROPERTYFINDER', 'UF_CRM_LOCATIONTEXT_DUBIZZLE'], spaKey: 'ufCrm16_1791173032', spaCrmCode: 'UF_CRM_16_1791173032', spaAltKeys: ['ufCrm16CommunityPropertyfinder', 'ufCrm16_1791172692', 'ufCrm16SubCommunityPropertyfinder'], type: 'string', label: 'Neighborhood / Community' },
+  { leadCode: 'UF_CRM_CITY', leadAltCodes: ['UF_CRM_CITY_BAYUT', 'UF_CRM_CITY_PF'], spaKey: 'ufCrm16_1791172815', spaCrmCode: 'UF_CRM_16_1791172815', spaAltKeys: ['ufCrm16_1791172830', 'ufCrm16_1791172841'], type: 'string', label: 'City' },
+  { leadCode: 'UF_CRM_COUNTRY', spaKey: 'ufCrm16_1791172854', spaCrmCode: 'UF_CRM_16_1791172854', spaAltKeys: ['ufCrm16CountryCode'], type: 'string', label: 'Country' },
+  { leadCode: 'UF_CRM_STREET', leadAltCodes: ['UF_CRM_STREETNAME'], spaKey: 'ufCrm16Street', spaCrmCode: 'UF_CRM_16_STREET', spaAltKeys: ['ufCrm16DisplayAddress', 'ufCrm16DisplayedAddress'], type: 'string', label: 'Street' },
   { leadCode: 'UF_CRM_1791970638065', leadAltCodes: ['ADDRESS'], spaKey: 'ufCrm16_1791172676', spaCrmCode: 'UF_CRM_16_1791172676', type: 'address', label: 'Address' },
   { leadCode: 'UF_CRM_LATITUDE', spaKey: 'ufCrm16Latitude', spaCrmCode: 'UF_CRM_16_LATITUDE', type: 'number', label: 'Latitude' },
   { leadCode: 'UF_CRM_LONGITUDE', spaKey: 'ufCrm16Longitude', spaCrmCode: 'UF_CRM_16_LONGITUDE', type: 'number', label: 'Longitude' },
 
   // 5. Pricing & Terms
-  { leadCode: 'UF_CRM_LISTING_PRICE', leadAltCodes: ['UF_CRM_1791963299133'], spaKey: 'ufCrm16_1790154936', spaCrmCode: 'UF_CRM_16_1790154936', type: 'money', label: 'Listing Price (AED)' },
-  { leadCode: 'UF_CRM_PRICE_PER_SQUARE_FOOT', spaKey: 'ufCrm16ListPricePerSqFt', spaCrmCode: 'UF_CRM_16_LIST_PRICE_PER_SQ_FT', type: 'money', label: 'Price Per Sq Ft' },
+  { leadCode: 'UF_CRM_LISTING_PRICE', leadAltCodes: ['UF_CRM_LISTINGPRICE', 'UF_CRM_1791963299133', 'UF_CRM_YEARLY_RENTAL'], spaKey: 'ufCrm16_1790154936', spaCrmCode: 'UF_CRM_16_1790154936', spaAltKeys: ['ufCrm16Price', 'ufCrm16YearlyRental'], type: 'money', label: 'Listing Price (AED)' },
+  { leadCode: 'UF_CRM_PRICE_PER_SQUARE_FOOT', leadAltCodes: ['UF_CRM_LISTINGPRICEPERSQFT'], spaKey: 'ufCrm16ListPricePerSqFt', spaCrmCode: 'UF_CRM_16_LIST_PRICE_PER_SQ_FT', spaAltKeys: ['ufCrm16_1792611299625'], type: 'money', label: 'Price Per Sq Ft' },
   { leadCode: 'UF_CRM_BUYERAGENTCOMMISSION', spaKey: 'ufCrm16BuyersAgentCommission', spaCrmCode: 'UF_CRM_16_BUYERS_AGENT_COMMISSION', type: 'number', label: 'Agency Commission (%)' },
   { leadCode: 'UF_CRM_SERVICE_CHARGE', spaKey: 'ufCrm16ServiceCharge', spaCrmCode: 'UF_CRM_16_SERVICE_CHARGE', type: 'money', label: 'Service Charges (Annual)' },
   { leadCode: 'UF_CRM_HOAFREQUENCY', spaKey: 'ufCrm16HoaFrequency', spaCrmCode: 'UF_CRM_16_HOA_FREQUENCY', type: 'enumeration', enumCategory: 'hoaFrequency', label: 'Rental Frequency' },
@@ -526,15 +526,15 @@ const LISTING_FIELD_MAP = [
 
   // 7. Portals & Marketing
   { leadCode: 'UF_CRM_1791970864836', leadAltCodes: ['UF_CRM_RERA_PERMIT'], spaKey: 'ufCrm16ReraPermitNumber', spaCrmCode: 'UF_CRM_16_RERA_PERMIT_NUMBER', type: 'string', label: 'RERA Permit Number' },
-  { leadCode: 'UF_CRM_TRAKHEESI_PERMIT_NO', spaKey: 'ufCrm16_1791787455285', spaCrmCode: 'UF_CRM_16_1791787455285', type: 'string', label: 'Trakheesi Permit No' },
-  { leadCode: 'UF_CRM_TRAKHEESI_EXPIRY', leadAltCodes: ['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE'], spaKey: 'ufCrm16_1791787502111', spaCrmCode: 'UF_CRM_16_1791787502111', type: 'date', label: 'Trakheesi Permit Expiry Date' },
-  { leadCode: 'UF_CRM_QR_CODE_LINK', spaKey: 'ufCrm16QrCodeLink', spaCrmCode: 'UF_CRM_16_QR_CODE_LINK', type: 'url', label: 'DLD QR / Permit URL' },
+  { leadCode: 'UF_CRM_TRAKHEESI_PERMIT_NO', leadAltCodes: ['UF_CRM_RERA_PERMIT', 'UF_CRM_1791970864836'], spaKey: 'ufCrm16_1791787455285', spaCrmCode: 'UF_CRM_16_1791787455285', spaAltKeys: ['ufCrm16DtcmPermitNumber', 'ufCrm16ReraPermitNumber'], type: 'string', label: 'Trakheesi Permit No' },
+  { leadCode: 'UF_CRM_TRAKHEESI_EXPIRY', leadAltCodes: ['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE'], spaKey: 'ufCrm16_1791787502111', spaCrmCode: 'UF_CRM_16_1791787502111', spaAltKeys: ['ufCrm16FormAExpiryDate'], type: 'date', label: 'Trakheesi Permit Expiry Date' },
+  { leadCode: 'UF_CRM_QR_CODE_LINK', leadAltCodes: ['UF_CRM_QR_CODE'], spaKey: 'ufCrm16QrCodeLink', spaCrmCode: 'UF_CRM_16_QR_CODE_LINK', spaAltKeys: ['ufCrm16QrCode'], type: 'url', label: 'DLD QR / Permit URL' },
   { leadCode: 'UF_CRM_BAYUT_ID', spaKey: 'ufCrm16_1790155092', spaCrmCode: 'UF_CRM_16_1790155092', type: 'string', label: 'Bayut Listing ID' },
   { leadCode: 'UF_CRM_PF_ID', leadAltCodes: ['UF_CRM_1792151466'], spaKey: 'ufCrm16PropertyFinderListingId', spaCrmCode: 'UF_CRM_16_PROPERTY_FINDER_LISTING_ID', type: 'string', label: 'Propertyfinder Listing ID' },
-  { leadCode: 'UF_CRM_DUBIZZLE_REGION', spaKey: 'ufCrm16DubizzleRegion', spaCrmCode: 'UF_CRM_16_DUBIZZLE_REGION', type: 'string', label: 'Dubizzle Listing ID / Region' },
+  { leadCode: 'UF_CRM_DUBIZZLE_REGION', leadAltCodes: ['UF_CRM_LOCATIONTEXT_DUBIZZLE', 'UF_CRM_BUILDING_DUBIZZLE'], spaKey: 'ufCrm16DubizzleRegion', spaCrmCode: 'UF_CRM_16_DUBIZZLE_REGION', spaAltKeys: ['ufCrm16LocationtextBayut', 'ufCrm16PropertyfinderRegion'], type: 'string', label: 'Dubizzle Listing ID / Region' },
   { leadCode: 'UF_CRM_SYSTEMALLOWEDFORPORTALS', leadAltCodes: ['UF_CRM_PORTALS_ENABLED'], spaKey: 'ufCrm16SystemAllowedForPortals', spaCrmCode: 'UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS', type: 'boolean', label: 'Bayut / Dubizzle Feed Toggle' },
-  { leadCode: 'UF_CRM_UK_SUMMARY_DESCRIPTION', spaKey: 'ufCrm16SummaryDescription', spaCrmCode: 'UF_CRM_16_SUMMARY_DESCRIPTION', type: 'string', label: 'Portal Title' },
-  { leadCode: 'UF_CRM_DESCRIPTION', spaKey: 'ufCrm16Description', spaCrmCode: 'UF_CRM_16_DESCRIPTION', type: 'textarea', label: 'Portal Description' },
+  { leadCode: 'UF_CRM_UK_SUMMARY_DESCRIPTION', leadAltCodes: ['UF_CRM_DESCRIPTION_OUTRO_TEXT', 'UF_CRM_SUMMARY', 'TITLE'], spaKey: 'ufCrm16SummaryDescription', spaCrmCode: 'UF_CRM_16_SUMMARY_DESCRIPTION', spaAltKeys: ['ufCrm16Combinedtitle', 'title'], type: 'string', label: 'Portal Title' },
+  { leadCode: 'UF_CRM_DESCRIPTION', leadAltCodes: ['UF_CRM_DESCRIPTION_INTRO_TEXT', 'UF_CRM_DESCRIPTION_1', 'UF_CRM_DESCRIPTION_AUTO'], spaKey: 'ufCrm16Description', spaCrmCode: 'UF_CRM_16_DESCRIPTION', spaAltKeys: ['ufCrm16DescriptionIntroText', 'ufCrm16DescriptionAuto', 'sourceDescription'], type: 'textarea', label: 'Portal Description' },
 
   // 8. Media & Documents
   { leadCode: 'UF_CRM_PRIMARY_IMAGE', spaKey: 'ufCrm16_1791173118', spaCrmCode: 'UF_CRM_16_1791173118', type: 'file', label: 'Primary Listing Image' },
@@ -640,6 +640,14 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
       const targetKey = mapping.spaKey;
       let targetVal = rawVal;
 
+      // Handle URL fields when Lead provides an object with url / showUrl (e.g. UF_CRM_QR_CODE)
+      if (mapping.type === 'url' && rawVal && typeof rawVal === 'object') {
+        targetVal = rawVal.url || rawVal.showUrl || rawVal.src || '';
+        if (!targetVal && rawVal.id) {
+          targetVal = `/bitrix/tools/crm_show_file.php?fileId=${rawVal.id}`;
+        }
+      }
+
       // Handle enum translation
       if (mapping.type === 'enumeration' && mapping.enumCategory && LISTING_ENUM_MAPS[mapping.enumCategory]) {
         const mapCategory = LISTING_ENUM_MAPS[mapping.enumCategory];
@@ -649,19 +657,36 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
           targetVal = mappedId;
         }
       } else if (mapping.type === 'money') {
-        const num = parseFloat(String(rawVal).split('|')[0]);
-        if (!isNaN(num)) targetVal = num;
+        // Handle money formatting: if Lead provides "145000|AED" or 145000
+        if (typeof rawVal === 'string' && rawVal.includes('|')) {
+          targetVal = rawVal;
+        } else {
+          const num = parseFloat(rawVal);
+          if (!isNaN(num)) targetVal = `${num}|AED`;
+        }
       } else if (mapping.type === 'number' || mapping.type === 'integer') {
-        const num = parseFloat(rawVal);
+        const cleanStr = String(rawVal).split('|')[0].trim();
+        const num = parseFloat(cleanStr);
         if (!isNaN(num)) targetVal = num;
       } else if (mapping.type === 'boolean') {
-        targetVal = rawVal === 'Y' || rawVal === true || rawVal === 1 || rawVal === '1';
+        targetVal = (rawVal === 'Y' || rawVal === true || rawVal === 1 || rawVal === '1') ? 'Y' : 'N';
       }
 
       // Check if SPA item value actually differs
       const existingVal = spaItem[targetKey];
       if (String(existingVal ?? '') !== String(targetVal ?? '')) {
         updates[targetKey] = targetVal;
+      }
+    }
+
+    // Auto-calculate Price Per Sq Ft if missing
+    const effPrice = updates.ufCrm16_1790154936 || spaItem.ufCrm16_1790154936;
+    const effSqft = updates.ufCrm16SqFt || spaItem.ufCrm16SqFt || updates.ufCrm16Size || spaItem.ufCrm16Size;
+    if (effPrice && effSqft && !updates.ufCrm16ListPricePerSqFt && !spaItem.ufCrm16ListPricePerSqFt) {
+      const pNum = parseFloat(String(effPrice).split('|')[0]);
+      const sNum = parseFloat(String(effSqft));
+      if (!isNaN(pNum) && !isNaN(sNum) && sNum > 0) {
+        updates.ufCrm16ListPricePerSqFt = `${(pNum / sNum).toFixed(2)}|AED`;
       }
     }
 
@@ -713,7 +738,15 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
 
     const leadUpdates = {};
     for (const mapping of LISTING_FIELD_MAP) {
-      const rawVal = item[mapping.spaKey];
+      let rawVal = item[mapping.spaKey];
+      if ((rawVal === undefined || rawVal === null || rawVal === '' || rawVal === 0 || rawVal === '0') && mapping.spaAltKeys) {
+        for (const alt of mapping.spaAltKeys) {
+          if (item[alt] !== undefined && item[alt] !== null && item[alt] !== '' && item[alt] !== 0 && item[alt] !== '0') {
+            rawVal = item[alt];
+            break;
+          }
+        }
+      }
       if (rawVal === undefined || rawVal === null || rawVal === '') continue;
 
       let targetVal = rawVal;
