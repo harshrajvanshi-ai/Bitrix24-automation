@@ -895,8 +895,7 @@ async function runTests() {
   assert(listingJs.includes("id: '2440', value: '12 Cheque'"), 'Number of Cheques includes actual SPA enum 2440 12 Cheque');
   assert(!listingJs.includes("ufCrm16RecordType") && !listingJs.includes("Offering / Record Type"), 'Record Type is removed from listing details layout');
   assert(listingJs.includes("f.type === 'enumeration' || f.type === 'stage'"), 'Stage field renders as picklist select in listing details');
-  assert(listingJs.includes("fetchStageOptions"), 'Listing details defines fetchStageOptions for dynamic stage loading');
-  assert(listingJs.includes("DT1058_0:NEW"), 'Stage picklist contains standard SPA stage options');
+  assert(listingJs.includes("DYNAMIC_1058_STAGE_") && listingJs.includes("stageOptionsByPipeline"), 'Stage picklist loads options strictly for current pipeline without hardcoded dummy list values');
   assert(listingJs.includes("id: '702', value: 'Off-Plan'"), 'Completion Status includes actual SPA enum 702 Off-Plan');
   assert(listingJs.includes("id: '836', value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
   assert(listingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');

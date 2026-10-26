@@ -369,10 +369,11 @@ app.all('/api/listing/:id/update', async (req, res) => {
  */
 app.get('/api/stages/listing', async (req, res) => {
   try {
+    const categoryId = req.query.categoryId !== undefined ? req.query.categoryId : (req.query.category || 0);
     let stages = [];
     try {
       const r = await BitrixClient.call('crm.status.list', {
-        filter: { '%ENTITY_ID': 'DYNAMIC_1058_STAGE' },
+        filter: { '=ENTITY_ID': `DYNAMIC_1058_STAGE_${categoryId}` },
         order: { SORT: 'ASC' }
       });
       if (Array.isArray(r)) stages = r;
@@ -382,7 +383,7 @@ app.get('/api/stages/listing', async (req, res) => {
     if (!stages || stages.length === 0) {
       try {
         const r2 = await BitrixClient.call('crm.status.list', {
-          filter: { '%ENTITY_ID': 'DYNAMIC_16_STAGE' },
+          filter: { '=ENTITY_ID': `DYNAMIC_16_STAGE_${categoryId}` },
           order: { SORT: 'ASC' }
         });
         if (Array.isArray(r2)) stages = r2;
@@ -390,35 +391,16 @@ app.get('/api/stages/listing', async (req, res) => {
       } catch (_) {}
     }
 
-    if (stages && stages.length > 0) {
-      return res.json({
-        success: true,
-        stages: stages.map(s => ({ id: s.STATUS_ID, value: s.NAME || s.STATUS_ID }))
-      });
-    }
-
     res.json({
       success: true,
-      stages: [
-        { id: 'DT1058_0:NEW', value: 'New / Draft' },
-        { id: 'DT1058_0:PREPARATION', value: 'Under Review' },
-        { id: 'DT1058_0:CLIENT', value: 'Active / Published' },
-        { id: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
-        { id: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
-        { id: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
-      ]
+      categoryId,
+      stages: (stages || []).map(s => ({ id: s.STATUS_ID, value: s.NAME || s.STATUS_ID }))
     });
   } catch (err) {
     res.json({
       success: true,
-      stages: [
-        { id: 'DT1058_0:NEW', value: 'New / Draft' },
-        { id: 'DT1058_0:PREPARATION', value: 'Under Review' },
-        { id: 'DT1058_0:CLIENT', value: 'Active / Published' },
-        { id: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
-        { id: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
-        { id: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
-      ]
+      categoryId: req.query.categoryId || 0,
+      stages: []
     });
   }
 });

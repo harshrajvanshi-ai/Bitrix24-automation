@@ -97,14 +97,7 @@
             crmCode: 'STAGE_ID',
             label: 'Stage',
             type: 'stage',
-            options: [
-              { id: 'DT1058_0:NEW', value: 'New / Draft' },
-              { id: 'DT1058_0:PREPARATION', value: 'Under Review' },
-              { id: 'DT1058_0:CLIENT', value: 'Active / Published' },
-              { id: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
-              { id: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
-              { id: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
-            ],
+            options: [],
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
@@ -912,61 +905,65 @@
     });
   }
 
-  let cachedStageOptions = null;
+  const stageOptionsByPipeline = {};
 
-  function fetchStageOptions() {
+  function fetchStageOptions(pipelineId = 0) {
+    const pId = pipelineId !== undefined && pipelineId !== null ? pipelineId : 0;
+    const cacheKey = `pipe_${pId}`;
     return new Promise(resolve => {
-      if (cachedStageOptions) {
-        resolve(cachedStageOptions);
+      if (stageOptionsByPipeline[cacheKey]) {
+        resolve(stageOptionsByPipeline[cacheKey]);
         return;
       }
 
       if (window.BX24) {
+        // Strict equality for the current pipeline's stage entity ID: DYNAMIC_1058_STAGE_{pId}
         window.BX24.callMethod('crm.status.list', {
-          filter: { '%ENTITY_ID': 'DYNAMIC_1058_STAGE' },
+          filter: { '=ENTITY_ID': `DYNAMIC_1058_STAGE_${pId}` },
           order: { SORT: 'ASC' }
         }, res => {
           if (!res.error() && Array.isArray(res.data()) && res.data().length > 0) {
-            cachedStageOptions = res.data().map(s => ({
+            stageOptionsByPipeline[cacheKey] = res.data().map(s => ({
               id: s.STATUS_ID,
               value: s.NAME || s.STATUS_ID
             }));
-            resolve(cachedStageOptions);
+            resolve(stageOptionsByPipeline[cacheKey]);
           } else {
+            // Fallback to DYNAMIC_16_STAGE_{pId}
             window.BX24.callMethod('crm.status.list', {
-              filter: { '%ENTITY_ID': 'DYNAMIC_16_STAGE' },
+              filter: { '=ENTITY_ID': `DYNAMIC_16_STAGE_${pId}` },
               order: { SORT: 'ASC' }
             }, res2 => {
               if (!res2.error() && Array.isArray(res2.data()) && res2.data().length > 0) {
-                cachedStageOptions = res2.data().map(s => ({
+                stageOptionsByPipeline[cacheKey] = res2.data().map(s => ({
                   id: s.STATUS_ID,
                   value: s.NAME || s.STATUS_ID
                 }));
-                resolve(cachedStageOptions);
+                resolve(stageOptionsByPipeline[cacheKey]);
               } else {
-                fetchFallbackStages(resolve);
+                fetchFallbackStages(pId, resolve);
               }
             });
           }
         });
       } else {
-        fetchFallbackStages(resolve);
+        fetchFallbackStages(pId, resolve);
       }
     });
   }
 
-  function fetchFallbackStages(resolve) {
-    fetch('/api/stages/listing')
+  function fetchFallbackStages(pipelineId, resolve) {
+    fetch(`/api/stages/listing?categoryId=${pipelineId}`)
       .then(r => r.json())
       .then(data => {
-        if (data.success && Array.isArray(data.stages) && data.stages.length > 0) {
-          cachedStageOptions = data.stages;
-          resolve(cachedStageOptions);
+        if (data.success && Array.isArray(data.stages)) {
+          stageOptionsByPipeline[`pipe_${pipelineId}`] = data.stages;
+          resolve(data.stages);
         } else {
-          resolve(null);
+          resolve([]);
         }
       })
-      .catch(() => resolve(null));
+      .catch(() => resolve([]));
   }
 
   // ============================================================================
@@ -2159,11 +2156,17 @@
       const rawStr = (rawVal !== null && rawVal !== undefined) ? String(rawVal).trim().toLowerCase() : '';
       let options = f.options ? [...f.options] : [];
 
-      if (f.type === 'stage' && cachedStageOptions && cachedStageOptions.length > 0) {
-        options = cachedStageOptions;
+      if (f.type === 'stage') {
+        const pipelineId = (currentListing?.categoryId !== undefined && currentListing?.categoryId !== null)
+          ? currentListing.categoryId
+          : (currentListing?.CATEGORY_ID !== undefined && currentListing?.CATEGORY_ID !== null ? currentListing.CATEGORY_ID : 0);
+        const pipeKey = `pipe_${pipelineId}`;
+        if (stageOptionsByPipeline[pipeKey] && stageOptionsByPipeline[pipeKey].length > 0) {
+          options = stageOptionsByPipeline[pipeKey];
+        }
       }
 
-      // If record has an existing stage/enum value not present in options, preserve it as an option
+      // If record has an existing stage value, preserve it in the picklist
       if (rawVal && !options.some(opt => String(opt.id).trim().toLowerCase() === rawStr || String(opt.value).trim().toLowerCase() === rawStr)) {
         options.unshift({ id: String(rawVal), value: String(rawVal) });
       }
@@ -2445,16 +2448,19 @@
       }
 
       console.log(`[LISTING] Loading listing #${currentListingId}...`);
-      const [listingItem, stages] = await Promise.all([
-        fetchListing(currentListingId),
-        fetchStageOptions().catch(() => null)
-      ]);
-      currentListing = listingItem;
+      currentListing = await fetchListing(currentListingId);
       console.log('[LISTING] Loaded item data:', currentListing);
 
-      if (stages && stages.length > 0) {
-        const stageF = findFieldConfig('stageId');
-        if (stageF) stageF.options = stages;
+      // Determine current pipeline (categoryId) strictly from the record
+      const pipelineId = (currentListing?.categoryId !== undefined && currentListing?.categoryId !== null)
+        ? currentListing.categoryId
+        : (currentListing?.CATEGORY_ID !== undefined && currentListing?.CATEGORY_ID !== null ? currentListing.CATEGORY_ID : 0);
+
+      // Fetch stages strictly for the current pipeline
+      const stages = await fetchStageOptions(pipelineId).catch(() => []);
+      const stageF = findFieldConfig('stageId');
+      if (stageF) {
+        stageF.options = stages || [];
       }
 
       // Render strictly driven by the field value

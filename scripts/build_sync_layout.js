@@ -45,14 +45,7 @@ const synchronizedListingSections = [
         bitrixLabel: 'Status / Stage',
         type: 'stage',
         placeholder: '-- Select Stage --',
-        options: [
-          { id: 'DT1058_0:NEW', spaId: 'DT1058_0:NEW', value: 'New / Draft' },
-          { id: 'DT1058_0:PREPARATION', spaId: 'DT1058_0:PREPARATION', value: 'Under Review' },
-          { id: 'DT1058_0:CLIENT', spaId: 'DT1058_0:CLIENT', value: 'Active / Published' },
-          { id: 'DT1058_0:UNDER_OFFER', spaId: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
-          { id: 'DT1058_0:SUCCESS', spaId: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
-          { id: 'DT1058_0:FAIL', spaId: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
-        ],
+        options: [],
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
