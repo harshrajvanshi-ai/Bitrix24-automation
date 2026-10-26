@@ -1739,10 +1739,15 @@
       const parts = str.split('/');
       return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
     }
-    if (/^\d{10,13}$/.test(str)) 
-    {
+    if (/^\d{10,13}$/.test(str)) {
       const d = new Date(Number(str.length === 10 ? str * 1000 : str));
       if (!isNaN(d.getTime())) {
+        return d.toISOString().slice(0, 10);
+      }
+    }
+    return str.slice(0, 10);
+  }
+
   // ============================================================================
   // 6c. AUTO-CALCULATION & FIELD AUTOMATION ENGINE
   // ============================================================================
