@@ -844,6 +844,7 @@ async function runTests() {
   assert(serverCode.includes("app.all('/listing-install'"), 'server.js defines /listing-install route');
   assert(serverCode.includes("app.get('/api/listing/:id'"), 'server.js defines GET /api/listing/:id route');
   assert(serverCode.includes("app.all('/api/listing/:id/update'"), 'server.js defines /api/listing/:id/update route');
+  assert(serverCode.includes("app.get('/api/stages/listing'"), 'server.js defines GET /api/stages/listing route');
   assert(serverCode.includes("CRM_DYNAMIC_1058_DETAIL_TAB"), 'server.js registers CRM_DYNAMIC_1058_DETAIL_TAB placement');
   assert(serverCode.includes("CRM_DYNAMIC_16_DETAIL_TAB"), 'server.js registers CRM_DYNAMIC_16_DETAIL_TAB placement');
 
@@ -893,6 +894,9 @@ async function runTests() {
   assert(listingJs.includes("id: '2432', value: '1 Cheque'"), 'Number of Cheques includes actual SPA enum 2432 1 Cheque');
   assert(listingJs.includes("id: '2440', value: '12 Cheque'"), 'Number of Cheques includes actual SPA enum 2440 12 Cheque');
   assert(!listingJs.includes("ufCrm16RecordType") && !listingJs.includes("Offering / Record Type"), 'Record Type is removed from listing details layout');
+  assert(listingJs.includes("f.type === 'enumeration' || f.type === 'stage'"), 'Stage field renders as picklist select in listing details');
+  assert(listingJs.includes("fetchStageOptions"), 'Listing details defines fetchStageOptions for dynamic stage loading');
+  assert(listingJs.includes("DT1058_0:NEW"), 'Stage picklist contains standard SPA stage options');
   assert(listingJs.includes("id: '702', value: 'Off-Plan'"), 'Completion Status includes actual SPA enum 702 Off-Plan');
   assert(listingJs.includes("id: '836', value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
   assert(listingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');

@@ -364,6 +364,66 @@ app.all('/api/listing/:id/update', async (req, res) => {
 });
 
 /**
+ * GET /api/stages/listing
+ * Returns stages for Listing SPA (entityTypeId 1058 or 16)
+ */
+app.get('/api/stages/listing', async (req, res) => {
+  try {
+    let stages = [];
+    try {
+      const r = await BitrixClient.call('crm.status.list', {
+        filter: { '%ENTITY_ID': 'DYNAMIC_1058_STAGE' },
+        order: { SORT: 'ASC' }
+      });
+      if (Array.isArray(r)) stages = r;
+      else if (r && Array.isArray(r.result)) stages = r.result;
+    } catch (_) {}
+
+    if (!stages || stages.length === 0) {
+      try {
+        const r2 = await BitrixClient.call('crm.status.list', {
+          filter: { '%ENTITY_ID': 'DYNAMIC_16_STAGE' },
+          order: { SORT: 'ASC' }
+        });
+        if (Array.isArray(r2)) stages = r2;
+        else if (r2 && Array.isArray(r2.result)) stages = r2.result;
+      } catch (_) {}
+    }
+
+    if (stages && stages.length > 0) {
+      return res.json({
+        success: true,
+        stages: stages.map(s => ({ id: s.STATUS_ID, value: s.NAME || s.STATUS_ID }))
+      });
+    }
+
+    res.json({
+      success: true,
+      stages: [
+        { id: 'DT1058_0:NEW', value: 'New / Draft' },
+        { id: 'DT1058_0:PREPARATION', value: 'Under Review' },
+        { id: 'DT1058_0:CLIENT', value: 'Active / Published' },
+        { id: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
+        { id: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
+        { id: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
+      ]
+    });
+  } catch (err) {
+    res.json({
+      success: true,
+      stages: [
+        { id: 'DT1058_0:NEW', value: 'New / Draft' },
+        { id: 'DT1058_0:PREPARATION', value: 'Under Review' },
+        { id: 'DT1058_0:CLIENT', value: 'Active / Published' },
+        { id: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
+        { id: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
+        { id: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
+      ]
+    });
+  }
+});
+
+/**
  * POST /api/b24/:method
  * Secure proxy endpoint for Bitrix24 REST methods (supporting dev & testing)
  */

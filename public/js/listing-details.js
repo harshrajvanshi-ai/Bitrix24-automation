@@ -97,6 +97,14 @@
             crmCode: 'STAGE_ID',
             label: 'Stage',
             type: 'stage',
+            options: [
+              { id: 'DT1058_0:NEW', value: 'New / Draft' },
+              { id: 'DT1058_0:PREPARATION', value: 'Under Review' },
+              { id: 'DT1058_0:CLIENT', value: 'Active / Published' },
+              { id: 'DT1058_0:UNDER_OFFER', value: 'Under Offer' },
+              { id: 'DT1058_0:SUCCESS', value: 'Won / Transacted' },
+              { id: 'DT1058_0:FAIL', value: 'Lost / Canceled' }
+            ],
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
@@ -902,6 +910,63 @@
         }
       });
     });
+  }
+
+  let cachedStageOptions = null;
+
+  function fetchStageOptions() {
+    return new Promise(resolve => {
+      if (cachedStageOptions) {
+        resolve(cachedStageOptions);
+        return;
+      }
+
+      if (window.BX24) {
+        window.BX24.callMethod('crm.status.list', {
+          filter: { '%ENTITY_ID': 'DYNAMIC_1058_STAGE' },
+          order: { SORT: 'ASC' }
+        }, res => {
+          if (!res.error() && Array.isArray(res.data()) && res.data().length > 0) {
+            cachedStageOptions = res.data().map(s => ({
+              id: s.STATUS_ID,
+              value: s.NAME || s.STATUS_ID
+            }));
+            resolve(cachedStageOptions);
+          } else {
+            window.BX24.callMethod('crm.status.list', {
+              filter: { '%ENTITY_ID': 'DYNAMIC_16_STAGE' },
+              order: { SORT: 'ASC' }
+            }, res2 => {
+              if (!res2.error() && Array.isArray(res2.data()) && res2.data().length > 0) {
+                cachedStageOptions = res2.data().map(s => ({
+                  id: s.STATUS_ID,
+                  value: s.NAME || s.STATUS_ID
+                }));
+                resolve(cachedStageOptions);
+              } else {
+                fetchFallbackStages(resolve);
+              }
+            });
+          }
+        });
+      } else {
+        fetchFallbackStages(resolve);
+      }
+    });
+  }
+
+  function fetchFallbackStages(resolve) {
+    fetch('/api/stages/listing')
+      .then(r => r.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.stages) && data.stages.length > 0) {
+          cachedStageOptions = data.stages;
+          resolve(cachedStageOptions);
+        } else {
+          resolve(null);
+        }
+      })
+      .catch(() => resolve(null));
   }
 
   // ============================================================================
@@ -2080,7 +2145,7 @@
       });
       group.appendChild(textarea);
       initialFormValues[f.key] = textarea.value;
-    } else if (f.type === 'enumeration') {
+    } else if (f.type === 'enumeration' || f.type === 'stage') {
       const select = document.createElement('select');
       select.id = `field_${f.key}`;
       select.name = f.key;
@@ -2092,7 +2157,17 @@
       select.appendChild(defOpt);
 
       const rawStr = (rawVal !== null && rawVal !== undefined) ? String(rawVal).trim().toLowerCase() : '';
-      const options = f.options || [];
+      let options = f.options ? [...f.options] : [];
+
+      if (f.type === 'stage' && cachedStageOptions && cachedStageOptions.length > 0) {
+        options = cachedStageOptions;
+      }
+
+      // If record has an existing stage/enum value not present in options, preserve it as an option
+      if (rawVal && !options.some(opt => String(opt.id).trim().toLowerCase() === rawStr || String(opt.value).trim().toLowerCase() === rawStr)) {
+        options.unshift({ id: String(rawVal), value: String(rawVal) });
+      }
+
       options.forEach(opt => {
         const optionEl = document.createElement('option');
         optionEl.value = opt.id;
@@ -2370,8 +2445,17 @@
       }
 
       console.log(`[LISTING] Loading listing #${currentListingId}...`);
-      currentListing = await fetchListing(currentListingId);
+      const [listingItem, stages] = await Promise.all([
+        fetchListing(currentListingId),
+        fetchStageOptions().catch(() => null)
+      ]);
+      currentListing = listingItem;
       console.log('[LISTING] Loaded item data:', currentListing);
+
+      if (stages && stages.length > 0) {
+        const stageF = findFieldConfig('stageId');
+        if (stageF) stageF.options = stages;
+      }
 
       // Render strictly driven by the field value
       const layoutKey = detectLayoutFromListing(currentListing);
