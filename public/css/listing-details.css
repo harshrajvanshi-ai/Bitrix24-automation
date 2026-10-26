@@ -337,8 +337,15 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
   margin-bottom: 16px;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.section-card:focus-within,
+.section-card.has-open-dropdown {
+  z-index: 50;
+  position: relative;
 }
 
 .section-header {
@@ -348,6 +355,8 @@ body {
   padding: 12px 20px;
   background: #fcfcfd;
   border-bottom: 1px solid var(--border-subtle);
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
   cursor: pointer;
   user-select: none;
   min-height: 48px;
@@ -401,12 +410,20 @@ body {
   transform: rotate(-90deg);
 }
 
+.section-card.collapsed .section-header {
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
+  border-bottom: none;
+}
+
 .section-card.collapsed .section-body {
   display: none;
 }
 
 .section-body {
   padding: 20px 22px;
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
 }
 
 /* Grid */
@@ -422,6 +439,12 @@ body {
   flex-direction: column;
   gap: 6px;
   height: 100%;
+  position: relative;
+}
+
+.field-group:focus-within,
+.field-group.has-open-dropdown {
+  z-index: 60;
 }
 
 .field-group.full-width {
@@ -1061,6 +1084,12 @@ textarea.form-control {
 .lookup-container {
   position: relative;
   width: 100%;
+  z-index: 10;
+}
+
+.lookup-container:focus-within,
+.lookup-container.has-open-dropdown {
+  z-index: 100;
 }
 
 .lookup-input-wrap {
@@ -1149,16 +1178,28 @@ textarea.form-control {
   background: #ffffff;
   border: 1.5px solid var(--border-card);
   border-radius: var(--radius-sm);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16), 0 4px 10px rgba(0, 0, 0, 0.06);
   max-height: 240px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 99999;
   display: none;
   animation: dropIn 0.14s ease;
 }
 
+.lookup-dropdown.dropup {
+  top: auto;
+  bottom: calc(100% + 4px);
+  box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.16), 0 -4px 10px rgba(0, 0, 0, 0.06);
+  animation: dropUp 0.14s ease;
+}
+
 @keyframes dropIn {
   from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes dropUp {
+  from { opacity: 0; transform: translateY(4px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 

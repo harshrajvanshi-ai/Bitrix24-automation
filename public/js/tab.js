@@ -413,9 +413,40 @@
 
     let debounceTimer = null;
 
+    function closeDropdown() {
+      dropdown.style.display = 'none';
+      dropdown.classList.remove('dropup');
+      container.classList.remove('has-open-dropdown');
+      const group = container.closest('.form-group');
+      if (group) group.classList.remove('has-open-dropdown');
+      const section = container.closest('.form-section');
+      if (section) section.classList.remove('has-open-dropdown');
+    }
+
+    function adjustDropdownPosition() {
+      const rect = inputWrap.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      if (spaceBelow < 250 && spaceAbove > spaceBelow) {
+        dropdown.classList.add('dropup');
+      } else {
+        dropdown.classList.remove('dropup');
+      }
+    }
+
+    function openDropdown() {
+      adjustDropdownPosition();
+      dropdown.style.display = 'block';
+      container.classList.add('has-open-dropdown');
+      const group = container.closest('.form-group');
+      if (group) group.classList.add('has-open-dropdown');
+      const section = container.closest('.form-section');
+      if (section) section.classList.add('has-open-dropdown');
+    }
+
     async function queryLookup(query = '', refresh = false) {
       dropdown.innerHTML = '<div class="lookup-spinner">Searching Bitrix24 records...</div>';
-      dropdown.style.display = 'block';
+      openDropdown();
 
       try {
         const refreshParam = refresh ? '&refresh=1' : '';
@@ -445,6 +476,7 @@
           empty.style.cssText = 'color: #828b95; cursor: default;';
           empty.textContent = 'No matching records found';
           dropdown.appendChild(empty);
+          adjustDropdownPosition();
           return;
         }
 
@@ -469,7 +501,7 @@
             input.dataset.selectedRef = item.crmRef || item.id;
             clearBtn.style.display = 'block';
             openBtn.style.display = 'inline-flex';
-            dropdown.style.display = 'none';
+            closeDropdown();
 
             // Auto-populate companion fields
             if ((f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') && item.title) {
@@ -486,13 +518,21 @@
 
           dropdown.appendChild(itemEl);
         });
+        adjustDropdownPosition();
       } catch (err) {
         dropdown.innerHTML = '<div class="lookup-item" style="color: var(--b24-danger);">Failed to load records</div>';
+        adjustDropdownPosition();
       }
     }
 
     input.addEventListener('focus', () => {
       queryLookup(input.value.trim());
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDropdown();
+      }
     });
 
     input.addEventListener('input', () => {
@@ -511,7 +551,7 @@
       input.dataset.selectedRef = '';
       clearBtn.style.display = 'none';
       openBtn.style.display = 'none';
-      dropdown.style.display = 'none';
+      closeDropdown();
 
       if (f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') {
         const devNameInput = document.getElementById('field_UF_CRM_DEVELOPER_NAME');
@@ -524,7 +564,7 @@
 
     document.addEventListener('click', (e) => {
       if (!container.contains(e.target)) {
-        dropdown.style.display = 'none';
+        closeDropdown();
       }
     });
 

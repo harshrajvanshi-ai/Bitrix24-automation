@@ -1016,6 +1016,33 @@ async function runTests() {
   assert(spaSyncContent.includes('effPrice && effSqft && !updates.ufCrm16ListPricePerSqFt'), 'src/spaSync.js auto-calculates Price Per Sq Ft during cross-entity sync');
 
   // ============================================================================
+  // Case 21: Layout Card Overflow & Autocomplete Dropdown Stacking
+  // ============================================================================
+  console.log('\n--- Case 21: Layout Card Overflow & Autocomplete Dropdown Stacking ---');
+  const listingCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/listing-details.css'), 'utf-8');
+  const leadCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/tab.css'), 'utf-8');
+  const listingJsContent = fs.readFileSync(path.resolve(__dirname, 'public/js/listing-details.js'), 'utf-8');
+  const leadJsContent = fs.readFileSync(path.resolve(__dirname, 'public/js/tab.js'), 'utf-8');
+
+  // Listing CSS checks
+  assert(listingCssContent.includes('.section-card {') && listingCssContent.includes('overflow: visible;'), 'listing-details.css sets .section-card overflow to visible to prevent dropdown clipping');
+  assert(listingCssContent.includes('.section-card:focus-within,\n.section-card.has-open-dropdown'), 'listing-details.css elevates stacking context for section-card with open dropdown');
+  assert(listingCssContent.includes('.lookup-dropdown.dropup'), 'listing-details.css defines .lookup-dropdown.dropup for upward display');
+  assert(listingCssContent.includes('z-index: 99999;'), 'listing-details.css assigns top z-index to .lookup-dropdown');
+
+  // Lead CSS checks
+  assert(leadCssContent.includes('.form-section {') && leadCssContent.includes('overflow: visible;'), 'tab.css sets .form-section overflow to visible to prevent dropdown clipping');
+  assert(leadCssContent.includes('.form-section:focus-within,\n.form-section.has-open-dropdown'), 'tab.css elevates stacking context for form-section with open dropdown');
+  assert(leadCssContent.includes('.lookup-dropdown.dropup'), 'tab.css defines .lookup-dropdown.dropup for upward display');
+  assert(leadCssContent.includes('z-index: 99999;'), 'tab.css assigns top z-index to .lookup-dropdown');
+
+  // JS checks
+  assert(listingJsContent.includes('adjustDropdownPosition') && listingJsContent.includes('dropup'), 'listing-details.js calculates viewport space and toggles dropup class');
+  assert(listingJsContent.includes('has-open-dropdown'), 'listing-details.js dynamically manages has-open-dropdown state');
+  assert(leadJsContent.includes('adjustDropdownPosition') && leadJsContent.includes('dropup'), 'tab.js calculates viewport space and toggles dropup class');
+  assert(leadJsContent.includes('has-open-dropdown'), 'tab.js dynamically manages has-open-dropdown state');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

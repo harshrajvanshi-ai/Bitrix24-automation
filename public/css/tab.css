@@ -392,15 +392,28 @@ body {
   background: var(--card-bg);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-slow);
+}
+
+.form-section:focus-within,
+.form-section.has-open-dropdown {
+  z-index: 50;
+  position: relative;
 }
 
 .form-section:hover {
   border-color: rgba(2,132,199,0.22);
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
+}
+
+.form-section.section-collapsed .section-header {
+  border-bottom-left-radius: calc(var(--radius-lg) - 1.5px);
+  border-bottom-right-radius: calc(var(--radius-lg) - 1.5px);
+  border-bottom: none;
 }
 
 .form-section.section-collapsed .section-body { display: none; }
@@ -422,6 +435,8 @@ body {
   position: relative;
   background: linear-gradient(135deg, #fafbfd 0%, #f6f8fb 60%, #f0f5fa 100%);
   border-bottom: 1.5px solid #eef2f7;
+  border-top-left-radius: calc(var(--radius-lg) - 1.5px);
+  border-top-right-radius: calc(var(--radius-lg) - 1.5px);
   padding: 11px 18px 11px 20px;
   display: flex;
   justify-content: space-between;
@@ -530,6 +545,8 @@ body {
   padding: 16px 20px 20px;
   background: #ffffff;
   border-top: 1px solid rgba(2,132,199,0.06);
+  border-bottom-left-radius: calc(var(--radius-lg) - 1.5px);
+  border-bottom-right-radius: calc(var(--radius-lg) - 1.5px);
 }
 
 /* =========================================================================
@@ -550,6 +567,12 @@ body {
   flex-direction: column;
   gap: 4px;
   transition: opacity var(--transition-fast);
+  position: relative;
+}
+
+.form-group:focus-within,
+.form-group.has-open-dropdown {
+  z-index: 60;
 }
 
 .form-group.full-width { grid-column: 1 / -1; }
@@ -730,6 +753,12 @@ select.form-control {
 .lookup-container {
   position: relative;
   width: 100%;
+  z-index: 10;
+}
+
+.lookup-container:focus-within,
+.lookup-container.has-open-dropdown {
+  z-index: 100;
 }
 
 .lookup-input-wrap {
@@ -823,16 +852,28 @@ select.form-control {
   background: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-xl);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16), 0 4px 10px rgba(0, 0, 0, 0.06);
   max-height: 240px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 99999;
   display: none;
   animation: dropIn 0.14s ease;
 }
 
+.lookup-dropdown.dropup {
+  top: auto;
+  bottom: calc(100% + 6px);
+  box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.16), 0 -4px 10px rgba(0, 0, 0, 0.06);
+  animation: dropUp 0.14s ease;
+}
+
 @keyframes dropIn {
   from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes dropUp {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
