@@ -6,3 +6,5 @@ storage/*.json
 npm-debug.log*
 .DS_Store
 spa_fields_dump.json
+scratch*
+
