@@ -85,6 +85,18 @@ const synchronizedListingSections = [
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
+        code: 'UF_CRM_LISTINGAGENT',
+        leadAltCode: 'UF_CRM_ASSIGNED_TO_BROKER',
+        spaKey: 'ufCrm16ListingAgent',
+        spaCrmCode: 'UF_CRM_16_LISTING_AGENT',
+        label: 'Listing Agent / Broker',
+        bitrixLabel: 'Listing Agent',
+        type: 'lookup',
+        placeholder: 'Search Listing Agent...',
+        lookupEntity: 'broker',
+        rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
+      },
+      {
         code: 'XML_ID',
         leadAltCode: 'UF_CRM_LISTING_ID',
         spaKey: 'xmlId',
@@ -109,7 +121,9 @@ const synchronizedListingSections = [
         spaCrmCode: 'COMPANY_ID',
         label: 'Company (Agency or Developer)',
         bitrixLabel: 'Company',
-        type: 'crm_company',
+        type: 'lookup',
+        placeholder: 'Search Company or Developer...',
+        lookupEntity: 'developer',
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
@@ -118,7 +132,9 @@ const synchronizedListingSections = [
         spaCrmCode: 'CONTACT_ID',
         label: 'Contact',
         bitrixLabel: 'Contact',
-        type: 'crm_contact',
+        type: 'lookup',
+        placeholder: 'Search Contact...',
+        lookupEntity: 'contact',
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
@@ -127,7 +143,9 @@ const synchronizedListingSections = [
         spaCrmCode: 'CONTACT_IDS',
         label: 'Contacts',
         bitrixLabel: 'Contacts',
-        type: 'crm_contact_multi',
+        type: 'lookup',
+        placeholder: 'Search Contacts...',
+        lookupEntity: 'contact',
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
@@ -136,8 +154,9 @@ const synchronizedListingSections = [
         spaCrmCode: 'PARENT_ID_1052',
         label: 'Master Property (parentId1052)',
         bitrixLabel: 'Property',
-        type: 'crm_entity',
-        placeholder: 'Property SPA reference...',
+        type: 'lookup',
+        placeholder: 'Search Master Property...',
+        lookupEntity: 'property',
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
       },
       {
@@ -156,7 +175,9 @@ const synchronizedListingSections = [
         spaCrmCode: 'UF_CRM_16_1791172932',
         label: 'Developer CRM Entity',
         bitrixLabel: 'Developer',
-        type: 'crm_entity',
+        type: 'lookup',
+        placeholder: 'Search Developer...',
+        lookupEntity: 'developer',
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
       }
     ]
@@ -295,6 +316,18 @@ const synchronizedListingSections = [
         type: 'integer',
         placeholder: 'e.g. 2',
         rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
+      },
+      {
+        code: 'UF_CRM_PROPERTY_LAYOUT',
+        leadAltCode: 'UF_CRM_LAYOUT',
+        spaKey: 'ufCrm16Layout',
+        spaCrmCode: 'UF_CRM_16_LAYOUT',
+        label: 'Property Layout',
+        bitrixLabel: 'Property Layout',
+        type: 'lookup',
+        placeholder: 'Search Layout...',
+        lookupEntity: 'layout',
+        rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
       }
     ]
   },
@@ -311,9 +344,22 @@ const synchronizedListingSections = [
         spaCrmCode: 'UF_CRM_16_PROJECT_NAME',
         label: 'Project / Building Name',
         bitrixLabel: 'Project Name',
-        type: 'string',
-        placeholder: 'e.g. Downtown Views II, Creek Horizon...',
+        type: 'lookup',
+        placeholder: 'Search Project / Building...',
+        lookupEntity: 'project',
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+      },
+      {
+        code: 'UF_CRM_PROJECT',
+        leadAltCode: 'UF_CRM_1792558317',
+        spaKey: 'ufCrm16MasterProject',
+        spaCrmCode: 'UF_CRM_16_MASTER_PROJECT',
+        label: 'Master Project',
+        bitrixLabel: 'Master Project',
+        type: 'lookup',
+        placeholder: 'Search Master Project...',
+        lookupEntity: 'master_project',
+        rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
       },
       {
         code: 'UF_CRM_BUILDING_DUBIZZLE',

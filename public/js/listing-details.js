@@ -1578,7 +1578,7 @@
 
   function isLookupField(f) {
     if (!f) return false;
-    const lookupTypes = ['crm_company', 'crm_contact', 'crm_contact_multi', 'crm_entity', 'user', 'crm'];
+    const lookupTypes = ['crm_company', 'crm_contact', 'crm_contact_multi', 'crm_entity', 'user', 'crm', 'lookup'];
     if (lookupTypes.includes(f.type)) return true;
     if (f.key === 'companyId' || f.key === 'contactId' || f.key === 'contactIds' || f.key === 'assignedById') return true;
     if (f.key && f.key.startsWith('parentId')) return true;
@@ -1586,10 +1586,11 @@
   }
 
   function getEntityMeta(type, key) {
-    if (type === 'crm_company' || key === 'companyId') {
-      return { icon: '🏢', label: 'Company', defaultPrefix: 'Company #' };
+    const k = String(key || '').toLowerCase();
+    if (type === 'crm_company' || key === 'companyId' || k.includes('company') || k.includes('developer')) {
+      return { icon: '🏢', label: 'Company / Developer', defaultPrefix: 'Company #' };
     }
-    if (type === 'crm_contact' || key === 'contactId') {
+    if (type === 'crm_contact' || key === 'contactId' || k.includes('contact')) {
       return { icon: '👤', label: 'Contact', defaultPrefix: 'Contact #' };
     }
     if (type === 'crm_contact_multi' || key === 'contactIds') {
@@ -1598,8 +1599,14 @@
     if (type === 'user' || key === 'assignedById') {
       return { icon: '👤', label: 'Responsible Person', defaultPrefix: 'User #' };
     }
-    if (key === 'parentId1052') {
+    if (key === 'parentId1052' || k.includes('property')) {
       return { icon: '🏗️', label: 'Master Property', defaultPrefix: 'Master Property #' };
+    }
+    if (k.includes('project')) {
+      return { icon: '🏢', label: 'Project', defaultPrefix: 'Project #' };
+    }
+    if (k.includes('layout')) {
+      return { icon: '📐', label: 'Layout', defaultPrefix: 'Layout #' };
     }
     return { icon: '🔗', label: 'CRM Entity', defaultPrefix: 'Record #' };
   }

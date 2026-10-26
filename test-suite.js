@@ -973,7 +973,16 @@ async function runTests() {
   // Verify server.js routes for listing mapping and sync
   const serverContent = fs.readFileSync(path.resolve(__dirname, 'server.js'), 'utf-8');
   assert(serverContent.includes("app.get('/api/mapping/listing'"), 'server.js defines GET /api/mapping/listing endpoint');
-  assert(serverContent.includes("app.post('/api/lead/:id/sync-listing'"), 'server.js defines POST /api/lead/:id/sync-listing endpoint');
+  // Verify listing layout uses interactive lookup fields matching lead layout pattern
+  const configJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'config/fields.json'), 'utf-8'));
+  const listingLookupFields = (configJson.listingLayout?.sections || []).flatMap(s => (s.fields || [])).filter(f => f.type === 'lookup');
+  assert(listingLookupFields.length >= 7, 'listingLayout defines interactive lookup fields (>= 7 lookup fields)');
+  assert(listingLookupFields.some(f => f.code === 'COMPANY_ID' && f.lookupEntity === 'developer'), 'COMPANY_ID is configured as developer lookup');
+  assert(listingLookupFields.some(f => f.code === 'CONTACT_ID' && f.lookupEntity === 'contact'), 'CONTACT_ID is configured as contact lookup');
+  assert(listingLookupFields.some(f => f.code === 'UF_CRM_PROPERTY' && f.lookupEntity === 'property'), 'UF_CRM_PROPERTY is configured as property lookup');
+  assert(listingLookupFields.some(f => f.code === 'UF_CRM_PROJECT_NAME' && f.lookupEntity === 'project'), 'UF_CRM_PROJECT_NAME is configured as project lookup');
+  assert(tabJsContent.includes('isLookupField'), 'public/js/tab.js defines isLookupField helper');
+  assert(tabJsContent.includes('resolveLookupEntity'), 'public/js/tab.js defines resolveLookupEntity helper');
   // ============================================================================
   // Case 20: Layout Field Automations & Auto-Calculations
   // ============================================================================

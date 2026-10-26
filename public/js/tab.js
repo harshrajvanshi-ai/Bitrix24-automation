@@ -180,11 +180,50 @@
   }
 
   /**
+   * Check if a field represents an interactive CRM entity lookup
+   */
+  function isLookupField(f) {
+    if (!f) return false;
+    if (f.type === 'lookup') return true;
+    const lookupTypes = ['crm_company', 'crm_contact', 'crm_contact_multi', 'crm_entity', 'lookup'];
+    if (lookupTypes.includes(f.type)) return true;
+    if (f.lookupEntity) return true;
+    const lookupCodes = [
+      'COMPANY_ID', 'CONTACT_ID', 'UF_CRM_CONTACTS', 'UF_CRM_PROPERTY',
+      'UF_CRM_DEVELOPER_1', 'UF_CRM_PROJECT', 'UF_CRM_PROJECT_1', 'UF_CRM_PROJECT_NAME',
+      'UF_CRM_PROPERTY_LAYOUT', 'UF_CRM_PROPERTY_PROPERTYFINDER', 'UF_CRM_LISTING',
+      'UF_CRM_LISTINGAGENT', 'UF_CRM_ASSIGNED_TO_BROKER', 'UF_CRM_OWNER_ENQUIRY'
+    ];
+    if (lookupCodes.includes(f.code)) return true;
+    return false;
+  }
+
+  /**
+   * Resolve lookup entity type (developer, contact, property, project, master_project, layout, listing, broker)
+   */
+  function resolveLookupEntity(f) {
+    if (f.lookupEntity) return f.lookupEntity;
+    const code = f.code || '';
+    if (code === 'COMPANY_ID' || code === 'UF_CRM_DEVELOPER_1' || f.type === 'crm_company') return 'developer';
+    if (code === 'CONTACT_ID' || code === 'UF_CRM_CONTACTS' || code === 'UF_CRM_OWNER_ENQUIRY' || f.type === 'crm_contact' || f.type === 'crm_contact_multi') return 'contact';
+    if (code === 'UF_CRM_PROPERTY' || code === 'UF_CRM_PROPERTY_PROPERTYFINDER' || code === 'UF_CRM_MASTERPROPERTY') return 'property';
+    if (code === 'UF_CRM_PROJECT_1' || code === 'UF_CRM_PROJECT_NAME') return 'project';
+    if (code === 'UF_CRM_PROJECT' || code === 'UF_CRM_1792558317') return 'master_project';
+    if (code === 'UF_CRM_PROPERTY_LAYOUT' || code === 'UF_CRM_LAYOUT') return 'layout';
+    if (code === 'UF_CRM_LISTING') return 'listing';
+    if (code === 'UF_CRM_LISTINGAGENT' || code === 'UF_CRM_ASSIGNED_TO_BROKER') return 'broker';
+    return 'master_project';
+  }
+
+  /**
    * Create interactive Lookup Autocomplete Component (Bitrix CRM Entity Lookups)
    */
   function createLookupInput(f, currentVal, markFieldDirty) {
     const container = document.createElement('div');
     container.className = 'lookup-container';
+
+    const entity = f.lookupEntity || resolveLookupEntity(f);
+    f.lookupEntity = entity;
 
     const inputWrap = document.createElement('div');
     inputWrap.className = 'lookup-input-wrap';
@@ -203,33 +242,74 @@
     input.autocomplete = 'off';
 
     // Check if initial value is already resolved in currentLead or needs lookup resolution
-    if (currentLead && currentLead[f.code + '_TITLE']) {
-      input.value = currentLead[f.code + '_TITLE'];
-      input.dataset.selectedRef = currentLead[f.code + '_REF'] || currentVal;
-      const idM = String(currentVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
-      if (idM) input.dataset.selectedId = idM[1];
+    let knownTitle = '';
+    let knownRef = '';
+    let knownId = '';
+
+    if (currentLead) {
+      if (currentLead[f.code + '_TITLE']) {
+        knownTitle = currentLead[f.code + '_TITLE'];
+        knownRef = currentLead[f.code + '_REF'] || currentVal;
+      } else if (f.code === 'COMPANY_ID' && currentLead.COMPANY_TITLE) {
+        knownTitle = currentLead.COMPANY_TITLE;
+        knownRef = currentVal ? `CO_${currentVal}` : '';
+        knownId = String(currentVal || '');
+      } else if (f.code === 'CONTACT_ID' && (currentLead.CONTACT_FULL_NAME || currentLead.CONTACT_NAME)) {
+        knownTitle = currentLead.CONTACT_FULL_NAME || currentLead.CONTACT_NAME;
+        knownRef = currentVal ? `C_${currentVal}` : '';
+        knownId = String(currentVal || '');
+      } else if (f.code === 'UF_CRM_DEVELOPER_1' && (currentLead.UF_CRM_DEVELOPER_NAME || currentLead.UF_CRM_DEVELOPER_1_TITLE)) {
+        knownTitle = currentLead.UF_CRM_DEVELOPER_NAME || currentLead.UF_CRM_DEVELOPER_1_TITLE;
+        knownRef = currentVal || '';
+      } else if ((f.code === 'UF_CRM_PROJECT_NAME' || f.code === 'UF_CRM_PROJECT_1') && currentLead.UF_CRM_PROJECT_NAME) {
+        knownTitle = currentLead.UF_CRM_PROJECT_NAME;
+        knownRef = currentLead.UF_CRM_PROJECT_1 || currentVal || '';
+      } else if (f.code === 'UF_CRM_PROPERTY' && currentLead.UF_CRM_PROPERTY_TITLE) {
+        knownTitle = currentLead.UF_CRM_PROPERTY_TITLE;
+        knownRef = currentVal || '';
+      }
+    }
+
+    if (knownTitle) {
+      input.value = knownTitle;
+      if (knownRef) input.dataset.selectedRef = knownRef;
+      if (knownId) {
+        input.dataset.selectedId = knownId;
+      } else {
+        const idM = String(knownRef || currentVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
+        if (idM) input.dataset.selectedId = idM[1];
+      }
     } else if (currentVal) {
-      const refMatch = String(currentVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
+      let rawVal = currentVal;
+      if (Array.isArray(rawVal) && rawVal.length > 0) rawVal = rawVal[0];
+      if (rawVal && typeof rawVal === 'object') {
+        if (rawVal.title || rawVal.name) {
+          input.value = rawVal.title || rawVal.name;
+        }
+        rawVal = rawVal.id || rawVal.ID || rawVal.value || '';
+      }
+
+      const refMatch = String(rawVal).trim().match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
       if (refMatch) {
         const cleanId = refMatch[1];
         input.dataset.selectedId = cleanId;
-        input.dataset.selectedRef = currentVal;
-        fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanId)}`)
+        input.dataset.selectedRef = rawVal;
+        fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`)
           .then(r => r.json())
           .then(d => {
             const match = (d.items || []).find(it => String(it.id) === cleanId) || (d.items && d.items[0]);
-            if (match && (input.value === currentVal || input.value === cleanId || !input.value)) {
+            if (match && (input.value === String(currentVal) || input.value === cleanId || !input.value)) {
               input.value = match.title;
-              input.dataset.selectedRef = match.crmRef || currentVal;
+              input.dataset.selectedRef = match.crmRef || rawVal;
             }
           })
           .catch(() => {});
       } else {
         // Plain text title passed (e.g. from legacy data), pre-resolve ID and CRM reference
-        fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(String(currentVal).trim())}`)
+        fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(String(rawVal).trim())}`)
           .then(r => r.json())
           .then(d => {
-            const match = (d.items || []).find(it => it.title.toLowerCase() === String(currentVal).trim().toLowerCase()) || (d.items && d.items[0]);
+            const match = (d.items || []).find(it => it.title.toLowerCase() === String(rawVal).trim().toLowerCase()) || (d.items && d.items[0]);
             if (match) {
               input.dataset.selectedId = match.id;
               input.dataset.selectedRef = match.crmRef || match.id;
@@ -313,6 +393,17 @@
             input.dataset.selectedRef = item.crmRef || item.id;
             clearBtn.style.display = 'block';
             dropdown.style.display = 'none';
+
+            // Auto-populate companion fields
+            if ((f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') && item.title) {
+              const devNameInput = document.getElementById('field_UF_CRM_DEVELOPER_NAME');
+              if (devNameInput) devNameInput.value = item.title;
+            }
+            if ((f.code === 'UF_CRM_PROJECT_NAME' || f.code === 'UF_CRM_PROJECT_1') && item.title) {
+              const altEl = document.getElementById(f.code === 'UF_CRM_PROJECT_NAME' ? 'field_UF_CRM_PROJECT_1' : 'field_UF_CRM_PROJECT_NAME');
+              if (altEl) altEl.value = item.title;
+            }
+
             markFieldDirty();
           });
 
@@ -342,6 +433,12 @@
       input.dataset.selectedRef = '';
       clearBtn.style.display = 'none';
       dropdown.style.display = 'none';
+
+      if (f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') {
+        const devNameInput = document.getElementById('field_UF_CRM_DEVELOPER_NAME');
+        if (devNameInput) devNameInput.value = '';
+      }
+
       markFieldDirty();
       input.focus();
     });
@@ -400,7 +497,8 @@
    * Create field input control supporting lookup, enumeration, boolean, money, date, text, number
    */
   function createFieldInput(f, currentVal, markFieldDirty) {
-    if (f.type === 'lookup') {
+    if (isLookupField(f)) {
+      if (!f.lookupEntity) f.lookupEntity = resolveLookupEntity(f);
       return createLookupInput(f, currentVal, markFieldDirty);
     }
 
@@ -728,7 +826,7 @@
     // 2. Composite Title & Portal Title from actual non-empty record fields
     const beds = getVal(['UF_CRM_1791952093551', 'UF_CRM_BEDROOM']);
     const propType = getText(['UF_CRM_1791952050535', 'UF_CRM_PROPERTY_TYPE']);
-    const project = getVal(['UF_CRM_1791952285159', 'UF_CRM_PROJECT_NAME']);
+    const project = getText(['UF_CRM_1791952285159', 'UF_CRM_PROJECT_NAME', 'UF_CRM_PROJECT_1']);
     const community = getVal(['UF_CRM_1791952328751', 'UF_CRM_COMMUNITY']);
     const city = getVal(['UF_CRM_1791952345511', 'UF_CRM_CITY']);
 
@@ -1256,7 +1354,7 @@
           });
           filePromises.push(p);
         }
-      } else if (f.type === 'lookup') {
+      } else if (f.type === 'lookup' || isLookupField(f)) {
         payload[f.code] = input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();
       } else {
         payload[f.code] = input.value.trim();
@@ -1277,6 +1375,22 @@
 
     if (payload.UF_CRM_PROPERTY_LAYOUT && !payload.UF_CRM_LAYOUT) {
       payload.UF_CRM_LAYOUT = payload.UF_CRM_PROPERTY_LAYOUT;
+    }
+
+    // Bidirectional sync for project text name & CRM reference
+    if (payload.UF_CRM_PROJECT_1 && !payload.UF_CRM_PROJECT_NAME) {
+      const pInput = document.getElementById('field_UF_CRM_PROJECT_1') || document.getElementById('field_UF_CRM_PROJECT_NAME');
+      if (pInput?.value) payload.UF_CRM_PROJECT_NAME = pInput.value.trim();
+    }
+    if (payload.UF_CRM_PROJECT_NAME && !payload.UF_CRM_PROJECT_1) {
+      const pInput = document.getElementById('field_UF_CRM_PROJECT_NAME');
+      if (pInput?.dataset?.selectedRef || pInput?.dataset?.selectedId) {
+        payload.UF_CRM_PROJECT_1 = pInput.dataset.selectedRef || pInput.dataset.selectedId;
+      }
+    }
+    if ((payload.COMPANY_ID || payload.UF_CRM_DEVELOPER_1) && !payload.UF_CRM_DEVELOPER_NAME) {
+      const dInput = document.getElementById('field_COMPANY_ID') || document.getElementById('field_UF_CRM_DEVELOPER_1');
+      if (dInput?.value) payload.UF_CRM_DEVELOPER_NAME = dInput.value.trim();
     }
 
     if (payload.UF_CRM_PROPERTY_PROPERTYFINDER && !payload.UF_CRM_PROPERTY) {
