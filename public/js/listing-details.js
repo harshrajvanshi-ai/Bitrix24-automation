@@ -1145,8 +1145,8 @@
 
       if (zoomToggleBtn) {
         zoomToggleBtn.style.display = 'inline-flex';
-        zoomToggleBtn.innerHTML = '🔍 Zoom';
-        zoomToggleBtn.title = 'Toggle 4x zoom';
+        zoomToggleBtn.classList.remove('active');
+        zoomToggleBtn.title = 'Fit to Screen / 1:1 Size';
       }
 
       _lbScale = 1;
@@ -1185,7 +1185,7 @@
       }));
 
       const applyTransform = (smooth = true) => {
-        img.style.transition = smooth ? 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
+        img.style.transition = smooth ? 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
         img.style.transform = `translate(${_lbImgX}px, ${_lbImgY}px) scale(${_lbScale})`;
       };
 
@@ -1195,8 +1195,8 @@
         applyTransform(smooth);
         img.classList.toggle('zoomed-in', _lbScale > 1);
         if (zoomToggleBtn) {
-          zoomToggleBtn.innerHTML = _lbScale > 1 ? '🔍 Fit' : '🔍 Zoom';
-          zoomToggleBtn.title = _lbScale > 1 ? 'Reset to fit' : 'Toggle 4x zoom';
+          zoomToggleBtn.classList.toggle('active', _lbScale > 1);
+          zoomToggleBtn.title = _lbScale > 1 ? 'Fit to Screen' : '1:1 Original Size';
         }
       };
 
@@ -1355,7 +1355,25 @@
     const card = document.createElement('div');
     card.className = 'file-upload-card';
 
-    // 1. Dropzone Bar (Clean, single-line icon + text group)
+    // 1. Bitrix24 Native View Switcher Bar (Tile, List, Fit width)
+    const switcher = document.createElement('div');
+    switcher.className = 'b24-view-switcher';
+    switcher.innerHTML = `
+      <button type="button" class="b24-view-btn active" data-view="tile" title="Tile view">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        Tile
+      </button>
+      <button type="button" class="b24-view-btn" data-view="list" title="List view">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        List
+      </button>
+      <button type="button" class="b24-view-btn" data-view="fit" title="Fit width">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+        Fit width
+      </button>
+    `;
+
+    // 2. Dropzone Bar (Clean, single-line icon + text group)
     const dropzone = document.createElement('div');
     dropzone.className = 'dropzone-box';
     const isMulti = field.isMultiple || field.key.includes('DOCS') || field.key.includes('1791544736052') || field.key.includes('1791881642219');
@@ -1392,18 +1410,26 @@
       }
     });
 
-    card.appendChild(dropzone);
-
-    // 2. In-Window Inline Preview Viewport (Shows image in the same window at stable fixed height!)
+    // 3. In-Window Inline Preview Viewport (Kept for compatibility)
     const viewportBox = document.createElement('div');
     viewportBox.className = 'inline-preview-viewport';
     viewportBox.id = `viewport_${field.key}`;
     viewportBox.style.display = 'none';
 
-    // 3. Unified Preview Tiles Strip (Fixed identical 88x88px size for both images & docs)
+    // 4. Bitrix24 Files Container (Unified Preview Tiles Strip)
     const stripWrap = document.createElement('div');
-    stripWrap.className = 'thumbnail-strip';
+    stripWrap.className = 'thumbnail-strip b24-files-container';
     stripWrap.id = `strip_${field.key}`;
+
+    switcher.querySelectorAll('.b24-view-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switcher.querySelectorAll('.b24-view-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const viewMode = btn.dataset.view;
+        stripWrap.classList.remove('view-tile', 'view-list', 'view-fit');
+        stripWrap.classList.add(`view-${viewMode}`);
+      });
+    });
 
     // Collect and normalize all existing files into a field gallery
     const existingList = Array.isArray(rawValue) ? rawValue : (rawValue ? [rawValue] : []);
@@ -1416,8 +1442,6 @@
       let fileName = '';
 
       if (typeof fileItem === 'object') {
-        // Prioritize urlMachine because it contains signed HMAC authentication (?token=...)
-        // Bitrix ajax.php URLs without token strictly require intranet session cookies, which fail with 403 in iframe
         fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
         const fid = fileItem.id || fileItem.ID || fileItem.fileId;
         if (!fileUrl && fid) {
@@ -1440,7 +1464,6 @@
 
       const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
       let fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
-      // Fallback: If URL points to intranet ajax.php and lacks a machine token, stream through local proxy
       if (fullUrl.includes('ajax.php') && !fullUrl.includes('token=')) {
         fullUrl = `/api/file/proxy?url=${encodeURIComponent(fullUrl)}`;
       }
@@ -1454,57 +1477,58 @@
     fieldGallery.forEach((item, itemIdx) => {
       if (item.isImage) {
         const thumb = document.createElement('div');
-        thumb.className = 'thumb-item preview-thumb-wrap';
+        thumb.className = 'thumb-item preview-thumb-wrap b24-file-tile';
         thumb.title = `${item.name} - Click to preview`;
+        thumb.innerHTML = `
+          <div class="b24-tile-thumb-wrap">
+            <img class="thumb-item-img b24-tile-img" src="${item.url}" alt="${item.name}" loading="lazy">
+            <div class="thumb-zoom-overlay">🔍 View</div>
+          </div>
+          <div class="b24-tile-footer">
+            <span class="b24-tile-name" title="${item.name}">${item.name}</span>
+          </div>
+        `;
 
-        const thumbImg = document.createElement('img');
-        thumbImg.className = 'thumb-item-img';
-        thumbImg.src = item.url;
-        thumbImg.alt = item.name;
+        const thumbImg = thumb.querySelector('.thumb-item-img');
         thumbImg.onerror = function () {
           if (!this.dataset.proxied && item.url.startsWith('http')) {
             this.dataset.proxied = '1';
             this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
           } else {
             this.onerror = null;
-            thumb.innerHTML = `<div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span><span class="doc-tile-name">${item.name}</span></div><div class="thumb-zoom-overlay">🔍 Zoom</div>`;
+            thumb.querySelector('.b24-tile-thumb-wrap').innerHTML = `
+              <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span></div>
+              <div class="thumb-zoom-overlay">🔍 View</div>
+            `;
           }
         };
 
-        const zoomOverlay = document.createElement('div');
-        zoomOverlay.className = 'thumb-zoom-overlay';
-        zoomOverlay.textContent = '🔍 Zoom';
-
-        thumb.appendChild(thumbImg);
-        thumb.appendChild(zoomOverlay);
-
         thumb.addEventListener('click', () => {
-          showInWindowImage(viewportBox, item.url, item.name, fieldGallery, itemIdx);
+          openLightbox(item.name, item.url, false, fieldGallery, itemIdx);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
         });
 
         stripWrap.appendChild(thumb);
       } else {
-        // Uniform Document Preview Tile (exact same 88x88px dimensions as photo tile)
         const docThumb = document.createElement('div');
-        docThumb.className = 'thumb-item preview-doc-wrap';
+        docThumb.className = 'thumb-item preview-doc-wrap b24-file-tile';
         docThumb.title = `${item.name} - Click to preview`;
         docThumb.innerHTML = `
-          <div class="doc-tile-inner">
-            <span class="doc-tile-badge ${item.isPdf ? 'pdf' : 'doc'}">${item.isPdf ? 'PDF' : 'DOC'}</span>
-            <span class="doc-tile-icon">📄</span>
-            <span class="doc-tile-name" title="${item.name}">${item.name}</span>
+          <div class="b24-tile-thumb-wrap">
+            <div class="doc-tile-inner">
+              <span class="doc-tile-badge ${item.isPdf ? 'pdf' : 'doc'}">${item.isPdf ? 'PDF' : 'DOC'}</span>
+              <span class="doc-tile-icon">📄</span>
+            </div>
+            <div class="thumb-zoom-overlay">🔍 View</div>
           </div>
-          <div class="thumb-zoom-overlay">🔍 View</div>
+          <div class="b24-tile-footer">
+            <span class="b24-tile-name" title="${item.name}">${item.name}</span>
+          </div>
         `;
 
         docThumb.addEventListener('click', () => {
-          if (item.isImage) {
-            showInWindowImage(viewportBox, item.url, item.name, fieldGallery, itemIdx);
-          } else {
-            showInWindowPdf(viewportBox, item.url, item.name, fieldGallery, itemIdx);
-          }
+          openLightbox(item.name, item.url, item.isPdf, fieldGallery, itemIdx);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           docThumb.classList.add('active');
         });
@@ -1513,21 +1537,10 @@
       }
     });
 
-    // Automatically display first item in inline viewport on load!
-    if (fieldGallery.length > 0) {
-      const firstItem = fieldGallery[0];
-      if (firstItem.isImage) {
-        showInWindowImage(viewportBox, firstItem.url, firstItem.name, fieldGallery, 0);
-      } else if (firstItem.isPdf) {
-        showInWindowPdf(viewportBox, firstItem.url, firstItem.name, fieldGallery, 0);
-      }
-      if (stripWrap.firstChild) {
-        stripWrap.firstChild.classList.add('active');
-      }
-    }
-
-    card.appendChild(viewportBox);
+    card.appendChild(switcher);
     card.appendChild(stripWrap);
+    card.appendChild(dropzone);
+    card.appendChild(viewportBox);
     container.appendChild(card);
   }
 
@@ -1636,22 +1649,24 @@
         setDirty(true);
 
         if (isImage) {
-          // Immediately show newly selected image in the same window viewport!
-          showInWindowImage(viewportBox, dataUrl, `${file.name} (New)`);
-
-          // Append thumbnail tile to strip (fixed 88x88px size)
+          // Append thumbnail tile to strip (Bitrix24 native 140x110px tile)
           const thumb = document.createElement('div');
-          thumb.className = 'thumb-item preview-thumb-wrap active';
+          thumb.className = 'thumb-item preview-thumb-wrap b24-file-tile active';
           thumb.title = `${file.name} (Ready to upload)`;
           thumb.innerHTML = `
-            <img class="thumb-item-img" src="${dataUrl}" alt="${file.name}">
-            <div class="thumb-zoom-overlay">🔍 Zoom</div>
-            <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+            <div class="b24-tile-thumb-wrap">
+              <img class="thumb-item-img b24-tile-img" src="${dataUrl}" alt="${file.name}">
+              <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+            </div>
+            <div class="b24-tile-footer">
+              <span class="b24-tile-name" title="${file.name}">${file.name}</span>
+            </div>
           `;
 
           thumb.addEventListener('click', (ev) => {
             if (ev.target.classList.contains('thumb-remove-btn')) return;
-            showInWindowImage(viewportBox, dataUrl, file.name);
+            openLightbox(file.name, dataUrl, false);
             stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
           });
@@ -1670,31 +1685,27 @@
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           stripWrap.appendChild(thumb);
         } else {
-          // Document tile of exact same fixed 88x88px size!
-          if (isPdf) {
-            showInWindowPdf(viewportBox, dataUrl, `${file.name} (New)`);
-          }
-
+          // Document tile of exact same Bitrix24 native 140x110px size
           const docThumb = document.createElement('div');
-          docThumb.className = 'thumb-item preview-doc-wrap active';
+          docThumb.className = 'thumb-item preview-doc-wrap b24-file-tile active';
           docThumb.title = `${file.name} (Ready to upload)`;
           docThumb.innerHTML = `
-            <div class="doc-tile-inner">
-              <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
-              <span class="doc-tile-icon">📄</span>
-              <span class="doc-tile-name" title="${file.name}">${file.name}</span>
+            <div class="b24-tile-thumb-wrap">
+              <div class="doc-tile-inner">
+                <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
+                <span class="doc-tile-icon">📄</span>
+              </div>
+              <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
             </div>
-            <div class="thumb-zoom-overlay">🔍 View</div>
-            <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+            <div class="b24-tile-footer">
+              <span class="b24-tile-name" title="${file.name}">${file.name}</span>
+            </div>
           `;
 
           docThumb.addEventListener('click', (ev) => {
             if (ev.target.classList.contains('thumb-remove-btn')) return;
-            if (isImage) {
-              showInWindowImage(viewportBox, dataUrl, file.name);
-            } else {
-              showInWindowPdf(viewportBox, dataUrl, file.name);
-            }
+            openLightbox(file.name, dataUrl, isPdf);
             stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
             docThumb.classList.add('active');
           });
