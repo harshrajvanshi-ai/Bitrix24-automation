@@ -817,12 +817,18 @@
   const dirtyIndicator = document.getElementById('dirty-indicator');
   const dirtyText = document.getElementById('dirty-text');
 
-  // Lightbox Modal Elements (In same window)
+  // Lightbox Modal Elements (Premium Gallery Viewer)
   const lightboxModal = document.getElementById('lightbox-modal');
   const lightboxTitle = document.getElementById('lightbox-title');
+  const lightboxFileIcon = document.getElementById('lightbox-file-icon');
+  const lightboxCounter = document.getElementById('lightbox-counter');
   const lightboxBody = document.getElementById('lightbox-body');
   const lightboxDownloadLink = document.getElementById('lightbox-download-link');
   const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
+  const lbNavPrev = document.getElementById('lb-nav-prev');
+  const lbNavNext = document.getElementById('lb-nav-next');
+  const lbFilmstrip = document.getElementById('lb-filmstrip');
+  const lbZoomControls = document.getElementById('lb-zoom-controls');
 
   // ============================================================================
   // 2. HELPER & UTILITY FUNCTIONS
@@ -1027,153 +1033,259 @@
   }
 
   // ============================================================================
-  // 4. LIGHTBOX & DOCUMENT MODAL VIEWER (STRICTLY IN SAME IFRAME WINDOW)
+  // ============================================================================
+  // 4. LIGHTBOX — Premium Gallery Viewer (In-Window)
   // ============================================================================
   let lightboxCleanup = null;
+  let _lbGallery = [];     // array of { url, name, isImage, isPdf }
+  let _lbIndex   = 0;      // current index within gallery
+  let _lbScale   = 1;      // current zoom scale
+  let _lbImgX    = 0;
+  let _lbImgY    = 0;
 
-  function openLightbox(title, url, isPdf = false) {
+  function _lbSetCounter() {
+    if (_lbGallery.length > 1) {
+      lightboxCounter.textContent = `${_lbIndex + 1} / ${_lbGallery.length}`;
+      lightboxCounter.style.display = '';
+    } else {
+      lightboxCounter.style.display = 'none';
+    }
+  }
+
+  function _lbSetNavState() {
+    const multi = _lbGallery.length > 1;
+    lbNavPrev.style.display = multi ? 'flex' : 'none';
+    lbNavNext.style.display = multi ? 'flex' : 'none';
+    lbNavPrev.disabled = _lbIndex === 0;
+    lbNavNext.disabled = _lbIndex === _lbGallery.length - 1;
+  }
+
+  function _lbSyncFilmstrip() {
+    lbFilmstrip.querySelectorAll('.lb-film-item').forEach((el, i) => {
+      el.classList.toggle('active', i === _lbIndex);
+    });
+    const activeEl = lbFilmstrip.querySelectorAll('.lb-film-item')[_lbIndex];
+    if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  function _lbBuildFilmstrip(gallery) {
+    lbFilmstrip.innerHTML = '';
+    if (gallery.length <= 1) {
+      lbFilmstrip.style.display = 'none';
+      return;
+    }
+    lbFilmstrip.style.display = 'flex';
+    gallery.forEach((item, i) => {
+      const el = document.createElement('div');
+      el.className = 'lb-film-item' + (i === _lbIndex ? ' active' : '');
+      if (item.isImage) {
+        el.innerHTML = `<img src="${item.url}" alt="${item.name}" loading="lazy">`;
+      } else {
+        const badgeClass = item.isPdf ? 'pdf' : 'doc';
+        const icon = item.isPdf ? '📄' : '📎';
+        el.innerHTML = `
+          <div class="lb-film-item-doc">
+            <span>${icon}</span>
+            <span class="lb-film-badge ${badgeClass}">${item.isPdf ? 'PDF' : 'DOC'}</span>
+          </div>
+        `;
+      }
+      el.addEventListener('click', () => _lbGoTo(i));
+      lbFilmstrip.appendChild(el);
+    });
+  }
+
+  function _lbGoTo(idx) {
+    if (idx < 0 || idx >= _lbGallery.length) return;
+    _lbIndex = idx;
+    _lbScale = 1;
+    _lbImgX = 0;
+    _lbImgY = 0;
+    _lbRenderCurrent();
+    _lbSetCounter();
+    _lbSetNavState();
+    _lbSyncFilmstrip();
+  }
+
+  function _lbRenderCurrent() {
     if (lightboxCleanup) {
       lightboxCleanup();
       lightboxCleanup = null;
     }
 
-    lightboxTitle.textContent = title || 'File Preview';
-    lightboxDownloadLink.href = url;
-    lightboxDownloadLink.setAttribute('download', title || 'download');
+    // Clear only the main content (keep nav buttons, hints, zoom controls)
+    const existingImg = lightboxBody.querySelector('.lightbox-img');
+    const existingIframe = lightboxBody.querySelector('.lightbox-iframe');
+    const existingError = lightboxBody.querySelector('.lb-error-box');
+    if (existingImg) existingImg.remove();
+    if (existingIframe) existingIframe.remove();
+    if (existingError) existingError.remove();
 
-    lightboxBody.innerHTML = '';
-    let isZoomed = false;
+    const item = _lbGallery[_lbIndex];
+    lightboxTitle.textContent = item.name || 'Preview';
+    lightboxDownloadLink.href = item.url;
+    lightboxDownloadLink.setAttribute('download', item.name || 'download');
 
-    let zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
-    if (!zoomToggleBtn) {
-      zoomToggleBtn = document.createElement('button');
-      zoomToggleBtn.id = 'lightbox-zoom-toggle-btn';
-      zoomToggleBtn.type = 'button';
-      zoomToggleBtn.className = 'btn btn-secondary btn-compact';
-      const actions = document.querySelector('.lightbox-actions');
-      if (actions) {
-        actions.insertBefore(zoomToggleBtn, lightboxCloseBtn);
-      }
-    }
+    const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
 
-    if (isPdf) {
+    if (item.isPdf) {
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '📄';
       if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
+      if (lbZoomControls) lbZoomControls.style.display = 'none';
+
       const iframe = document.createElement('iframe');
       iframe.className = 'lightbox-iframe';
-      iframe.src = url;
+      iframe.src = item.url;
       lightboxBody.appendChild(iframe);
     } else {
+      // Image
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '🖼️';
+      if (lbZoomControls) lbZoomControls.style.display = 'flex';
+
       if (zoomToggleBtn) {
         zoomToggleBtn.style.display = 'inline-flex';
-        zoomToggleBtn.innerHTML = '🔍 5x Zoom';
-        zoomToggleBtn.title = 'Zoom in 5 times smoothly';
+        zoomToggleBtn.innerHTML = '🔍 Zoom';
+        zoomToggleBtn.title = 'Toggle 4x zoom';
       }
 
-      const img = document.createElement('img');
-      img.className = 'lightbox-img';
-      img.src = url;
-      img.alt = title;
-
-      let currentX = 0;
-      let currentY = 0;
+      _lbScale = 1;
+      _lbImgX = 0;
+      _lbImgY = 0;
       let isDragging = false;
       let dragStartX = 0;
       let dragStartY = 0;
       let hasDragged = false;
 
-      const setTransform = (x, y, scale, smooth = true) => {
-        img.style.transition = smooth ? 'transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1)' : 'none';
-        img.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+      const img = document.createElement('img');
+      img.className = 'lightbox-img lb-transitioning';
+      img.src = item.url;
+      img.alt = item.name;
+      img.onerror = () => {
+        img.style.display = 'none';
+        const err = document.createElement('div');
+        err.className = 'lb-error-box';
+        err.innerHTML = `
+          <span style="font-size:32px;">🖼️</span>
+          <span>Unable to preview image</span>
+          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab ↗</a>
+        `;
+        lightboxBody.appendChild(err);
+      };
+      lightboxBody.appendChild(img);
+
+      // Trigger fade-in
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.remove('lb-transitioning');
+      }));
+
+      const applyTransform = (smooth = true) => {
+        img.style.transition = smooth ? 'transform 0.32s cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
+        img.style.transform = `translate(${_lbImgX}px, ${_lbImgY}px) scale(${_lbScale})`;
       };
 
-      const toggleZoom = () => {
-        isZoomed = !isZoomed;
-        if (isZoomed) {
-          currentX = 0;
-          currentY = 0;
-          img.classList.add('zoomed-in');
-          setTransform(0, 0, 5, true);
-          if (zoomToggleBtn) {
-            zoomToggleBtn.innerHTML = '🔍 Fit Screen';
-            zoomToggleBtn.title = 'Reset to fit window';
-          }
-        } else {
-          currentX = 0;
-          currentY = 0;
-          img.classList.remove('zoomed-in');
-          setTransform(0, 0, 1, true);
-          if (zoomToggleBtn) {
-            zoomToggleBtn.innerHTML = '🔍 5x Zoom';
-            zoomToggleBtn.title = 'Zoom in 5 times smoothly';
-          }
+      const setZoom = (scale, smooth = true) => {
+        _lbScale = Math.max(1, Math.min(8, scale));
+        if (_lbScale === 1) { _lbImgX = 0; _lbImgY = 0; }
+        applyTransform(smooth);
+        img.classList.toggle('zoomed-in', _lbScale > 1);
+        if (zoomToggleBtn) {
+          zoomToggleBtn.innerHTML = _lbScale > 1 ? '🔍 Fit' : '🔍 Zoom';
+          zoomToggleBtn.title = _lbScale > 1 ? 'Reset to fit' : 'Toggle 4x zoom';
         }
       };
 
-      // Mouse drag to smoothly pan around the 5x zoomed image
+      const toggleZoom = () => setZoom(_lbScale > 1 ? 1 : 4);
+
+      // Zoom-in/out/reset buttons
+      const zbIn = document.getElementById('lb-zoom-in-btn');
+      const zbOut = document.getElementById('lb-zoom-out-btn');
+      const zbReset = document.getElementById('lb-zoom-reset-btn');
+      if (zbIn) zbIn.onclick = () => setZoom(_lbScale * 1.5);
+      if (zbOut) zbOut.onclick = () => setZoom(_lbScale / 1.5);
+      if (zbReset) zbReset.onclick = () => setZoom(1);
+
+      // Click to toggle zoom
+      img.addEventListener('click', () => {
+        if (hasDragged) { hasDragged = false; return; }
+        toggleZoom();
+      });
+
+      if (zoomToggleBtn) zoomToggleBtn.onclick = toggleZoom;
+
+      // Drag to pan
       img.addEventListener('mousedown', (e) => {
-        if (!isZoomed) return;
+        if (_lbScale <= 1) return;
         isDragging = true;
         hasDragged = false;
-        dragStartX = e.clientX - currentX;
-        dragStartY = e.clientY - currentY;
+        dragStartX = e.clientX - _lbImgX;
+        dragStartY = e.clientY - _lbImgY;
         img.classList.add('grabbing');
         e.preventDefault();
       });
 
-      const onMouseMove = (e) => {
-        if (!isDragging || !isZoomed) return;
-        const dx = e.clientX - dragStartX;
-        const dy = e.clientY - dragStartY;
-        if (Math.abs(dx - currentX) > 3 || Math.abs(dy - currentY) > 3) {
-          hasDragged = true;
-        }
-        currentX = dx;
-        currentY = dy;
-        setTransform(currentX, currentY, 5, false);
+      const onMove = (e) => {
+        if (!isDragging || _lbScale <= 1) return;
+        const nx = e.clientX - dragStartX;
+        const ny = e.clientY - dragStartY;
+        if (Math.abs(nx - _lbImgX) > 3 || Math.abs(ny - _lbImgY) > 3) hasDragged = true;
+        _lbImgX = nx;
+        _lbImgY = ny;
+        applyTransform(false);
       };
 
-      const onMouseUp = () => {
+      const onUp = () => {
         if (!isDragging) return;
         isDragging = false;
         img.classList.remove('grabbing');
       };
 
-      window.addEventListener('mousemove', onMouseMove);
-      window.addEventListener('mouseup', onMouseUp);
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
 
-      // Wheel zoom smoothly toggles between 1x and 5x
+      // Wheel scroll to zoom
       const onWheel = (e) => {
         e.preventDefault();
-        if (e.deltaY < 0 && !isZoomed) {
-          toggleZoom();
-        } else if (e.deltaY > 0 && isZoomed) {
-          toggleZoom();
-        }
+        const delta = e.deltaY > 0 ? 0.85 : 1.2;
+        setZoom(_lbScale * delta, false);
       };
       lightboxBody.addEventListener('wheel', onWheel, { passive: false });
 
-      img.addEventListener('click', () => {
-        if (hasDragged) {
-          hasDragged = false;
-          return;
-        }
-        toggleZoom();
-      });
-
-      if (zoomToggleBtn) {
-        zoomToggleBtn.onclick = toggleZoom;
-      }
-
       lightboxCleanup = () => {
-        window.removeEventListener('mousemove', onMouseMove);
-        window.removeEventListener('mouseup', onMouseUp);
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
         lightboxBody.removeEventListener('wheel', onWheel);
+        if (zbIn) zbIn.onclick = null;
+        if (zbOut) zbOut.onclick = null;
+        if (zbReset) zbReset.onclick = null;
+        if (zoomToggleBtn) zoomToggleBtn.onclick = null;
       };
+    }
+  }
 
-      lightboxBody.appendChild(img);
+  /**
+   * Opens the premium gallery lightbox.
+   * @param {string} title   - file name / title
+   * @param {string} url     - file URL
+   * @param {boolean} isPdf  - true = PDF iframe, false = image
+   * @param {Array} gallery  - optional array of {url,name,isImage,isPdf} for multi-item galleries
+   * @param {number} startIdx - index in gallery to open
+   */
+  function openLightbox(title, url, isPdf = false, gallery = null, startIdx = 0) {
+    if (gallery && gallery.length > 1) {
+      _lbGallery = gallery;
+      _lbIndex = startIdx;
+    } else {
+      _lbGallery = [{ url, name: title, isImage: !isPdf, isPdf }];
+      _lbIndex = 0;
     }
 
+    _lbBuildFilmstrip(_lbGallery);
+    _lbRenderCurrent();
+    _lbSetCounter();
+    _lbSetNavState();
+
     lightboxModal.style.display = 'flex';
+    lightboxModal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
   }
 
@@ -1183,23 +1295,43 @@
       lightboxCleanup = null;
     }
     lightboxModal.style.display = 'none';
-    lightboxBody.innerHTML = '';
+    lightboxModal.classList.remove('is-open');
+    // Clear dynamic children
+    const img = lightboxBody.querySelector('.lightbox-img');
+    const iframe = lightboxBody.querySelector('.lightbox-iframe');
+    const errorBox = lightboxBody.querySelector('.lb-error-box');
+    if (img) img.remove();
+    if (iframe) iframe.remove();
+    if (errorBox) errorBox.remove();
     document.body.style.overflow = '';
+    _lbGallery = [];
+    _lbIndex = 0;
+    _lbScale = 1;
+    _lbImgX = 0;
+    _lbImgY = 0;
     const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
     if (zoomToggleBtn) {
-      zoomToggleBtn.onclick = null;
       zoomToggleBtn.style.display = 'none';
+      zoomToggleBtn.onclick = null;
     }
+    if (lbZoomControls) lbZoomControls.style.display = 'none';
+    lbFilmstrip.style.display = 'none';
+    lightboxCounter.style.display = 'none';
+    lbNavPrev.style.display = 'none';
+    lbNavNext.style.display = 'none';
   }
 
+  // Event listeners
   lightboxCloseBtn.addEventListener('click', closeLightbox);
-  lightboxModal.addEventListener('click', (e) => {
-    if (e.target === lightboxModal) closeLightbox();
-  });
+  lightboxModal.addEventListener('click', (e) => { if (e.target === lightboxModal) closeLightbox(); });
+  lbNavPrev.addEventListener('click', () => _lbGoTo(_lbIndex - 1));
+  lbNavNext.addEventListener('click', () => _lbGoTo(_lbIndex + 1));
+
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && lightboxModal.style.display === 'flex') {
-      closeLightbox();
-    }
+    if (lightboxModal.style.display !== 'flex') return;
+    if (e.key === 'Escape') { closeLightbox(); return; }
+    if (e.key === 'ArrowLeft')  { _lbGoTo(_lbIndex - 1); return; }
+    if (e.key === 'ArrowRight') { _lbGoTo(_lbIndex + 1); return; }
   });
 
   // ============================================================================
@@ -1267,9 +1399,9 @@
     stripWrap.className = 'thumbnail-strip';
     stripWrap.id = `strip_${field.key}`;
 
-    // Collect all existing files
+    // Collect and normalize all existing files into a field gallery
     const existingList = Array.isArray(rawValue) ? rawValue : (rawValue ? [rawValue] : []);
-    let firstItemFound = null;
+    const fieldGallery = [];
 
     existingList.forEach((fileItem, idx) => {
       if (!fileItem) return;
@@ -1303,21 +1435,21 @@
       const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
       const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
 
-      if (!firstItemFound) {
-        firstItemFound = { url: fullUrl, name: fileName, isImage, isPdf };
-      }
+      fieldGallery.push({ url: fullUrl, name: fileName, isImage, isPdf });
+    });
 
-      if (isImage) {
+    fieldGallery.forEach((item, itemIdx) => {
+      if (item.isImage) {
         const thumb = document.createElement('div');
         thumb.className = 'thumb-item preview-thumb-wrap';
-        thumb.title = `${fileName} - Click to preview`;
+        thumb.title = `${item.name} - Click to preview`;
         thumb.innerHTML = `
-          <img class="thumb-item-img" src="${fullUrl}" alt="${fileName}" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'doc-tile-inner\\'><span class=\\'doc-tile-badge img\\'>IMG</span><span class=\\'doc-tile-icon\\'>🖼️</span><span class=\\'doc-tile-name\\'>${fileName}</span></div>';">
+          <img class="thumb-item-img" src="${item.url}" alt="${item.name}" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'doc-tile-inner\\'><span class=\\'doc-tile-badge img\\'>IMG</span><span class=\\'doc-tile-icon\\'>🖼️</span><span class=\\'doc-tile-name\\'>${item.name}</span></div>';">
           <div class="thumb-zoom-overlay">🔍 Zoom</div>
         `;
         
         thumb.addEventListener('click', () => {
-          showInWindowImage(viewportBox, fullUrl, fileName);
+          showInWindowImage(viewportBox, item.url, item.name, fieldGallery, itemIdx);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
         });
@@ -1327,21 +1459,21 @@
         // Uniform Document Preview Tile (exact same 88x88px dimensions as photo tile)
         const docThumb = document.createElement('div');
         docThumb.className = 'thumb-item preview-doc-wrap';
-        docThumb.title = `${fileName} - Click to preview`;
+        docThumb.title = `${item.name} - Click to preview`;
         docThumb.innerHTML = `
           <div class="doc-tile-inner">
-            <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
+            <span class="doc-tile-badge ${item.isPdf ? 'pdf' : 'doc'}">${item.isPdf ? 'PDF' : 'DOC'}</span>
             <span class="doc-tile-icon">📄</span>
-            <span class="doc-tile-name" title="${fileName}">${fileName}</span>
+            <span class="doc-tile-name" title="${item.name}">${item.name}</span>
           </div>
           <div class="thumb-zoom-overlay">🔍 View</div>
         `;
 
         docThumb.addEventListener('click', () => {
-          if (isPdf) {
-            showInWindowPdf(viewportBox, fullUrl, fileName);
+          if (item.isPdf) {
+            showInWindowPdf(viewportBox, item.url, item.name, fieldGallery, itemIdx);
           } else {
-            openLightbox(fileName, fullUrl, false);
+            openLightbox(item.name, item.url, false, fieldGallery, itemIdx);
           }
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           docThumb.classList.add('active');
@@ -1352,11 +1484,12 @@
     });
 
     // Automatically display first item in inline viewport on load!
-    if (firstItemFound) {
-      if (firstItemFound.isImage) {
-        showInWindowImage(viewportBox, firstItemFound.url, firstItemFound.name);
-      } else if (firstItemFound.isPdf) {
-        showInWindowPdf(viewportBox, firstItemFound.url, firstItemFound.name);
+    if (fieldGallery.length > 0) {
+      const firstItem = fieldGallery[0];
+      if (firstItem.isImage) {
+        showInWindowImage(viewportBox, firstItem.url, firstItem.name, fieldGallery, 0);
+      } else if (firstItem.isPdf) {
+        showInWindowPdf(viewportBox, firstItem.url, firstItem.name, fieldGallery, 0);
       }
       if (stripWrap.firstChild) {
         stripWrap.firstChild.classList.add('active');
@@ -1369,21 +1502,24 @@
   }
 
   // Shows an image directly inside the inline viewport in the same window
-  function showInWindowImage(viewportBox, url, name) {
+  function showInWindowImage(viewportBox, url, name, gallery = null, index = 0) {
     viewportBox.style.display = 'flex';
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">👁 Preview: ${name}</span>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <button type="button" class="btn btn-secondary btn-compact zoom-btn" style="height:24px; font-size:11px; padding:0 8px;">🔍 Zoom</button>
+        <div class="inline-preview-topbar-actions">
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
+          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">⬇</a>
           <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
         </div>
       </div>
-      <img class="inline-preview-img" src="${url}" alt="${name}" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;\\'><span>🖼️ Unable to load preview</span><a href=\\'${url}\\' target=\\'_blank\\' style=\\'color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;\\'>Open image link ↗</a></div>');">
+      <img class="inline-preview-img" src="${url}" alt="${name}" title="Click to open gallery viewer" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;\\'><span>🖼️ Unable to load preview</span><a href=\\'${url}\\' target=\\'_blank\\' style=\\'color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;\\'>Open image link ↗</a></div>');">
     `;
 
-    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, false));
-    viewportBox.querySelector('.inline-preview-img').addEventListener('click', () => openLightbox(name, url, false));
+    const openViewer = () => openLightbox(name, url, false, gallery, index);
+    viewportBox.querySelector('.zoom-btn').addEventListener('click', openViewer);
+    const imgEl = viewportBox.querySelector('.inline-preview-img');
+    if (imgEl) imgEl.addEventListener('click', openViewer);
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';
@@ -1393,20 +1529,21 @@
   }
 
   // Shows a PDF directly inside the inline viewport in the same window
-  function showInWindowPdf(viewportBox, url, name) {
+  function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
     viewportBox.style.display = 'flex';
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
-        <div style="display:flex; gap:6px; align-items:center;">
-          <button type="button" class="btn btn-secondary btn-compact zoom-btn" style="height:24px; font-size:11px; padding:0 8px;">🔍 Zoom</button>
+        <div class="inline-preview-topbar-actions">
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
+          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">⬇</a>
           <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
         </div>
       </div>
       <iframe class="inline-preview-iframe" src="${url}"></iframe>
     `;
 
-    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, true));
+    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, true, gallery, index));
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';

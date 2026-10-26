@@ -92,22 +92,57 @@
   </div>
 
   <!-- ── 3. Lightbox & Document Preview Modal (Direct child of body to guarantee viewport bounds) ── -->
-  <div id="lightbox-modal" class="lightbox-modal" style="display: none;">
+  <div id="lightbox-modal" class="lightbox-modal" style="display: none;" role="dialog" aria-modal="true" aria-label="File Preview">
     <div class="lightbox-content">
+
+      <!-- Header -->
       <div class="lightbox-header">
-        <span id="lightbox-title" class="lightbox-title">File Preview</span>
+        <div class="lightbox-header-left">
+          <span id="lightbox-file-icon" class="lightbox-file-icon">🖼️</span>
+          <span id="lightbox-title" class="lightbox-title">File Preview</span>
+          <span id="lightbox-counter" class="lightbox-counter" style="display:none"></span>
+        </div>
         <div class="lightbox-actions">
-          <a id="lightbox-download-link" href="#" target="_blank" download class="btn btn-secondary btn-compact">
+          <button type="button" id="lightbox-zoom-toggle-btn" class="lb-action-btn" style="display:none" title="Toggle zoom (or scroll)">
+            🔍 Zoom
+          </button>
+          <a id="lightbox-download-link" href="#" target="_blank" download class="lb-action-btn" title="Download file">
             ⬇ Download
           </a>
-          <button type="button" id="lightbox-close-btn" class="btn btn-secondary btn-compact" aria-label="Close preview">
+          <button type="button" id="lightbox-close-btn" class="lb-action-btn lb-close-btn" aria-label="Close preview">
             ✕ Close
           </button>
         </div>
       </div>
+
+      <!-- Body with nav arrows -->
       <div id="lightbox-body" class="lightbox-body">
+        <!-- Gallery arrows -->
+        <button type="button" id="lb-nav-prev" class="lb-nav-btn lb-nav-prev" aria-label="Previous" style="display:none">‹</button>
+        <button type="button" id="lb-nav-next" class="lb-nav-btn lb-nav-next" aria-label="Next" style="display:none">›</button>
+
+        <!-- Zoom corner controls (images only) -->
+        <div id="lb-zoom-controls" class="lb-zoom-controls" style="display:none">
+          <button type="button" class="lb-zoom-ctrl-btn" id="lb-zoom-in-btn" title="Zoom In">＋</button>
+          <button type="button" class="lb-zoom-ctrl-btn" id="lb-zoom-out-btn" title="Zoom Out">−</button>
+          <button type="button" class="lb-zoom-ctrl-btn" id="lb-zoom-reset-btn" title="Reset">⊡</button>
+        </div>
+
+        <!-- Keyboard hints (fade in on hover) -->
+        <div class="lb-hints">
+          <span class="lb-hint-pill"><span class="lb-hint-key">←</span><span class="lb-hint-key">→</span> Navigate</span>
+          <span class="lb-hint-pill"><span class="lb-hint-key">Esc</span> Close</span>
+          <span class="lb-hint-pill"><span class="lb-hint-key">scroll</span> Zoom</span>
+        </div>
+
         <!-- Populated dynamically with <img> or <iframe> -->
       </div>
+
+      <!-- Thumbnail filmstrip (hidden for single-file) -->
+      <div id="lb-filmstrip" class="lb-filmstrip" style="display:none">
+        <!-- Populated dynamically -->
+      </div>
+
     </div>
   </div>
 

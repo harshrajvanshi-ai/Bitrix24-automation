@@ -1043,6 +1043,28 @@ async function runTests() {
   assert(leadJsContent.includes('has-open-dropdown'), 'tab.js dynamically manages has-open-dropdown state');
 
   // ============================================================================
+  console.log('\n--- Case 22: Gallery Lightbox Viewer & Responsive Media Styling ---');
+  const listingHtmlContent = fs.readFileSync(path.resolve(__dirname, 'views/listing-details.html'), 'utf-8');
+
+  // HTML checks
+  assert(listingHtmlContent.includes('id="lightbox-counter"'), 'views/listing-details.html contains lightbox counter');
+  assert(listingHtmlContent.includes('id="lb-filmstrip"'), 'views/listing-details.html contains thumbnail filmstrip');
+  assert(listingHtmlContent.includes('id="lb-nav-prev"') && listingHtmlContent.includes('id="lb-nav-next"'), 'views/listing-details.html contains gallery nav buttons');
+  assert(listingHtmlContent.includes('id="lb-zoom-controls"'), 'views/listing-details.html contains corner zoom controls');
+
+  // CSS checks
+  assert(listingCssContent.includes('.lb-filmstrip'), 'listing-details.css contains .lb-filmstrip styling');
+  assert(listingCssContent.includes('.lb-film-item'), 'listing-details.css contains .lb-film-item thumbnail styling');
+  assert(listingCssContent.includes('.lb-nav-btn'), 'listing-details.css contains .lb-nav-btn navigation arrow styling');
+  assert(listingCssContent.includes('.lb-error-box'), 'listing-details.css contains .lb-error-box image error fallback styling');
+  assert(listingCssContent.includes('@media (max-width: 640px)'), 'listing-details.css contains responsive media queries for gallery lightbox');
+
+  // JS checks
+  assert(listingJsContent.includes('_lbBuildFilmstrip'), 'listing-details.js implements _lbBuildFilmstrip for multi-item galleries');
+  assert(listingJsContent.includes('_lbGoTo'), 'listing-details.js implements _lbGoTo for gallery index navigation');
+  assert(listingJsContent.includes("classList.add('is-open')"), 'listing-details.js manages is-open state on lightbox modal');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
