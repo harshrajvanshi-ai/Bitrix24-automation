@@ -619,7 +619,7 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
 
       // Handle URL fields when Lead provides an object with url / showUrl (e.g. UF_CRM_QR_CODE)
       if (mapping.type === 'url' && rawVal && typeof rawVal === 'object') {
-        targetVal = rawVal.url || rawVal.showUrl || rawVal.src || '';
+        targetVal = rawVal.urlMachine || rawVal.url || rawVal.showUrl || rawVal.src || '';
         if (!targetVal && rawVal.id) {
           targetVal = `/bitrix/tools/crm_show_file.php?fileId=${rawVal.id}`;
         }

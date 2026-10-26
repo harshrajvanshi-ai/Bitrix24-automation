@@ -728,7 +728,7 @@
         let fileName = '';
 
         if (typeof fileItem === 'object') {
-          fileUrl = fileItem.showUrl || fileItem.downloadUrl || '';
+          fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || '';
           fileName = fileItem.name || `${f.label || 'Attached File'}${filesList.length > 1 ? ` #${idx + 1}` : ''}`;
         } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
           fileUrl = fileItem;

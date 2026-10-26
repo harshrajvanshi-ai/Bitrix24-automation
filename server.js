@@ -16,6 +16,7 @@ const path = require('path');
 const helmet = require('helmet');
 const cors = require('cors');
 const fs = require('fs');
+const axios = require('axios');
 
 const config = require('./src/config');
 const StorageManager = require('./src/storage');
@@ -426,9 +427,60 @@ app.post('/api/b24/:method', apiLimiter, async (req, res) => {
       success: false,
       error: err.message,
       error_description: err.response?.data?.error_description || err.message
+});
+
+/**
+ * GET /api/file/proxy
+ * Secure proxy endpoint to stream Bitrix24 media and file attachments.
+ * Resolves browser 403 Forbidden issues caused by iframe cross-origin cookie restrictions.
+ */
+app.get('/api/file/proxy', async (req, res) => {
+  try {
+    const rawUrl = req.query.url;
+    if (!rawUrl) {
+      return res.status(400).send('Missing file url');
+    }
+    const decodedUrl = decodeURIComponent(rawUrl);
+    let parsed;
+    try {
+      parsed = new URL(decodedUrl);
+    } catch (_) {
+      return res.status(400).send('Invalid url');
+    }
+
+    const domain = parsed.hostname.toLowerCase();
+    const allowed = domain.endsWith('bitrix24.com') ||
+                    domain.endsWith('bitrix24.ae') ||
+                    domain.endsWith('bitrix24.eu') ||
+                    domain.endsWith('bitrix24.in') ||
+                    domain.endsWith('bitrix.info');
+
+    if (!allowed) {
+      return res.status(403).send('Forbidden domain');
+    }
+
+    const response = await axios({
+      method: 'get',
+      url: decodedUrl,
+      responseType: 'stream',
+      timeout: 20000,
+      validateStatus: (status) => status < 400
     });
+
+    if (response.headers['content-type']) {
+      res.setHeader('Content-Type', response.headers['content-type']);
+    }
+    if (response.headers['content-length']) {
+      res.setHeader('Content-Length', response.headers['content-length']);
+    }
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    response.data.pipe(res);
+  } catch (err) {
+    console.error('[FILE PROXY] Failed to stream file:', err.message);
+    res.status(err.response?.status || 500).send('Unable to load file preview');
   }
 });
+
 
 // ------------------------------------------------------------------------------
 // 3. Event Handler (/events)

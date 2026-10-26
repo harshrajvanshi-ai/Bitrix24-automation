@@ -1066,7 +1066,17 @@
       const el = document.createElement('div');
       el.className = 'lb-film-item' + (i === _lbIndex ? ' active' : '');
       if (item.isImage) {
-        el.innerHTML = `<img src="${item.url}" alt="${item.name}" loading="lazy">`;
+        const filmImg = document.createElement('img');
+        filmImg.src = item.url;
+        filmImg.alt = item.name;
+        filmImg.loading = 'lazy';
+        filmImg.onerror = function () {
+          if (!this.dataset.proxied && item.url && item.url.startsWith('http')) {
+            this.dataset.proxied = '1';
+            this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+          }
+        };
+        el.appendChild(filmImg);
       } else {
         const badgeClass = item.isPdf ? 'pdf' : 'doc';
         const icon = item.isPdf ? '📄' : '📎';
@@ -1148,6 +1158,11 @@
       img.src = item.url;
       img.alt = item.name;
       img.onerror = () => {
+        if (!img.dataset.proxied && item.url && item.url.startsWith('http')) {
+          img.dataset.proxied = '1';
+          img.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+          return;
+        }
         img.style.display = 'none';
         const err = document.createElement('div');
         err.className = 'lb-error-box';
@@ -1397,7 +1412,9 @@
       let fileName = '';
 
       if (typeof fileItem === 'object') {
-        fileUrl = fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
+        // Prioritize urlMachine because it contains signed HMAC authentication (?token=...)
+        // Bitrix ajax.php URLs without token strictly require intranet session cookies, which fail with 403 in iframe
+        fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
         const fid = fileItem.id || fileItem.ID || fileItem.fileId;
         if (!fileUrl && fid) {
           fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
@@ -1418,7 +1435,12 @@
       if (!fileUrl) return;
 
       const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
-      const fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+      let fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+      // Fallback: If URL points to intranet ajax.php and lacks a machine token, stream through local proxy
+      if (fullUrl.includes('ajax.php') && !fullUrl.includes('token=')) {
+        fullUrl = `/api/file/proxy?url=${encodeURIComponent(fullUrl)}`;
+      }
+
       const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
       const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
 
@@ -1430,11 +1452,28 @@
         const thumb = document.createElement('div');
         thumb.className = 'thumb-item preview-thumb-wrap';
         thumb.title = `${item.name} - Click to preview`;
-        thumb.innerHTML = `
-          <img class="thumb-item-img" src="${item.url}" alt="${item.name}" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'doc-tile-inner\\'><span class=\\'doc-tile-badge img\\'>IMG</span><span class=\\'doc-tile-icon\\'>🖼️</span><span class=\\'doc-tile-name\\'>${item.name}</span></div>';">
-          <div class="thumb-zoom-overlay">🔍 Zoom</div>
-        `;
-        
+
+        const thumbImg = document.createElement('img');
+        thumbImg.className = 'thumb-item-img';
+        thumbImg.src = item.url;
+        thumbImg.alt = item.name;
+        thumbImg.onerror = function () {
+          if (!this.dataset.proxied && item.url.startsWith('http')) {
+            this.dataset.proxied = '1';
+            this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+          } else {
+            this.onerror = null;
+            thumb.innerHTML = `<div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span><span class="doc-tile-name">${item.name}</span></div><div class="thumb-zoom-overlay">🔍 Zoom</div>`;
+          }
+        };
+
+        const zoomOverlay = document.createElement('div');
+        zoomOverlay.className = 'thumb-zoom-overlay';
+        zoomOverlay.textContent = '🔍 Zoom';
+
+        thumb.appendChild(thumbImg);
+        thumb.appendChild(zoomOverlay);
+
         thumb.addEventListener('click', () => {
           showInWindowImage(viewportBox, item.url, item.name, fieldGallery, itemIdx);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
@@ -1500,13 +1539,31 @@
           <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
         </div>
       </div>
-      <img class="inline-preview-img" src="${url}" alt="${name}" title="Click to open gallery viewer" onerror="this.onerror=null;this.style.display='none';this.insertAdjacentHTML('afterend','<div style=\\'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;\\'><span>🖼️ Unable to load preview</span><a href=\\'${url}\\' target=\\'_blank\\' style=\\'color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;\\'>Open image link ↗</a></div>');">
     `;
+
+    const img = document.createElement('img');
+    img.className = 'inline-preview-img';
+    img.src = url;
+    img.alt = name;
+    img.title = 'Click to open gallery viewer';
+    img.onerror = function () {
+      if (!this.dataset.proxied && url.startsWith('http')) {
+        this.dataset.proxied = '1';
+        this.src = `/api/file/proxy?url=${encodeURIComponent(url)}`;
+      } else {
+        this.onerror = null;
+        this.style.display = 'none';
+        const errDiv = document.createElement('div');
+        errDiv.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;';
+        errDiv.innerHTML = `<span>🖼️ Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link ↗</a>`;
+        viewportBox.appendChild(errDiv);
+      }
+    };
+    viewportBox.appendChild(img);
 
     const openViewer = () => openLightbox(name, url, false, gallery, index);
     viewportBox.querySelector('.zoom-btn').addEventListener('click', openViewer);
-    const imgEl = viewportBox.querySelector('.inline-preview-img');
-    if (imgEl) imgEl.addEventListener('click', openViewer);
+    img.addEventListener('click', openViewer);
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';
@@ -2832,16 +2889,29 @@
         payload['contactIds'] = payload['contactIds'].split(',').map(s => s.trim()).filter(Boolean);
       }
 
-      // Package pending file uploads with { fileData: [name, base64] }
+      // Package pending file uploads with { fileData: [name, base64] } or multiple file tuples
       for (const [fieldKey, fileList] of Object.entries(pendingFileUploads)) {
-        if (fileList.length === 1) {
+        if (!fileList || fileList.length === 0) continue;
+
+        const fConfig = findFieldConfig(fieldKey);
+        const isMulti = fConfig?.isMultiple || fieldKey.includes('1791881642219') || fieldKey.includes('1791544736052');
+
+        if (isMulti) {
+          // Bitrix REST API multiple file upload requires array of [fileName, base64] tuples.
+          // To preserve existing files on record, include existing file IDs
+          const existingRaw = currentListing?.[fieldKey] || (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
+          const existingList = Array.isArray(existingRaw) ? existingRaw : (existingRaw ? [existingRaw] : []);
+          const existingIds = existingList
+            .map(it => (typeof it === 'object' ? (it.id || it.ID || it.fileId) : it))
+            .filter(Boolean);
+
+          const newTuples = fileList.map(item => [item.name, item.dataUrl.split(',')[1] || '']);
+          payload[fieldKey] = [...existingIds, ...newTuples];
+        } else {
+          // Single file field: Bitrix expects { fileData: [name, base64] }
           const item = fileList[0];
           const base64 = item.dataUrl.split(',')[1] || '';
           payload[fieldKey] = { fileData: [item.name, base64] };
-        } else if (fileList.length > 1) {
-          payload[fieldKey] = fileList.map(item => ({
-            fileData: [item.name, item.dataUrl.split(',')[1] || '']
-          }));
         }
       }
 
