@@ -832,14 +832,14 @@ const synchronizedListingSections = [
     id: 'media',
     title: 'Media & Documents',
     icon: '📸',
-    desc: 'Primary images, title deeds, brochures, floor plans, and 360 virtual tours',
+    desc: 'Primary images, title deeds, photos, documents, and Form A agreements',
     fields: [
       {
         code: 'UF_CRM_PRIMARY_IMAGE',
         spaKey: 'ufCrm16_1791173118',
         spaCrmCode: 'UF_CRM_16_1791173118',
-        label: 'Primary Listing Image',
-        bitrixLabel: 'Primary Listing Image',
+        label: 'Primary Image',
+        bitrixLabel: 'Primary Image',
         type: 'file',
         isImage: true,
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
@@ -848,7 +848,7 @@ const synchronizedListingSections = [
         code: 'UF_CRM_PHOTOS',
         spaKey: 'ufCrm16_1791881642219',
         spaCrmCode: 'UF_CRM_16_1791881642219',
-        label: 'Photos (Gallery)',
+        label: 'Photos',
         bitrixLabel: 'Photos',
         type: 'file',
         isImage: true,
@@ -859,27 +859,29 @@ const synchronizedListingSections = [
         code: 'UF_CRM_DOCS',
         spaKey: 'ufCrm16_1791172957',
         spaCrmCode: 'UF_CRM_16_1791172957',
-        label: 'Docs & Attachments',
-        bitrixLabel: 'Property Title / Deed Docs',
+        label: 'Docs',
+        bitrixLabel: 'Docs',
         type: 'file',
         isDoc: true,
+        isMultiple: true,
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
         code: 'UF_CRM_PHOTOS_AND_DOCUMENTS',
-        leadAltCode: 'UF_CRM_FLOOR_PLAN',
         spaKey: 'ufCrm16_1791544736052',
         spaCrmCode: 'UF_CRM_16_1791544736052',
-        label: 'Floor Plan',
+        label: 'Photos and Documents',
         bitrixLabel: 'Photos and Documents',
         type: 'file',
-        rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
+        isDoc: true,
+        isMultiple: true,
+        rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },
       {
         code: 'UF_CRM_TITLE_DEED',
         spaKey: 'ufCrm16TitleDeed',
         spaCrmCode: 'UF_CRM_16_TITLE_DEED',
-        label: 'Title Deed / Ownership Proof',
+        label: 'Title Deed',
         bitrixLabel: 'Title Deed',
         type: 'file',
         isDoc: true,
@@ -889,31 +891,11 @@ const synchronizedListingSections = [
         code: 'UF_CRM_FORM_A_DOC',
         spaKey: 'ufCrm16_1791787381785',
         spaCrmCode: 'UF_CRM_16_1791787381785',
-        label: 'Form A Document (Mandate Agreement)',
-        bitrixLabel: 'Form A Signed Document',
+        label: 'Form A Document',
+        bitrixLabel: 'Form A Document',
         type: 'file',
         isDoc: true,
         rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
-      },
-      {
-        code: 'UF_CRM_WEBSITE_URL',
-        spaKey: 'ufCrm16WebsiteUrl',
-        spaCrmCode: 'UF_CRM_16_WEBSITE_URL',
-        label: 'Brochure URL / File',
-        bitrixLabel: 'Website URL',
-        type: 'url',
-        placeholder: 'https://cdn.example.com/brochures/listing.pdf',
-        rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'show', rent: 'hide' }
-      },
-      {
-        code: 'UF_CRM_LISTING_WEBSITE',
-        spaKey: 'ufCrm16ListingWebsite',
-        spaCrmCode: 'UF_CRM_16_LISTING_WEBSITE',
-        label: '360 Virtual Tour Link',
-        bitrixLabel: 'Listing Website',
-        type: 'tour_url',
-        placeholder: 'https://my.matterport.com/show/?m=... or Kuula / YouTube 360',
-        rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
       }
     ]
   }
@@ -924,8 +906,9 @@ const updatedDynamicSections = (currentConfig.listingDynamicLayout?.sections || 
   const matchSyncSec = synchronizedListingSections.find(s => s.id === dynSec.id);
   if (!matchSyncSec) return dynSec;
 
+  const validSyncKeys = new Set(matchSyncSec.fields.flatMap(f => [f.spaKey, f.spaCrmCode].filter(Boolean)));
   const updatedFields = (dynSec.fields || [])
-    .filter(dynField => dynField.key !== 'ufCrm16RecordType' && dynField.crmCode !== 'UF_CRM_16_RECORD_TYPE')
+    .filter(dynField => dynField.key !== 'ufCrm16RecordType' && dynField.crmCode !== 'UF_CRM_16_RECORD_TYPE' && (validSyncKeys.has(dynField.key) || validSyncKeys.has(dynField.crmCode)))
     .map(dynField => {
     const syncField = matchSyncSec.fields.find(f => f.spaKey === dynField.key || f.spaCrmCode === dynField.crmCode);
     if (syncField) {

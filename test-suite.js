@@ -868,7 +868,8 @@ async function runTests() {
 
   // 6. Verify Field Visibility Matrix (✔ = show, opt = opt, — = hide)
   assert(listingJs.includes("rules: { external_stock: 'hide', off_plan: 'hide', overseas_sale: 'hide', rent: 'show' }"), 'Rental Frequency and Security Deposit only shown on Rent');
-  assert(listingJs.includes("rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'show', rent: 'hide' }"), 'Brochure URL hidden on Rent and shown on Off-plan/Overseas');
+  assert(!listingJs.includes("ufCrm16WebsiteUrl") && !listingJs.includes("Brochure URL"), 'Brochure URL removed and only respective Bitrix24 file fields included in Media & Documents');
+  assert(listingJs.includes("ufCrm16_1791544736052") && listingJs.includes("Photos and Documents"), 'Photos and Documents included with respective Bitrix24 field');
   assert(listingJs.includes("rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }"), 'Furnished Status hidden on Off-plan and shown on Rent');
 
   // 7. Verify Media & File Preview Engine

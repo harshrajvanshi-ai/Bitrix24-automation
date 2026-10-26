@@ -516,14 +516,12 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_DESCRIPTION', leadAltCodes: ['UF_CRM_DESCRIPTION_INTRO_TEXT', 'UF_CRM_DESCRIPTION_1', 'UF_CRM_DESCRIPTION_AUTO'], spaKey: 'ufCrm16Description', spaCrmCode: 'UF_CRM_16_DESCRIPTION', spaAltKeys: ['ufCrm16DescriptionIntroText', 'ufCrm16DescriptionAuto', 'sourceDescription'], type: 'textarea', label: 'Portal Description' },
 
   // 8. Media & Documents
-  { leadCode: 'UF_CRM_PRIMARY_IMAGE', spaKey: 'ufCrm16_1791173118', spaCrmCode: 'UF_CRM_16_1791173118', type: 'file', label: 'Primary Listing Image' },
-  { leadCode: 'UF_CRM_PHOTOS', spaKey: 'ufCrm16_1791881642219', spaCrmCode: 'UF_CRM_16_1791881642219', type: 'file', label: 'Photos (Gallery)' },
-  { leadCode: 'UF_CRM_DOCS', spaKey: 'ufCrm16_1791172957', spaCrmCode: 'UF_CRM_16_1791172957', type: 'file', label: 'Docs & Attachments' },
-  { leadCode: 'UF_CRM_PHOTOS_AND_DOCUMENTS', leadAltCodes: ['UF_CRM_FLOOR_PLAN'], spaKey: 'ufCrm16_1791544736052', spaCrmCode: 'UF_CRM_16_1791544736052', type: 'file', label: 'Floor Plan' },
-  { leadCode: 'UF_CRM_TITLE_DEED', spaKey: 'ufCrm16TitleDeed', spaCrmCode: 'UF_CRM_16_TITLE_DEED', type: 'file', label: 'Title Deed / Ownership Proof' },
-  { leadCode: 'UF_CRM_FORM_A_DOC', spaKey: 'ufCrm16_1791787381785', spaCrmCode: 'UF_CRM_16_1791787381785', type: 'file', label: 'Form A Document' },
-  { leadCode: 'UF_CRM_WEBSITE_URL', spaKey: 'ufCrm16WebsiteUrl', spaCrmCode: 'UF_CRM_16_WEBSITE_URL', type: 'url', label: 'Brochure URL / File' },
-  { leadCode: 'UF_CRM_LISTING_WEBSITE', spaKey: 'ufCrm16ListingWebsite', spaCrmCode: 'UF_CRM_16_LISTING_WEBSITE', type: 'tour_url', label: '360 Virtual Tour Link' }
+  { leadCode: 'UF_CRM_PRIMARY_IMAGE', spaKey: 'ufCrm16_1791173118', spaCrmCode: 'UF_CRM_16_1791173118', type: 'file', label: 'Primary Image' },
+  { leadCode: 'UF_CRM_PHOTOS', spaKey: 'ufCrm16_1791881642219', spaCrmCode: 'UF_CRM_16_1791881642219', type: 'file', label: 'Photos' },
+  { leadCode: 'UF_CRM_DOCS', spaKey: 'ufCrm16_1791172957', spaCrmCode: 'UF_CRM_16_1791172957', type: 'file', label: 'Docs' },
+  { leadCode: 'UF_CRM_PHOTOS_AND_DOCUMENTS', spaKey: 'ufCrm16_1791544736052', spaCrmCode: 'UF_CRM_16_1791544736052', type: 'file', label: 'Photos and Documents' },
+  { leadCode: 'UF_CRM_TITLE_DEED', spaKey: 'ufCrm16TitleDeed', spaCrmCode: 'UF_CRM_16_TITLE_DEED', type: 'file', label: 'Title Deed' },
+  { leadCode: 'UF_CRM_FORM_A_DOC', spaKey: 'ufCrm16_1791787381785', spaCrmCode: 'UF_CRM_16_1791787381785', type: 'file', label: 'Form A Document' }
 ];
 
 /**

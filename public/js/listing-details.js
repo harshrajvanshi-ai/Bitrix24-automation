@@ -720,12 +720,12 @@
         id: 'media',
         title: 'Media & Documents',
         icon: '📸',
-        desc: 'Primary images, title deeds, brochures, floor plans, and 360 virtual tours',
+        desc: 'Primary images, title deeds, photos, documents, and Form A agreements',
         fields: [
           {
             key: 'ufCrm16_1791173118',
             crmCode: 'UF_CRM_16_1791173118',
-            label: 'Primary Listing Image',
+            label: 'Primary Image',
             type: 'file',
             isImage: true,
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
@@ -733,7 +733,7 @@
           {
             key: 'ufCrm16_1791881642219',
             crmCode: 'UF_CRM_16_1791881642219',
-            label: 'Photos (Gallery)',
+            label: 'Photos',
             type: 'file',
             isImage: true,
             isMultiple: true,
@@ -742,22 +742,25 @@
           {
             key: 'ufCrm16_1791172957',
             crmCode: 'UF_CRM_16_1791172957',
-            label: 'Docs & Attachments',
+            label: 'Docs',
             type: 'file',
             isDoc: true,
+            isMultiple: true,
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16_1791544736052',
             crmCode: 'UF_CRM_16_1791544736052',
-            label: 'Floor Plan',
+            label: 'Photos and Documents',
             type: 'file',
-            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
+            isDoc: true,
+            isMultiple: true,
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'ufCrm16TitleDeed',
             crmCode: 'UF_CRM_16_TITLE_DEED',
-            label: 'Title Deed / Ownership Proof',
+            label: 'Title Deed',
             type: 'file',
             isDoc: true,
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'show', rent: 'opt' }
@@ -765,26 +768,10 @@
           {
             key: 'ufCrm16_1791787381785',
             crmCode: 'UF_CRM_16_1791787381785',
-            label: 'Form A Document (Mandate Agreement)',
+            label: 'Form A Document',
             type: 'file',
             isDoc: true,
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
-          },
-          {
-            key: 'ufCrm16WebsiteUrl',
-            crmCode: 'UF_CRM_16_WEBSITE_URL',
-            label: 'Brochure URL / File',
-            type: 'url',
-            placeholder: 'https://cdn.example.com/brochures/listing.pdf',
-            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'show', rent: 'hide' }
-          },
-          {
-            key: 'ufCrm16ListingWebsite',
-            crmCode: 'UF_CRM_16_LISTING_WEBSITE',
-            label: '360 Virtual Tour Link',
-            type: 'tour_url',
-            placeholder: 'https://my.matterport.com/show/?m=... or Kuula / YouTube 360',
-            rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
           }
         ]
       }
