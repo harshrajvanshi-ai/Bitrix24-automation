@@ -469,9 +469,29 @@ app.get('/api/file/proxy', async (req, res) => {
       validateStatus: (status) => status < 400
     });
 
-    if (response.headers['content-type']) {
-      res.setHeader('Content-Type', response.headers['content-type']);
+    // Remove frame restrictions so PDF and media can be rendered in iframes
+    res.removeHeader('X-Frame-Options');
+
+    // Extract filename from Bitrix Content-Disposition if present
+    const rawDisposition = response.headers['content-disposition'] || '';
+    let filename = 'document.pdf';
+    const match = rawDisposition.match(/filename\*?=(?:utf-8'')?"?([^";]+)"?/i);
+    if (match && match[1]) {
+      try {
+        filename = decodeURIComponent(match[1].trim());
+      } catch (_) {
+        filename = match[1].trim();
+      }
     }
+
+    let contentType = response.headers['content-type'] || 'application/octet-stream';
+    if (filename.toLowerCase().endsWith('.pdf') || decodedUrl.toLowerCase().includes('.pdf')) {
+      contentType = 'application/pdf';
+    }
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+
     if (response.headers['content-length']) {
       res.setHeader('Content-Length', response.headers['content-length']);
     }

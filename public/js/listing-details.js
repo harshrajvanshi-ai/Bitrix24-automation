@@ -1125,14 +1125,18 @@
 
     const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
 
-    if (item.isPdf) {
+    if (item.isPdf || !item.isImage) {
       if (lightboxFileIcon) lightboxFileIcon.textContent = '📄';
       if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
       if (lbZoomControls) lbZoomControls.style.display = 'none';
 
+      const proxyUrl = (item.url.startsWith('http') && !item.url.includes('/api/file/proxy'))
+        ? `/api/file/proxy?url=${encodeURIComponent(item.url)}`
+        : item.url;
+
       const iframe = document.createElement('iframe');
       iframe.className = 'lightbox-iframe';
-      iframe.src = item.url;
+      iframe.src = proxyUrl;
       lightboxBody.appendChild(iframe);
     } else {
       // Image
@@ -1442,7 +1446,7 @@
       }
 
       const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
-      const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl);
+      const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl) || (!isImage && field.isDoc);
 
       fieldGallery.push({ url: fullUrl, name: fileName, isImage, isPdf });
     });
@@ -1496,10 +1500,10 @@
         `;
 
         docThumb.addEventListener('click', () => {
-          if (item.isPdf) {
-            showInWindowPdf(viewportBox, item.url, item.name, fieldGallery, itemIdx);
+          if (item.isImage) {
+            showInWindowImage(viewportBox, item.url, item.name, fieldGallery, itemIdx);
           } else {
-            openLightbox(item.name, item.url, false, fieldGallery, itemIdx);
+            showInWindowPdf(viewportBox, item.url, item.name, fieldGallery, itemIdx);
           }
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           docThumb.classList.add('active');
@@ -1564,7 +1568,9 @@
     const openViewer = () => openLightbox(name, url, false, gallery, index);
     viewportBox.querySelector('.zoom-btn').addEventListener('click', openViewer);
     img.addEventListener('click', openViewer);
+    viewportBox.classList.remove('is-pdf-viewport');
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
+      viewportBox.classList.remove('is-pdf-viewport');
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';
       resizeWindow();
@@ -1574,21 +1580,30 @@
 
   // Shows a PDF directly inside the inline viewport in the same window
   function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
+    const proxyUrl = (url.startsWith('http') && !url.includes('/api/file/proxy'))
+      ? `/api/file/proxy?url=${encodeURIComponent(url)}`
+      : url;
+
+    viewportBox.classList.add('is-pdf-viewport');
     viewportBox.style.display = 'flex';
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
         <div class="inline-preview-topbar-actions">
           <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
-          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">⬇</a>
+          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">↗ Open</a>
+          <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">⬇</a>
           <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
         </div>
       </div>
-      <iframe class="inline-preview-iframe" src="${url}"></iframe>
+      <iframe class="inline-preview-iframe" src="${proxyUrl}">
+        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document ↗</a></p>
+      </iframe>
     `;
 
     viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, true, gallery, index));
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
+      viewportBox.classList.remove('is-pdf-viewport');
       viewportBox.style.display = 'none';
       viewportBox.innerHTML = '';
       resizeWindow();
@@ -1675,10 +1690,10 @@
 
           docThumb.addEventListener('click', (ev) => {
             if (ev.target.classList.contains('thumb-remove-btn')) return;
-            if (isPdf) {
-              showInWindowPdf(viewportBox, dataUrl, file.name);
+            if (isImage) {
+              showInWindowImage(viewportBox, dataUrl, file.name);
             } else {
-              openLightbox(file.name, dataUrl, false);
+              showInWindowPdf(viewportBox, dataUrl, file.name);
             }
             stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
             docThumb.classList.add('active');

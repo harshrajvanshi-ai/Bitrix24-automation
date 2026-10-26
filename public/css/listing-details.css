@@ -713,11 +713,24 @@ textarea.form-control {
 
 .inline-preview-iframe {
   width: 100%;
-  height: 190px;
+  height: 100%;
   border: none;
   background: #ffffff;
   border-radius: 4px;
 }
+
+.inline-preview-viewport.is-pdf-viewport {
+  height: 420px;
+  min-height: 420px;
+  max-height: 420px;
+}
+
+.inline-preview-viewport.is-pdf-viewport .inline-preview-iframe {
+  height: calc(100% - 36px);
+  margin-top: 36px;
+  width: 100%;
+}
+
 
 .inline-preview-topbar {
   position: absolute;
