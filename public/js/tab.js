@@ -757,7 +757,7 @@
       }
     }
   }
-  }
+  
 
   /**
    * Create standard form-group wrapper with label & validation feedback
