@@ -907,39 +907,53 @@
 
   const stageOptionsByPipeline = {};
 
-  function fetchStageOptions(pipelineId = 0) {
-    const pId = pipelineId !== undefined && pipelineId !== null ? pipelineId : 0;
+  function fetchStageOptions(pipelineId) {
+    const pId = (pipelineId !== undefined && pipelineId !== null) ? pipelineId : 22;
     const cacheKey = `pipe_${pId}`;
     return new Promise(resolve => {
-      if (stageOptionsByPipeline[cacheKey]) {
+      if (stageOptionsByPipeline[cacheKey] && stageOptionsByPipeline[cacheKey].length > 0) {
         resolve(stageOptionsByPipeline[cacheKey]);
         return;
       }
 
+      const targetEntityId = `DYNAMIC_1058_STAGE_${pId}`;
+      const targetFallbackEntityId = `DYNAMIC_16_STAGE_${pId}`;
+
+      function processResults(list) {
+        if (!Array.isArray(list)) return [];
+        // Strictly filter by ENTITY_ID matching the current pipeline so NO unrelated CRM dictionary items are included!
+        const filtered = list.filter(s => s && (s.ENTITY_ID === targetEntityId || s.ENTITY_ID === targetFallbackEntityId || (s.CATEGORY_ID !== undefined && String(s.CATEGORY_ID) === String(pId) && String(s.ENTITY_ID).startsWith('DYNAMIC_'))));
+        return filtered.map(s => ({
+          id: s.STATUS_ID,
+          value: s.NAME || s.STATUS_ID
+        }));
+      }
+
       if (window.BX24) {
-        // Strict equality for the current pipeline's stage entity ID: DYNAMIC_1058_STAGE_{pId}
         window.BX24.callMethod('crm.status.list', {
-          filter: { '=ENTITY_ID': `DYNAMIC_1058_STAGE_${pId}` },
+          filter: { ENTITY_ID: targetEntityId },
           order: { SORT: 'ASC' }
         }, res => {
-          if (!res.error() && Array.isArray(res.data()) && res.data().length > 0) {
-            stageOptionsByPipeline[cacheKey] = res.data().map(s => ({
-              id: s.STATUS_ID,
-              value: s.NAME || s.STATUS_ID
-            }));
-            resolve(stageOptionsByPipeline[cacheKey]);
+          let opts = [];
+          if (!res.error() && Array.isArray(res.data())) {
+            opts = processResults(res.data());
+          }
+          if (opts.length > 0) {
+            stageOptionsByPipeline[cacheKey] = opts;
+            resolve(opts);
           } else {
             // Fallback to DYNAMIC_16_STAGE_{pId}
             window.BX24.callMethod('crm.status.list', {
-              filter: { '=ENTITY_ID': `DYNAMIC_16_STAGE_${pId}` },
+              filter: { ENTITY_ID: targetFallbackEntityId },
               order: { SORT: 'ASC' }
             }, res2 => {
-              if (!res2.error() && Array.isArray(res2.data()) && res2.data().length > 0) {
-                stageOptionsByPipeline[cacheKey] = res2.data().map(s => ({
-                  id: s.STATUS_ID,
-                  value: s.NAME || s.STATUS_ID
-                }));
-                resolve(stageOptionsByPipeline[cacheKey]);
+              let opts2 = [];
+              if (!res2.error() && Array.isArray(res2.data())) {
+                opts2 = processResults(res2.data());
+              }
+              if (opts2.length > 0) {
+                stageOptionsByPipeline[cacheKey] = opts2;
+                resolve(opts2);
               } else {
                 fetchFallbackStages(pId, resolve);
               }

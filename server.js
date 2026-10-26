@@ -369,11 +369,14 @@ app.all('/api/listing/:id/update', async (req, res) => {
  */
 app.get('/api/stages/listing', async (req, res) => {
   try {
-    const categoryId = req.query.categoryId !== undefined ? req.query.categoryId : (req.query.category || 0);
+    const categoryId = req.query.categoryId !== undefined ? req.query.categoryId : (req.query.category || 22);
     let stages = [];
+    const targetEntity1 = `DYNAMIC_1058_STAGE_${categoryId}`;
+    const targetEntity2 = `DYNAMIC_16_STAGE_${categoryId}`;
+
     try {
       const r = await BitrixClient.call('crm.status.list', {
-        filter: { '=ENTITY_ID': `DYNAMIC_1058_STAGE_${categoryId}` },
+        filter: { ENTITY_ID: targetEntity1 },
         order: { SORT: 'ASC' }
       });
       if (Array.isArray(r)) stages = r;
@@ -383,7 +386,7 @@ app.get('/api/stages/listing', async (req, res) => {
     if (!stages || stages.length === 0) {
       try {
         const r2 = await BitrixClient.call('crm.status.list', {
-          filter: { '=ENTITY_ID': `DYNAMIC_16_STAGE_${categoryId}` },
+          filter: { ENTITY_ID: targetEntity2 },
           order: { SORT: 'ASC' }
         });
         if (Array.isArray(r2)) stages = r2;
@@ -391,15 +394,17 @@ app.get('/api/stages/listing', async (req, res) => {
       } catch (_) {}
     }
 
+    const filtered = (stages || []).filter(s => s && (s.ENTITY_ID === targetEntity1 || s.ENTITY_ID === targetEntity2 || (s.CATEGORY_ID !== undefined && String(s.CATEGORY_ID) === String(categoryId) && String(s.ENTITY_ID).startsWith('DYNAMIC_'))));
+
     res.json({
       success: true,
       categoryId,
-      stages: (stages || []).map(s => ({ id: s.STATUS_ID, value: s.NAME || s.STATUS_ID }))
+      stages: filtered.map(s => ({ id: s.STATUS_ID, value: s.NAME || s.STATUS_ID }))
     });
   } catch (err) {
     res.json({
       success: true,
-      categoryId: req.query.categoryId || 0,
+      categoryId: req.query.categoryId || 22,
       stages: []
     });
   }
