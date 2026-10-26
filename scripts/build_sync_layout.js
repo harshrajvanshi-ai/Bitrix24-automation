@@ -285,24 +285,6 @@ const synchronizedListingSections = [
         rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }
       },
       {
-        code: 'UF_CRM_RECORDTYPEID',
-        spaKey: 'ufCrm16RecordType',
-        spaCrmCode: 'UF_CRM_16_RECORD_TYPE',
-        label: 'Offering / Record Type',
-        bitrixLabel: 'Record Type',
-        type: 'enumeration',
-        placeholder: '-- Select Record Type --',
-        options: [
-          { id: '2230', spaId: '1070', value: 'Residential' },
-          { id: '2232', spaId: '1072', value: 'Commercial' },
-          { id: '2234', spaId: '1074', value: 'Off-Plan' },
-          { id: '2236', spaId: '1076', value: 'Secondary / Resale' },
-          { id: '2238', spaId: '1078', value: 'Rental' },
-          { id: '2240', spaId: '1080', value: 'Land / Plot' }
-        ],
-        rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-      },
-      {
         code: 'UF_CRM_NUMBEROFPARKINGSPACES',
         spaKey: 'ufCrm16ParkingSpaces',
         spaCrmCode: 'UF_CRM_16_PARKING_SPACES',
@@ -883,7 +865,9 @@ const updatedDynamicSections = (currentConfig.listingDynamicLayout?.sections || 
   const matchSyncSec = synchronizedListingSections.find(s => s.id === dynSec.id);
   if (!matchSyncSec) return dynSec;
 
-  const updatedFields = (dynSec.fields || []).map(dynField => {
+  const updatedFields = (dynSec.fields || [])
+    .filter(dynField => dynField.key !== 'ufCrm16RecordType' && dynField.crmCode !== 'UF_CRM_16_RECORD_TYPE')
+    .map(dynField => {
     const syncField = matchSyncSec.fields.find(f => f.spaKey === dynField.key || f.spaCrmCode === dynField.crmCode);
     if (syncField) {
       return {

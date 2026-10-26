@@ -365,26 +365,6 @@ const LISTING_ENUM_MAPS = {
     }
   },
 
-  // Record Type: Lead (2230 Residential... 2240 Land/Plot) <-> SPA (1070 Residential... 1080 Land/Plot)
-  recordType: {
-    leadToSpa: {
-      '2230': 1070, 'residential': 1070,
-      '2232': 1072, 'commercial': 1072,
-      '2234': 1074, 'off-plan': 1074,
-      '2236': 1076, 'secondary / resale': 1076, 'resale': 1076,
-      '2238': 1078, 'rental': 1078,
-      '2240': 1080, 'land / plot': 1080, 'land': 1080
-    },
-    spaToLead: {
-      '1070': '2230',
-      '1072': '2232',
-      '1074': '2234',
-      '1076': '2236',
-      '1078': '2238',
-      '1080': '2240'
-    }
-  },
-
   // Rental Frequency: Lead (1998 Monthly... 2008 None) <-> SPA (762 Monthly... 772 None)
   hoaFrequency: {
     leadToSpa: {
@@ -490,7 +470,6 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_UNIT_NO', spaKey: 'ufCrm16UnitNumber', spaCrmCode: 'UF_CRM_16_UNIT_NUMBER', type: 'string', label: 'Unit Number' },
   { leadCode: 'UF_CRM_FLOOR', spaKey: 'ufCrm16Floor', spaCrmCode: 'UF_CRM_16_FLOOR', type: 'integer', label: 'Floor Number' },
   { leadCode: 'UF_CRM_1791969936048', spaKey: 'ufCrm16Furnished', spaCrmCode: 'UF_CRM_16_FURNISHED', type: 'enumeration', enumCategory: 'furnished', label: 'Furnished Status' },
-  { leadCode: 'UF_CRM_RECORDTYPEID', spaKey: 'ufCrm16RecordType', spaCrmCode: 'UF_CRM_16_RECORD_TYPE', type: 'enumeration', enumCategory: 'recordType', label: 'Offering / Record Type' },
   { leadCode: 'UF_CRM_NUMBEROFPARKINGSPACES', leadAltCodes: ['UF_CRM_PARKING'], spaKey: 'ufCrm16ParkingSpaces', spaCrmCode: 'UF_CRM_16_PARKING_SPACES', type: 'integer', label: 'Parking Spaces' },
 
   // 4. Location & Geography

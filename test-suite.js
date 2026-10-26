@@ -892,7 +892,7 @@ async function runTests() {
   assert(listingJs.includes("id: '768', value: 'Annually'"), 'Rental Frequency includes actual SPA enum 768 Annually');
   assert(listingJs.includes("id: '2432', value: '1 Cheque'"), 'Number of Cheques includes actual SPA enum 2432 1 Cheque');
   assert(listingJs.includes("id: '2440', value: '12 Cheque'"), 'Number of Cheques includes actual SPA enum 2440 12 Cheque');
-  assert(listingJs.includes("id: '1070', value: 'Residential'"), 'Record Type includes actual SPA enum 1070 Residential');
+  assert(!listingJs.includes("ufCrm16RecordType") && !listingJs.includes("Offering / Record Type"), 'Record Type is removed from listing details layout');
   assert(listingJs.includes("id: '702', value: 'Off-Plan'"), 'Completion Status includes actual SPA enum 702 Off-Plan');
   assert(listingJs.includes("id: '836', value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
   assert(listingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');
@@ -944,7 +944,7 @@ async function runTests() {
   assert(enumMaps.propertyType.leadToSpa['1760'] === 892, 'Property Type Penthouse: Lead 1760 maps to SPA 892');
 
   assert(enumMaps.furnished.leadToSpa['1794'] === 736, 'Furnished Status: Lead 1794 maps to SPA 736');
-  assert(enumMaps.recordType.leadToSpa['2230'] === 1070, 'Record Type: Lead 2230 maps to SPA 1070');
+  assert(!enumMaps.recordType, 'Record Type enum map is removed from spaSync');
   assert(enumMaps.hoaFrequency.leadToSpa['1998'] === 762, 'Rental Frequency: Lead 1998 maps to SPA 762');
   assert(enumMaps.cheques.leadToSpa['2446'] === 2436, 'Number of Cheques: Lead 2446 maps to SPA 2436');
   assert(enumMaps.completionStatus.leadToSpa['1944'] === 702, 'Completion Status: Lead 1944 maps to SPA 702');

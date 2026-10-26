@@ -295,21 +295,6 @@
             rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }
           },
           {
-            key: 'ufCrm16RecordType',
-            crmCode: 'UF_CRM_16_RECORD_TYPE',
-            label: 'Offering / Record Type',
-            type: 'enumeration',
-            options: [
-              { id: '1070', value: 'Residential' },
-              { id: '1072', value: 'Commercial' },
-              { id: '1074', value: 'Off-Plan' },
-              { id: '1076', value: 'Secondary / Resale' },
-              { id: '1078', value: 'Rental' },
-              { id: '1080', value: 'Land / Plot' }
-            ],
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-          },
-          {
             key: 'ufCrm16ParkingSpaces',
             crmCode: 'UF_CRM_16_PARKING_SPACES',
             label: 'Parking Spaces',
