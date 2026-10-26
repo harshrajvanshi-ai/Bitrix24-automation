@@ -784,6 +784,17 @@ const synchronizedListingSections = [
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
       },
       {
+        code: 'UF_CRM_LISTING',
+        spaKey: 'ufCrm16Listing',
+        spaCrmCode: 'UF_CRM_16_LISTING',
+        label: 'Linked Portal Listing',
+        bitrixLabel: 'Listing',
+        type: 'lookup',
+        placeholder: 'Search Listing...',
+        lookupEntity: 'listing',
+        rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
+      },
+      {
         code: 'UF_CRM_SYSTEMALLOWEDFORPORTALS',
         leadAltCode: 'UF_CRM_PORTALS_ENABLED',
         spaKey: 'ufCrm16SystemAllowedForPortals',
@@ -908,7 +919,7 @@ const synchronizedListingSections = [
   }
 ];
 
-// Update listingDynamicLayout sections with bidirectional leadCode references
+// Update listingDynamicLayout sections with bidirectional leadCode references and lookup types
 const updatedDynamicSections = (currentConfig.listingDynamicLayout?.sections || []).map(dynSec => {
   const matchSyncSec = synchronizedListingSections.find(s => s.id === dynSec.id);
   if (!matchSyncSec) return dynSec;
@@ -920,6 +931,8 @@ const updatedDynamicSections = (currentConfig.listingDynamicLayout?.sections || 
     if (syncField) {
       return {
         ...dynField,
+        type: syncField.type || dynField.type,
+        lookupEntity: syncField.lookupEntity || dynField.lookupEntity || undefined,
         leadCode: syncField.code,
         leadAltCode: syncField.leadAltCode || undefined
       };
@@ -927,9 +940,24 @@ const updatedDynamicSections = (currentConfig.listingDynamicLayout?.sections || 
     return dynField;
   });
 
+  const existingKeys = new Set(updatedFields.map(f => f.key || f.crmCode));
+  const newFieldsToAdd = matchSyncSec.fields
+    .filter(f => f.spaKey && !existingKeys.has(f.spaKey) && !existingKeys.has(f.spaCrmCode))
+    .map(f => ({
+      key: f.spaKey,
+      crmCode: f.spaCrmCode,
+      label: f.label,
+      type: f.type,
+      lookupEntity: f.lookupEntity || undefined,
+      placeholder: f.placeholder,
+      rules: f.rules,
+      leadCode: f.code,
+      leadAltCode: f.leadAltCode || undefined
+    }));
+
   return {
     ...dynSec,
-    fields: updatedFields
+    fields: [...updatedFields, ...newFieldsToAdd]
   };
 });
 

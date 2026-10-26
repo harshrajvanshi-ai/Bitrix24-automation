@@ -134,6 +134,15 @@
             type: 'string',
             placeholder: 'e.g. EXT-984210',
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
+          },
+          {
+            key: 'ufCrm16ListingAgent',
+            crmCode: 'UF_CRM_16_LISTING_AGENT',
+            label: 'Listing Agent / Broker',
+            type: 'lookup',
+            lookupEntity: 'broker',
+            placeholder: 'Search Listing Agent...',
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           }
         ]
       },
@@ -148,29 +157,36 @@
             crmCode: 'COMPANY_ID',
             fallbackKeys: ['mycompanyId', 'ufCrm16_1791172932'],
             label: 'Company (Agency or Developer)',
-            type: 'crm_company',
+            type: 'lookup',
+            lookupEntity: 'developer',
+            placeholder: 'Search Company or Developer...',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'contactId',
             crmCode: 'CONTACT_ID',
             label: 'Contact',
-            type: 'crm_contact',
+            type: 'lookup',
+            lookupEntity: 'contact',
+            placeholder: 'Search Contact...',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'contactIds',
             crmCode: 'CONTACT_IDS',
             label: 'Contacts',
-            type: 'crm_contact_multi',
+            type: 'lookup',
+            lookupEntity: 'contact',
+            placeholder: 'Search Contacts...',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
             key: 'parentId1052',
             crmCode: 'PARENT_ID_1052',
             label: 'Master Property (parentId1052)',
-            type: 'crm_entity',
-            placeholder: 'Property SPA reference...',
+            type: 'lookup',
+            lookupEntity: 'property',
+            placeholder: 'Search Master Property...',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           },
           {
@@ -186,7 +202,9 @@
             key: 'ufCrm16_1791172932',
             crmCode: 'UF_CRM_16_1791172932',
             label: 'Developer CRM Entity',
-            type: 'crm_entity',
+            type: 'lookup',
+            lookupEntity: 'developer',
+            placeholder: 'Search Developer...',
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           }
         ]
@@ -302,6 +320,15 @@
             type: 'integer',
             placeholder: 'e.g. 2',
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16Layout',
+            crmCode: 'UF_CRM_16_LAYOUT',
+            label: 'Property Layout',
+            type: 'lookup',
+            lookupEntity: 'layout',
+            placeholder: 'Search Layout...',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           }
         ]
       },
@@ -316,9 +343,19 @@
             crmCode: 'UF_CRM_16_PROJECT_NAME',
             fallbackKeys: ['ufCrm16BuildingBayut', 'ufCrm16MasterProjectInfo', 'ufCrm16ProjectInfo'],
             label: 'Project / Building Name',
-            type: 'string',
-            placeholder: 'e.g. Downtown Views II, Creek Horizon...',
+            type: 'lookup',
+            lookupEntity: 'project',
+            placeholder: 'Search Project / Building...',
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16MasterProject',
+            crmCode: 'UF_CRM_16_MASTER_PROJECT',
+            label: 'Master Project',
+            type: 'lookup',
+            lookupEntity: 'master_project',
+            placeholder: 'Search Master Project...',
+            rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'opt' }
           },
           {
             key: 'ufCrm16BuildingBayut',
@@ -667,6 +704,15 @@
             placeholder: 'Marketing description, key amenities...',
             fullWidth: true,
             rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16Listing',
+            crmCode: 'UF_CRM_16_LISTING',
+            label: 'Linked Portal Listing',
+            type: 'lookup',
+            lookupEntity: 'listing',
+            placeholder: 'Search Listing...',
+            rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
           }
         ]
       },
@@ -1580,9 +1626,32 @@
     if (!f) return false;
     const lookupTypes = ['crm_company', 'crm_contact', 'crm_contact_multi', 'crm_entity', 'user', 'crm', 'lookup'];
     if (lookupTypes.includes(f.type)) return true;
+    if (f.lookupEntity) return true;
     if (f.key === 'companyId' || f.key === 'contactId' || f.key === 'contactIds' || f.key === 'assignedById') return true;
     if (f.key && f.key.startsWith('parentId')) return true;
+    if (f.key === 'ufCrm16ProjectName' || f.key === 'ufCrm16MasterProject' || f.key === 'ufCrm16Layout' || f.key === 'ufCrm16Listing' || f.key === 'ufCrm16ListingAgent' || f.key === 'ufCrm16_1791172932') return true;
     return false;
+  }
+
+  function resolveLookupEntity(f) {
+    if (!f) return 'master_project';
+    if (f.lookupEntity) return f.lookupEntity;
+    const key = f.key || '';
+    const crmCode = f.crmCode || '';
+    const type = f.type || '';
+    const k = (key + '_' + crmCode).toLowerCase();
+
+    if (k.includes('developer') || key === 'companyId' || type === 'crm_company') return 'developer';
+    if (k.includes('contact') || key === 'contactId' || key === 'contactIds' || type === 'crm_contact' || type === 'crm_contact_multi') return 'contact';
+    if (k.includes('property') && !k.includes('masterproject')) return 'property';
+    if (key === 'parentId1052' || type === 'crm_entity') return 'property';
+    if (k.includes('layout')) return 'layout';
+    if (k.includes('masterproject') || k.includes('master_project')) return 'master_project';
+    if (k.includes('project')) return 'project';
+    if (k.includes('listingagent') || k.includes('broker') || k.includes('agent')) return 'broker';
+    if (k.includes('listing')) return 'listing';
+    if (key === 'assignedById' || type === 'user') return 'user';
+    return 'master_project';
   }
 
   function getEntityMeta(type, key) {
@@ -1599,14 +1668,23 @@
     if (type === 'user' || key === 'assignedById') {
       return { icon: '👤', label: 'Responsible Person', defaultPrefix: 'User #' };
     }
-    if (key === 'parentId1052' || k.includes('property')) {
+    if (key === 'parentId1052' || (k.includes('property') && !k.includes('masterproject'))) {
       return { icon: '🏗️', label: 'Master Property', defaultPrefix: 'Master Property #' };
+    }
+    if (k.includes('masterproject') || k.includes('master_project')) {
+      return { icon: '🏛️', label: 'Master Project', defaultPrefix: 'Master Project #' };
     }
     if (k.includes('project')) {
       return { icon: '🏢', label: 'Project', defaultPrefix: 'Project #' };
     }
     if (k.includes('layout')) {
       return { icon: '📐', label: 'Layout', defaultPrefix: 'Layout #' };
+    }
+    if (k.includes('listingagent') || k.includes('broker')) {
+      return { icon: '💼', label: 'Listing Agent / Broker', defaultPrefix: 'Broker #' };
+    }
+    if (k.includes('listing')) {
+      return { icon: '📋', label: 'Listing', defaultPrefix: 'Listing #' };
     }
     return { icon: '🔗', label: 'CRM Entity', defaultPrefix: 'Record #' };
   }
@@ -1627,6 +1705,10 @@
     if (idStr.startsWith('L_')) {
       return `/crm/lead/details/${idStr.replace(/^L_/, '')}/`;
     }
+    if (/^DYNAMIC_(\d+)_(\d+)$/.test(idStr)) {
+      const parts = idStr.match(/^DYNAMIC_(\d+)_(\d+)$/);
+      return `/crm/type/${parts[1]}/details/${parts[2]}/`;
+    }
     if (/^T[0-9a-fA-F]+_(\d+)$/.test(idStr)) {
       const parts = idStr.split('_');
       const hex = parts[0].substring(1);
@@ -1637,17 +1719,33 @@
     const num = idStr.replace(/[^\d]/g, '');
     if (!num) return '';
 
-    if (type === 'crm_company' || key === 'companyId') {
+    const k = String(key || '').toLowerCase();
+    if (type === 'crm_company' || key === 'companyId' || k.includes('company') || k.includes('developer')) {
       return `/crm/company/details/${num}/`;
     }
-    if (type === 'crm_contact' || type === 'crm_contact_multi' || key === 'contactId' || key === 'contactIds') {
+    if (type === 'crm_contact' || type === 'crm_contact_multi' || key === 'contactId' || key === 'contactIds' || k.includes('contact')) {
       return `/crm/contact/details/${num}/`;
     }
     if (type === 'user' || key === 'assignedById') {
       return `/company/personal/user/${num}/`;
     }
-    if (key === 'parentId1052' || type === 'crm_entity') {
+    if (key === 'parentId1052' || k.includes('property')) {
       return `/crm/type/1052/details/${num}/`;
+    }
+    if (k.includes('masterproject') || k.includes('master_project')) {
+      return `/crm/type/1040/details/${num}/`;
+    }
+    if (k.includes('project')) {
+      return `/crm/type/1044/details/${num}/`;
+    }
+    if (k.includes('layout')) {
+      return `/crm/type/1048/details/${num}/`;
+    }
+    if (k.includes('listingagent') || k.includes('broker')) {
+      return `/crm/type/1094/details/${num}/`;
+    }
+    if (k.includes('listing')) {
+      return `/crm/type/1058/details/${num}/`;
     }
     return `/crm/type/1052/details/${num}/`;
   }
@@ -1943,16 +2041,27 @@
   }
 
   function renderLookupField(f, rawVal, group, displayLabel) {
+    const entity = f.lookupEntity || resolveLookupEntity(f);
+    f.lookupEntity = entity;
     const meta = getEntityMeta(f.type, f.key);
+
+    const container = document.createElement('div');
+    container.className = 'lookup-container';
+
     const wrap = document.createElement('div');
     wrap.className = 'lookup-input-wrap';
+
+    const icon = document.createElement('span');
+    icon.className = 'lookup-icon';
+    icon.textContent = '🔍';
 
     const input = document.createElement('input');
     input.id = `field_${f.key}`;
     input.name = f.key;
     input.type = 'text';
     input.className = 'form-control';
-    input.placeholder = f.placeholder || `Enter ${displayLabel} ID or name...`;
+    input.placeholder = f.placeholder || `Search ${displayLabel}...`;
+    input.autocomplete = 'off';
 
     let rawIdStr = '';
     if (Array.isArray(rawVal)) {
@@ -1984,16 +2093,28 @@
 
     const hasValidId = rawIdStr && rawIdStr !== '0';
 
-    // Show title directly inside the input field
     if (knownTitle) {
       input.value = knownTitle;
       input.title = `${knownTitle} (ID: ${rawIdStr})`;
+      input.dataset.selectedId = rawIdStr;
+      input.dataset.selectedRef = rawIdStr;
     } else if (hasValidId) {
       input.value = `#${rawIdStr}`;
       input.title = `${meta.label} ID: ${rawIdStr}`;
+      input.dataset.selectedId = rawIdStr;
+      input.dataset.selectedRef = rawIdStr;
+    } else if (rawVal && typeof rawVal === 'string' && rawVal.trim()) {
+      input.value = rawVal.trim();
     } else {
       input.value = '';
     }
+
+    const clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.className = 'lookup-clear-btn';
+    clearBtn.innerHTML = '&times;';
+    clearBtn.title = 'Clear selection';
+    clearBtn.style.display = input.value ? 'block' : 'none';
 
     // Open button: arrow only!
     const openBtn = document.createElement('button');
@@ -2003,56 +2124,180 @@
     openBtn.title = `Open linked ${meta.label} in Bitrix24`;
     openBtn.style.display = hasValidId ? 'inline-flex' : 'none';
 
-    // Fetch title in background and display title inside field
+    // Fetch title in background via /api/lookup or Bitrix fallback
     if (hasValidId && !knownTitle) {
-      fetchEntityTitle(f.type, rawIdStr, f.key, (resolvedTitle) => {
-        if (resolvedTitle && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
-          input.value = resolvedTitle;
-          input.title = `${resolvedTitle} (ID: ${rawIdStr})`;
-          if (f.key === 'ufCrm16_1791172932' || f.key === 'companyId') {
-            const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
-            if (devNameInput && !devNameInput.value) {
-              devNameInput.value = resolvedTitle;
+      const cleanId = rawIdStr.replace(/^[A-Z]+_/, '').replace(/^DYNAMIC_\d+_/, '');
+      fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`)
+        .then(r => r.json())
+        .then(d => {
+          const match = (d.items || []).find(it => String(it.id) === cleanId) || (d.items && d.items[0]);
+          if (match && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
+            input.value = match.title;
+            input.title = `${match.title} (ID: ${rawIdStr})`;
+            input.dataset.selectedRef = match.crmRef || rawIdStr;
+            clearBtn.style.display = 'block';
+            if (f.key === 'ufCrm16_1791172932' || f.key === 'companyId') {
+              const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
+              if (devNameInput && !devNameInput.value) {
+                devNameInput.value = match.title;
+              }
             }
           }
-        }
-      });
+        })
+        .catch(() => {
+          fetchEntityTitle(f.type, rawIdStr, f.key, (resolvedTitle) => {
+            if (resolvedTitle && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
+              input.value = resolvedTitle;
+              input.title = `${resolvedTitle} (ID: ${rawIdStr})`;
+              clearBtn.style.display = 'block';
+            }
+          });
+        });
     }
 
-    openBtn.addEventListener('click', (e) => {
-      const currentTargetId = input.dataset.id || input.value.trim();
-      const firstId = currentTargetId.includes(',') ? currentTargetId.split(',')[0].trim() : currentTargetId;
-      openLinkedRecord(f.type, firstId, f.key, e);
+    const dropdown = document.createElement('div');
+    dropdown.className = 'lookup-dropdown';
+
+    wrap.appendChild(icon);
+    wrap.appendChild(input);
+    wrap.appendChild(clearBtn);
+    wrap.appendChild(openBtn);
+    container.appendChild(wrap);
+    container.appendChild(dropdown);
+
+    let debounceTimer = null;
+
+    async function queryLookup(query = '', refresh = false) {
+      dropdown.innerHTML = '<div class="lookup-spinner">Searching Bitrix24 records...</div>';
+      dropdown.style.display = 'block';
+
+      try {
+        const refreshParam = refresh ? '&refresh=1' : '';
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(query)}${refreshParam}`);
+        const data = await res.json();
+        const items = data.items || [];
+
+        dropdown.innerHTML = '';
+
+        const header = document.createElement('div');
+        header.className = 'lookup-dropdown-header';
+        header.innerHTML = `<span>${items.length} records</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">🔄 Refresh</button>`;
+        const refreshBtnEl = header.querySelector('.lookup-refresh-btn');
+        if (refreshBtnEl) {
+          refreshBtnEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            queryLookup(input.value.trim(), true);
+          });
+        }
+        dropdown.appendChild(header);
+
+        if (items.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'lookup-item';
+          empty.style.cssText = 'color: #828b95; cursor: default;';
+          empty.textContent = 'No matching records found';
+          dropdown.appendChild(empty);
+          return;
+        }
+
+        items.forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'lookup-item';
+
+          const titleSpan = document.createElement('span');
+          titleSpan.className = 'lookup-item-title';
+          titleSpan.textContent = item.title;
+
+          const idSpan = document.createElement('span');
+          idSpan.className = 'lookup-item-id';
+          idSpan.textContent = `#${item.id}`;
+
+          itemEl.appendChild(titleSpan);
+          itemEl.appendChild(idSpan);
+
+          itemEl.addEventListener('click', () => {
+            input.value = item.title;
+            input.dataset.id = String(item.id);
+            input.dataset.selectedId = String(item.id);
+            input.dataset.selectedRef = item.crmRef || item.id;
+            input.title = `${item.title} (ID: ${item.id})`;
+            clearBtn.style.display = 'block';
+            openBtn.style.display = 'inline-flex';
+            dropdown.style.display = 'none';
+
+            // Auto-populate companion fields
+            if ((f.key === 'companyId' || f.key === 'ufCrm16_1791172932') && item.title) {
+              const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
+              if (devNameInput) devNameInput.value = item.title;
+            }
+            if (f.key === 'ufCrm16ProjectName' && item.title) {
+              const bayutInput = document.getElementById('field_ufCrm16BuildingBayut');
+              if (bayutInput && !bayutInput.value) bayutInput.value = item.title;
+            }
+
+            setDirty(true);
+            runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+          });
+
+          dropdown.appendChild(itemEl);
+        });
+      } catch (err) {
+        dropdown.innerHTML = '<div class="lookup-item" style="color: var(--danger);">Failed to load records</div>';
+      }
+    }
+
+    input.addEventListener('focus', () => {
+      queryLookup(input.value.trim());
     });
 
     input.addEventListener('input', () => {
       const val = input.value.trim();
       input.dataset.id = val;
-      setDirty(true);
+      clearBtn.style.display = val ? 'block' : 'none';
       openBtn.style.display = (val && val !== '0') ? 'inline-flex' : 'none';
+      setDirty(true);
+
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        queryLookup(val);
+      }, 250);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
     });
 
-    input.addEventListener('blur', () => {
-      const val = input.value.trim();
-      if (val && (/^\d+$/.test(val) || /^CO_\d+$/i.test(val) || /^C_\d+$/i.test(val))) {
-        fetchEntityTitle(f.type, val, f.key, (resolvedTitle) => {
-          if (resolvedTitle && input.dataset.id === val) {
-            input.value = resolvedTitle;
-            input.title = `${resolvedTitle} (ID: ${val})`;
-            if (f.key === 'ufCrm16_1791172932' || f.key === 'companyId') {
-              const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
-              if (devNameInput && !devNameInput.value) {
-                devNameInput.value = resolvedTitle;
-              }
-            }
-          }
-        });
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      input.dataset.id = '';
+      input.dataset.selectedId = '';
+      input.dataset.selectedRef = '';
+      input.title = '';
+      clearBtn.style.display = 'none';
+      openBtn.style.display = 'none';
+      dropdown.style.display = 'none';
+
+      if (f.key === 'companyId' || f.key === 'ufCrm16_1791172932') {
+        const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
+        if (devNameInput) devNameInput.value = '';
+      }
+
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      input.focus();
+    });
+
+    openBtn.addEventListener('click', (e) => {
+      const currentTargetId = input.dataset.id || input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();
+      const firstId = currentTargetId.includes(',') ? currentTargetId.split(',')[0].trim() : currentTargetId;
+      openLinkedRecord(f.type, firstId, f.key, e);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!container.contains(e.target)) {
+        dropdown.style.display = 'none';
       }
     });
 
-    wrap.appendChild(input);
-    wrap.appendChild(openBtn);
-    group.appendChild(wrap);
+    group.appendChild(container);
     initialFormValues[f.key] = input.dataset.id || input.value;
   }
 
@@ -2411,7 +2656,9 @@
         if (el.name && el.type !== 'file') {
           let fieldVal = (el.dataset.id !== undefined && el.dataset.id !== '') ? el.dataset.id : el.value;
           const fConfig = findFieldConfig(el.name);
-          if (fConfig && fConfig.type === 'money' && fieldVal && !String(fieldVal).includes('|')) {
+          if (fConfig && (fConfig.key === 'ufCrm16ProjectName' || fConfig.crmCode === 'UF_CRM_16_PROJECT_NAME')) {
+            fieldVal = el.value;
+          } else if (fConfig && fConfig.type === 'money' && fieldVal && !String(fieldVal).includes('|')) {
             const numPart = String(fieldVal).replace(/[^\d.-]/g, '');
             fieldVal = numPart ? `${numPart}|AED` : '';
           }

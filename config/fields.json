@@ -1309,6 +1309,22 @@
             }
           },
           {
+            "code": "UF_CRM_LISTING",
+            "spaKey": "ufCrm16Listing",
+            "spaCrmCode": "UF_CRM_16_LISTING",
+            "label": "Linked Portal Listing",
+            "bitrixLabel": "Listing",
+            "type": "lookup",
+            "placeholder": "Search Listing...",
+            "lookupEntity": "listing",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
+          },
+          {
             "code": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
             "leadAltCode": "UF_CRM_PORTALS_ENABLED",
             "spaKey": "ufCrm16SystemAllowedForPortals",
@@ -4307,6 +4323,22 @@
       }
     },
     {
+      "code": "UF_CRM_LISTING",
+      "spaKey": "ufCrm16Listing",
+      "spaCrmCode": "UF_CRM_16_LISTING",
+      "label": "Linked Portal Listing",
+      "bitrixLabel": "Listing",
+      "type": "lookup",
+      "placeholder": "Search Listing...",
+      "lookupEntity": "listing",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
+    },
+    {
       "code": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
       "leadAltCode": "UF_CRM_PORTALS_ENABLED",
       "spaKey": "ufCrm16SystemAllowedForPortals",
@@ -6187,6 +6219,22 @@
             },
             "leadCode": "XML_ID",
             "leadAltCode": "UF_CRM_LISTING_ID"
+          },
+          {
+            "key": "ufCrm16ListingAgent",
+            "crmCode": "UF_CRM_16_LISTING_AGENT",
+            "label": "Listing Agent / Broker",
+            "type": "lookup",
+            "lookupEntity": "broker",
+            "placeholder": "Search Listing Agent...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            },
+            "leadCode": "UF_CRM_LISTINGAGENT",
+            "leadAltCode": "UF_CRM_ASSIGNED_TO_BROKER"
           }
         ]
       },
@@ -6200,46 +6248,49 @@
             "key": "companyId",
             "crmCode": "COMPANY_ID",
             "label": "Company (Agency or Developer)",
-            "type": "crm_company",
+            "type": "lookup",
             "rules": {
               "external_stock": "show",
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
             },
-            "leadCode": "COMPANY_ID"
+            "leadCode": "COMPANY_ID",
+            "lookupEntity": "developer"
           },
           {
             "key": "contactId",
             "crmCode": "CONTACT_ID",
             "label": "Contact",
-            "type": "crm_contact",
+            "type": "lookup",
             "rules": {
               "external_stock": "show",
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
             },
-            "leadCode": "CONTACT_ID"
+            "leadCode": "CONTACT_ID",
+            "lookupEntity": "contact"
           },
           {
             "key": "contactIds",
             "crmCode": "CONTACT_IDS",
             "label": "Contacts",
-            "type": "crm_contact_multi",
+            "type": "lookup",
             "rules": {
               "external_stock": "show",
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
             },
-            "leadCode": "UF_CRM_CONTACTS"
+            "leadCode": "UF_CRM_CONTACTS",
+            "lookupEntity": "contact"
           },
           {
             "key": "parentId1052",
             "crmCode": "PARENT_ID_1052",
             "label": "Master Property (parentId1052)",
-            "type": "crm_entity",
+            "type": "lookup",
             "placeholder": "Property SPA reference...",
             "rules": {
               "external_stock": "opt",
@@ -6247,7 +6298,8 @@
               "overseas_sale": "opt",
               "rent": "opt"
             },
-            "leadCode": "UF_CRM_PROPERTY"
+            "leadCode": "UF_CRM_PROPERTY",
+            "lookupEntity": "property"
           },
           {
             "key": "ufCrm16DeveloperName",
@@ -6267,14 +6319,15 @@
             "key": "ufCrm16_1791172932",
             "crmCode": "UF_CRM_16_1791172932",
             "label": "Developer CRM Entity",
-            "type": "crm_entity",
+            "type": "lookup",
             "rules": {
               "external_stock": "opt",
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "opt"
             },
-            "leadCode": "UF_CRM_DEVELOPER_1"
+            "leadCode": "UF_CRM_DEVELOPER_1",
+            "lookupEntity": "developer"
           }
         ]
       },
@@ -6506,6 +6559,22 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_NUMBEROFPARKINGSPACES"
+          },
+          {
+            "key": "ufCrm16Layout",
+            "crmCode": "UF_CRM_16_LAYOUT",
+            "label": "Property Layout",
+            "type": "lookup",
+            "lookupEntity": "layout",
+            "placeholder": "Search Layout...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            },
+            "leadCode": "UF_CRM_PROPERTY_LAYOUT",
+            "leadAltCode": "UF_CRM_LAYOUT"
           }
         ]
       },
@@ -6519,7 +6588,7 @@
             "key": "ufCrm16ProjectName",
             "crmCode": "UF_CRM_16_PROJECT_NAME",
             "label": "Project / Building Name",
-            "type": "string",
+            "type": "lookup",
             "placeholder": "e.g. Downtown Views II, Creek Horizon...",
             "rules": {
               "external_stock": "show",
@@ -6528,7 +6597,8 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_PROJECT_NAME",
-            "leadAltCode": "UF_CRM_PROJECT_1"
+            "leadAltCode": "UF_CRM_PROJECT_1",
+            "lookupEntity": "project"
           },
           {
             "key": "ufCrm16BuildingBayut",
@@ -6669,6 +6739,22 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_LONGITUDE"
+          },
+          {
+            "key": "ufCrm16MasterProject",
+            "crmCode": "UF_CRM_16_MASTER_PROJECT",
+            "label": "Master Project",
+            "type": "lookup",
+            "lookupEntity": "master_project",
+            "placeholder": "Search Master Project...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            },
+            "leadCode": "UF_CRM_PROJECT",
+            "leadAltCode": "UF_CRM_1792558317"
           }
         ]
       },
@@ -7139,6 +7225,48 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_DESCRIPTION"
+          },
+          {
+            "key": "ufCrm16QrCodeFile",
+            "crmCode": "UF_CRM_16_QR_CODE_FILE",
+            "label": "DLD QR Code Attachment",
+            "type": "file",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "hide",
+              "rent": "opt"
+            },
+            "leadCode": "UF_CRM_QR_CODE"
+          },
+          {
+            "key": "ufCrm16PortalListingId",
+            "crmCode": "UF_CRM_16_PORTAL_LISTING_ID",
+            "label": "Portal Listing ID",
+            "type": "string",
+            "placeholder": "e.g. PORT-1122",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "hide",
+              "rent": "opt"
+            },
+            "leadCode": "UF_CRM_PORTAL_LISTING_ID"
+          },
+          {
+            "key": "ufCrm16Listing",
+            "crmCode": "UF_CRM_16_LISTING",
+            "label": "Linked Portal Listing",
+            "type": "lookup",
+            "lookupEntity": "listing",
+            "placeholder": "Search Listing...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            },
+            "leadCode": "UF_CRM_LISTING"
           }
         ]
       },

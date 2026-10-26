@@ -902,11 +902,18 @@ async function runTests() {
 
   // 9. Verify Lookup Fields & Linked Record Accessibility from Layout
   assert(listingJs.includes("isLookupField"), 'Defines isLookupField to recognize CRM lookup types');
+  assert(listingJs.includes("resolveLookupEntity"), 'Defines resolveLookupEntity to map listing lookup types to entities');
   assert(listingJs.includes("openLinkedRecord"), 'Defines openLinkedRecord to navigate directly to linked records');
   assert(listingJs.includes("lookup-open-btn"), 'Renders inline lookup-open-btn for direct 1-click access');
   assert(listingJs.includes("<span>↗</span>"), 'Renders arrow-only open button next to lookup input');
   assert(listingJs.includes("input.dataset.id"), 'Preserves underlying entity ID via dataset.id while displaying title inside input');
+  assert(listingJs.includes("lookup-dropdown"), 'Renders autocomplete dropdown container in listing layout');
+  assert(listingJs.includes("lookup-clear-btn"), 'Renders clear button for 1-click reset of lookup field');
+  assert(listingJs.includes("lookup-refresh-btn"), 'Renders refresh button for live re-query of Bitrix records');
+  assert(listingJs.includes("/api/lookup"), 'Connects to live /api/lookup endpoint with debounce search');
   assert(listingCss.includes(".lookup-open-btn"), 'public/css/listing-details.css contains lookup-open-btn styling');
+  assert(listingCss.includes(".lookup-dropdown"), 'public/css/listing-details.css contains lookup-dropdown styling');
+  assert(listingCss.includes(".lookup-item"), 'public/css/listing-details.css contains lookup-item styling');
 
   // ============================================================================
   // Test Case 19: Listing Layout Synchronization & Cross-Entity Field Mapping Engine
@@ -983,6 +990,13 @@ async function runTests() {
   assert(listingLookupFields.some(f => f.code === 'UF_CRM_PROJECT_NAME' && f.lookupEntity === 'project'), 'UF_CRM_PROJECT_NAME is configured as project lookup');
   assert(tabJsContent.includes('isLookupField'), 'public/js/tab.js defines isLookupField helper');
   assert(tabJsContent.includes('resolveLookupEntity'), 'public/js/tab.js defines resolveLookupEntity helper');
+  assert(tabJsContent.includes('openLinkedRecord'), 'public/js/tab.js defines openLinkedRecord for linked CRM navigation');
+  assert(tabJsContent.includes('lookup-open-btn'), 'public/js/tab.js renders lookup-open-btn for 1-click open');
+  assert(tabCssContent.includes('.lookup-open-btn'), 'public/css/tab.css defines .lookup-open-btn styling');
+  const dynamicLookupFields = (configJson.listingDynamicLayout?.sections || []).flatMap(s => (s.fields || [])).filter(f => f.type === 'lookup');
+  assert(dynamicLookupFields.length >= 7, 'listingDynamicLayout defines interactive lookup fields (>= 7 lookup fields)');
+  assert(dynamicLookupFields.some(f => f.key === 'companyId' && f.lookupEntity === 'developer'), 'companyId in listingDynamicLayout is developer lookup');
+  assert(dynamicLookupFields.some(f => f.key === 'parentId1052' && f.lookupEntity === 'property'), 'parentId1052 in listingDynamicLayout is property lookup');
   // ============================================================================
   // Case 20: Layout Field Automations & Auto-Calculations
   // ============================================================================

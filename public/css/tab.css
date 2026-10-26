@@ -736,15 +736,17 @@ select.form-control {
   position: relative;
   display: flex;
   align-items: center;
+  gap: 6px;
+  width: 100%;
 }
 
 .lookup-input-wrap .form-control {
   padding-left: 32px;
-  padding-right: 30px;
+  padding-right: 32px;
 }
 
 [dir="rtl"] .lookup-input-wrap .form-control {
-  padding-left: 30px;
+  padding-left: 32px;
   padding-right: 32px;
 }
 
@@ -755,6 +757,7 @@ select.form-control {
   color: var(--text-light);
   pointer-events: none;
   transition: color var(--transition-fast);
+  z-index: 2;
 }
 
 .lookup-input-wrap:focus-within .lookup-icon { color: var(--primary); }
@@ -763,7 +766,7 @@ select.form-control {
 
 .lookup-clear-btn {
   position: absolute;
-  right: 8px;
+  right: 48px;
   background: transparent;
   border: none;
   color: var(--text-light);
@@ -774,13 +777,42 @@ select.form-control {
   border-radius: 50%;
   display: none;
   transition: all var(--transition-fast);
+  z-index: 2;
 }
 
-[dir="rtl"] .lookup-clear-btn { right: auto; left: 8px; }
+[dir="rtl"] .lookup-clear-btn { right: auto; left: 48px; }
 
 .lookup-clear-btn:hover {
   color: var(--danger);
   background: #fee2e2;
+}
+
+.lookup-open-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius);
+  background: #f8fafc;
+  border: 1.5px solid var(--input-border);
+  color: var(--primary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.lookup-open-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-deep);
+  transform: translateY(-1px);
 }
 
 .lookup-dropdown {

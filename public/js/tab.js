@@ -216,6 +216,66 @@
   }
 
   /**
+   * Open linked record directly in Bitrix24
+   */
+  function openLinkedRecord(f, rawId, ev) {
+    if (ev) {
+      ev.preventDefault();
+      ev.stopPropagation();
+    }
+    if (!rawId) {
+      showToast('No valid linked record ID to open', 'warning');
+      return;
+    }
+    const idStr = String(rawId).trim();
+    let path = '';
+    const entity = f?.lookupEntity || resolveLookupEntity(f || {});
+
+    if (idStr.startsWith('CO_')) {
+      path = `/crm/company/details/${idStr.replace(/^CO_/, '')}/`;
+    } else if (idStr.startsWith('C_')) {
+      path = `/crm/contact/details/${idStr.replace(/^C_/, '')}/`;
+    } else if (idStr.startsWith('D_')) {
+      path = `/crm/deal/details/${idStr.replace(/^D_/, '')}/`;
+    } else if (idStr.startsWith('L_')) {
+      path = `/crm/lead/details/${idStr.replace(/^L_/, '')}/`;
+    } else if (/^DYNAMIC_(\d+)_(\d+)$/.test(idStr)) {
+      const m = idStr.match(/^DYNAMIC_(\d+)_(\d+)$/);
+      path = `/crm/type/${m[1]}/details/${m[2]}/`;
+    } else {
+      const num = idStr.replace(/[^\d]/g, '');
+      if (!num) return;
+      if (entity === 'developer' || entity === 'company') {
+        path = `/crm/company/details/${num}/`;
+      } else if (entity === 'contact') {
+        path = `/crm/contact/details/${num}/`;
+      } else if (entity === 'property') {
+        path = `/crm/type/1052/details/${num}/`;
+      } else if (entity === 'master_project') {
+        path = `/crm/type/1040/details/${num}/`;
+      } else if (entity === 'project') {
+        path = `/crm/type/1044/details/${num}/`;
+      } else if (entity === 'layout') {
+        path = `/crm/type/1048/details/${num}/`;
+      } else if (entity === 'broker') {
+        path = `/crm/type/1094/details/${num}/`;
+      } else if (entity === 'listing') {
+        path = `/crm/type/1058/details/${num}/`;
+      } else {
+        path = `/crm/type/1052/details/${num}/`;
+      }
+    }
+
+    if (window.BX24 && typeof window.BX24.openPath === 'function') {
+      window.BX24.openPath(path);
+    } else {
+      const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
+      const fullUrl = path.startsWith('http') ? path : `https://${domain}${path}`;
+      window.open(fullUrl, '_blank');
+    }
+  }
+
+  /**
    * Create interactive Lookup Autocomplete Component (Bitrix CRM Entity Lookups)
    */
   function createLookupInput(f, currentVal, markFieldDirty) {
@@ -301,6 +361,7 @@
             if (match && (input.value === String(currentVal) || input.value === cleanId || !input.value)) {
               input.value = match.title;
               input.dataset.selectedRef = match.crmRef || rawVal;
+              openBtn.style.display = 'inline-flex';
             }
           })
           .catch(() => {});
@@ -313,6 +374,7 @@
             if (match) {
               input.dataset.selectedId = match.id;
               input.dataset.selectedRef = match.crmRef || match.id;
+              openBtn.style.display = 'inline-flex';
             }
           })
           .catch(() => {});
@@ -326,12 +388,26 @@
     clearBtn.title = 'Clear selection';
     if (input.value) clearBtn.style.display = 'block';
 
+    const openBtn = document.createElement('button');
+    openBtn.type = 'button';
+    openBtn.className = 'lookup-open-btn';
+    openBtn.innerHTML = '<span>↗</span>';
+    openBtn.title = `Open linked ${f.label || 'record'} in Bitrix24`;
+    const hasInitialId = !!(input.dataset.selectedId || input.dataset.selectedRef || (currentVal && currentVal !== '0'));
+    openBtn.style.display = hasInitialId ? 'inline-flex' : 'none';
+
+    openBtn.addEventListener('click', (e) => {
+      const targetId = input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();
+      openLinkedRecord(f, targetId, e);
+    });
+
     const dropdown = document.createElement('div');
     dropdown.className = 'lookup-dropdown';
 
     inputWrap.appendChild(icon);
     inputWrap.appendChild(input);
     inputWrap.appendChild(clearBtn);
+    inputWrap.appendChild(openBtn);
     container.appendChild(inputWrap);
     container.appendChild(dropdown);
 
@@ -392,6 +468,7 @@
             input.dataset.selectedId = item.id;
             input.dataset.selectedRef = item.crmRef || item.id;
             clearBtn.style.display = 'block';
+            openBtn.style.display = 'inline-flex';
             dropdown.style.display = 'none';
 
             // Auto-populate companion fields
@@ -420,6 +497,7 @@
 
     input.addEventListener('input', () => {
       clearBtn.style.display = input.value ? 'block' : 'none';
+      openBtn.style.display = input.value ? 'inline-flex' : 'none';
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         queryLookup(input.value.trim());
@@ -432,6 +510,7 @@
       input.dataset.selectedId = '';
       input.dataset.selectedRef = '';
       clearBtn.style.display = 'none';
+      openBtn.style.display = 'none';
       dropdown.style.display = 'none';
 
       if (f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') {
