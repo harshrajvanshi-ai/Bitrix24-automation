@@ -906,6 +906,74 @@ async function runTests() {
   assert(listingCss.includes(".lookup-open-btn"), 'public/css/listing-details.css contains lookup-open-btn styling');
 
   // ============================================================================
+  // Test Case 19: Listing Layout Synchronization & Cross-Entity Field Mapping Engine
+  // ============================================================================
+  console.log('\n--- Case 19: Listing Layout Synchronization & Cross-Entity Field Mapping ---');
+  const spaSyncModule = require('./src/spaSync');
+  assert(typeof spaSyncModule.getListingFieldMapping === 'function', 'spaSync exports getListingFieldMapping function');
+  assert(typeof spaSyncModule.syncListingSpaFromLead === 'function', 'spaSync exports syncListingSpaFromLead function');
+  assert(typeof spaSyncModule.syncLeadFromListingSpa === 'function', 'spaSync exports syncLeadFromListingSpa function');
+
+  const mappingData = spaSyncModule.getListingFieldMapping();
+  assert(mappingData.success === true, 'getListingFieldMapping returns success: true');
+  assert(mappingData.entityTypeId === 1058, 'Entity type ID is 1058 (Listing SPA)');
+  assert(Array.isArray(mappingData.fieldMap) && mappingData.fieldMap.length >= 60, 'Field map contains >= 60 synchronized listing attributes');
+  assert(Array.isArray(mappingData.sections) && mappingData.sections.length === 8, 'Synchronized listing layout has exactly 8 structured sections');
+
+  // Check 8 structured sections
+  const sectionIds = mappingData.sections.map(s => s.id);
+  assert(sectionIds.includes('general'), 'Includes General Overview section');
+  assert(sectionIds.includes('seller'), 'Includes Seller & Source section');
+  assert(sectionIds.includes('specs'), 'Includes Property Specifications section');
+  assert(sectionIds.includes('location'), 'Includes Location & Geography section');
+  assert(sectionIds.includes('pricing'), 'Includes Pricing & Terms section');
+  assert(sectionIds.includes('dates'), 'Includes Dates & Timeline section');
+  assert(sectionIds.includes('marketing'), 'Includes Portals & Marketing section');
+  assert(sectionIds.includes('media'), 'Includes Media & Documents section');
+
+  // Check enum maps
+  const enumMaps = spaSyncModule.LISTING_ENUM_MAPS;
+  assert(enumMaps.listingType.leadToSpa['2578'] === 158, 'Listing Type Rent: Lead 2578 maps to SPA 158');
+  assert(enumMaps.listingType.leadToSpa['2580'] === 160, 'Listing Type Overseas Sale: Lead 2580 maps to SPA 160');
+  assert(enumMaps.listingType.leadToSpa['2582'] === 162, 'Listing Type Off-plan: Lead 2582 maps to SPA 162');
+  assert(enumMaps.listingType.leadToSpa['2584'] === 164, 'Listing Type External Stock: Lead 2584 maps to SPA 164');
+  assert(enumMaps.listingType.spaToLead['158'] === '2578', 'Listing Type Rent: SPA 158 maps inversely to Lead 2578');
+
+  assert(enumMaps.propertyType.leadToSpa['1754'] === 886, 'Property Type Apartment: Lead 1754 maps to SPA 886');
+  assert(enumMaps.propertyType.leadToSpa['1756'] === 888, 'Property Type Villa: Lead 1756 maps to SPA 888');
+  assert(enumMaps.propertyType.leadToSpa['1760'] === 892, 'Property Type Penthouse: Lead 1760 maps to SPA 892');
+
+  assert(enumMaps.furnished.leadToSpa['1794'] === 736, 'Furnished Status: Lead 1794 maps to SPA 736');
+  assert(enumMaps.recordType.leadToSpa['2230'] === 1070, 'Record Type: Lead 2230 maps to SPA 1070');
+  assert(enumMaps.hoaFrequency.leadToSpa['1998'] === 762, 'Rental Frequency: Lead 1998 maps to SPA 762');
+  assert(enumMaps.cheques.leadToSpa['2446'] === 2436, 'Number of Cheques: Lead 2446 maps to SPA 2436');
+  assert(enumMaps.completionStatus.leadToSpa['1944'] === 702, 'Completion Status: Lead 1944 maps to SPA 702');
+  assert(enumMaps.occupancy.leadToSpa['1824'] === 836, 'Tenancy Status: Lead 1824 maps to SPA 836');
+
+  // Verify tab.js contains dynamic sublayout detection and listener
+  const tabJsContent = fs.readFileSync(path.resolve(__dirname, 'public/js/tab.js'), 'utf-8');
+  assert(tabJsContent.includes('detectListingSubLayout'), 'public/js/tab.js defines detectListingSubLayout');
+  assert(tabJsContent.includes('applyListingSubLayout'), 'public/js/tab.js defines applyListingSubLayout');
+  assert(tabJsContent.includes('listingLayoutBadge'), 'public/js/tab.js controls listingLayoutBadge element');
+  assert(tabJsContent.includes('UF_CRM_1791952650167'), 'public/js/tab.js binds real-time change listener on Listing Type field');
+
+  // Verify views/tab.html contains layout pill badge
+  const tabHtmlContent = fs.readFileSync(path.resolve(__dirname, 'views/tab.html'), 'utf-8');
+  assert(tabHtmlContent.includes('id="listing-layout-badge"'), 'views/tab.html contains listing-layout-badge element');
+
+  // Verify public/css/tab.css contains layout-pill styling
+  const tabCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/tab.css'), 'utf-8');
+  assert(tabCssContent.includes('.layout-pill'), 'public/css/tab.css contains .layout-pill styling');
+  assert(tabCssContent.includes('.layout-pill-external_stock'), 'public/css/tab.css contains .layout-pill-external_stock styling');
+  assert(tabCssContent.includes('.layout-pill-rent'), 'public/css/tab.css contains .layout-pill-rent styling');
+
+  // Verify server.js routes for listing mapping and sync
+  const serverContent = fs.readFileSync(path.resolve(__dirname, 'server.js'), 'utf-8');
+  assert(serverContent.includes("app.get('/api/mapping/listing'"), 'server.js defines GET /api/mapping/listing endpoint');
+  assert(serverContent.includes("app.post('/api/lead/:id/sync-listing'"), 'server.js defines POST /api/lead/:id/sync-listing endpoint');
+  assert(serverContent.includes('syncListingSpaFromLead(leadId)'), 'server.js automatically syncs Listing SPA upon Lead update');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

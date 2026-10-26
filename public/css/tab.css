@@ -1216,3 +1216,45 @@ select.form-control {
 *::-webkit-scrollbar-track { background: transparent; }
 *::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
 *::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* =========================================================================
+   13. DYNAMIC LISTING TAILORED LAYOUT PILLS
+   ========================================================================= */
+.layout-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.layout-pill-external_stock {
+  background: #fdf4ff;
+  color: #a21caf;
+  border-color: #f0abfc;
+}
+
+.layout-pill-off_plan {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.layout-pill-overseas_sale {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.layout-pill-rent {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+

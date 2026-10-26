@@ -23,9 +23,26 @@
   let currentLead = null;
   let tabConfig = null;
   let currentLayout = null; // 'enquiry' | 'listing' | null
+  let currentListingSubLayout = 'rent'; // 'external_stock' | 'off_plan' | 'overseas_sale' | 'rent'
   let initialFormValues = {};
   let isDirty = false;
   let allSectionsCollapsed = false;
+
+  const LISTING_LAYOUT_META = {
+    external_stock: { id: 'external_stock', enumId: '2584', title: 'External Stock', icon: '🏢', pillClass: 'layout-pill-external_stock' },
+    off_plan: { id: 'off_plan', enumId: '2582', title: 'Off-plan', icon: '🏗️', pillClass: 'layout-pill-off_plan' },
+    overseas_sale: { id: 'overseas_sale', enumId: '2580', title: 'Overseas Sale', icon: '🌍', pillClass: 'layout-pill-overseas_sale' },
+    rent: { id: 'rent', enumId: '2578', title: 'Rent', icon: '🔑', pillClass: 'layout-pill-rent' }
+  };
+
+  function detectListingSubLayout(lead) {
+    const raw = lead?.UF_CRM_1791952650167 || lead?.UF_CRM_LISTING_TYPE;
+    const str = String(raw || '').toLowerCase().trim();
+    if (str === '2584' || str === 'external stock' || str === '164') return 'external_stock';
+    if (str === '2582' || str === 'off-plan listing' || str === 'off-plan' || str === '162') return 'off_plan';
+    if (str === '2580' || str === 'overseas sale' || str === '160') return 'overseas_sale';
+    return 'rent'; // default 2578 / 'rent' / '158'
+  }
 
   // DOM Elements
   const loadingEl = document.getElementById('loading');
@@ -33,6 +50,7 @@
   const formEl = document.getElementById('lead-tab-form');
   const fieldsContainer = document.getElementById('fields-container');
   const stageBadge = document.getElementById('stage-badge');
+  const listingLayoutBadge = document.getElementById('listing-layout-badge');
   const fieldsCountBadge = document.getElementById('fields-count-badge');
   const stageInfoText = document.getElementById('stage-info-text');
   const saveBtn = document.getElementById('btn-save');
@@ -577,6 +595,59 @@
     return { container, inputElement };
   }
 
+  function applyListingSubLayout(subLayout) {
+    currentListingSubLayout = subLayout;
+    const meta = LISTING_LAYOUT_META[subLayout] || LISTING_LAYOUT_META.rent;
+    if (listingLayoutBadge) {
+      listingLayoutBadge.className = `layout-pill ${meta.pillClass}`;
+      listingLayoutBadge.innerHTML = `${meta.icon} ${meta.title}`;
+      listingLayoutBadge.style.display = 'inline-flex';
+    }
+
+    let totalActive = 0;
+    const sections = tabConfig?.listingLayout?.sections || [];
+
+    sections.forEach((sec, sIdx) => {
+      const secId = `section_${sec.id || sIdx}`;
+      const sectionCard = document.getElementById(secId);
+      let secActiveCount = 0;
+
+      (sec.fields || []).forEach(f => {
+        const fg = document.querySelector(`.form-group[data-field-code="${f.code}"]`);
+        const rule = f.rules ? (f.rules[subLayout] || 'show') : 'show';
+        if (fg) {
+          fg.style.display = rule === 'hide' ? 'none' : '';
+          const labelEl = fg.querySelector('.form-label');
+          if (labelEl) {
+            const customLabel = (f.labelOverrides && f.labelOverrides[subLayout]) ? f.labelOverrides[subLayout] : f.label;
+            const star = labelEl.querySelector('.required-star');
+            labelEl.textContent = customLabel;
+            if (star) labelEl.appendChild(star);
+          }
+        }
+        if (rule !== 'hide') secActiveCount++;
+      });
+
+      totalActive += secActiveCount;
+
+      if (sectionCard) {
+        const badgeCount = sectionCard.querySelector('.section-badge-count');
+        if (badgeCount) badgeCount.textContent = `${secActiveCount} fields`;
+        sectionCard.style.display = secActiveCount === 0 ? 'none' : '';
+      }
+
+      const pill = sectionNavPills.children[sIdx + 1];
+      if (pill) {
+        pill.style.display = secActiveCount === 0 ? 'none' : '';
+      }
+    });
+
+    if (fieldsCountBadge) {
+      fieldsCountBadge.textContent = `${totalActive} fields in ${sections.length} sections`;
+    }
+    resizeWindow();
+  }
+
   /**
    * Create standard form-group wrapper with label & validation feedback
    */
@@ -584,12 +655,26 @@
     const formGroup = document.createElement('div');
     formGroup.className = `form-group ${f.fullWidth || f.type === 'text' ? 'full-width' : ''}`;
     formGroup.setAttribute('data-field-code', f.code);
-    formGroup.setAttribute('data-field-label', f.label.toLowerCase());
+    formGroup.setAttribute('data-field-label', (f.label || '').toLowerCase());
+
+    // Apply layout visibility rule for listing records
+    if (currentLayout === 'listing' && f.rules) {
+      const rule = f.rules[currentListingSubLayout] || 'show';
+      if (rule === 'hide') {
+        formGroup.style.display = 'none';
+      }
+    }
 
     const label = document.createElement('label');
     label.className = 'form-label';
     label.setAttribute('for', `field_${f.code}`);
-    label.textContent = f.label;
+    
+    // Contextual label override
+    const displayLabel = (currentLayout === 'listing' && f.labelOverrides && f.labelOverrides[currentListingSubLayout])
+      ? f.labelOverrides[currentListingSubLayout]
+      : f.label;
+    label.textContent = displayLabel;
+
     if (f.required) {
       const star = document.createElement('span');
       star.className = 'required-star';
@@ -610,6 +695,18 @@
     };
 
     const inputObj = createFieldInput(f, currentVal, markFieldDirty);
+
+    // Bind real-time listing layout switching when Listing Type changes
+    if (currentLayout === 'listing' && (f.code === 'UF_CRM_1791952650167' || f.code === 'UF_CRM_LISTING_TYPE')) {
+      inputObj.inputElement?.addEventListener('change', (e) => {
+        const selectedVal = e.target.value;
+        const detected = detectListingSubLayout({ UF_CRM_1791952650167: selectedVal });
+        if (detected && detected !== currentListingSubLayout) {
+          applyListingSubLayout(detected);
+        }
+      });
+    }
+
     formGroup.appendChild(inputObj.container);
     formGroup.appendChild(feedback);
 
@@ -633,18 +730,31 @@
       stageBadge.classList.add('badge-listing');
       stageBadge.textContent = 'Listing Record';
       if (stageInfoText) stageInfoText.innerHTML = '🏢 Presenting <strong>Listing Layout</strong>';
+
+      // Detect and activate tailored listing layout
+      currentListingSubLayout = detectListingSubLayout(lead);
+      if (listingLayoutBadge) {
+        const meta = LISTING_LAYOUT_META[currentListingSubLayout] || LISTING_LAYOUT_META.rent;
+        listingLayoutBadge.className = `layout-pill ${meta.pillClass}`;
+        listingLayoutBadge.innerHTML = `${meta.icon} ${meta.title}`;
+        listingLayoutBadge.style.display = 'inline-flex';
+      }
     } else {
       stageBadge.classList.add('badge-enquiry');
       stageBadge.textContent = 'Enquiry Record';
       if (stageInfoText) stageInfoText.innerHTML = '🔍 Presenting <strong>Enquiry Layout</strong>';
+      if (listingLayoutBadge) listingLayoutBadge.style.display = 'none';
     }
 
     const layoutDef = layout === 'listing' ? tabConfig.listingLayout : tabConfig.enquiryLayout;
     const sections = layoutDef?.sections || [];
 
-    // Calculate total fields count
+    // Calculate total fields count according to active rules
     let totalFields = 0;
-    sections.forEach(s => totalFields += (s.fields || []).length);
+    sections.forEach(s => {
+      const active = (s.fields || []).filter(f => layout !== 'listing' || !f.rules || (f.rules[currentListingSubLayout] || 'show') !== 'hide');
+      totalFields += active.length;
+    });
     fieldsCountBadge.textContent = `${totalFields} fields in ${sections.length} sections`;
 
     // Render Section Navigation Pills
@@ -661,12 +771,16 @@
 
     sections.forEach((sec, sIdx) => {
       const secId = `section_${sec.id || sIdx}`;
+      const activeFields = (sec.fields || []).filter(f => layout !== 'listing' || !f.rules || (f.rules[currentListingSubLayout] || 'show') !== 'hide');
 
       // Section Pill
       const pill = document.createElement('button');
       pill.type = 'button';
       pill.className = 'nav-pill';
       pill.innerHTML = `${sec.icon || '📁'} ${sec.title}`;
+      if (layout === 'listing' && activeFields.length === 0) {
+        pill.style.display = 'none';
+      }
       pill.addEventListener('click', () => {
         document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
@@ -688,6 +802,9 @@
       if (sec.defaultOpen === false) {
         sectionCard.classList.add('section-collapsed');
       }
+      if (layout === 'listing' && activeFields.length === 0) {
+        sectionCard.style.display = 'none';
+      }
 
       const headerEl = document.createElement('div');
       headerEl.className = 'section-header';
@@ -705,7 +822,7 @@
 
       const badgeCount = document.createElement('span');
       badgeCount.className = 'section-badge-count';
-      badgeCount.textContent = `${(sec.fields || []).length} fields`;
+      badgeCount.textContent = `${activeFields.length} fields`;
 
       leftWrap.appendChild(iconEl);
       leftWrap.appendChild(titleEl);

@@ -22,7 +22,14 @@ const StorageManager = require('./src/storage');
 const BitrixClient = require('./src/bitrixClient');
 const DiscoveryService = require('./src/discovery');
 const EventRouter = require('./src/eventRouter');
-const { syncEnquirySpaFromLead, STATE_ENUM_TO_LABEL, STATE_LABEL_TO_ENUM } = require('./src/spaSync');
+const {
+  syncEnquirySpaFromLead,
+  syncListingSpaFromLead,
+  syncLeadFromListingSpa,
+  getListingFieldMapping,
+  STATE_ENUM_TO_LABEL,
+  STATE_LABEL_TO_ENUM
+} = require('./src/spaSync');
 const { verifyBitrixEventToken, verifyAdminSecret } = require('./src/middleware/auth');
 const { apiLimiter, eventLimiter } = require('./src/middleware/rateLimiter');
 
@@ -344,6 +351,11 @@ app.all('/api/listing/:id/update', async (req, res) => {
       id: listingId,
       fields
     });
+    // Asynchronously synchronize linked Lead
+    syncLeadFromListingSpa(listingId).catch(leadErr => {
+      console.warn(`[SPA SYNC] Background sync to lead from listing #${listingId} failed:`, leadErr.message);
+    });
+
     res.json({ success: true, item: result?.item || result });
   } catch (err) {
     console.error(`[API] Error updating listing #${req.params.id}:`, err.message);
@@ -1107,9 +1119,40 @@ app.post('/api/lead/:id', apiLimiter, async (req, res) => {
       console.warn(`[SPA SYNC] Background sync failed for Lead #${leadId}:`, spaErr.message);
     });
 
+    // Asynchronously synchronize linked Listing SPA item
+    syncListingSpaFromLead(leadId).catch(spaErr => {
+      console.warn(`[SPA SYNC] Background listing sync failed for Lead #${leadId}:`, spaErr.message);
+    });
+
     res.json({ success: true, result });
   } catch (err) {
     console.error(`[API] Failed to update Lead #${leadId}:`, err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/mapping/listing
+ * Returns complete field mapping and enum translation dictionaries between Lead Listing and Listing SPA (1058)
+ */
+app.get('/api/mapping/listing', (req, res) => {
+  try {
+    const mapping = getListingFieldMapping();
+    res.json(mapping);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/lead/:id/sync-listing
+ * On-demand endpoint to synchronize Lead with its linked Listing SPA item
+ */
+app.post('/api/lead/:id/sync-listing', async (req, res) => {
+  try {
+    const result = await syncListingSpaFromLead(req.params.id);
+    res.json({ success: true, result });
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });

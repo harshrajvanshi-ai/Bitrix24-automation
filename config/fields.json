@@ -13,50 +13,278 @@
     "listingStageName": "Listing Leads"
   },
   "listingLayout": {
-    "title": "Listing Form Layout",
+    "title": "Listing Form Layout (Dynamic Multi-Layout Synchronized)",
+    "layoutField": "UF_CRM_1791952650167",
+    "layoutFieldAlt": "UF_CRM_LISTING_TYPE",
+    "layoutEnumMap": {
+      "2578": "rent",
+      "2580": "overseas_sale",
+      "2582": "off_plan",
+      "2584": "external_stock",
+      "rent": "rent",
+      "overseas sale": "overseas_sale",
+      "off-plan": "off_plan",
+      "off-plan listing": "off_plan",
+      "external stock": "external_stock"
+    },
+    "layoutMeta": {
+      "external_stock": {
+        "id": "external_stock",
+        "enumId": "164",
+        "title": "External Stock",
+        "icon": "🏢",
+        "pillClass": "layout-pill-external_stock"
+      },
+      "off_plan": {
+        "id": "off_plan",
+        "enumId": "162",
+        "title": "Off-plan",
+        "icon": "🏗️",
+        "pillClass": "layout-pill-off_plan"
+      },
+      "overseas_sale": {
+        "id": "overseas_sale",
+        "enumId": "160",
+        "title": "Overseas Sale",
+        "icon": "🌍",
+        "pillClass": "layout-pill-overseas_sale"
+      },
+      "rent": {
+        "id": "rent",
+        "enumId": "158",
+        "title": "Rent",
+        "icon": "🔑",
+        "pillClass": "layout-pill-rent"
+      }
+    },
     "sections": [
       {
-        "id": "sec_commercial",
-        "icon": "📌",
-        "title": "Commercial Terms & Listing Status",
+        "id": "general",
+        "title": "Commercial Terms & General Overview",
+        "icon": "📋",
+        "desc": "Listing title, type, agreement authority, stage and responsible broker",
         "defaultOpen": true,
-        "description": "Listing name, operation, property types, exclusive terms, and status",
         "fields": [
           {
-            "code": "UF_CRM_LISTING_NAME",
-            "label": "Listing Name",
+            "code": "UF_CRM_1791952409183",
+            "leadAltCode": "UF_CRM_LISTING_NAME",
+            "spaKey": "title",
+            "spaCrmCode": "TITLE",
+            "label": "Listing Title",
             "bitrixLabel": "Listing Name",
             "type": "string",
-            "placeholder": "Enter listing name...",
-            "fullWidth": true
+            "placeholder": "e.g. Luxury 4BR Penthouse in Downtown Dubai...",
+            "fullWidth": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "STATUS_ID",
+            "spaKey": "stageId",
+            "spaCrmCode": "STAGE_ID",
+            "label": "Stage",
+            "bitrixLabel": "Status / Stage",
+            "type": "stage",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "ASSIGNED_BY_ID",
+            "spaKey": "assignedById",
+            "spaCrmCode": "ASSIGNED_BY_ID",
+            "label": "Responsible Person",
+            "bitrixLabel": "Responsible Person",
+            "type": "user",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_1791952650167",
-            "label": "Listing Type",
+            "leadAltCode": "UF_CRM_LISTING_TYPE",
+            "spaKey": "ufCrm16_1790154808",
+            "spaCrmCode": "UF_CRM_16_1790154808",
+            "label": "Listing Type (Layout Driver)",
             "bitrixLabel": "Listing type",
             "type": "enumeration",
             "placeholder": "-- Select Listing Type --",
             "options": [
               {
                 "id": "2578",
+                "spaId": "158",
                 "value": "RENT"
               },
               {
                 "id": "2580",
+                "spaId": "160",
                 "value": "Overseas Sale"
               },
               {
                 "id": "2582",
+                "spaId": "162",
                 "value": "Off-plan Listing"
               },
               {
                 "id": "2584",
+                "spaId": "164",
                 "value": "External Stock"
               }
-            ]
+            ],
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
+            "code": "UF_CRM_1791970897872",
+            "leadAltCode": "UF_CRM_EXCLUSIVE",
+            "spaKey": "ufCrm16Exclusive",
+            "spaCrmCode": "UF_CRM_16_EXCLUSIVE",
+            "label": "Listing Agreement (Exclusive / Non-Exclusive)",
+            "bitrixLabel": "Exclusive",
+            "type": "boolean",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "XML_ID",
+            "leadAltCode": "UF_CRM_LISTING_ID",
+            "spaKey": "xmlId",
+            "spaCrmCode": "XML_ID",
+            "label": "External ID (xmlId)",
+            "bitrixLabel": "External ID",
+            "type": "string",
+            "placeholder": "e.g. EXT-984210",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
+          }
+        ]
+      },
+      {
+        "id": "seller",
+        "title": "Seller & Source",
+        "icon": "🤝",
+        "desc": "Agency, developer, owner contacts, and master property relation",
+        "fields": [
+          {
+            "code": "COMPANY_ID",
+            "spaKey": "companyId",
+            "spaCrmCode": "COMPANY_ID",
+            "label": "Company (Agency or Developer)",
+            "bitrixLabel": "Company",
+            "type": "crm_company",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "CONTACT_ID",
+            "spaKey": "contactId",
+            "spaCrmCode": "CONTACT_ID",
+            "label": "Contact",
+            "bitrixLabel": "Contact",
+            "type": "crm_contact",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_CONTACTS",
+            "spaKey": "contactIds",
+            "spaCrmCode": "CONTACT_IDS",
+            "label": "Contacts",
+            "bitrixLabel": "Contacts",
+            "type": "crm_contact_multi",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_PROPERTY",
+            "spaKey": "parentId1052",
+            "spaCrmCode": "PARENT_ID_1052",
+            "label": "Master Property (parentId1052)",
+            "bitrixLabel": "Property",
+            "type": "crm_entity",
+            "placeholder": "Property SPA reference...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
+          },
+          {
+            "code": "UF_CRM_DEVELOPER_NAME",
+            "spaKey": "ufCrm16DeveloperName",
+            "spaCrmCode": "UF_CRM_16_DEVELOPER_NAME",
+            "label": "Developer Name",
+            "bitrixLabel": "Developer Name",
+            "type": "string",
+            "placeholder": "e.g. Emaar, Damac, Sobha...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
+          },
+          {
+            "code": "UF_CRM_DEVELOPER_1",
+            "spaKey": "ufCrm16_1791172932",
+            "spaCrmCode": "UF_CRM_16_1791172932",
+            "label": "Developer CRM Entity",
+            "bitrixLabel": "Developer",
+            "type": "crm_entity",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
+          }
+        ]
+      },
+      {
+        "id": "specs",
+        "title": "Property Specifications",
+        "icon": "📐",
+        "desc": "Dimensions, rooms, spaces, floor, and furnishing",
+        "fields": [
+          {
             "code": "UF_CRM_1791952050535",
+            "spaKey": "ufCrm16PropertyType",
+            "spaCrmCode": "UF_CRM_16_PROPERTY_TYPE",
             "label": "Property Type",
             "bitrixLabel": "Property Type",
             "type": "enumeration",
@@ -64,1147 +292,1181 @@
             "options": [
               {
                 "id": "1754",
+                "spaId": "886",
                 "value": "Apartment"
               },
               {
                 "id": "1756",
+                "spaId": "888",
                 "value": "Villa"
               },
               {
                 "id": "1758",
+                "spaId": "890",
                 "value": "Townhouse"
               },
               {
                 "id": "1760",
+                "spaId": "892",
                 "value": "Penthouse"
               },
               {
                 "id": "1762",
+                "spaId": "894",
                 "value": "Duplex"
               },
               {
                 "id": "1764",
+                "spaId": "896",
                 "value": "Land"
               },
               {
                 "id": "1766",
+                "spaId": "898",
                 "value": "Commercial"
               },
               {
                 "id": "1768",
+                "spaId": "900",
                 "value": "Office"
               },
               {
                 "id": "1770",
+                "spaId": "902",
                 "value": "Retail"
               }
-            ]
+            ],
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_PROPERTY_SUB_TYPE",
-            "label": "Property Sub Type",
+            "spaKey": "ufCrm16PropertySubType",
+            "spaCrmCode": "UF_CRM_16_PROPERTY_SUB_TYPE",
+            "label": "Property Sub-type",
             "bitrixLabel": "Property Sub Type",
             "type": "enumeration",
             "placeholder": "-- Select Property Sub Type --",
             "options": [
               {
                 "id": "2098",
+                "spaId": "872",
                 "value": "Standard"
               },
               {
                 "id": "2100",
+                "spaId": "874",
                 "value": "Luxury"
               },
               {
                 "id": "2102",
+                "spaId": "876",
                 "value": "Ultra Luxury"
               },
               {
                 "id": "2104",
+                "spaId": "878",
                 "value": "Simplex"
               },
               {
                 "id": "2106",
+                "spaId": "880",
                 "value": "Duplex"
               },
               {
                 "id": "2108",
+                "spaId": "882",
                 "value": "Triplex"
               },
               {
                 "id": "2110",
+                "spaId": "884",
                 "value": "Penthouse"
               }
-            ]
+            ],
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_LISTING_SOURCE",
-            "label": "Listing Source",
-            "bitrixLabel": "Listing Source",
-            "type": "enumeration",
-            "placeholder": "-- Select Listing Source --",
-            "options": [
-              {
-                "id": "2040",
-                "value": "Developer Direct"
-              },
-              {
-                "id": "2042",
-                "value": "Landlord / Owner"
-              },
-              {
-                "id": "2044",
-                "value": "Broker Network"
-              },
-              {
-                "id": "2046",
-                "value": "Bayut / Dubizzle"
-              },
-              {
-                "id": "2048",
-                "value": "Property Finder"
-              },
-              {
-                "id": "2050",
-                "value": "Company Website"
-              },
-              {
-                "id": "2052",
-                "value": "Referral"
-              },
-              {
-                "id": "2054",
-                "value": "Cold Outreach"
-              },
-              {
-                "id": "2056",
-                "value": "Social Media"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_LISTEDDATE",
-            "label": "Listed Date",
-            "bitrixLabel": "Listed Date",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_DATE_AVAILABLE",
-            "label": "Date Available",
-            "bitrixLabel": "Date Available",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_VIEWING_STATUS",
-            "label": "Viewing Status",
-            "bitrixLabel": "Viewing Status",
-            "type": "enumeration",
-            "placeholder": "-- Select Viewing Status --",
-            "options": [
-              {
-                "id": "2166",
-                "value": "Available for Viewing"
-              },
-              {
-                "id": "2168",
-                "value": "Key with Security"
-              },
-              {
-                "id": "2170",
-                "value": "Appointment Required"
-              },
-              {
-                "id": "2172",
-                "value": "Tenant Occupied - 24h Notice"
-              },
-              {
-                "id": "2174",
-                "value": "Keys with Agent"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_1791970832589",
-            "label": "Occupancy",
-            "bitrixLabel": "Occupancy",
-            "type": "enumeration",
-            "placeholder": "-- Select Occupancy --",
-            "options": [
-              {
-                "id": "1824",
-                "value": "Vacant on Transfer"
-              },
-              {
-                "id": "1826",
-                "value": "Owner Occupied"
-              },
-              {
-                "id": "1828",
-                "value": "Rented"
-              },
-              {
-                "id": "1830",
-                "value": "Under Notice"
-              },
-              {
-                "id": "1832",
-                "value": "Vacant"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_1791970897872",
-            "label": "Exclusive",
-            "bitrixLabel": "Exclusive",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_HOT_STOCK",
-            "label": "Hot Stock",
-            "bitrixLabel": "Hot Stock",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_IS_CLAIMABLE",
-            "label": "Is Claimable",
-            "bitrixLabel": "Is Claimable",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LISTING_LOCKED",
-            "label": "Listing Locked",
-            "bitrixLabel": "Listing Locked",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PREVIOUS_LISTING_ID",
-            "label": "Previous Listing ID",
-            "bitrixLabel": "Previous Listing ID",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
-            "label": "Days since last contacted",
-            "bitrixLabel": "Days since last contacted",
-            "type": "integer",
-            "placeholder": ""
-          }
-        ]
-      },
-      {
-        "id": "sec_pricing",
-        "icon": "💰",
-        "title": "Financials, Pricing & Payment Terms",
-        "defaultOpen": true,
-        "description": "Listing price, rate per sq. ft., cheques, rental, and service fees",
-        "fields": [
-          {
-            "code": "UF_CRM_LISTINGPRICE",
-            "label": "Price",
-            "bitrixLabel": "Price",
-            "type": "money",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
-            "label": "Price Per Square Foot",
-            "bitrixLabel": "Price Per Square Foot",
-            "type": "money",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PRICE_ON_REQUEST",
-            "label": "Price on Request",
-            "bitrixLabel": "Price on Request",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_1792139023",
-            "label": "Number of Cheques",
-            "bitrixLabel": "Number of Cheques",
-            "type": "enumeration",
-            "placeholder": "-- Select Number of Cheques --",
-            "options": [
-              {
-                "id": "2442",
-                "value": "1 Cheque"
-              },
-              {
-                "id": "2444",
-                "value": "2 Cheque"
-              },
-              {
-                "id": "2446",
-                "value": "4 Cheque"
-              },
-              {
-                "id": "2448",
-                "value": "6 Cheque"
-              },
-              {
-                "id": "2450",
-                "value": "12 Cheque"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_YEARLY_RENTAL",
-            "label": "Yearly Rental",
-            "bitrixLabel": "Yearly Rental",
-            "type": "money",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SERVICE_CHARGE",
-            "label": "Service Charge",
-            "bitrixLabel": "Service Charge",
-            "type": "money",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_NET_RENTAL_YIELD",
-            "label": "Net Rental Yield",
-            "bitrixLabel": "Net Rental Yield",
-            "type": "double",
-            "placeholder": ""
-          }
-        ]
-      },
-      {
-        "id": "sec_location",
-        "icon": "📍",
-        "title": "Building, Tower & Regional Location",
-        "defaultOpen": true,
-        "description": "Project lookup, property unit, layout, full address, and coordinates",
-        "fields": [
-          {
-            "code": "UF_CRM_PROJECT_1",
-            "label": "Project",
-            "bitrixLabel": "Project",
-            "type": "lookup",
-            "placeholder": "Search Project...",
-            "lookupEntity": "project"
-          },
-          {
-            "code": "UF_CRM_DEVELOPER_1",
-            "label": "Developer",
-            "bitrixLabel": "Developer",
-            "type": "lookup",
-            "placeholder": "Search Developer / Company...",
-            "lookupEntity": "developer"
-          },
-          {
-            "code": "UF_CRM_PROPERTY",
-            "label": "Property",
-            "bitrixLabel": "Property",
-            "type": "lookup",
-            "placeholder": "Search Property...",
-            "lookupEntity": "property"
-          },
-          {
-            "code": "UF_CRM_LAYOUT",
-            "label": "Layout",
-            "bitrixLabel": "Layout",
-            "type": "lookup",
-            "placeholder": "Search Layout...",
-            "lookupEntity": "layout"
-          },
-          {
-            "code": "UF_CRM_1791970638065",
-            "label": "Address",
-            "bitrixLabel": "Property Address",
-            "type": "address",
-            "placeholder": "",
-            "fullWidth": true
-          },
-          {
-            "code": "UF_CRM_LATITUDE",
-            "label": "Latitude",
-            "bitrixLabel": "Latitude",
-            "type": "double",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LONGITUDE",
-            "label": "Longitude",
-            "bitrixLabel": "Longitude",
-            "type": "double",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LOCATION_SOURCE",
-            "label": "Location Source",
-            "bitrixLabel": "Location Source",
-            "type": "enumeration",
-            "placeholder": "-- Select Location Source --",
-            "options": [
-              {
-                "id": "2058",
-                "value": "Google Maps GPS"
-              },
-              {
-                "id": "2060",
-                "value": "Makani Number"
-              },
-              {
-                "id": "2062",
-                "value": "Title Deed"
-              },
-              {
-                "id": "2064",
-                "value": "Developer Brochure"
-              },
-              {
-                "id": "2066",
-                "value": "Manual Pinpoint"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_WEBSITE_URL",
-            "label": "Website URL",
-            "bitrixLabel": "Website URL",
-            "type": "url",
-            "placeholder": "",
-            "fullWidth": true
-          }
-        ]
-      },
-      {
-        "id": "sec_specs",
-        "icon": "📐",
-        "title": "Property Specifications & Measurements",
-        "defaultOpen": true,
-        "description": "Bedrooms, bathrooms, size, lot dimensions, view, and furnishing",
-        "fields": [
-          {
-            "code": "UF_CRM_1791966366775",
+            "code": "UF_CRM_BEDROOMS",
+            "leadAltCode": "UF_CRM_1791966366775",
+            "spaKey": "ufCrm16_1791172802",
+            "spaCrmCode": "UF_CRM_16_1791172802",
             "label": "Bedrooms",
             "bitrixLabel": "Bedrooms",
-            "type": "double",
-            "placeholder": ""
+            "type": "number",
+            "placeholder": "e.g. 3",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_1791966408374",
+            "code": "UF_CRM_BATHROOMS",
+            "leadAltCode": "UF_CRM_1791966408374",
+            "spaKey": "ufCrm16_1791172787",
+            "spaCrmCode": "UF_CRM_16_1791172787",
             "label": "Bathrooms",
             "bitrixLabel": "Bathrooms",
-            "type": "double",
-            "placeholder": ""
+            "type": "number",
+            "placeholder": "e.g. 4",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_TOTALAREA",
-            "label": "Size",
-            "bitrixLabel": "Size",
-            "type": "double",
-            "placeholder": ""
+            "code": "UF_CRM_BUA",
+            "spaKey": "ufCrm16SqFt",
+            "spaCrmCode": "UF_CRM_16_SQ_FT",
+            "label": "Built-up Area (Sq Ft)",
+            "bitrixLabel": "Built-up Area (Sq. Ft.)",
+            "type": "number",
+            "addon": "Sq Ft",
+            "placeholder": "e.g. 2450",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_LOTSIZE",
-            "label": "Lot Size",
-            "bitrixLabel": "Lot Size",
-            "type": "double",
-            "placeholder": ""
+            "code": "UF_CRM_PLOT_AREA",
+            "spaKey": "ufCrm16PlotSize",
+            "spaCrmCode": "UF_CRM_16_PLOT_SIZE",
+            "label": "Plot Area (Sq Ft)",
+            "bitrixLabel": "Plot Area (Sq. Ft.)",
+            "type": "number",
+            "addon": "Sq Ft",
+            "placeholder": "e.g. 4200",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
           },
           {
-            "code": "UF_CRM_1791970130059",
-            "label": "View",
-            "bitrixLabel": "View",
-            "type": "enumeration",
-            "placeholder": "-- Select View --",
-            "options": [
-              {
-                "id": "1800",
-                "value": "Sea View"
-              },
-              {
-                "id": "1802",
-                "value": "Burj Khalifa View"
-              },
-              {
-                "id": "1804",
-                "value": "Marina View"
-              },
-              {
-                "id": "1806",
-                "value": "Palm View"
-              },
-              {
-                "id": "1808",
-                "value": "Golf Course View"
-              },
-              {
-                "id": "1810",
-                "value": "Pool View"
-              },
-              {
-                "id": "1812",
-                "value": "Garden View"
-              },
-              {
-                "id": "1814",
-                "value": "Park View"
-              },
-              {
-                "id": "1816",
-                "value": "City View"
-              },
-              {
-                "id": "1818",
-                "value": "Community View"
-              },
-              {
-                "id": "1820",
-                "value": "Street View"
-              },
-              {
-                "id": "1822",
-                "value": "Canal View"
-              }
-            ]
+            "code": "UF_CRM_UNIT_NO",
+            "spaKey": "ufCrm16UnitNumber",
+            "spaCrmCode": "UF_CRM_16_UNIT_NUMBER",
+            "label": "Unit Number",
+            "bitrixLabel": "Unit Number",
+            "type": "string",
+            "placeholder": "e.g. 1402",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_FLOOR",
+            "spaKey": "ufCrm16Floor",
+            "spaCrmCode": "UF_CRM_16_FLOOR",
+            "label": "Floor Number",
+            "bitrixLabel": "Floor",
+            "type": "integer",
+            "placeholder": "e.g. 14",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_1791969936048",
-            "label": "Furnished",
+            "spaKey": "ufCrm16Furnished",
+            "spaCrmCode": "UF_CRM_16_FURNISHED",
+            "label": "Furnished Status",
             "bitrixLabel": "Furnished",
             "type": "enumeration",
-            "placeholder": "-- Select Furnished --",
+            "placeholder": "-- Select Furnished Status --",
             "options": [
               {
                 "id": "1794",
-                "value": "Fully-Furnished"
+                "spaId": "736",
+                "value": "Furnished"
               },
               {
                 "id": "1796",
+                "spaId": "738",
                 "value": "Semi-Furnished"
               },
               {
                 "id": "1798",
+                "spaId": "740",
                 "value": "Unfurnished"
               }
-            ]
+            ],
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "hide",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_RECORDTYPEID",
+            "spaKey": "ufCrm16RecordType",
+            "spaCrmCode": "UF_CRM_16_RECORD_TYPE",
+            "label": "Offering / Record Type",
+            "bitrixLabel": "Record Type",
+            "type": "enumeration",
+            "placeholder": "-- Select Record Type --",
+            "options": [
+              {
+                "id": "2230",
+                "spaId": "1070",
+                "value": "Residential"
+              },
+              {
+                "id": "2232",
+                "spaId": "1072",
+                "value": "Commercial"
+              },
+              {
+                "id": "2234",
+                "spaId": "1074",
+                "value": "Off-Plan"
+              },
+              {
+                "id": "2236",
+                "spaId": "1076",
+                "value": "Secondary / Resale"
+              },
+              {
+                "id": "2238",
+                "spaId": "1078",
+                "value": "Rental"
+              },
+              {
+                "id": "2240",
+                "spaId": "1080",
+                "value": "Land / Plot"
+              }
+            ],
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_NUMBEROFPARKINGSPACES",
-            "label": "Number of Parking Spaces",
+            "spaKey": "ufCrm16ParkingSpaces",
+            "spaCrmCode": "UF_CRM_16_PARKING_SPACES",
+            "label": "Parking Spaces",
             "bitrixLabel": "Number of Parking Spaces",
             "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_COMPLETIONDATE",
-            "label": "Completion Date",
-            "bitrixLabel": "Completion Date",
-            "type": "date",
-            "placeholder": ""
+            "placeholder": "e.g. 2",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
           }
         ]
       },
       {
-        "id": "sec_amenities",
-        "icon": "🏖️",
-        "title": "Amenities & Key Features",
-        "defaultOpen": false,
-        "description": "Commercial & private amenities, and highlight features 1 through 10",
+        "id": "location",
+        "title": "Building, Location & Geography",
+        "icon": "📍",
+        "desc": "Country, city, community, tower, and coordinates",
         "fields": [
           {
-            "code": "UF_CRM_COMMERCIAL_AMENITIES",
-            "label": "Commercial Amenities",
-            "bitrixLabel": "Commercial Amenities",
+            "code": "UF_CRM_PROJECT_NAME",
+            "leadAltCode": "UF_CRM_PROJECT_1",
+            "spaKey": "ufCrm16ProjectName",
+            "spaCrmCode": "UF_CRM_16_PROJECT_NAME",
+            "label": "Project / Building Name",
+            "bitrixLabel": "Project Name",
             "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PRIVATE_AMENITIES",
-            "label": "Private Amenities",
-            "bitrixLabel": "Private Amenities",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_1",
-            "label": "Feature 1",
-            "bitrixLabel": "Feature 1",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_2",
-            "label": "Feature 2",
-            "bitrixLabel": "Feature 2",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_3",
-            "label": "Feature 3",
-            "bitrixLabel": "Feature 3",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_4",
-            "label": "Feature 4",
-            "bitrixLabel": "Feature 4",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_5",
-            "label": "Feature 5",
-            "bitrixLabel": "Feature 5",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_6",
-            "label": "Feature 6",
-            "bitrixLabel": "Feature 6",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_7",
-            "label": "Feature 7",
-            "bitrixLabel": "Feature 7",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_8",
-            "label": "Feature 8",
-            "bitrixLabel": "Feature 8",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE_9",
-            "label": "Feature 9",
-            "bitrixLabel": "Feature 9",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UK_FEATURE",
-            "label": "Feature 10",
-            "bitrixLabel": "Feature 10",
-            "type": "string",
-            "placeholder": ""
-          }
-        ]
-      },
-      {
-        "id": "sec_compliance",
-        "icon": "🛡️",
-        "title": "Permits & Regulatory Compliance",
-        "defaultOpen": false,
-        "description": "RERA permit, broker ID, Form A dates & password, QR code, and refresh date",
-        "fields": [
-          {
-            "code": "UF_CRM_1791970864836",
-            "label": "RERA Permit Number",
-            "bitrixLabel": "RERA Permit Number",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_TRAKHEESI_EXPIRY",
-            "label": "Trakheesi Permit Expiry",
-            "bitrixLabel": "Trakheesi Permit Expiry",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BROKER_S_LISTING_ID",
-            "label": "Broker's Listing ID",
-            "bitrixLabel": "Broker's Listing ID",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_FORM_A_DATE",
-            "label": "Form A Signed Date",
-            "bitrixLabel": "Form A Signed Date",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_FORM_A_EXPIRY_DATE",
-            "label": "Form A expiry date",
-            "bitrixLabel": "Form A expiry date",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_FORM_A_PASSWORD",
-            "label": "Form A Password",
-            "bitrixLabel": "Form A Password",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LAST_REFRESH_DATE",
-            "label": "Last Refresh Date",
-            "bitrixLabel": "Last Refresh Date",
-            "type": "datetime",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_QR_CODE",
-            "label": "QR Code",
-            "bitrixLabel": "QR Code",
-            "type": "file",
-            "placeholder": ""
-          }
-        ]
-      },
-      {
-        "id": "sec_portals",
-        "icon": "🌐",
-        "title": "Portal Syndication (Bayut & Propertyfinder)",
-        "defaultOpen": false,
-        "description": "Syndication feeds, portal property types, community mapping, and sync logs",
-        "fields": [
-          {
-            "code": "UF_CRM_PORTALS_ENABLED",
-            "label": "BayutDubizzle Feed",
-            "bitrixLabel": "BayutDubizzle Feed",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PORTAL_LISTING_ID",
-            "label": "Bayut Listing Id",
-            "bitrixLabel": "Portal Listing Id",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BAYUT_PROPERTY_TYPE",
-            "label": "Bayut Property Type",
-            "bitrixLabel": "Bayut Property Type",
-            "type": "enumeration",
-            "placeholder": "-- Select Bayut Property Type --",
-            "options": [
-              {
-                "id": "1900",
-                "value": "Apartment"
-              },
-              {
-                "id": "1902",
-                "value": "Villa"
-              },
-              {
-                "id": "1904",
-                "value": "Townhouse"
-              },
-              {
-                "id": "1906",
-                "value": "Penthouse"
-              },
-              {
-                "id": "1908",
-                "value": "Hotel Apartment"
-              },
-              {
-                "id": "1910",
-                "value": "Duplex"
-              },
-              {
-                "id": "1912",
-                "value": "Residential Plot"
-              },
-              {
-                "id": "1914",
-                "value": "Residential Floor"
-              },
-              {
-                "id": "1916",
-                "value": "Residential Building"
-              },
-              {
-                "id": "1918",
-                "value": "Office"
-              },
-              {
-                "id": "1920",
-                "value": "Retail"
-              },
-              {
-                "id": "1922",
-                "value": "Shop"
-              },
-              {
-                "id": "1924",
-                "value": "Warehouse"
-              },
-              {
-                "id": "1926",
-                "value": "Commercial Building"
-              },
-              {
-                "id": "1928",
-                "value": "Commercial Plot"
-              }
-            ]
+            "placeholder": "e.g. Downtown Views II, Creek Horizon...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_BUILDING_DUBIZZLE",
-            "label": "Building - Bayut",
+            "spaKey": "ufCrm16BuildingBayut",
+            "spaCrmCode": "UF_CRM_16_BUILDING_BAYUT",
+            "label": "Building / Tower Name (Bayut)",
             "bitrixLabel": "Building - Bayut",
             "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_CITY_BAYUT",
-            "label": "City - Bayut",
-            "bitrixLabel": "City (Bayut)",
-            "type": "enumeration",
-            "placeholder": "-- Select City - Bayut --",
-            "options": [
-              {
-                "id": "2546",
-                "value": "Dubai"
-              },
-              {
-                "id": "2548",
-                "value": "Abu Dhabi"
-              },
-              {
-                "id": "2550",
-                "value": "Sharjah"
-              },
-              {
-                "id": "2552",
-                "value": "Ajman"
-              },
-              {
-                "id": "2554",
-                "value": "Ras Al Khaimah"
-              },
-              {
-                "id": "2556",
-                "value": "Fujairah"
-              },
-              {
-                "id": "2558",
-                "value": "Umm Al Quwain"
-              },
-              {
-                "id": "2560",
-                "value": "Al Ain"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
-            "label": "LocationText - Bayut",
-            "bitrixLabel": "LocationText - Bayut",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BAYUT_ERROR_LOG",
-            "label": "Bayut Error Log",
-            "bitrixLabel": "Bayut Error Log",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_1792151466",
-            "label": "Property Finder Listing Id",
-            "bitrixLabel": "Property Finder Listing Id",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PROPERTYFINDER_PROPERTY_TYPE",
-            "label": "PropertyFinder Property Type",
-            "bitrixLabel": "PropertyFinder Property Type",
-            "type": "enumeration",
-            "placeholder": "-- Select PropertyFinder Property Type --",
-            "options": [
-              {
-                "id": "2202",
-                "value": "Apartment"
-              },
-              {
-                "id": "2204",
-                "value": "Villa"
-              },
-              {
-                "id": "2206",
-                "value": "Townhouse"
-              },
-              {
-                "id": "2208",
-                "value": "Penthouse"
-              },
-              {
-                "id": "2210",
-                "value": "Hotel Apartment"
-              },
-              {
-                "id": "2212",
-                "value": "Duplex"
-              },
-              {
-                "id": "2214",
-                "value": "Plot"
-              },
-              {
-                "id": "2216",
-                "value": "Full Floor"
-              },
-              {
-                "id": "2218",
-                "value": "Whole Building"
-              },
-              {
-                "id": "2220",
-                "value": "Office Space"
-              },
-              {
-                "id": "2222",
-                "value": "Retail"
-              },
-              {
-                "id": "2224",
-                "value": "Shop"
-              },
-              {
-                "id": "2226",
-                "value": "Warehouse"
-              },
-              {
-                "id": "2228",
-                "value": "Factory"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
-            "label": "Property - Propertyfinder",
-            "bitrixLabel": "Property - Propertyfinder",
-            "type": "lookup",
-            "placeholder": "Search Property - Propertyfinder...",
-            "lookupEntity": "property"
-          },
-          {
-            "code": "UF_CRM_CITY_PF",
-            "label": "City - Propertyfinder",
-            "bitrixLabel": "City (Propertyfinder)",
-            "type": "enumeration",
-            "placeholder": "-- Select City - Propertyfinder --",
-            "options": [
-              {
-                "id": "2562",
-                "value": "Dubai"
-              },
-              {
-                "id": "2564",
-                "value": "Abu Dhabi"
-              },
-              {
-                "id": "2566",
-                "value": "Sharjah"
-              },
-              {
-                "id": "2568",
-                "value": "Ajman"
-              },
-              {
-                "id": "2570",
-                "value": "Ras Al Khaimah"
-              },
-              {
-                "id": "2572",
-                "value": "Fujairah"
-              },
-              {
-                "id": "2574",
-                "value": "Umm Al Quwain"
-              },
-              {
-                "id": "2576",
-                "value": "Al Ain"
-              }
-            ]
+            "placeholder": "e.g. Tower A, East Wing...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
+            "spaKey": "ufCrm16CommunityPropertyfinder",
+            "spaCrmCode": "UF_CRM_16_COMMUNITY_PROPERTYFINDER",
             "label": "Community - Propertyfinder",
             "bitrixLabel": "Community - Propertyfinder",
             "type": "string",
-            "placeholder": ""
+            "placeholder": "e.g. Downtown Dubai, Palm Jumeirah...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
-            "label": "Sub Community - Propertyfinder",
+            "spaKey": "ufCrm16SubCommunityPropertyfinder",
+            "spaCrmCode": "UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER",
+            "label": "Sub-Community",
             "bitrixLabel": "Sub Community - Propertyfinder",
             "type": "string",
-            "placeholder": ""
+            "placeholder": "e.g. Burj Crown, Marina Gate 2...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_PROPERTYFINDER_REGION",
-            "label": "Propertyfinder Region",
-            "bitrixLabel": "Propertyfinder Region",
+            "code": "UF_CRM_NEIGHBORHOOD",
+            "spaKey": "ufCrm16_1791173032",
+            "spaCrmCode": "UF_CRM_16_1791173032",
+            "label": "Neighborhood / Community",
+            "bitrixLabel": "Neighborhood",
             "type": "string",
-            "placeholder": ""
+            "placeholder": "e.g. Business Bay, Dubai Marina...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_PF_ERROR_LOG",
-            "label": "PF Error Log",
-            "bitrixLabel": "PF Error Log",
+            "code": "UF_CRM_CITY",
+            "spaKey": "ufCrm16_1791172815",
+            "spaCrmCode": "UF_CRM_16_1791172815",
+            "label": "City",
+            "bitrixLabel": "City",
             "type": "string",
-            "placeholder": ""
+            "placeholder": "e.g. Dubai, London, Abu Dhabi...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_COUNTRY",
+            "spaKey": "ufCrm16_1791172854",
+            "spaCrmCode": "UF_CRM_16_1791172854",
+            "label": "Country",
+            "bitrixLabel": "Country",
+            "type": "string",
+            "placeholder": "e.g. United Arab Emirates, UK, France...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "show",
+              "rent": "opt"
+            }
+          },
+          {
+            "code": "UF_CRM_STREET",
+            "spaKey": "ufCrm16Street",
+            "spaCrmCode": "UF_CRM_16_STREET",
+            "label": "Street",
+            "bitrixLabel": "Street",
+            "type": "string",
+            "placeholder": "e.g. Sheikh Mohammed bin Rashid Blvd...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_1791970638065",
+            "spaKey": "ufCrm16_1791172676",
+            "spaCrmCode": "UF_CRM_16_1791172676",
+            "label": "Address",
+            "bitrixLabel": "Property Address",
+            "type": "address",
+            "placeholder": "Street, building, unit number...",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_LATITUDE",
+            "spaKey": "ufCrm16Latitude",
+            "spaCrmCode": "UF_CRM_16_LATITUDE",
+            "label": "Latitude",
+            "bitrixLabel": "Latitude",
+            "type": "number",
+            "placeholder": "e.g. 25.1972",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_LONGITUDE",
+            "spaKey": "ufCrm16Longitude",
+            "spaCrmCode": "UF_CRM_16_LONGITUDE",
+            "label": "Longitude",
+            "bitrixLabel": "Longitude",
+            "type": "number",
+            "placeholder": "e.g. 55.2744",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           }
         ]
       },
       {
-        "id": "sec_ownership",
-        "icon": "👥",
-        "title": "Owners, Agents & Tenant Team",
-        "defaultOpen": false,
-        "description": "Listing owner, property owners, referral agent, tenant, and broker contact info",
+        "id": "pricing",
+        "title": "Pricing & Financial Terms",
+        "icon": "💰",
+        "desc": "Asking price, rent frequency, commission, and payment plans",
         "fields": [
           {
-            "code": "UF_CRM_OWNER_LISTING",
-            "label": "Owner - Listing",
-            "bitrixLabel": "Owner - Listing",
-            "type": "lookup",
-            "placeholder": "Search Owner - Listing...",
-            "lookupEntity": "contact"
+            "code": "UF_CRM_LISTING_PRICE",
+            "leadAltCode": "UF_CRM_1791963299133",
+            "spaKey": "ufCrm16_1790154936",
+            "spaCrmCode": "UF_CRM_16_1790154936",
+            "label": "Listing Price (AED)",
+            "bitrixLabel": "Listing Price",
+            "type": "money",
+            "addon": "AED",
+            "placeholder": "e.g. 2,500,000",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            },
+            "labelOverrides": {
+              "rent": "Listing Price (as annual rent)"
+            }
           },
           {
-            "code": "UF_CRM_PROPERTYOWNERCONTACT",
-            "label": "Property Owner",
-            "bitrixLabel": "Property Owner",
-            "type": "lookup",
-            "placeholder": "Search Property Owner...",
-            "lookupEntity": "contact"
+            "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
+            "spaKey": "ufCrm16ListPricePerSqFt",
+            "spaCrmCode": "UF_CRM_16_LIST_PRICE_PER_SQ_FT",
+            "label": "Price Per Sq Ft",
+            "bitrixLabel": "Price Per Square Foot",
+            "type": "money",
+            "addon": "AED/SqFt",
+            "placeholder": "e.g. 1,450",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "opt"
+            }
           },
           {
-            "code": "UF_CRM_PROPERTY_OWNER_2",
-            "label": "Property Owner 2",
-            "bitrixLabel": "Property Owner 2",
-            "type": "lookup",
-            "placeholder": "Search Property Owner 2...",
-            "lookupEntity": "contact"
+            "code": "UF_CRM_BUYERAGENTCOMMISSION",
+            "spaKey": "ufCrm16BuyersAgentCommission",
+            "spaCrmCode": "UF_CRM_16_BUYERS_AGENT_COMMISSION",
+            "label": "Agency Commission (%)",
+            "bitrixLabel": "Buyers Agent Commission %",
+            "type": "number",
+            "addon": "%",
+            "placeholder": "e.g. 2.0",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_REFERRAL_AGENT_SELLER",
-            "label": "Referral Agent - Seller",
-            "bitrixLabel": "Referral Agent - Seller",
-            "type": "lookup",
-            "placeholder": "Search Broker / Agent...",
-            "lookupEntity": "broker"
+            "code": "UF_CRM_SERVICE_CHARGE",
+            "spaKey": "ufCrm16ServiceCharge",
+            "spaCrmCode": "UF_CRM_16_SERVICE_CHARGE",
+            "label": "Service Charges (Annual)",
+            "bitrixLabel": "Service Charges",
+            "type": "money",
+            "addon": "AED",
+            "placeholder": "e.g. 15,000",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
           },
           {
-            "code": "UF_CRM_TENANT",
-            "label": "Tenant",
-            "bitrixLabel": "Tenant",
-            "type": "lookup",
-            "placeholder": "Search Tenant...",
-            "lookupEntity": "contact"
+            "code": "UF_CRM_HOAFREQUENCY",
+            "spaKey": "ufCrm16HoaFrequency",
+            "spaCrmCode": "UF_CRM_16_HOA_FREQUENCY",
+            "label": "Rental Frequency",
+            "bitrixLabel": "HOA Frequency",
+            "type": "enumeration",
+            "placeholder": "-- Select Rental Frequency --",
+            "options": [
+              {
+                "id": "1998",
+                "spaId": "762",
+                "value": "Monthly"
+              },
+              {
+                "id": "2000",
+                "spaId": "764",
+                "value": "Quarterly"
+              },
+              {
+                "id": "2002",
+                "spaId": "766",
+                "value": "Semi-Annually"
+              },
+              {
+                "id": "2004",
+                "spaId": "768",
+                "value": "Annually"
+              },
+              {
+                "id": "2006",
+                "spaId": "770",
+                "value": "Included in Rent"
+              },
+              {
+                "id": "2008",
+                "spaId": "772",
+                "value": "None"
+              }
+            ],
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "hide",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_PORTAL_LISTING_AGENT",
-            "label": "Portal Listing Agent",
-            "bitrixLabel": "Portal Listing Agent",
-            "type": "lookup",
-            "placeholder": "Search Broker / Agent...",
-            "lookupEntity": "broker"
+            "code": "UF_CRM_PETDEPOSIT",
+            "spaKey": "ufCrm16PetDeposit",
+            "spaCrmCode": "UF_CRM_16_PET_DEPOSIT",
+            "label": "Security Deposit (AED)",
+            "bitrixLabel": "Pet Deposit",
+            "type": "money",
+            "addon": "AED",
+            "placeholder": "e.g. 10,000",
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "hide",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
           },
           {
-            "code": "UF_CRM_LISTINGAGENTNAME",
-            "label": "Listing Agent Name",
-            "bitrixLabel": "Listing Agent Name",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LISTING_AGENT_PHONE",
-            "label": "Listing Agent Phone",
-            "bitrixLabel": "Listing Agent Phone",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LISTING_AGENT_EMAIL",
-            "label": "Listing Agent Email",
-            "bitrixLabel": "Listing Agent Email",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LISTING_OWNER_NAME",
-            "label": "Listing Owner Name",
-            "bitrixLabel": "Listing Owner Name",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LISTING_OWNER_MOBILE",
-            "label": "Listing Owner Mobile",
-            "bitrixLabel": "Listing Owner Mobile",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LISTING_OWNER_EMAIL",
-            "label": "Listing Owner email",
-            "bitrixLabel": "Listing Owner email",
-            "type": "string",
-            "placeholder": ""
+            "code": "UF_CRM_1792139023",
+            "leadAltCode": "UF_CRM_CHEQUES",
+            "spaKey": "ufCrm16_1792127520",
+            "spaCrmCode": "UF_CRM_16_1792127520",
+            "label": "Number of Cheques",
+            "bitrixLabel": "Cheques",
+            "type": "enumeration",
+            "placeholder": "-- Select Cheques --",
+            "options": [
+              {
+                "id": "2440",
+                "spaId": "2432",
+                "value": "1 Cheque"
+              },
+              {
+                "id": "2442",
+                "spaId": "2434",
+                "value": "2 Cheque"
+              },
+              {
+                "id": "2444",
+                "spaId": "2434",
+                "value": "2 Cheques"
+              },
+              {
+                "id": "2446",
+                "spaId": "2436",
+                "value": "4 Cheque"
+              },
+              {
+                "id": "2448",
+                "spaId": "2438",
+                "value": "6 Cheque"
+              },
+              {
+                "id": "2450",
+                "spaId": "2440",
+                "value": "12 Cheque"
+              }
+            ],
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "opt",
+              "overseas_sale": "hide",
+              "rent": "show"
+            },
+            "labelOverrides": {
+              "off_plan": "Number of Cheques (payment plan)"
+            }
           }
         ]
       },
       {
-        "id": "sec_media",
-        "icon": "📝",
-        "title": "Descriptions, Documents & Notes",
-        "defaultOpen": false,
-        "description": "Intro and outro marketing text, uploaded documents, photos, and internal comments",
+        "id": "dates",
+        "title": "Dates & Timeline",
+        "icon": "📅",
+        "desc": "Mandate duration, availability, and tenancy start/finish dates",
         "fields": [
           {
-            "code": "UF_CRM_DESCRIPTION_INTRO_TEXT",
-            "label": "Description - Intro Text",
-            "bitrixLabel": "Description - Intro Text",
-            "type": "string",
-            "placeholder": "",
-            "fullWidth": true
+            "code": "UF_CRM_AVAIL_DATE",
+            "leadAltCode": "BEGINDATE",
+            "spaKey": "begindate",
+            "spaCrmCode": "BEGINDATE",
+            "label": "Started on",
+            "bitrixLabel": "Available From Date",
+            "type": "date",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "show"
+            },
+            "labelOverrides": {
+              "external_stock": "Started on (mandate period)",
+              "rent": "Started on (tenancy / availability)"
+            }
           },
           {
-            "code": "UF_CRM_DESCRIPTION_OUTRO_TEXT",
-            "label": "Description - Outro Text",
-            "bitrixLabel": "Description - Outro Text",
+            "code": "UF_CRM_AVAILABLE_TO",
+            "leadAltCode": "CLOSEDATE",
+            "spaKey": "closedate",
+            "spaCrmCode": "CLOSEDATE",
+            "label": "Finished on",
+            "bitrixLabel": "Available To Date",
+            "type": "date",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "show"
+            },
+            "labelOverrides": {
+              "external_stock": "Finished on (mandate period)",
+              "rent": "Finished on (tenancy / availability)"
+            }
+          },
+          {
+            "code": "UF_CRM_DATE_AVAILABLE",
+            "spaKey": "ufCrm16_1790155057",
+            "spaCrmCode": "UF_CRM_16_1790155057",
+            "label": "Available From",
+            "bitrixLabel": "Date Available",
+            "type": "date",
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_COMPLETIONDATE",
+            "spaKey": "ufCrm16CompletionDate",
+            "spaCrmCode": "UF_CRM_16_COMPLETION_DATE",
+            "label": "Handover / Completion Date",
+            "bitrixLabel": "Completion Date",
+            "type": "date",
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "hide"
+            }
+          },
+          {
+            "code": "UF_CRM_COMPLETION_STATUS",
+            "spaKey": "ufCrm16CompletionStatus",
+            "spaCrmCode": "UF_CRM_16_COMPLETION_STATUS",
+            "label": "Completion Status",
+            "bitrixLabel": "Completion Status",
+            "type": "enumeration",
+            "placeholder": "-- Select Completion Status --",
+            "options": [
+              {
+                "id": "1944",
+                "spaId": "702",
+                "value": "Off-Plan"
+              },
+              {
+                "id": "1946",
+                "spaId": "704",
+                "value": "Under Construction"
+              },
+              {
+                "id": "1948",
+                "spaId": "706",
+                "value": "Completed"
+              },
+              {
+                "id": "1950",
+                "spaId": "708",
+                "value": "Handover"
+              },
+              {
+                "id": "1952",
+                "spaId": "710",
+                "value": "Ready"
+              }
+            ],
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "hide"
+            }
+          },
+          {
+            "code": "UF_CRM_1791970832589",
+            "spaKey": "ufCrm16Occupancy",
+            "spaCrmCode": "UF_CRM_16_OCCUPANCY",
+            "label": "Tenancy Status",
+            "bitrixLabel": "Occupancy Status",
+            "type": "enumeration",
+            "placeholder": "-- Select Tenancy Status --",
+            "options": [
+              {
+                "id": "1824",
+                "spaId": "836",
+                "value": "Vacant on Transfer"
+              },
+              {
+                "id": "1826",
+                "spaId": "838",
+                "value": "Owner Occupied"
+              },
+              {
+                "id": "1828",
+                "spaId": "840",
+                "value": "Rented"
+              },
+              {
+                "id": "1830",
+                "spaId": "842",
+                "value": "Under Notice"
+              },
+              {
+                "id": "1832",
+                "spaId": "844",
+                "value": "Vacant"
+              }
+            ],
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "hide",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_EXPIRATION_DATE",
+            "spaKey": "ufCrm16ExpirationDate",
+            "spaCrmCode": "UF_CRM_16_EXPIRATION_DATE",
+            "label": "Tenancy End / Mandate Expiry Date",
+            "bitrixLabel": "Expiration Date",
+            "type": "date",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "hide",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          }
+        ]
+      },
+      {
+        "id": "marketing",
+        "title": "Portals & Marketing",
+        "icon": "🚀",
+        "desc": "Bayut, Propertyfinder, Dubizzle IDs, feed toggles, RERA permit, and descriptions",
+        "fields": [
+          {
+            "code": "UF_CRM_1791970864836",
+            "leadAltCode": "UF_CRM_RERA_PERMIT",
+            "spaKey": "ufCrm16ReraPermitNumber",
+            "spaCrmCode": "UF_CRM_16_RERA_PERMIT_NUMBER",
+            "label": "RERA Permit Number",
+            "bitrixLabel": "RERA Permit Number",
             "type": "string",
-            "placeholder": "",
-            "fullWidth": true
+            "placeholder": "e.g. 7114829100",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_TRAKHEESI_PERMIT_NO",
+            "spaKey": "ufCrm16_1791787455285",
+            "spaCrmCode": "UF_CRM_16_1791787455285",
+            "label": "Trakheesi Permit No",
+            "bitrixLabel": "Trakheesi Permit No",
+            "type": "string",
+            "placeholder": "e.g. TRK-982145",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_TRAKHEESI_EXPIRY",
+            "leadAltCode": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
+            "spaKey": "ufCrm16_1791787502111",
+            "spaCrmCode": "UF_CRM_16_1791787502111",
+            "label": "Trakheesi Permit Expiry Date",
+            "bitrixLabel": "Trakheesi Permit Expiry",
+            "type": "date",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
+            "spaKey": "ufCrm16_1791787502111",
+            "spaCrmCode": "UF_CRM_16_1791787502111",
+            "label": "Trakheesi Permit Expiry Date (Alternative)",
+            "bitrixLabel": "Trakheesi Permit Expiry Date",
+            "type": "date",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_QR_CODE_LINK",
+            "spaKey": "ufCrm16QrCodeLink",
+            "spaCrmCode": "UF_CRM_16_QR_CODE_LINK",
+            "label": "DLD QR / Permit URL",
+            "bitrixLabel": "QR Code Link",
+            "type": "url",
+            "placeholder": "https://dubailand.gov.ae/en/eservices/licensing/...",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_QR_CODE",
+            "spaKey": "ufCrm16QrCodeFile",
+            "spaCrmCode": "UF_CRM_16_QR_CODE_FILE",
+            "label": "DLD QR Code Attachment",
+            "bitrixLabel": "QR Code File",
+            "type": "file",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "hide",
+              "rent": "opt"
+            }
+          },
+          {
+            "code": "UF_CRM_BAYUT_ID",
+            "spaKey": "ufCrm16_1790155092",
+            "spaCrmCode": "UF_CRM_16_1790155092",
+            "label": "Bayut Listing ID",
+            "bitrixLabel": "Bayut ID",
+            "type": "string",
+            "placeholder": "e.g. BYT-481902",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_1792151466",
+            "leadAltCode": "UF_CRM_PF_ID",
+            "spaKey": "ufCrm16PropertyFinderListingId",
+            "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
+            "label": "Property Finder Listing Id",
+            "bitrixLabel": "Property Finder Listing Id",
+            "type": "string",
+            "placeholder": "e.g. PF-981273",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_PF_ID",
+            "spaKey": "ufCrm16PropertyFinderListingId",
+            "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
+            "label": "Propertyfinder Listing ID",
+            "bitrixLabel": "PF ID",
+            "type": "string",
+            "placeholder": "e.g. PF-981273",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_PORTAL_LISTING_ID",
+            "spaKey": "ufCrm16PortalListingId",
+            "spaCrmCode": "UF_CRM_16_PORTAL_LISTING_ID",
+            "label": "Portal Listing ID",
+            "bitrixLabel": "Portal Listing Id",
+            "type": "string",
+            "placeholder": "e.g. PORT-1122",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "hide",
+              "rent": "opt"
+            }
+          },
+          {
+            "code": "UF_CRM_DUBIZZLE_REGION",
+            "spaKey": "ufCrm16DubizzleRegion",
+            "spaCrmCode": "UF_CRM_16_DUBIZZLE_REGION",
+            "label": "Dubizzle Listing ID / Region",
+            "bitrixLabel": "Dubizzle Region",
+            "type": "string",
+            "placeholder": "e.g. DBZ-558291",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
+            "leadAltCode": "UF_CRM_PORTALS_ENABLED",
+            "spaKey": "ufCrm16SystemAllowedForPortals",
+            "spaCrmCode": "UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS",
+            "label": "Bayut / Dubizzle Feed Toggle",
+            "bitrixLabel": "System Allowed for Portals",
+            "type": "boolean",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_UK_SUMMARY_DESCRIPTION",
+            "spaKey": "ufCrm16SummaryDescription",
+            "spaCrmCode": "UF_CRM_16_SUMMARY_DESCRIPTION",
+            "label": "Portal Title",
+            "bitrixLabel": "Summary Description",
+            "type": "string",
+            "placeholder": "SEO Headline for Portals...",
+            "fullWidth": true,
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_DESCRIPTION",
+            "spaKey": "ufCrm16Description",
+            "spaCrmCode": "UF_CRM_16_DESCRIPTION",
+            "label": "Portal Description",
+            "bitrixLabel": "Property Description / Amenities",
+            "type": "textarea",
+            "placeholder": "Marketing description, key amenities...",
+            "fullWidth": true,
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          }
+        ]
+      },
+      {
+        "id": "media",
+        "title": "Media & Documents",
+        "icon": "📸",
+        "desc": "Primary images, title deeds, brochures, floor plans, and 360 virtual tours",
+        "fields": [
+          {
+            "code": "UF_CRM_PRIMARY_IMAGE",
+            "spaKey": "ufCrm16_1791173118",
+            "spaCrmCode": "UF_CRM_16_1791173118",
+            "label": "Primary Listing Image",
+            "bitrixLabel": "Primary Listing Image",
+            "type": "file",
+            "isImage": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_PHOTOS",
+            "spaKey": "ufCrm16_1791881642219",
+            "spaCrmCode": "UF_CRM_16_1791881642219",
+            "label": "Photos (Gallery)",
+            "bitrixLabel": "Photos",
+            "type": "file",
+            "isImage": true,
+            "isMultiple": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_DOCS",
+            "spaKey": "ufCrm16_1791172957",
+            "spaCrmCode": "UF_CRM_16_1791172957",
+            "label": "Docs & Attachments",
+            "bitrixLabel": "Property Title / Deed Docs",
+            "type": "file",
+            "isDoc": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            }
           },
           {
             "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
-            "label": "Photos and Documents",
+            "leadAltCode": "UF_CRM_FLOOR_PLAN",
+            "spaKey": "ufCrm16_1791544736052",
+            "spaCrmCode": "UF_CRM_16_1791544736052",
+            "label": "Floor Plan",
             "bitrixLabel": "Photos and Documents",
             "type": "file",
-            "placeholder": "",
-            "fullWidth": true
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
           },
           {
-            "code": "UF_CRM_COMMENTS_1",
-            "label": "Comments",
-            "bitrixLabel": "Comments",
-            "type": "string",
-            "placeholder": "",
-            "fullWidth": true
+            "code": "UF_CRM_TITLE_DEED",
+            "spaKey": "ufCrm16TitleDeed",
+            "spaCrmCode": "UF_CRM_16_TITLE_DEED",
+            "label": "Title Deed / Ownership Proof",
+            "bitrixLabel": "Title Deed",
+            "type": "file",
+            "isDoc": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "opt",
+              "overseas_sale": "show",
+              "rent": "opt"
+            }
+          },
+          {
+            "code": "UF_CRM_FORM_A_DOC",
+            "spaKey": "ufCrm16_1791787381785",
+            "spaCrmCode": "UF_CRM_16_1791787381785",
+            "label": "Form A Document (Mandate Agreement)",
+            "bitrixLabel": "Form A Signed Document",
+            "type": "file",
+            "isDoc": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_WEBSITE_URL",
+            "spaKey": "ufCrm16WebsiteUrl",
+            "spaCrmCode": "UF_CRM_16_WEBSITE_URL",
+            "label": "Brochure URL / File",
+            "bitrixLabel": "Website URL",
+            "type": "url",
+            "placeholder": "https://cdn.example.com/brochures/listing.pdf",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "hide"
+            }
+          },
+          {
+            "code": "UF_CRM_LISTING_WEBSITE",
+            "spaKey": "ufCrm16ListingWebsite",
+            "spaCrmCode": "UF_CRM_16_LISTING_WEBSITE",
+            "label": "360 Virtual Tour Link",
+            "bitrixLabel": "Listing Website",
+            "type": "tour_url",
+            "placeholder": "https://my.matterport.com/show/?m=... or Kuula / YouTube 360",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "opt",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
           }
         ]
       }
@@ -2834,40 +3096,209 @@
   },
   "listingFields": [
     {
-      "code": "UF_CRM_LISTING_NAME",
-      "label": "Listing Name",
+      "code": "UF_CRM_1791952409183",
+      "leadAltCode": "UF_CRM_LISTING_NAME",
+      "spaKey": "title",
+      "spaCrmCode": "TITLE",
+      "label": "Listing Title",
       "bitrixLabel": "Listing Name",
       "type": "string",
-      "placeholder": "Enter listing name...",
-      "fullWidth": true
+      "placeholder": "e.g. Luxury 4BR Penthouse in Downtown Dubai...",
+      "fullWidth": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "STATUS_ID",
+      "spaKey": "stageId",
+      "spaCrmCode": "STAGE_ID",
+      "label": "Stage",
+      "bitrixLabel": "Status / Stage",
+      "type": "stage",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "ASSIGNED_BY_ID",
+      "spaKey": "assignedById",
+      "spaCrmCode": "ASSIGNED_BY_ID",
+      "label": "Responsible Person",
+      "bitrixLabel": "Responsible Person",
+      "type": "user",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_1791952650167",
-      "label": "Listing Type",
+      "leadAltCode": "UF_CRM_LISTING_TYPE",
+      "spaKey": "ufCrm16_1790154808",
+      "spaCrmCode": "UF_CRM_16_1790154808",
+      "label": "Listing Type (Layout Driver)",
       "bitrixLabel": "Listing type",
       "type": "enumeration",
       "placeholder": "-- Select Listing Type --",
       "options": [
         {
           "id": "2578",
+          "spaId": "158",
           "value": "RENT"
         },
         {
           "id": "2580",
+          "spaId": "160",
           "value": "Overseas Sale"
         },
         {
           "id": "2582",
+          "spaId": "162",
           "value": "Off-plan Listing"
         },
         {
           "id": "2584",
+          "spaId": "164",
           "value": "External Stock"
         }
-      ]
+      ],
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_1791970897872",
+      "leadAltCode": "UF_CRM_EXCLUSIVE",
+      "spaKey": "ufCrm16Exclusive",
+      "spaCrmCode": "UF_CRM_16_EXCLUSIVE",
+      "label": "Listing Agreement (Exclusive / Non-Exclusive)",
+      "bitrixLabel": "Exclusive",
+      "type": "boolean",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "XML_ID",
+      "leadAltCode": "UF_CRM_LISTING_ID",
+      "spaKey": "xmlId",
+      "spaCrmCode": "XML_ID",
+      "label": "External ID (xmlId)",
+      "bitrixLabel": "External ID",
+      "type": "string",
+      "placeholder": "e.g. EXT-984210",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
+    },
+    {
+      "code": "COMPANY_ID",
+      "spaKey": "companyId",
+      "spaCrmCode": "COMPANY_ID",
+      "label": "Company (Agency or Developer)",
+      "bitrixLabel": "Company",
+      "type": "crm_company",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "CONTACT_ID",
+      "spaKey": "contactId",
+      "spaCrmCode": "CONTACT_ID",
+      "label": "Contact",
+      "bitrixLabel": "Contact",
+      "type": "crm_contact",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_CONTACTS",
+      "spaKey": "contactIds",
+      "spaCrmCode": "CONTACT_IDS",
+      "label": "Contacts",
+      "bitrixLabel": "Contacts",
+      "type": "crm_contact_multi",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_PROPERTY",
+      "spaKey": "parentId1052",
+      "spaCrmCode": "PARENT_ID_1052",
+      "label": "Master Property (parentId1052)",
+      "bitrixLabel": "Property",
+      "type": "crm_entity",
+      "placeholder": "Property SPA reference...",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
+    },
+    {
+      "code": "UF_CRM_DEVELOPER_NAME",
+      "spaKey": "ufCrm16DeveloperName",
+      "spaCrmCode": "UF_CRM_16_DEVELOPER_NAME",
+      "label": "Developer Name",
+      "bitrixLabel": "Developer Name",
+      "type": "string",
+      "placeholder": "e.g. Emaar, Damac, Sobha...",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
+    },
+    {
+      "code": "UF_CRM_DEVELOPER_1",
+      "spaKey": "ufCrm16_1791172932",
+      "spaCrmCode": "UF_CRM_16_1791172932",
+      "label": "Developer CRM Entity",
+      "bitrixLabel": "Developer",
+      "type": "crm_entity",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
     },
     {
       "code": "UF_CRM_1791952050535",
+      "spaKey": "ufCrm16PropertyType",
+      "spaCrmCode": "UF_CRM_16_PROPERTY_TYPE",
       "label": "Property Type",
       "bitrixLabel": "Property Type",
       "type": "enumeration",
@@ -2875,1075 +3306,1141 @@
       "options": [
         {
           "id": "1754",
+          "spaId": "886",
           "value": "Apartment"
         },
         {
           "id": "1756",
+          "spaId": "888",
           "value": "Villa"
         },
         {
           "id": "1758",
+          "spaId": "890",
           "value": "Townhouse"
         },
         {
           "id": "1760",
+          "spaId": "892",
           "value": "Penthouse"
         },
         {
           "id": "1762",
+          "spaId": "894",
           "value": "Duplex"
         },
         {
           "id": "1764",
+          "spaId": "896",
           "value": "Land"
         },
         {
           "id": "1766",
+          "spaId": "898",
           "value": "Commercial"
         },
         {
           "id": "1768",
+          "spaId": "900",
           "value": "Office"
         },
         {
           "id": "1770",
+          "spaId": "902",
           "value": "Retail"
         }
-      ]
+      ],
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_PROPERTY_SUB_TYPE",
-      "label": "Property Sub Type",
+      "spaKey": "ufCrm16PropertySubType",
+      "spaCrmCode": "UF_CRM_16_PROPERTY_SUB_TYPE",
+      "label": "Property Sub-type",
       "bitrixLabel": "Property Sub Type",
       "type": "enumeration",
       "placeholder": "-- Select Property Sub Type --",
       "options": [
         {
           "id": "2098",
+          "spaId": "872",
           "value": "Standard"
         },
         {
           "id": "2100",
+          "spaId": "874",
           "value": "Luxury"
         },
         {
           "id": "2102",
+          "spaId": "876",
           "value": "Ultra Luxury"
         },
         {
           "id": "2104",
+          "spaId": "878",
           "value": "Simplex"
         },
         {
           "id": "2106",
+          "spaId": "880",
           "value": "Duplex"
         },
         {
           "id": "2108",
+          "spaId": "882",
           "value": "Triplex"
         },
         {
           "id": "2110",
+          "spaId": "884",
           "value": "Penthouse"
         }
-      ]
+      ],
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_LISTING_SOURCE",
-      "label": "Listing Source",
-      "bitrixLabel": "Listing Source",
-      "type": "enumeration",
-      "placeholder": "-- Select Listing Source --",
-      "options": [
-        {
-          "id": "2040",
-          "value": "Developer Direct"
-        },
-        {
-          "id": "2042",
-          "value": "Landlord / Owner"
-        },
-        {
-          "id": "2044",
-          "value": "Broker Network"
-        },
-        {
-          "id": "2046",
-          "value": "Bayut / Dubizzle"
-        },
-        {
-          "id": "2048",
-          "value": "Property Finder"
-        },
-        {
-          "id": "2050",
-          "value": "Company Website"
-        },
-        {
-          "id": "2052",
-          "value": "Referral"
-        },
-        {
-          "id": "2054",
-          "value": "Cold Outreach"
-        },
-        {
-          "id": "2056",
-          "value": "Social Media"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_LISTEDDATE",
-      "label": "Listed Date",
-      "bitrixLabel": "Listed Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DATE_AVAILABLE",
-      "label": "Date Available",
-      "bitrixLabel": "Date Available",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_VIEWING_STATUS",
-      "label": "Viewing Status",
-      "bitrixLabel": "Viewing Status",
-      "type": "enumeration",
-      "placeholder": "-- Select Viewing Status --",
-      "options": [
-        {
-          "id": "2166",
-          "value": "Available for Viewing"
-        },
-        {
-          "id": "2168",
-          "value": "Key with Security"
-        },
-        {
-          "id": "2170",
-          "value": "Appointment Required"
-        },
-        {
-          "id": "2172",
-          "value": "Tenant Occupied - 24h Notice"
-        },
-        {
-          "id": "2174",
-          "value": "Keys with Agent"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_1791970832589",
-      "label": "Occupancy",
-      "bitrixLabel": "Occupancy",
-      "type": "enumeration",
-      "placeholder": "-- Select Occupancy --",
-      "options": [
-        {
-          "id": "1824",
-          "value": "Vacant on Transfer"
-        },
-        {
-          "id": "1826",
-          "value": "Owner Occupied"
-        },
-        {
-          "id": "1828",
-          "value": "Rented"
-        },
-        {
-          "id": "1830",
-          "value": "Under Notice"
-        },
-        {
-          "id": "1832",
-          "value": "Vacant"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_1791970897872",
-      "label": "Exclusive",
-      "bitrixLabel": "Exclusive",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_HOT_STOCK",
-      "label": "Hot Stock",
-      "bitrixLabel": "Hot Stock",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_IS_CLAIMABLE",
-      "label": "Is Claimable",
-      "bitrixLabel": "Is Claimable",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LISTING_LOCKED",
-      "label": "Listing Locked",
-      "bitrixLabel": "Listing Locked",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PREVIOUS_LISTING_ID",
-      "label": "Previous Listing ID",
-      "bitrixLabel": "Previous Listing ID",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
-      "label": "Days since last contacted",
-      "bitrixLabel": "Days since last contacted",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LISTINGPRICE",
-      "label": "Price",
-      "bitrixLabel": "Price",
-      "type": "money",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
-      "label": "Price Per Square Foot",
-      "bitrixLabel": "Price Per Square Foot",
-      "type": "money",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PRICE_ON_REQUEST",
-      "label": "Price on Request",
-      "bitrixLabel": "Price on Request",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_1792139023",
-      "label": "Number of Cheques",
-      "bitrixLabel": "Number of Cheques",
-      "type": "enumeration",
-      "placeholder": "-- Select Number of Cheques --",
-      "options": [
-        {
-          "id": "2442",
-          "value": "1 Cheque"
-        },
-        {
-          "id": "2444",
-          "value": "2 Cheques"
-        },
-        {
-          "id": "2446",
-          "value": "4 Cheques"
-        },
-        {
-          "id": "2448",
-          "value": "6 Cheques"
-        },
-        {
-          "id": "2450",
-          "value": "12 Cheques"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_YEARLY_RENTAL",
-      "label": "Yearly Rental",
-      "bitrixLabel": "Yearly Rental",
-      "type": "money",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SERVICE_CHARGE",
-      "label": "Service Charge",
-      "bitrixLabel": "Service Charge",
-      "type": "money",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_NET_RENTAL_YIELD",
-      "label": "Net Rental Yield",
-      "bitrixLabel": "Net Rental Yield",
-      "type": "double",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PROJECT_1",
-      "label": "Project",
-      "bitrixLabel": "Project",
-      "type": "lookup",
-      "placeholder": "Search Project...",
-      "lookupEntity": "project"
-    },
-    {
-      "code": "UF_CRM_PROPERTY",
-      "label": "Property",
-      "bitrixLabel": "Property",
-      "type": "lookup",
-      "placeholder": "Search Property...",
-      "lookupEntity": "property"
-    },
-    {
-      "code": "UF_CRM_LAYOUT",
-      "label": "Layout",
-      "bitrixLabel": "Layout",
-      "type": "lookup",
-      "placeholder": "Search Layout...",
-      "lookupEntity": "layout"
-    },
-    {
-      "code": "UF_CRM_1791970638065",
-      "label": "Address",
-      "bitrixLabel": "Property Address",
-      "type": "address",
-      "placeholder": "",
-      "fullWidth": true
-    },
-    {
-      "code": "UF_CRM_LATITUDE",
-      "label": "Latitude",
-      "bitrixLabel": "Latitude",
-      "type": "double",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LONGITUDE",
-      "label": "Longitude",
-      "bitrixLabel": "Longitude",
-      "type": "double",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LOCATION_SOURCE",
-      "label": "Location Source",
-      "bitrixLabel": "Location Source",
-      "type": "enumeration",
-      "placeholder": "-- Select Location Source --",
-      "options": [
-        {
-          "id": "2058",
-          "value": "Google Maps GPS"
-        },
-        {
-          "id": "2060",
-          "value": "Makani Number"
-        },
-        {
-          "id": "2062",
-          "value": "Title Deed"
-        },
-        {
-          "id": "2064",
-          "value": "Developer Brochure"
-        },
-        {
-          "id": "2066",
-          "value": "Manual Pinpoint"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_WEBSITE_URL",
-      "label": "Website URL",
-      "bitrixLabel": "Website URL",
-      "type": "url",
-      "placeholder": "",
-      "fullWidth": true
-    },
-    {
-      "code": "UF_CRM_1791966366775",
+      "code": "UF_CRM_BEDROOMS",
+      "leadAltCode": "UF_CRM_1791966366775",
+      "spaKey": "ufCrm16_1791172802",
+      "spaCrmCode": "UF_CRM_16_1791172802",
       "label": "Bedrooms",
       "bitrixLabel": "Bedrooms",
-      "type": "double",
-      "placeholder": ""
+      "type": "number",
+      "placeholder": "e.g. 3",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_1791966408374",
+      "code": "UF_CRM_BATHROOMS",
+      "leadAltCode": "UF_CRM_1791966408374",
+      "spaKey": "ufCrm16_1791172787",
+      "spaCrmCode": "UF_CRM_16_1791172787",
       "label": "Bathrooms",
       "bitrixLabel": "Bathrooms",
-      "type": "double",
-      "placeholder": ""
+      "type": "number",
+      "placeholder": "e.g. 4",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_TOTALAREA",
-      "label": "Size",
-      "bitrixLabel": "Size",
-      "type": "double",
-      "placeholder": ""
+      "code": "UF_CRM_BUA",
+      "spaKey": "ufCrm16SqFt",
+      "spaCrmCode": "UF_CRM_16_SQ_FT",
+      "label": "Built-up Area (Sq Ft)",
+      "bitrixLabel": "Built-up Area (Sq. Ft.)",
+      "type": "number",
+      "addon": "Sq Ft",
+      "placeholder": "e.g. 2450",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_LOTSIZE",
-      "label": "Lot Size",
-      "bitrixLabel": "Lot Size",
-      "type": "double",
-      "placeholder": ""
+      "code": "UF_CRM_PLOT_AREA",
+      "spaKey": "ufCrm16PlotSize",
+      "spaCrmCode": "UF_CRM_16_PLOT_SIZE",
+      "label": "Plot Area (Sq Ft)",
+      "bitrixLabel": "Plot Area (Sq. Ft.)",
+      "type": "number",
+      "addon": "Sq Ft",
+      "placeholder": "e.g. 4200",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
     },
     {
-      "code": "UF_CRM_1791970130059",
-      "label": "View",
-      "bitrixLabel": "View",
-      "type": "enumeration",
-      "placeholder": "-- Select View --",
-      "options": [
-        {
-          "id": "1800",
-          "value": "Sea View"
-        },
-        {
-          "id": "1802",
-          "value": "Burj Khalifa View"
-        },
-        {
-          "id": "1804",
-          "value": "Marina View"
-        },
-        {
-          "id": "1806",
-          "value": "Palm View"
-        },
-        {
-          "id": "1808",
-          "value": "Golf Course View"
-        },
-        {
-          "id": "1810",
-          "value": "Pool View"
-        },
-        {
-          "id": "1812",
-          "value": "Garden View"
-        },
-        {
-          "id": "1814",
-          "value": "Park View"
-        },
-        {
-          "id": "1816",
-          "value": "City View"
-        },
-        {
-          "id": "1818",
-          "value": "Community View"
-        },
-        {
-          "id": "1820",
-          "value": "Street View"
-        },
-        {
-          "id": "1822",
-          "value": "Canal View"
-        }
-      ]
+      "code": "UF_CRM_UNIT_NO",
+      "spaKey": "ufCrm16UnitNumber",
+      "spaCrmCode": "UF_CRM_16_UNIT_NUMBER",
+      "label": "Unit Number",
+      "bitrixLabel": "Unit Number",
+      "type": "string",
+      "placeholder": "e.g. 1402",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_FLOOR",
+      "spaKey": "ufCrm16Floor",
+      "spaCrmCode": "UF_CRM_16_FLOOR",
+      "label": "Floor Number",
+      "bitrixLabel": "Floor",
+      "type": "integer",
+      "placeholder": "e.g. 14",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_1791969936048",
-      "label": "Furnished",
+      "spaKey": "ufCrm16Furnished",
+      "spaCrmCode": "UF_CRM_16_FURNISHED",
+      "label": "Furnished Status",
       "bitrixLabel": "Furnished",
       "type": "enumeration",
-      "placeholder": "-- Select Furnished --",
+      "placeholder": "-- Select Furnished Status --",
       "options": [
         {
           "id": "1794",
-          "value": "Fully-Furnished"
+          "spaId": "736",
+          "value": "Furnished"
         },
         {
           "id": "1796",
+          "spaId": "738",
           "value": "Semi-Furnished"
         },
         {
           "id": "1798",
+          "spaId": "740",
           "value": "Unfurnished"
         }
-      ]
+      ],
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "hide",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_RECORDTYPEID",
+      "spaKey": "ufCrm16RecordType",
+      "spaCrmCode": "UF_CRM_16_RECORD_TYPE",
+      "label": "Offering / Record Type",
+      "bitrixLabel": "Record Type",
+      "type": "enumeration",
+      "placeholder": "-- Select Record Type --",
+      "options": [
+        {
+          "id": "2230",
+          "spaId": "1070",
+          "value": "Residential"
+        },
+        {
+          "id": "2232",
+          "spaId": "1072",
+          "value": "Commercial"
+        },
+        {
+          "id": "2234",
+          "spaId": "1074",
+          "value": "Off-Plan"
+        },
+        {
+          "id": "2236",
+          "spaId": "1076",
+          "value": "Secondary / Resale"
+        },
+        {
+          "id": "2238",
+          "spaId": "1078",
+          "value": "Rental"
+        },
+        {
+          "id": "2240",
+          "spaId": "1080",
+          "value": "Land / Plot"
+        }
+      ],
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_NUMBEROFPARKINGSPACES",
-      "label": "Number of Parking Spaces",
+      "spaKey": "ufCrm16ParkingSpaces",
+      "spaCrmCode": "UF_CRM_16_PARKING_SPACES",
+      "label": "Parking Spaces",
       "bitrixLabel": "Number of Parking Spaces",
       "type": "integer",
-      "placeholder": ""
+      "placeholder": "e.g. 2",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_COMPLETIONDATE",
-      "label": "Completion Date",
-      "bitrixLabel": "Completion Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_COMMERCIAL_AMENITIES",
-      "label": "Commercial Amenities",
-      "bitrixLabel": "Commercial Amenities",
+      "code": "UF_CRM_PROJECT_NAME",
+      "leadAltCode": "UF_CRM_PROJECT_1",
+      "spaKey": "ufCrm16ProjectName",
+      "spaCrmCode": "UF_CRM_16_PROJECT_NAME",
+      "label": "Project / Building Name",
+      "bitrixLabel": "Project Name",
       "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PRIVATE_AMENITIES",
-      "label": "Private Amenities",
-      "bitrixLabel": "Private Amenities",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_1",
-      "label": "Feature 1",
-      "bitrixLabel": "Feature 1",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_2",
-      "label": "Feature 2",
-      "bitrixLabel": "Feature 2",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_3",
-      "label": "Feature 3",
-      "bitrixLabel": "Feature 3",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_4",
-      "label": "Feature 4",
-      "bitrixLabel": "Feature 4",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_5",
-      "label": "Feature 5",
-      "bitrixLabel": "Feature 5",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_6",
-      "label": "Feature 6",
-      "bitrixLabel": "Feature 6",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_7",
-      "label": "Feature 7",
-      "bitrixLabel": "Feature 7",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_8",
-      "label": "Feature 8",
-      "bitrixLabel": "Feature 8",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE_9",
-      "label": "Feature 9",
-      "bitrixLabel": "Feature 9",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_UK_FEATURE",
-      "label": "Feature 10",
-      "bitrixLabel": "Feature 10",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_1791970864836",
-      "label": "RERA Permit Number",
-      "bitrixLabel": "RERA Permit Number",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_TRAKHEESI_EXPIRY",
-      "label": "Trakheesi Permit Expiry",
-      "bitrixLabel": "Trakheesi Permit Expiry",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BROKER_S_LISTING_ID",
-      "label": "Broker's Listing ID",
-      "bitrixLabel": "Broker's Listing ID",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_FORM_A_DATE",
-      "label": "Form A Signed Date",
-      "bitrixLabel": "Form A Signed Date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_FORM_A_EXPIRY_DATE",
-      "label": "Form A expiry date",
-      "bitrixLabel": "Form A expiry date",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_FORM_A_PASSWORD",
-      "label": "Form A Password",
-      "bitrixLabel": "Form A Password",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_LAST_REFRESH_DATE",
-      "label": "Last Refresh Date",
-      "bitrixLabel": "Last Refresh Date",
-      "type": "datetime",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_QR_CODE",
-      "label": "QR Code",
-      "bitrixLabel": "QR Code",
-      "type": "file",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PORTALS_ENABLED",
-      "label": "BayutDubizzle Feed",
-      "bitrixLabel": "BayutDubizzle Feed",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PORTAL_LISTING_ID",
-      "label": "Bayut Listing Id",
-      "bitrixLabel": "Portal Listing Id",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BAYUT_PROPERTY_TYPE",
-      "label": "Bayut Property Type",
-      "bitrixLabel": "Bayut Property Type",
-      "type": "enumeration",
-      "placeholder": "-- Select Bayut Property Type --",
-      "options": [
-        {
-          "id": "1900",
-          "value": "Apartment"
-        },
-        {
-          "id": "1902",
-          "value": "Villa"
-        },
-        {
-          "id": "1904",
-          "value": "Townhouse"
-        },
-        {
-          "id": "1906",
-          "value": "Penthouse"
-        },
-        {
-          "id": "1908",
-          "value": "Hotel Apartment"
-        },
-        {
-          "id": "1910",
-          "value": "Duplex"
-        },
-        {
-          "id": "1912",
-          "value": "Residential Plot"
-        },
-        {
-          "id": "1914",
-          "value": "Residential Floor"
-        },
-        {
-          "id": "1916",
-          "value": "Residential Building"
-        },
-        {
-          "id": "1918",
-          "value": "Office"
-        },
-        {
-          "id": "1920",
-          "value": "Retail"
-        },
-        {
-          "id": "1922",
-          "value": "Shop"
-        },
-        {
-          "id": "1924",
-          "value": "Warehouse"
-        },
-        {
-          "id": "1926",
-          "value": "Commercial Building"
-        },
-        {
-          "id": "1928",
-          "value": "Commercial Plot"
-        }
-      ]
+      "placeholder": "e.g. Downtown Views II, Creek Horizon...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_BUILDING_DUBIZZLE",
-      "label": "Building - Bayut",
+      "spaKey": "ufCrm16BuildingBayut",
+      "spaCrmCode": "UF_CRM_16_BUILDING_BAYUT",
+      "label": "Building / Tower Name (Bayut)",
       "bitrixLabel": "Building - Bayut",
       "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_CITY_BAYUT",
-      "label": "City - Bayut",
-      "bitrixLabel": "City (Bayut)",
-      "type": "enumeration",
-      "placeholder": "-- Select City - Bayut --",
-      "options": [
-        {
-          "id": "2546",
-          "value": "Dubai"
-        },
-        {
-          "id": "2548",
-          "value": "Abu Dhabi"
-        },
-        {
-          "id": "2550",
-          "value": "Sharjah"
-        },
-        {
-          "id": "2552",
-          "value": "Ajman"
-        },
-        {
-          "id": "2554",
-          "value": "Ras Al Khaimah"
-        },
-        {
-          "id": "2556",
-          "value": "Fujairah"
-        },
-        {
-          "id": "2558",
-          "value": "Umm Al Quwain"
-        },
-        {
-          "id": "2560",
-          "value": "Al Ain"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
-      "label": "LocationText - Bayut",
-      "bitrixLabel": "LocationText - Bayut",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BAYUT_ERROR_LOG",
-      "label": "Bayut Error Log",
-      "bitrixLabel": "Bayut Error Log",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_1792151466",
-      "label": "Property Finder Listing Id",
-      "bitrixLabel": "Property Finder Listing Id",
-      "type": "string",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_PROPERTYFINDER_PROPERTY_TYPE",
-      "label": "PropertyFinder Property Type",
-      "bitrixLabel": "PropertyFinder Property Type",
-      "type": "enumeration",
-      "placeholder": "-- Select PropertyFinder Property Type --",
-      "options": [
-        {
-          "id": "2202",
-          "value": "Apartment"
-        },
-        {
-          "id": "2204",
-          "value": "Villa"
-        },
-        {
-          "id": "2206",
-          "value": "Townhouse"
-        },
-        {
-          "id": "2208",
-          "value": "Penthouse"
-        },
-        {
-          "id": "2210",
-          "value": "Hotel Apartment"
-        },
-        {
-          "id": "2212",
-          "value": "Duplex"
-        },
-        {
-          "id": "2214",
-          "value": "Plot"
-        },
-        {
-          "id": "2216",
-          "value": "Full Floor"
-        },
-        {
-          "id": "2218",
-          "value": "Whole Building"
-        },
-        {
-          "id": "2220",
-          "value": "Office Space"
-        },
-        {
-          "id": "2222",
-          "value": "Retail"
-        },
-        {
-          "id": "2224",
-          "value": "Shop"
-        },
-        {
-          "id": "2226",
-          "value": "Warehouse"
-        },
-        {
-          "id": "2228",
-          "value": "Factory"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
-      "label": "Property - Propertyfinder",
-      "bitrixLabel": "Property - Propertyfinder",
-      "type": "lookup",
-      "placeholder": "Search Property - Propertyfinder...",
-      "lookupEntity": "property"
-    },
-    {
-      "code": "UF_CRM_CITY_PF",
-      "label": "City - Propertyfinder",
-      "bitrixLabel": "City (Propertyfinder)",
-      "type": "enumeration",
-      "placeholder": "-- Select City - Propertyfinder --",
-      "options": [
-        {
-          "id": "2562",
-          "value": "Dubai"
-        },
-        {
-          "id": "2564",
-          "value": "Abu Dhabi"
-        },
-        {
-          "id": "2566",
-          "value": "Sharjah"
-        },
-        {
-          "id": "2568",
-          "value": "Ajman"
-        },
-        {
-          "id": "2570",
-          "value": "Ras Al Khaimah"
-        },
-        {
-          "id": "2572",
-          "value": "Fujairah"
-        },
-        {
-          "id": "2574",
-          "value": "Umm Al Quwain"
-        },
-        {
-          "id": "2576",
-          "value": "Al Ain"
-        }
-      ]
+      "placeholder": "e.g. Tower A, East Wing...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
+      "spaKey": "ufCrm16CommunityPropertyfinder",
+      "spaCrmCode": "UF_CRM_16_COMMUNITY_PROPERTYFINDER",
       "label": "Community - Propertyfinder",
       "bitrixLabel": "Community - Propertyfinder",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "e.g. Downtown Dubai, Palm Jumeirah...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
-      "label": "Sub Community - Propertyfinder",
+      "spaKey": "ufCrm16SubCommunityPropertyfinder",
+      "spaCrmCode": "UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER",
+      "label": "Sub-Community",
       "bitrixLabel": "Sub Community - Propertyfinder",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "e.g. Burj Crown, Marina Gate 2...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_PROPERTYFINDER_REGION",
-      "label": "Propertyfinder Region",
-      "bitrixLabel": "Propertyfinder Region",
+      "code": "UF_CRM_NEIGHBORHOOD",
+      "spaKey": "ufCrm16_1791173032",
+      "spaCrmCode": "UF_CRM_16_1791173032",
+      "label": "Neighborhood / Community",
+      "bitrixLabel": "Neighborhood",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "e.g. Business Bay, Dubai Marina...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_PF_ERROR_LOG",
-      "label": "PF Error Log",
-      "bitrixLabel": "PF Error Log",
+      "code": "UF_CRM_CITY",
+      "spaKey": "ufCrm16_1791172815",
+      "spaCrmCode": "UF_CRM_16_1791172815",
+      "label": "City",
+      "bitrixLabel": "City",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "e.g. Dubai, London, Abu Dhabi...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_OWNER_LISTING",
-      "label": "Owner - Listing",
-      "bitrixLabel": "Owner - Listing",
-      "type": "lookup",
-      "placeholder": "Search Owner - Listing...",
-      "lookupEntity": "contact"
-    },
-    {
-      "code": "UF_CRM_PROPERTYOWNERCONTACT",
-      "label": "Property Owner",
-      "bitrixLabel": "Property Owner",
-      "type": "lookup",
-      "placeholder": "Search Property Owner...",
-      "lookupEntity": "contact"
-    },
-    {
-      "code": "UF_CRM_PROPERTY_OWNER_2",
-      "label": "Property Owner 2",
-      "bitrixLabel": "Property Owner 2",
-      "type": "lookup",
-      "placeholder": "Search Property Owner 2...",
-      "lookupEntity": "contact"
-    },
-    {
-      "code": "UF_CRM_REFERRAL_AGENT_SELLER",
-      "label": "Referral Agent - Seller",
-      "bitrixLabel": "Referral Agent - Seller",
-      "type": "lookup",
-      "placeholder": "Search Broker / Agent...",
-      "lookupEntity": "broker"
-    },
-    {
-      "code": "UF_CRM_TENANT",
-      "label": "Tenant",
-      "bitrixLabel": "Tenant",
-      "type": "lookup",
-      "placeholder": "Search Tenant...",
-      "lookupEntity": "contact"
-    },
-    {
-      "code": "UF_CRM_PORTAL_LISTING_AGENT",
-      "label": "Portal Listing Agent",
-      "bitrixLabel": "Portal Listing Agent",
-      "type": "lookup",
-      "placeholder": "Search Broker / Agent...",
-      "lookupEntity": "broker"
-    },
-    {
-      "code": "UF_CRM_LISTINGAGENTNAME",
-      "label": "Listing Agent Name",
-      "bitrixLabel": "Listing Agent Name",
+      "code": "UF_CRM_COUNTRY",
+      "spaKey": "ufCrm16_1791172854",
+      "spaCrmCode": "UF_CRM_16_1791172854",
+      "label": "Country",
+      "bitrixLabel": "Country",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "e.g. United Arab Emirates, UK, France...",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "show",
+        "rent": "opt"
+      }
     },
     {
-      "code": "UF_CRM_LISTING_AGENT_PHONE",
-      "label": "Listing Agent Phone",
-      "bitrixLabel": "Listing Agent Phone",
+      "code": "UF_CRM_STREET",
+      "spaKey": "ufCrm16Street",
+      "spaCrmCode": "UF_CRM_16_STREET",
+      "label": "Street",
+      "bitrixLabel": "Street",
       "type": "string",
-      "placeholder": ""
+      "placeholder": "e.g. Sheikh Mohammed bin Rashid Blvd...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_LISTING_AGENT_EMAIL",
-      "label": "Listing Agent Email",
-      "bitrixLabel": "Listing Agent Email",
-      "type": "string",
-      "placeholder": ""
+      "code": "UF_CRM_1791970638065",
+      "spaKey": "ufCrm16_1791172676",
+      "spaCrmCode": "UF_CRM_16_1791172676",
+      "label": "Address",
+      "bitrixLabel": "Property Address",
+      "type": "address",
+      "placeholder": "Street, building, unit number...",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_LISTING_OWNER_NAME",
-      "label": "Listing Owner Name",
-      "bitrixLabel": "Listing Owner Name",
-      "type": "string",
-      "placeholder": ""
+      "code": "UF_CRM_LATITUDE",
+      "spaKey": "ufCrm16Latitude",
+      "spaCrmCode": "UF_CRM_16_LATITUDE",
+      "label": "Latitude",
+      "bitrixLabel": "Latitude",
+      "type": "number",
+      "placeholder": "e.g. 25.1972",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_LISTING_OWNER_MOBILE",
-      "label": "Listing Owner Mobile",
-      "bitrixLabel": "Listing Owner Mobile",
-      "type": "string",
-      "placeholder": ""
+      "code": "UF_CRM_LONGITUDE",
+      "spaKey": "ufCrm16Longitude",
+      "spaCrmCode": "UF_CRM_16_LONGITUDE",
+      "label": "Longitude",
+      "bitrixLabel": "Longitude",
+      "type": "number",
+      "placeholder": "e.g. 55.2744",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
-      "code": "UF_CRM_LISTING_OWNER_EMAIL",
-      "label": "Listing Owner email",
-      "bitrixLabel": "Listing Owner email",
-      "type": "string",
-      "placeholder": ""
+      "code": "UF_CRM_LISTING_PRICE",
+      "leadAltCode": "UF_CRM_1791963299133",
+      "spaKey": "ufCrm16_1790154936",
+      "spaCrmCode": "UF_CRM_16_1790154936",
+      "label": "Listing Price (AED)",
+      "bitrixLabel": "Listing Price",
+      "type": "money",
+      "addon": "AED",
+      "placeholder": "e.g. 2,500,000",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      },
+      "labelOverrides": {
+        "rent": "Listing Price (as annual rent)"
+      }
     },
     {
-      "code": "UF_CRM_DESCRIPTION_INTRO_TEXT",
-      "label": "Description - Intro Text",
-      "bitrixLabel": "Description - Intro Text",
-      "type": "string",
-      "placeholder": "",
-      "fullWidth": true
+      "code": "UF_CRM_PRICE_PER_SQUARE_FOOT",
+      "spaKey": "ufCrm16ListPricePerSqFt",
+      "spaCrmCode": "UF_CRM_16_LIST_PRICE_PER_SQ_FT",
+      "label": "Price Per Sq Ft",
+      "bitrixLabel": "Price Per Square Foot",
+      "type": "money",
+      "addon": "AED/SqFt",
+      "placeholder": "e.g. 1,450",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "opt"
+      }
     },
     {
-      "code": "UF_CRM_DESCRIPTION_OUTRO_TEXT",
-      "label": "Description - Outro Text",
-      "bitrixLabel": "Description - Outro Text",
+      "code": "UF_CRM_BUYERAGENTCOMMISSION",
+      "spaKey": "ufCrm16BuyersAgentCommission",
+      "spaCrmCode": "UF_CRM_16_BUYERS_AGENT_COMMISSION",
+      "label": "Agency Commission (%)",
+      "bitrixLabel": "Buyers Agent Commission %",
+      "type": "number",
+      "addon": "%",
+      "placeholder": "e.g. 2.0",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_SERVICE_CHARGE",
+      "spaKey": "ufCrm16ServiceCharge",
+      "spaCrmCode": "UF_CRM_16_SERVICE_CHARGE",
+      "label": "Service Charges (Annual)",
+      "bitrixLabel": "Service Charges",
+      "type": "money",
+      "addon": "AED",
+      "placeholder": "e.g. 15,000",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
+    },
+    {
+      "code": "UF_CRM_HOAFREQUENCY",
+      "spaKey": "ufCrm16HoaFrequency",
+      "spaCrmCode": "UF_CRM_16_HOA_FREQUENCY",
+      "label": "Rental Frequency",
+      "bitrixLabel": "HOA Frequency",
+      "type": "enumeration",
+      "placeholder": "-- Select Rental Frequency --",
+      "options": [
+        {
+          "id": "1998",
+          "spaId": "762",
+          "value": "Monthly"
+        },
+        {
+          "id": "2000",
+          "spaId": "764",
+          "value": "Quarterly"
+        },
+        {
+          "id": "2002",
+          "spaId": "766",
+          "value": "Semi-Annually"
+        },
+        {
+          "id": "2004",
+          "spaId": "768",
+          "value": "Annually"
+        },
+        {
+          "id": "2006",
+          "spaId": "770",
+          "value": "Included in Rent"
+        },
+        {
+          "id": "2008",
+          "spaId": "772",
+          "value": "None"
+        }
+      ],
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "hide",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_PETDEPOSIT",
+      "spaKey": "ufCrm16PetDeposit",
+      "spaCrmCode": "UF_CRM_16_PET_DEPOSIT",
+      "label": "Security Deposit (AED)",
+      "bitrixLabel": "Pet Deposit",
+      "type": "money",
+      "addon": "AED",
+      "placeholder": "e.g. 10,000",
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "hide",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_1792139023",
+      "leadAltCode": "UF_CRM_CHEQUES",
+      "spaKey": "ufCrm16_1792127520",
+      "spaCrmCode": "UF_CRM_16_1792127520",
+      "label": "Number of Cheques",
+      "bitrixLabel": "Cheques",
+      "type": "enumeration",
+      "placeholder": "-- Select Cheques --",
+      "options": [
+        {
+          "id": "2440",
+          "spaId": "2432",
+          "value": "1 Cheque"
+        },
+        {
+          "id": "2442",
+          "spaId": "2434",
+          "value": "2 Cheque"
+        },
+        {
+          "id": "2444",
+          "spaId": "2434",
+          "value": "2 Cheques"
+        },
+        {
+          "id": "2446",
+          "spaId": "2436",
+          "value": "4 Cheque"
+        },
+        {
+          "id": "2448",
+          "spaId": "2438",
+          "value": "6 Cheque"
+        },
+        {
+          "id": "2450",
+          "spaId": "2440",
+          "value": "12 Cheque"
+        }
+      ],
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "opt",
+        "overseas_sale": "hide",
+        "rent": "show"
+      },
+      "labelOverrides": {
+        "off_plan": "Number of Cheques (payment plan)"
+      }
+    },
+    {
+      "code": "UF_CRM_AVAIL_DATE",
+      "leadAltCode": "BEGINDATE",
+      "spaKey": "begindate",
+      "spaCrmCode": "BEGINDATE",
+      "label": "Started on",
+      "bitrixLabel": "Available From Date",
+      "type": "date",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "show"
+      },
+      "labelOverrides": {
+        "external_stock": "Started on (mandate period)",
+        "rent": "Started on (tenancy / availability)"
+      }
+    },
+    {
+      "code": "UF_CRM_AVAILABLE_TO",
+      "leadAltCode": "CLOSEDATE",
+      "spaKey": "closedate",
+      "spaCrmCode": "CLOSEDATE",
+      "label": "Finished on",
+      "bitrixLabel": "Available To Date",
+      "type": "date",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "show"
+      },
+      "labelOverrides": {
+        "external_stock": "Finished on (mandate period)",
+        "rent": "Finished on (tenancy / availability)"
+      }
+    },
+    {
+      "code": "UF_CRM_DATE_AVAILABLE",
+      "spaKey": "ufCrm16_1790155057",
+      "spaCrmCode": "UF_CRM_16_1790155057",
+      "label": "Available From",
+      "bitrixLabel": "Date Available",
+      "type": "date",
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_COMPLETIONDATE",
+      "spaKey": "ufCrm16CompletionDate",
+      "spaCrmCode": "UF_CRM_16_COMPLETION_DATE",
+      "label": "Handover / Completion Date",
+      "bitrixLabel": "Completion Date",
+      "type": "date",
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_COMPLETION_STATUS",
+      "spaKey": "ufCrm16CompletionStatus",
+      "spaCrmCode": "UF_CRM_16_COMPLETION_STATUS",
+      "label": "Completion Status",
+      "bitrixLabel": "Completion Status",
+      "type": "enumeration",
+      "placeholder": "-- Select Completion Status --",
+      "options": [
+        {
+          "id": "1944",
+          "spaId": "702",
+          "value": "Off-Plan"
+        },
+        {
+          "id": "1946",
+          "spaId": "704",
+          "value": "Under Construction"
+        },
+        {
+          "id": "1948",
+          "spaId": "706",
+          "value": "Completed"
+        },
+        {
+          "id": "1950",
+          "spaId": "708",
+          "value": "Handover"
+        },
+        {
+          "id": "1952",
+          "spaId": "710",
+          "value": "Ready"
+        }
+      ],
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_1791970832589",
+      "spaKey": "ufCrm16Occupancy",
+      "spaCrmCode": "UF_CRM_16_OCCUPANCY",
+      "label": "Tenancy Status",
+      "bitrixLabel": "Occupancy Status",
+      "type": "enumeration",
+      "placeholder": "-- Select Tenancy Status --",
+      "options": [
+        {
+          "id": "1824",
+          "spaId": "836",
+          "value": "Vacant on Transfer"
+        },
+        {
+          "id": "1826",
+          "spaId": "838",
+          "value": "Owner Occupied"
+        },
+        {
+          "id": "1828",
+          "spaId": "840",
+          "value": "Rented"
+        },
+        {
+          "id": "1830",
+          "spaId": "842",
+          "value": "Under Notice"
+        },
+        {
+          "id": "1832",
+          "spaId": "844",
+          "value": "Vacant"
+        }
+      ],
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "hide",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_EXPIRATION_DATE",
+      "spaKey": "ufCrm16ExpirationDate",
+      "spaCrmCode": "UF_CRM_16_EXPIRATION_DATE",
+      "label": "Tenancy End / Mandate Expiry Date",
+      "bitrixLabel": "Expiration Date",
+      "type": "date",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "hide",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_1791970864836",
+      "leadAltCode": "UF_CRM_RERA_PERMIT",
+      "spaKey": "ufCrm16ReraPermitNumber",
+      "spaCrmCode": "UF_CRM_16_RERA_PERMIT_NUMBER",
+      "label": "RERA Permit Number",
+      "bitrixLabel": "RERA Permit Number",
       "type": "string",
-      "placeholder": "",
-      "fullWidth": true
+      "placeholder": "e.g. 7114829100",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_TRAKHEESI_PERMIT_NO",
+      "spaKey": "ufCrm16_1791787455285",
+      "spaCrmCode": "UF_CRM_16_1791787455285",
+      "label": "Trakheesi Permit No",
+      "bitrixLabel": "Trakheesi Permit No",
+      "type": "string",
+      "placeholder": "e.g. TRK-982145",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_TRAKHEESI_EXPIRY",
+      "leadAltCode": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
+      "spaKey": "ufCrm16_1791787502111",
+      "spaCrmCode": "UF_CRM_16_1791787502111",
+      "label": "Trakheesi Permit Expiry Date",
+      "bitrixLabel": "Trakheesi Permit Expiry",
+      "type": "date",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
+      "spaKey": "ufCrm16_1791787502111",
+      "spaCrmCode": "UF_CRM_16_1791787502111",
+      "label": "Trakheesi Permit Expiry Date (Alternative)",
+      "bitrixLabel": "Trakheesi Permit Expiry Date",
+      "type": "date",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_QR_CODE_LINK",
+      "spaKey": "ufCrm16QrCodeLink",
+      "spaCrmCode": "UF_CRM_16_QR_CODE_LINK",
+      "label": "DLD QR / Permit URL",
+      "bitrixLabel": "QR Code Link",
+      "type": "url",
+      "placeholder": "https://dubailand.gov.ae/en/eservices/licensing/...",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_QR_CODE",
+      "spaKey": "ufCrm16QrCodeFile",
+      "spaCrmCode": "UF_CRM_16_QR_CODE_FILE",
+      "label": "DLD QR Code Attachment",
+      "bitrixLabel": "QR Code File",
+      "type": "file",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "hide",
+        "rent": "opt"
+      }
+    },
+    {
+      "code": "UF_CRM_BAYUT_ID",
+      "spaKey": "ufCrm16_1790155092",
+      "spaCrmCode": "UF_CRM_16_1790155092",
+      "label": "Bayut Listing ID",
+      "bitrixLabel": "Bayut ID",
+      "type": "string",
+      "placeholder": "e.g. BYT-481902",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_1792151466",
+      "leadAltCode": "UF_CRM_PF_ID",
+      "spaKey": "ufCrm16PropertyFinderListingId",
+      "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
+      "label": "Property Finder Listing Id",
+      "bitrixLabel": "Property Finder Listing Id",
+      "type": "string",
+      "placeholder": "e.g. PF-981273",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_PF_ID",
+      "spaKey": "ufCrm16PropertyFinderListingId",
+      "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
+      "label": "Propertyfinder Listing ID",
+      "bitrixLabel": "PF ID",
+      "type": "string",
+      "placeholder": "e.g. PF-981273",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_PORTAL_LISTING_ID",
+      "spaKey": "ufCrm16PortalListingId",
+      "spaCrmCode": "UF_CRM_16_PORTAL_LISTING_ID",
+      "label": "Portal Listing ID",
+      "bitrixLabel": "Portal Listing Id",
+      "type": "string",
+      "placeholder": "e.g. PORT-1122",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "hide",
+        "rent": "opt"
+      }
+    },
+    {
+      "code": "UF_CRM_DUBIZZLE_REGION",
+      "spaKey": "ufCrm16DubizzleRegion",
+      "spaCrmCode": "UF_CRM_16_DUBIZZLE_REGION",
+      "label": "Dubizzle Listing ID / Region",
+      "bitrixLabel": "Dubizzle Region",
+      "type": "string",
+      "placeholder": "e.g. DBZ-558291",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
+      "leadAltCode": "UF_CRM_PORTALS_ENABLED",
+      "spaKey": "ufCrm16SystemAllowedForPortals",
+      "spaCrmCode": "UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS",
+      "label": "Bayut / Dubizzle Feed Toggle",
+      "bitrixLabel": "System Allowed for Portals",
+      "type": "boolean",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_UK_SUMMARY_DESCRIPTION",
+      "spaKey": "ufCrm16SummaryDescription",
+      "spaCrmCode": "UF_CRM_16_SUMMARY_DESCRIPTION",
+      "label": "Portal Title",
+      "bitrixLabel": "Summary Description",
+      "type": "string",
+      "placeholder": "SEO Headline for Portals...",
+      "fullWidth": true,
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_DESCRIPTION",
+      "spaKey": "ufCrm16Description",
+      "spaCrmCode": "UF_CRM_16_DESCRIPTION",
+      "label": "Portal Description",
+      "bitrixLabel": "Property Description / Amenities",
+      "type": "textarea",
+      "placeholder": "Marketing description, key amenities...",
+      "fullWidth": true,
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_PRIMARY_IMAGE",
+      "spaKey": "ufCrm16_1791173118",
+      "spaCrmCode": "UF_CRM_16_1791173118",
+      "label": "Primary Listing Image",
+      "bitrixLabel": "Primary Listing Image",
+      "type": "file",
+      "isImage": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_PHOTOS",
+      "spaKey": "ufCrm16_1791881642219",
+      "spaCrmCode": "UF_CRM_16_1791881642219",
+      "label": "Photos (Gallery)",
+      "bitrixLabel": "Photos",
+      "type": "file",
+      "isImage": true,
+      "isMultiple": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_DOCS",
+      "spaKey": "ufCrm16_1791172957",
+      "spaCrmCode": "UF_CRM_16_1791172957",
+      "label": "Docs & Attachments",
+      "bitrixLabel": "Property Title / Deed Docs",
+      "type": "file",
+      "isDoc": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "show"
+      }
     },
     {
       "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
-      "label": "Photos and Documents",
+      "leadAltCode": "UF_CRM_FLOOR_PLAN",
+      "spaKey": "ufCrm16_1791544736052",
+      "spaCrmCode": "UF_CRM_16_1791544736052",
+      "label": "Floor Plan",
       "bitrixLabel": "Photos and Documents",
       "type": "file",
-      "placeholder": "",
-      "fullWidth": true
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
     },
     {
-      "code": "UF_CRM_COMMENTS_1",
-      "label": "Comments",
-      "bitrixLabel": "Comments",
-      "type": "string",
-      "placeholder": "",
-      "fullWidth": true
+      "code": "UF_CRM_TITLE_DEED",
+      "spaKey": "ufCrm16TitleDeed",
+      "spaCrmCode": "UF_CRM_16_TITLE_DEED",
+      "label": "Title Deed / Ownership Proof",
+      "bitrixLabel": "Title Deed",
+      "type": "file",
+      "isDoc": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "opt",
+        "overseas_sale": "show",
+        "rent": "opt"
+      }
     },
     {
-      "code": "UF_CRM_DEVELOPER_1",
-      "label": "Developer",
-      "bitrixLabel": "Developer",
-      "type": "lookup",
-      "placeholder": "Search Developer / Company...",
-      "lookupEntity": "developer"
+      "code": "UF_CRM_FORM_A_DOC",
+      "spaKey": "ufCrm16_1791787381785",
+      "spaCrmCode": "UF_CRM_16_1791787381785",
+      "label": "Form A Document (Mandate Agreement)",
+      "bitrixLabel": "Form A Signed Document",
+      "type": "file",
+      "isDoc": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_WEBSITE_URL",
+      "spaKey": "ufCrm16WebsiteUrl",
+      "spaCrmCode": "UF_CRM_16_WEBSITE_URL",
+      "label": "Brochure URL / File",
+      "bitrixLabel": "Website URL",
+      "type": "url",
+      "placeholder": "https://cdn.example.com/brochures/listing.pdf",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "show",
+        "overseas_sale": "show",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_LISTING_WEBSITE",
+      "spaKey": "ufCrm16ListingWebsite",
+      "spaCrmCode": "UF_CRM_16_LISTING_WEBSITE",
+      "label": "360 Virtual Tour Link",
+      "bitrixLabel": "Listing Website",
+      "type": "tour_url",
+      "placeholder": "https://my.matterport.com/show/?m=... or Kuula / YouTube 360",
+      "rules": {
+        "external_stock": "opt",
+        "off_plan": "opt",
+        "overseas_sale": "opt",
+        "rent": "opt"
+      }
     }
   ],
   "enquiryFields": [
@@ -5568,7 +6065,9 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791952409183",
+            "leadAltCode": "UF_CRM_LISTING_NAME"
           },
           {
             "key": "stageId",
@@ -5580,7 +6079,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "STATUS_ID"
           },
           {
             "key": "assignedById",
@@ -5592,7 +6092,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "ASSIGNED_BY_ID"
           },
           {
             "key": "ufCrm16_1790154808",
@@ -5622,7 +6123,9 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791952650167",
+            "leadAltCode": "UF_CRM_LISTING_TYPE"
           },
           {
             "key": "ufCrm16Exclusive",
@@ -5634,7 +6137,9 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791970897872",
+            "leadAltCode": "UF_CRM_EXCLUSIVE"
           },
           {
             "key": "xmlId",
@@ -5647,7 +6152,9 @@
               "off_plan": "opt",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "XML_ID",
+            "leadAltCode": "UF_CRM_LISTING_ID"
           }
         ]
       },
@@ -5667,7 +6174,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "COMPANY_ID"
           },
           {
             "key": "contactId",
@@ -5679,7 +6187,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "CONTACT_ID"
           },
           {
             "key": "contactIds",
@@ -5691,7 +6200,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_CONTACTS"
           },
           {
             "key": "parentId1052",
@@ -5704,7 +6214,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_PROPERTY"
           },
           {
             "key": "ufCrm16DeveloperName",
@@ -5717,7 +6228,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_DEVELOPER_NAME"
           },
           {
             "key": "ufCrm16_1791172932",
@@ -5729,7 +6241,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_DEVELOPER_1"
           }
         ]
       },
@@ -5787,7 +6300,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791952050535"
           },
           {
             "key": "ufCrm16PropertySubType",
@@ -5829,7 +6343,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_PROPERTY_SUB_TYPE"
           },
           {
             "key": "ufCrm16_1791172802",
@@ -5842,7 +6357,9 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_BEDROOMS",
+            "leadAltCode": "UF_CRM_1791966366775"
           },
           {
             "key": "ufCrm16_1791172787",
@@ -5855,7 +6372,9 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_BATHROOMS",
+            "leadAltCode": "UF_CRM_1791966408374"
           },
           {
             "key": "ufCrm16SqFt",
@@ -5869,7 +6388,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_BUA"
           },
           {
             "key": "ufCrm16PlotSize",
@@ -5883,7 +6403,8 @@
               "off_plan": "opt",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_PLOT_AREA"
           },
           {
             "key": "ufCrm16UnitNumber",
@@ -5896,7 +6417,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_UNIT_NO"
           },
           {
             "key": "ufCrm16Floor",
@@ -5909,7 +6431,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_FLOOR"
           },
           {
             "key": "ufCrm16Furnished",
@@ -5935,7 +6458,8 @@
               "off_plan": "hide",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791969936048"
           },
           {
             "key": "ufCrm16RecordType",
@@ -5973,7 +6497,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_RECORDTYPEID"
           },
           {
             "key": "ufCrm16ParkingSpaces",
@@ -5986,7 +6511,8 @@
               "off_plan": "opt",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_NUMBEROFPARKINGSPACES"
           }
         ]
       },
@@ -6007,7 +6533,9 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_PROJECT_NAME",
+            "leadAltCode": "UF_CRM_PROJECT_1"
           },
           {
             "key": "ufCrm16BuildingBayut",
@@ -6020,7 +6548,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_BUILDING_DUBIZZLE"
           },
           {
             "key": "ufCrm16CommunityPropertyfinder",
@@ -6033,7 +6562,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_COMMUNITY_PROPERTYFINDER"
           },
           {
             "key": "ufCrm16SubCommunityPropertyfinder",
@@ -6046,7 +6576,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER"
           },
           {
             "key": "ufCrm16_1791173032",
@@ -6059,7 +6590,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_NEIGHBORHOOD"
           },
           {
             "key": "ufCrm16_1791172815",
@@ -6072,7 +6604,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_CITY"
           },
           {
             "key": "ufCrm16_1791172854",
@@ -6085,7 +6618,8 @@
               "off_plan": "opt",
               "overseas_sale": "show",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_COUNTRY"
           },
           {
             "key": "ufCrm16Street",
@@ -6098,7 +6632,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_STREET"
           },
           {
             "key": "ufCrm16_1791172676",
@@ -6111,7 +6646,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791970638065"
           },
           {
             "key": "ufCrm16Latitude",
@@ -6124,7 +6660,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_LATITUDE"
           },
           {
             "key": "ufCrm16Longitude",
@@ -6137,7 +6674,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_LONGITUDE"
           }
         ]
       },
@@ -6162,7 +6700,9 @@
             },
             "labelOverrides": {
               "rent": "Listing Price (as annual rent)"
-            }
+            },
+            "leadCode": "UF_CRM_LISTING_PRICE",
+            "leadAltCode": "UF_CRM_1791963299133"
           },
           {
             "key": "ufCrm16ListPricePerSqFt",
@@ -6176,7 +6716,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_PRICE_PER_SQUARE_FOOT"
           },
           {
             "key": "ufCrm16BuyersAgentCommission",
@@ -6190,7 +6731,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_BUYERAGENTCOMMISSION"
           },
           {
             "key": "ufCrm16ServiceCharge",
@@ -6204,7 +6746,8 @@
               "off_plan": "opt",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_SERVICE_CHARGE"
           },
           {
             "key": "ufCrm16HoaFrequency",
@@ -6242,7 +6785,8 @@
               "off_plan": "hide",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_HOAFREQUENCY"
           },
           {
             "key": "ufCrm16PetDeposit",
@@ -6256,7 +6800,8 @@
               "off_plan": "hide",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_PETDEPOSIT"
           },
           {
             "key": "ufCrm16_1792127520",
@@ -6293,7 +6838,9 @@
             },
             "labelOverrides": {
               "off_plan": "Number of Cheques (payment plan)"
-            }
+            },
+            "leadCode": "UF_CRM_1792139023",
+            "leadAltCode": "UF_CRM_CHEQUES"
           }
         ]
       },
@@ -6317,7 +6864,9 @@
             "labelOverrides": {
               "external_stock": "Started on (mandate period)",
               "rent": "Started on (tenancy / availability)"
-            }
+            },
+            "leadCode": "UF_CRM_AVAIL_DATE",
+            "leadAltCode": "BEGINDATE"
           },
           {
             "key": "closedate",
@@ -6333,7 +6882,9 @@
             "labelOverrides": {
               "external_stock": "Finished on (mandate period)",
               "rent": "Finished on (tenancy / availability)"
-            }
+            },
+            "leadCode": "UF_CRM_AVAILABLE_TO",
+            "leadAltCode": "CLOSEDATE"
           },
           {
             "key": "ufCrm16_1790155057",
@@ -6345,7 +6896,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_DATE_AVAILABLE"
           },
           {
             "key": "ufCrm16CompletionDate",
@@ -6357,7 +6909,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "hide"
-            }
+            },
+            "leadCode": "UF_CRM_COMPLETIONDATE"
           },
           {
             "key": "ufCrm16CompletionStatus",
@@ -6391,7 +6944,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "hide"
-            }
+            },
+            "leadCode": "UF_CRM_COMPLETION_STATUS"
           },
           {
             "key": "ufCrm16Occupancy",
@@ -6425,7 +6979,8 @@
               "off_plan": "hide",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791970832589"
           },
           {
             "key": "ufCrm16ExpirationDate",
@@ -6437,7 +6992,8 @@
               "off_plan": "hide",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_EXPIRATION_DATE"
           }
         ]
       },
@@ -6458,7 +7014,9 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1791970864836",
+            "leadAltCode": "UF_CRM_RERA_PERMIT"
           },
           {
             "key": "ufCrm16_1791787455285",
@@ -6471,7 +7029,8 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_TRAKHEESI_PERMIT_NO"
           },
           {
             "key": "ufCrm16_1791787502111",
@@ -6483,7 +7042,9 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_TRAKHEESI_EXPIRY",
+            "leadAltCode": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE"
           },
           {
             "key": "ufCrm16QrCodeLink",
@@ -6496,7 +7057,8 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_QR_CODE_LINK"
           },
           {
             "key": "ufCrm16_1790155092",
@@ -6509,7 +7071,8 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_BAYUT_ID"
           },
           {
             "key": "ufCrm16PropertyFinderListingId",
@@ -6522,7 +7085,9 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_1792151466",
+            "leadAltCode": "UF_CRM_PF_ID"
           },
           {
             "key": "ufCrm16DubizzleRegion",
@@ -6535,7 +7100,8 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_DUBIZZLE_REGION"
           },
           {
             "key": "ufCrm16SystemAllowedForPortals",
@@ -6547,7 +7113,9 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
+            "leadAltCode": "UF_CRM_PORTALS_ENABLED"
           },
           {
             "key": "ufCrm16SummaryDescription",
@@ -6561,7 +7129,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_UK_SUMMARY_DESCRIPTION"
           },
           {
             "key": "ufCrm16Description",
@@ -6575,7 +7144,8 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_DESCRIPTION"
           }
         ]
       },
@@ -6596,7 +7166,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_PRIMARY_IMAGE"
           },
           {
             "key": "ufCrm16_1791881642219",
@@ -6610,7 +7181,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_PHOTOS"
           },
           {
             "key": "ufCrm16_1791172957",
@@ -6623,7 +7195,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_DOCS"
           },
           {
             "key": "ufCrm16_1791544736052",
@@ -6635,7 +7208,9 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_PHOTOS_AND_DOCUMENTS",
+            "leadAltCode": "UF_CRM_FLOOR_PLAN"
           },
           {
             "key": "ufCrm16TitleDeed",
@@ -6648,7 +7223,8 @@
               "off_plan": "opt",
               "overseas_sale": "show",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_TITLE_DEED"
           },
           {
             "key": "ufCrm16_1791787381785",
@@ -6661,7 +7237,8 @@
               "off_plan": "opt",
               "overseas_sale": "opt",
               "rent": "show"
-            }
+            },
+            "leadCode": "UF_CRM_FORM_A_DOC"
           },
           {
             "key": "ufCrm16WebsiteUrl",
@@ -6674,7 +7251,8 @@
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "hide"
-            }
+            },
+            "leadCode": "UF_CRM_WEBSITE_URL"
           },
           {
             "key": "ufCrm16ListingWebsite",
@@ -6687,7 +7265,8 @@
               "off_plan": "opt",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
+            },
+            "leadCode": "UF_CRM_LISTING_WEBSITE"
           }
         ]
       }
