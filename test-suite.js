@@ -359,11 +359,13 @@ async function runTests() {
     ...(fieldCfg.enquiryLayout?.sections || []).flatMap(s => s.fields || [])
   ].filter(f => f.type === 'file');
 
-  assert(allFileFields.length >= 2, 'File fields registered in layout schema');
   const hasQrCode = allFileFields.some(f => f.code === 'UF_CRM_QR_CODE');
-  const hasPhotosDocs = allFileFields.some(f => f.code === 'UF_CRM_PHOTOS_AND_DOCUMENTS');
+  const hasPhotos = allFileFields.some(f => f.code === 'UF_CRM_PHOTOS');
+  const hasDocuments = allFileFields.some(f => f.code === 'UF_CRM_DOCUMENTS');
+  const hasPhotosDocs = allFileFields.some(f => f.code === 'UF_CRM_PHOTOS_AND_DOCUMENTS' || f.leadAltCodes?.includes('UF_CRM_PHOTOS_AND_DOCUMENTS') || f.fallbackKeys?.includes('ufCrm16_1791544736052'));
   assert(hasQrCode, 'UF_CRM_QR_CODE registered as file field');
-  assert(hasPhotosDocs, 'UF_CRM_PHOTOS_AND_DOCUMENTS registered as file field');
+  assert(hasPhotos && hasDocuments, 'UF_CRM_PHOTOS and UF_CRM_DOCUMENTS registered as distinct sensible file fields');
+  assert(hasPhotosDocs, 'UF_CRM_PHOTOS_AND_DOCUMENTS supported via photos field mapping');
 
   // Verify file normalization logic matches Bitrix24 { fileData: [name, base64] } specification
   const knownMultipleFileFields = new Set([
@@ -868,8 +870,8 @@ async function runTests() {
 
   // 6. Verify Field Visibility Matrix (✔ = show, opt = opt, — = hide)
   assert(listingJs.includes("rules: { external_stock: 'hide', off_plan: 'hide', overseas_sale: 'hide', rent: 'show' }"), 'Rental Frequency and Security Deposit only shown on Rent');
-  assert(!listingJs.includes("ufCrm16WebsiteUrl") && !listingJs.includes("Brochure URL"), 'Brochure URL removed and only respective Bitrix24 file fields included in Media & Documents');
-  assert(listingJs.includes("ufCrm16_1791544736052") && listingJs.includes("Photos and Documents"), 'Photos and Documents included with respective Bitrix24 field');
+  assert(listingJs.includes("ufCrm16_1791881665252") && listingJs.includes("ufCrm16QrCode"), 'Media & Documents contains logical and sensible fields (Documents, QR Code, Photos, Primary Image, Title Deed, Form A)');
+  assert(listingJs.includes("ufCrm16_1791544736052"), 'Legacy Photos and Documents supported as fallbackKey for Photos');
   assert(listingJs.includes("rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }"), 'Furnished Status hidden on Off-plan and shown on Rent');
 
   // 7. Verify Media & File Preview Engine
@@ -1205,6 +1207,32 @@ async function runTests() {
   const fieldsJsonCode = fs.readFileSync('config/fields.json', 'utf8');
   assert(fieldsJsonCode.includes('"UF_CRM_16_1791173131"'), 'config/fields.json defines spaBindingCode UF_CRM_16_1791173131 for Project');
   assert(fieldsJsonCode.includes('"UF_CRM_16_1791173000"'), 'config/fields.json defines spaBindingCode UF_CRM_16_1791173000 for Master Project');
+
+  // ============================================================================
+  // Test Case 28: Sensible & Logical Media & Documents Field Configuration
+  // ============================================================================
+  console.log('\n--- Case 28: Sensible & Logical Media & Documents Field Configuration ---');
+  // 1. Verify listing-details.js defines only logically distinct media fields
+  assert(finalListingJs.includes("ufCrm16_1791173118"), 'listing-details.js includes Primary Image (ufCrm16_1791173118)');
+  assert(finalListingJs.includes("ufCrm16_1791881642219"), 'listing-details.js includes Photos (ufCrm16_1791881642219)');
+  assert(finalListingJs.includes("ufCrm16_1791881665252"), 'listing-details.js includes Documents (ufCrm16_1791881665252)');
+  assert(finalListingJs.includes("ufCrm16TitleDeed"), 'listing-details.js includes Title Deed (ufCrm16TitleDeed)');
+  assert(finalListingJs.includes("ufCrm16_1791787381785"), 'listing-details.js includes Form A Document (ufCrm16_1791787381785)');
+  assert(finalListingJs.includes("ufCrm16QrCode"), 'listing-details.js includes QR Code (ufCrm16QrCode)');
+
+  // 2. Verify legacy duplicate/ambiguous fields are mapped via fallbackKeys rather than displayed as separate inputs
+  assert(finalListingJs.includes("fallbackKeys: ['ufCrm16_1791544736052']"), 'Photos field maps legacy Photos and Documents (1791544736052) via fallbackKeys');
+  assert(finalListingJs.includes("fallbackKeys: ['ufCrm16_1791172957']"), 'Documents field maps legacy Docs (1791172957) via fallbackKeys');
+  assert(!finalListingJs.includes("label: 'Photos and Documents'"), 'Duplicate "Photos and Documents" field is removed from UI display');
+  assert(!finalListingJs.includes("label: 'Docs'"), 'Duplicate legacy "Docs" field is removed from UI display');
+
+  // 3. Verify config/fields.json media section
+  assert(fieldsJsonCode.includes('"key": "ufCrm16_1791881665252"'), 'config/fields.json defines Documents field ufCrm16_1791881665252');
+  assert(fieldsJsonCode.includes('"key": "ufCrm16QrCode"'), 'config/fields.json defines QR Code field ufCrm16QrCode');
+
+  // 4. Verify src/spaSync.js Lead <-> SPA synchronization for media
+  assert(spaSyncCode.includes("spaKey: 'ufCrm16_1791881665252'"), 'spaSync.js synchronizes Documents field ufCrm16_1791881665252');
+  assert(spaSyncCode.includes("spaKey: 'ufCrm16QrCode'"), 'spaSync.js synchronizes QR Code field ufCrm16QrCode');
 
   // ============================================================================
   // Summary

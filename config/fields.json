@@ -1402,8 +1402,10 @@
           },
           {
             "code": "UF_CRM_PHOTOS",
+            "leadAltCodes": ["UF_CRM_PHOTOS_AND_DOCUMENTS"],
             "spaKey": "ufCrm16_1791881642219",
             "spaCrmCode": "UF_CRM_16_1791881642219",
+            "fallbackKeys": ["ufCrm16_1791544736052"],
             "label": "Photos",
             "bitrixLabel": "Photos",
             "type": "file",
@@ -1417,27 +1419,13 @@
             }
           },
           {
-            "code": "UF_CRM_DOCS",
-            "spaKey": "ufCrm16_1791172957",
-            "spaCrmCode": "UF_CRM_16_1791172957",
-            "label": "Docs",
-            "bitrixLabel": "Docs",
-            "type": "file",
-            "isDoc": true,
-            "isMultiple": true,
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
-            "spaKey": "ufCrm16_1791544736052",
-            "spaCrmCode": "UF_CRM_16_1791544736052",
-            "label": "Photos and Documents",
-            "bitrixLabel": "Photos and Documents",
+            "code": "UF_CRM_DOCUMENTS",
+            "leadAltCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"],
+            "spaKey": "ufCrm16_1791881665252",
+            "spaCrmCode": "UF_CRM_16_1791881665252",
+            "fallbackKeys": ["ufCrm16_1791172957"],
+            "label": "Documents",
+            "bitrixLabel": "Documents",
             "type": "file",
             "isDoc": true,
             "isMultiple": true,
@@ -1465,6 +1453,7 @@
           },
           {
             "code": "UF_CRM_FORM_A_DOC",
+            "leadAltCodes": ["UF_CRM_FORM_A_DOCUMENT"],
             "spaKey": "ufCrm16_1791787381785",
             "spaCrmCode": "UF_CRM_16_1791787381785",
             "label": "Form A Document",
@@ -1475,6 +1464,21 @@
               "external_stock": "show",
               "off_plan": "opt",
               "overseas_sale": "opt",
+              "rent": "show"
+            }
+          },
+          {
+            "code": "UF_CRM_QR_CODE",
+            "spaKey": "ufCrm16QrCode",
+            "spaCrmCode": "UF_CRM_16_QR_CODE",
+            "label": "QR Code",
+            "bitrixLabel": "QR Code",
+            "type": "file",
+            "isImage": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
               "rent": "show"
             }
           }
@@ -4380,8 +4384,10 @@
     },
     {
       "code": "UF_CRM_PHOTOS",
+      "leadAltCodes": ["UF_CRM_PHOTOS_AND_DOCUMENTS"],
       "spaKey": "ufCrm16_1791881642219",
       "spaCrmCode": "UF_CRM_16_1791881642219",
+      "fallbackKeys": ["ufCrm16_1791544736052"],
       "label": "Photos",
       "bitrixLabel": "Photos",
       "type": "file",
@@ -4395,27 +4401,13 @@
       }
     },
     {
-      "code": "UF_CRM_DOCS",
-      "spaKey": "ufCrm16_1791172957",
-      "spaCrmCode": "UF_CRM_16_1791172957",
-      "label": "Docs",
-      "bitrixLabel": "Docs",
-      "type": "file",
-      "isDoc": true,
-      "isMultiple": true,
-      "rules": {
-        "external_stock": "show",
-        "off_plan": "show",
-        "overseas_sale": "show",
-        "rent": "show"
-      }
-    },
-    {
-      "code": "UF_CRM_PHOTOS_AND_DOCUMENTS",
-      "spaKey": "ufCrm16_1791544736052",
-      "spaCrmCode": "UF_CRM_16_1791544736052",
-      "label": "Photos and Documents",
-      "bitrixLabel": "Photos and Documents",
+      "code": "UF_CRM_DOCUMENTS",
+      "leadAltCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"],
+      "spaKey": "ufCrm16_1791881665252",
+      "spaCrmCode": "UF_CRM_16_1791881665252",
+      "fallbackKeys": ["ufCrm16_1791172957"],
+      "label": "Documents",
+      "bitrixLabel": "Documents",
       "type": "file",
       "isDoc": true,
       "isMultiple": true,
@@ -4443,6 +4435,7 @@
     },
     {
       "code": "UF_CRM_FORM_A_DOC",
+      "leadAltCodes": ["UF_CRM_FORM_A_DOCUMENT"],
       "spaKey": "ufCrm16_1791787381785",
       "spaCrmCode": "UF_CRM_16_1791787381785",
       "label": "Form A Document",
@@ -4453,6 +4446,21 @@
         "external_stock": "show",
         "off_plan": "opt",
         "overseas_sale": "opt",
+        "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_QR_CODE",
+      "spaKey": "ufCrm16QrCode",
+      "spaCrmCode": "UF_CRM_16_QR_CODE",
+      "label": "QR Code",
+      "bitrixLabel": "QR Code",
+      "type": "file",
+      "isImage": true,
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
         "rent": "show"
       }
     }
@@ -7246,7 +7254,8 @@
           {
             "key": "ufCrm16_1791881642219",
             "crmCode": "UF_CRM_16_1791881642219",
-            "label": "Photos (Gallery)",
+            "fallbackKeys": ["ufCrm16_1791544736052"],
+            "label": "Photos",
             "type": "file",
             "isImage": true,
             "isMultiple": true,
@@ -7256,39 +7265,30 @@
               "overseas_sale": "show",
               "rent": "show"
             },
-            "leadCode": "UF_CRM_PHOTOS"
+            "leadCode": "UF_CRM_PHOTOS",
+            "leadAltCodes": ["UF_CRM_PHOTOS_AND_DOCUMENTS"]
           },
           {
-            "key": "ufCrm16_1791172957",
-            "crmCode": "UF_CRM_16_1791172957",
-            "label": "Docs & Attachments",
+            "key": "ufCrm16_1791881665252",
+            "crmCode": "UF_CRM_16_1791881665252",
+            "fallbackKeys": ["ufCrm16_1791172957"],
+            "label": "Documents",
             "type": "file",
             "isDoc": true,
+            "isMultiple": true,
             "rules": {
               "external_stock": "show",
               "off_plan": "show",
               "overseas_sale": "show",
               "rent": "show"
             },
-            "leadCode": "UF_CRM_DOCS"
-          },
-          {
-            "key": "ufCrm16_1791544736052",
-            "crmCode": "UF_CRM_16_1791544736052",
-            "label": "Floor Plan",
-            "type": "file",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "opt"
-            },
-            "leadCode": "UF_CRM_PHOTOS_AND_DOCUMENTS"
+            "leadCode": "UF_CRM_DOCUMENTS",
+            "leadAltCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"]
           },
           {
             "key": "ufCrm16TitleDeed",
             "crmCode": "UF_CRM_16_TITLE_DEED",
-            "label": "Title Deed / Ownership Proof",
+            "label": "Title Deed",
             "type": "file",
             "isDoc": true,
             "rules": {
@@ -7302,7 +7302,7 @@
           {
             "key": "ufCrm16_1791787381785",
             "crmCode": "UF_CRM_16_1791787381785",
-            "label": "Form A Document (Mandate Agreement)",
+            "label": "Form A Document",
             "type": "file",
             "isDoc": true,
             "rules": {
@@ -7311,7 +7311,22 @@
               "overseas_sale": "opt",
               "rent": "show"
             },
-            "leadCode": "UF_CRM_FORM_A_DOC"
+            "leadCode": "UF_CRM_FORM_A_DOC",
+            "leadAltCodes": ["UF_CRM_FORM_A_DOCUMENT"]
+          },
+          {
+            "key": "ufCrm16QrCode",
+            "crmCode": "UF_CRM_16_QR_CODE",
+            "label": "QR Code",
+            "type": "file",
+            "isImage": true,
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
+              "rent": "show"
+            },
+            "leadCode": "UF_CRM_QR_CODE"
           }
         ]
       }

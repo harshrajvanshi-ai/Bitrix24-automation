@@ -721,7 +721,7 @@
         id: 'media',
         title: 'Media & Documents',
         icon: '📸',
-        desc: 'Primary images, title deeds, photos, documents, and Form A agreements',
+        desc: 'Primary image, photo gallery, documents, title deed, Form A, and RERA QR code',
         fields: [
           {
             key: 'ufCrm16_1791173118',
@@ -734,6 +734,7 @@
           {
             key: 'ufCrm16_1791881642219',
             crmCode: 'UF_CRM_16_1791881642219',
+            fallbackKeys: ['ufCrm16_1791544736052'],
             label: 'Photos',
             type: 'file',
             isImage: true,
@@ -741,18 +742,10 @@
             rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           },
           {
-            key: 'ufCrm16_1791172957',
-            crmCode: 'UF_CRM_16_1791172957',
-            label: 'Docs',
-            type: 'file',
-            isDoc: true,
-            isMultiple: true,
-            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-          },
-          {
-            key: 'ufCrm16_1791544736052',
-            crmCode: 'UF_CRM_16_1791544736052',
-            label: 'Photos and Documents',
+            key: 'ufCrm16_1791881665252',
+            crmCode: 'UF_CRM_16_1791881665252',
+            fallbackKeys: ['ufCrm16_1791172957'],
+            label: 'Documents',
             type: 'file',
             isDoc: true,
             isMultiple: true,
@@ -773,6 +766,14 @@
             type: 'file',
             isDoc: true,
             rules: { external_stock: 'show', off_plan: 'opt', overseas_sale: 'opt', rent: 'show' }
+          },
+          {
+            key: 'ufCrm16QrCode',
+            crmCode: 'UF_CRM_16_QR_CODE',
+            label: 'QR Code',
+            type: 'file',
+            isImage: true,
+            rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
           }
         ]
       }
@@ -1629,7 +1630,7 @@
     // 2. Dropzone Bar (Clean, single-line icon + text group)
     const dropzone = document.createElement('div');
     dropzone.className = 'dropzone-box';
-    const isMulti = field.isMultiple || field.key.includes('DOCS') || field.key.includes('1791544736052') || field.key.includes('1791881642219');
+    const isMulti = field.isMultiple || field.key.includes('DOCS') || field.key.includes('1791544736052') || field.key.includes('1791881642219') || field.key.includes('1791881665252');
     const uploadLabel = field.isImage ? (isMulti ? 'Upload Photos' : 'Upload Image') : (isMulti ? 'Upload Documents' : 'Upload Document');
 
     dropzone.innerHTML = `
@@ -2413,6 +2414,10 @@
         if ((f.type === 'crm_company' || f.key === 'companyId') && (val === 0 || val === '0')) {
           continue;
         }
+        // If file field has an empty array [], continue to fallback
+        if (f.type === 'file' && Array.isArray(val) && val.length === 0) {
+          continue;
+        }
         if (typeof val === 'object' && val !== null) {
           if (f.type === 'url' || f.key === 'ufCrm16QrCodeLink') {
             const u = val.url || val.showUrl || val.src || val.defaultUrl;
@@ -2430,6 +2435,9 @@
       if (matchKey && item[matchKey] !== undefined && item[matchKey] !== null && item[matchKey] !== '') {
         const val = item[matchKey];
         if ((f.type === 'crm_company' || f.key === 'companyId') && (val === 0 || val === '0')) {
+          continue;
+        }
+        if (f.type === 'file' && Array.isArray(val) && val.length === 0) {
           continue;
         }
         if (typeof val === 'object' && val !== null) {
@@ -3438,12 +3446,11 @@
         const removedSet = removedFileIds[fieldKey] || new Set();
         if (fileList.length === 0 && removedSet.size === 0) continue;
 
-        const fConfig = findFieldConfig(fieldKey);
-        const isMulti = fConfig?.isMultiple || fieldKey.includes('1791881642219') || fieldKey.includes('1791544736052');
+        const isMulti = fConfig?.isMultiple || fieldKey.includes('1791881642219') || fieldKey.includes('1791881665252') || fieldKey.includes('1791544736052');
 
         if (isMulti) {
           // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
-          const existingRaw = currentListing?.[fieldKey] || (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
+          const existingRaw = (fConfig ? getFieldValue(fConfig, currentListing) : null) || currentListing?.[fieldKey] || (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
           const existingList = Array.isArray(existingRaw) ? existingRaw : (existingRaw ? [existingRaw] : []);
           const keptIds = existingList
             .map(it => (typeof it === 'object' ? (it.id || it.ID || it.fileId) : it))
