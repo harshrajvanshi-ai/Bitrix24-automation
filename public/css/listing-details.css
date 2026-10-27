@@ -805,38 +805,50 @@ textarea.form-control {
 
 /* ── Bitrix24 Native View Switcher ── */
 .b24-view-switcher {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
+  background: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
   margin-bottom: 12px;
   user-select: none;
+  gap: 2px;
 }
 
 .b24-view-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   background: transparent;
   border: 1px solid transparent;
-  padding: 4px 10px;
-  border-radius: 4px;
+  outline: none !important;
+  padding: 5px 12px;
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 500;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .b24-view-btn:hover {
-  background: #f1f5f9;
-  color: #1e293b;
+  color: #0f172a;
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .b24-view-btn.active {
-  background: #e0f2fe;
-  border-color: #bae6fd;
+  background: #ffffff;
   color: #0284c7;
   font-weight: 600;
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.b24-view-btn:focus,
+.b24-view-btn:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.35);
 }
 
 /* ── Thumbnail Strip & Bitrix24 Files Container ── */
@@ -848,52 +860,36 @@ textarea.form-control {
   gap: 12px;
   margin-top: 10px;
   padding: 4px 0 6px;
-}
-
-.b24-files-container.view-fit .b24-file-tile,
-.thumbnail-strip.view-fit .thumb-item {
-  flex: 1 1 calc(25% - 12px);
-  min-width: 140px;
-}
-
-.b24-files-container.view-list,
-.thumbnail-strip.view-list {
-  flex-direction: column;
-  gap: 6px;
-}
-
-.b24-files-container.view-list .b24-file-tile,
-.thumbnail-strip.view-list .thumb-item {
   width: 100%;
-  max-width: 100%;
-  height: 44px;
-  min-height: 44px;
-  flex-direction: row;
-  padding: 6px 12px;
+  box-sizing: border-box;
 }
 
-/* Bitrix24 Native Tile Dimensions (Screenshot 1: 140x110px with preview on top and name centered below) */
+/* 1. TILE MODE (Responsive Grid) */
+.thumbnail-strip.view-tile,
+.b24-files-container.view-tile {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+}
+
 .b24-file-tile,
 .thumb-item,
 .preview-thumb-wrap,
 .preview-doc-wrap {
   position: relative;
-  width: 140px;
-  height: 110px;
-  min-width: 140px;
-  min-height: 110px;
-  max-width: 140px;
-  max-height: 110px;
-  flex: 0 0 140px;
+  width: 100%;
+  height: 120px;
+  min-height: 120px;
+  max-height: 120px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  transition: all 0.16s ease;
+  transition: all 0.18s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
@@ -901,8 +897,8 @@ textarea.form-control {
 .thumb-item:hover,
 .preview-thumb-wrap:hover,
 .preview-doc-wrap:hover {
-  border-color: #2fc6f6;
-  box-shadow: 0 4px 14px rgba(47, 198, 246, 0.25);
+  border-color: #38bdf8;
+  box-shadow: 0 6px 16px rgba(14, 165, 233, 0.16);
   transform: translateY(-2px);
 }
 
@@ -910,14 +906,14 @@ textarea.form-control {
 .thumb-item.active,
 .preview-thumb-wrap.active,
 .preview-doc-wrap.active {
-  border-color: #2fc6f6;
-  box-shadow: 0 0 0 2px rgba(47, 198, 246, 0.35);
+  border-color: #0284c7;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.35);
 }
 
 .b24-tile-thumb-wrap {
   width: 100%;
-  height: 78px;
-  min-height: 78px;
+  height: 84px;
+  min-height: 84px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -936,8 +932,8 @@ textarea.form-control {
 
 .b24-tile-footer {
   width: 100%;
-  height: 32px;
-  min-height: 32px;
+  height: 36px;
+  min-height: 36px;
   padding: 0 8px;
   display: flex;
   align-items: center;
@@ -956,6 +952,218 @@ textarea.form-control {
   text-overflow: ellipsis;
   text-align: center;
   width: 100%;
+}
+
+.b24-list-actions {
+  display: none;
+}
+
+/* 2. LIST MODE (Clean, horizontal rows with 40x40 thumbnail and action buttons) */
+.b24-files-container.view-list,
+.thumbnail-strip.view-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.b24-files-container.view-list .b24-file-tile,
+.thumbnail-strip.view-list .thumb-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 52px !important;
+  min-height: 52px !important;
+  max-height: 52px !important;
+  flex: none !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  gap: 12px !important;
+  transform: none !important;
+}
+
+.b24-files-container.view-list .b24-file-tile:hover,
+.thumbnail-strip.view-list .thumb-item:hover {
+  border-color: #38bdf8 !important;
+  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.12) !important;
+  transform: none !important;
+}
+
+.b24-files-container.view-list .b24-tile-thumb-wrap,
+.thumbnail-strip.view-list .b24-tile-thumb-wrap {
+  width: 40px !important;
+  min-width: 40px !important;
+  max-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+}
+
+.b24-files-container.view-list .thumb-zoom-overlay,
+.thumbnail-strip.view-list .thumb-zoom-overlay {
+  display: none !important;
+}
+
+.b24-files-container.view-list .thumb-remove-btn,
+.thumbnail-strip.view-list .thumb-remove-btn {
+  display: none !important;
+}
+
+.b24-files-container.view-list .b24-tile-footer,
+.thumbnail-strip.view-list .b24-tile-footer {
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  overflow: hidden !important;
+}
+
+.b24-files-container.view-list .b24-tile-name,
+.thumbnail-strip.view-list .b24-tile-name {
+  text-align: left !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #1e293b !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  flex: 1 1 auto !important;
+  padding-right: 12px !important;
+}
+
+.b24-files-container.view-list .b24-list-actions,
+.thumbnail-strip.view-list .b24-list-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
+}
+
+.b24-list-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.b24-list-btn.view-btn {
+  background: #f0f9ff;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+}
+
+.b24-list-btn.view-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+}
+
+.b24-list-btn.remove-btn,
+.thumb-remove-btn-list {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.b24-list-btn.remove-btn:hover,
+.thumb-remove-btn-list:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+/* 3. FIT WIDTH MODE (Full-width high-resolution cards) */
+.b24-files-container.view-fit,
+.thumbnail-strip.view-fit {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+.b24-files-container.view-fit .b24-file-tile,
+.thumbnail-strip.view-fit .thumb-item {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  min-height: 160px !important;
+  max-height: none !important;
+  flex: none !important;
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #ffffff !important;
+  overflow: hidden !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+
+.b24-files-container.view-fit .b24-tile-thumb-wrap,
+.thumbnail-strip.view-fit .b24-tile-thumb-wrap {
+  width: 100% !important;
+  height: 150px !important;
+  min-height: 150px !important;
+  max-height: 180px !important;
+  background: #0f172a !important;
+}
+
+.b24-files-container.view-fit .thumb-item-img,
+.thumbnail-strip.view-fit .thumb-item-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.b24-files-container.view-fit .b24-tile-footer,
+.thumbnail-strip.view-fit .b24-tile-footer {
+  width: 100% !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: #ffffff !important;
+  border-top: 1px solid #f1f5f9 !important;
+}
+
+.b24-files-container.view-fit .b24-tile-name,
+.thumbnail-strip.view-fit .b24-tile-name {
+  text-align: left !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  flex: 1 1 auto !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.b24-files-container.view-fit .b24-list-actions,
+.thumbnail-strip.view-fit .b24-list-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-shrink: 0 !important;
 }
 
 /* Document tile inner layout */
@@ -1043,22 +1251,24 @@ textarea.form-control {
 
 .thumb-remove-btn {
   position: absolute;
-  top: 3px;
-  right: 3px;
-  background: rgba(239, 68, 68, 0.85);
+  top: 4px;
+  right: 4px;
+  background: rgba(239, 68, 68, 0.92);
   color: #ffffff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 10px;
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 3;
-  transition: background 0.15s;
-  opacity: 0;
+  z-index: 10;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.82;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .thumb-item:hover .thumb-remove-btn,
@@ -1069,7 +1279,9 @@ textarea.form-control {
 
 .thumb-remove-btn:hover {
   background: #dc2626;
+  opacity: 1;
   transform: scale(1.15);
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.45);
 }
 
 /* =========================================================================

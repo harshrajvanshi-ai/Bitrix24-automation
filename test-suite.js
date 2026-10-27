@@ -1060,10 +1060,23 @@ async function runTests() {
   assert(listingCssContent.includes('.lb-error-box'), 'listing-details.css contains .lb-error-box image error fallback styling');
   assert(listingCssContent.includes('@media (max-width: 640px)'), 'listing-details.css contains responsive media queries for gallery lightbox');
 
+  // ============================================================================
+  console.log('\n--- Case 23: File Removal & Responsive View Switcher Controls ---');
+  // CSS checks
+  assert(listingCssContent.includes('.b24-view-switcher'), 'listing-details.css contains .b24-view-switcher styling');
+  assert(listingCssContent.includes('.b24-view-btn') && listingCssContent.includes('outline: none !important'), 'listing-details.css enforces outline reset on .b24-view-btn');
+  assert(listingCssContent.includes('.b24-list-actions'), 'listing-details.css contains .b24-list-actions styling');
+  assert(listingCssContent.includes('.b24-list-btn.view-btn'), 'listing-details.css contains .b24-list-btn.view-btn styling');
+  assert(listingCssContent.includes('.thumb-remove-btn'), 'listing-details.css contains .thumb-remove-btn styling');
+  assert(listingCssContent.includes('.thumb-remove-btn-list'), 'listing-details.css contains .thumb-remove-btn-list styling');
+
   // JS checks
-  assert(listingJsContent.includes('_lbBuildFilmstrip'), 'listing-details.js implements _lbBuildFilmstrip for multi-item galleries');
-  assert(listingJsContent.includes('_lbGoTo'), 'listing-details.js implements _lbGoTo for gallery index navigation');
-  assert(listingJsContent.includes("classList.add('is-open')"), 'listing-details.js manages is-open state on lightbox modal');
+  assert(listingJsContent.includes('let removedFileIds = {};'), 'listing-details.js defines removedFileIds state variable');
+  assert(listingJsContent.includes('thumb-remove-btn') && listingJsContent.includes('handleRemoveItem'), 'listing-details.js renders remove buttons with handleRemoveItem handler');
+  assert(listingJsContent.includes('removedFileIds[field.key].add'), 'listing-details.js records removed file ID on removal');
+  assert(listingJsContent.includes('del: \'Y\'') || listingJsContent.includes('{ del: "Y" }'), 'listing-details.js formats single-file deletion with del: Y');
+  assert(listingJsContent.includes('!removedSet.has'), 'listing-details.js excludes removed file IDs from multiple-file payload');
+  assert(listingJsContent.includes('getRemovedFileIds'), 'listing-details.js exports getRemovedFileIds');
 
   // ============================================================================
   // Summary

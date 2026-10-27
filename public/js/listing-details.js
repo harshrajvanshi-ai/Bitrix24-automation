@@ -784,6 +784,7 @@
   let currentLayout = 'rent'; // Driven strictly by ufCrm16_1790154808
   let initialFormValues = {};
   let pendingFileUploads = {}; // fieldKey -> Array of { file, dataUrl, name, size }
+  let removedFileIds = {};     // fieldKey -> Set of removed file IDs
   let isDirty = false;
   let allSectionsCollapsed = false;
 
@@ -1507,10 +1508,11 @@
 
       let fileUrl = '';
       let fileName = '';
+      let fid = null;
 
       if (typeof fileItem === 'object') {
         fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
-        const fid = fileItem.id || fileItem.ID || fileItem.fileId;
+        fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
         if (!fileUrl && fid) {
           fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
         }
@@ -1525,7 +1527,7 @@
           fileName = fid ? `File #${fid}` : `${field.label} #${idx + 1}`;
         }
       } else if (typeof fileItem === 'number' || (typeof fileItem === 'string' && /^\d+$/.test(fileItem.trim()))) {
-        const fid = String(fileItem).trim();
+        fid = String(fileItem).trim();
         fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
         fileName = `${field.label} #${idx + 1}`;
       } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
@@ -1538,6 +1540,11 @@
 
       if (!fileUrl) return;
 
+      if (!fid && fileUrl) {
+        const idMatch = fileUrl.match(/(?:fileId|file_id|id)=(\d+)/i) || fileUrl.match(/\/file\/(\d+)/i);
+        if (idMatch) fid = idMatch[1];
+      }
+
       const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
       let fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
       if (fullUrl.includes('ajax.php') && !fullUrl.includes('token=')) {
@@ -1547,21 +1554,27 @@
       const isImage = field.isImage || /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
       const isPdf = /\.pdf($|\?)/i.test(fileName || fullUrl) || (!isImage && field.isDoc);
 
-      fieldGallery.push({ url: fullUrl, name: fileName, isImage, isPdf });
+      fieldGallery.push({ url: fullUrl, name: fileName, isImage, isPdf, id: fid });
     });
 
     fieldGallery.forEach((item, itemIdx) => {
+      const thumb = document.createElement('div');
+      thumb.className = `thumb-item ${item.isImage ? 'preview-thumb-wrap' : 'preview-doc-wrap'} b24-file-tile`;
+      thumb.title = `${item.name} - Click to preview`;
+
       if (item.isImage) {
-        const thumb = document.createElement('div');
-        thumb.className = 'thumb-item preview-thumb-wrap b24-file-tile';
-        thumb.title = `${item.name} - Click to preview`;
         thumb.innerHTML = `
           <div class="b24-tile-thumb-wrap">
             <img class="thumb-item-img b24-tile-img" src="${item.url}" alt="${item.name}" loading="lazy">
             <div class="thumb-zoom-overlay">🔍 View</div>
+            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
           </div>
           <div class="b24-tile-footer">
             <span class="b24-tile-name" title="${item.name}">${item.name}</span>
+            <div class="b24-list-actions">
+              <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+              <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+            </div>
           </div>
         `;
 
@@ -1576,45 +1589,86 @@
             this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
           } else {
             this.onerror = null;
-            thumb.querySelector('.b24-tile-thumb-wrap').innerHTML = `
+            const wrap = thumb.querySelector('.b24-tile-thumb-wrap');
+            wrap.innerHTML = `
               <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span></div>
               <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
             `;
+            const retryRemove = wrap.querySelector('.thumb-remove-btn');
+            if (retryRemove) retryRemove.addEventListener('click', handleRemoveItem);
           }
         };
-
-        thumb.addEventListener('click', () => {
-          openLightbox(item.name, item.url, false, fieldGallery, itemIdx, thumb);
-          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
-        });
-
-        stripWrap.appendChild(thumb);
       } else {
-        const docThumb = document.createElement('div');
-        docThumb.className = 'thumb-item preview-doc-wrap b24-file-tile';
-        docThumb.title = `${item.name} - Click to preview`;
-        docThumb.innerHTML = `
+        thumb.innerHTML = `
           <div class="b24-tile-thumb-wrap">
             <div class="doc-tile-inner">
               <span class="doc-tile-badge ${item.isPdf ? 'pdf' : 'doc'}">${item.isPdf ? 'PDF' : 'DOC'}</span>
               <span class="doc-tile-icon">📄</span>
             </div>
             <div class="thumb-zoom-overlay">🔍 View</div>
+            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
           </div>
           <div class="b24-tile-footer">
             <span class="b24-tile-name" title="${item.name}">${item.name}</span>
+            <div class="b24-list-actions">
+              <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+              <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+            </div>
           </div>
         `;
-
-        docThumb.addEventListener('click', () => {
-          openLightbox(item.name, item.url, item.isPdf, fieldGallery, itemIdx, docThumb);
-          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-          docThumb.classList.add('active');
-        });
-
-        stripWrap.appendChild(docThumb);
       }
+
+      const handleRemoveItem = (ev) => {
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        if (item.id) {
+          if (!removedFileIds[field.key]) {
+            removedFileIds[field.key] = new Set();
+          }
+          removedFileIds[field.key].add(String(item.id));
+        }
+
+        const gIdx = fieldGallery.indexOf(item);
+        if (gIdx !== -1) {
+          fieldGallery.splice(gIdx, 1);
+        }
+
+        thumb.remove();
+        setDirty(true);
+        resizeWindow();
+        showToast(`Marked "${item.name}" for removal. Click Save Changes to apply.`, 'info');
+      };
+
+      const removeBtn = thumb.querySelector('.thumb-remove-btn');
+      if (removeBtn) removeBtn.addEventListener('click', handleRemoveItem);
+
+      const listRemoveBtn = thumb.querySelector('.thumb-remove-btn-list');
+      if (listRemoveBtn) listRemoveBtn.addEventListener('click', handleRemoveItem);
+
+      const listViewBtn = thumb.querySelector('.b24-list-btn.view-btn');
+      if (listViewBtn) {
+        listViewBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          const currIdx = Math.max(0, fieldGallery.indexOf(item));
+          openLightbox(item.name, item.url, !item.isImage, fieldGallery, currIdx, thumb);
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+      }
+
+      thumb.addEventListener('click', (ev) => {
+        if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) {
+          return;
+        }
+        const currIdx = Math.max(0, fieldGallery.indexOf(item));
+        openLightbox(item.name, item.url, !item.isImage, fieldGallery, currIdx, thumb);
+        stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+      });
+
+      stripWrap.appendChild(thumb);
     });
 
     card.appendChild(switcher);
@@ -1741,17 +1795,14 @@
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
+              <div class="b24-list-actions">
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+              </div>
             </div>
           `;
 
-          thumb.addEventListener('click', (ev) => {
-            if (ev.target.classList.contains('thumb-remove-btn')) return;
-            openLightbox(file.name, dataUrl, false);
-            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
-          });
-
-          thumb.querySelector('.thumb-remove-btn').addEventListener('click', (ev) => {
+          const removeLocalItem = (ev) => {
             ev.stopPropagation();
             const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
             if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
@@ -1760,6 +1811,27 @@
             viewportBox.innerHTML = '';
             setDirty(true);
             resizeWindow();
+          };
+
+          thumb.querySelector('.thumb-remove-btn').addEventListener('click', removeLocalItem);
+          const listRem = thumb.querySelector('.thumb-remove-btn-list');
+          if (listRem) listRem.addEventListener('click', removeLocalItem);
+
+          const listVw = thumb.querySelector('.b24-list-btn.view-btn');
+          if (listVw) {
+            listVw.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              openLightbox(file.name, dataUrl, false);
+              stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+              thumb.classList.add('active');
+            });
+          }
+
+          thumb.addEventListener('click', (ev) => {
+            if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
+            openLightbox(file.name, dataUrl, false);
+            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
           });
 
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
@@ -1780,17 +1852,14 @@
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
+              <div class="b24-list-actions">
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+              </div>
             </div>
           `;
 
-          docThumb.addEventListener('click', (ev) => {
-            if (ev.target.classList.contains('thumb-remove-btn')) return;
-            openLightbox(file.name, dataUrl, isPdf);
-            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-            docThumb.classList.add('active');
-          });
-
-          docThumb.querySelector('.thumb-remove-btn').addEventListener('click', (ev) => {
+          const removeDocItem = (ev) => {
             ev.stopPropagation();
             const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
             if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
@@ -1799,6 +1868,27 @@
             viewportBox.innerHTML = '';
             setDirty(true);
             resizeWindow();
+          };
+
+          docThumb.querySelector('.thumb-remove-btn').addEventListener('click', removeDocItem);
+          const docListRem = docThumb.querySelector('.thumb-remove-btn-list');
+          if (docListRem) docListRem.addEventListener('click', removeDocItem);
+
+          const docListVw = docThumb.querySelector('.b24-list-btn.view-btn');
+          if (docListVw) {
+            docListVw.addEventListener('click', (ev) => {
+              ev.stopPropagation();
+              openLightbox(file.name, dataUrl, isPdf);
+              stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+              docThumb.classList.add('active');
+            });
+          }
+
+          docThumb.addEventListener('click', (ev) => {
+            if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
+            openLightbox(file.name, dataUrl, isPdf);
+            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            docThumb.classList.add('active');
           });
 
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
@@ -2995,29 +3085,42 @@
         payload['contactIds'] = payload['contactIds'].split(',').map(s => s.trim()).filter(Boolean);
       }
 
-      // Package pending file uploads with { fileData: [name, base64] } or multiple file tuples
-      for (const [fieldKey, fileList] of Object.entries(pendingFileUploads)) {
-        if (!fileList || fileList.length === 0) continue;
+      // Package pending file uploads & removals
+      const allFileFieldKeys = new Set([
+        ...Object.keys(pendingFileUploads),
+        ...Object.keys(removedFileIds)
+      ]);
+
+      for (const fieldKey of allFileFieldKeys) {
+        const fileList = pendingFileUploads[fieldKey] || [];
+        const removedSet = removedFileIds[fieldKey] || new Set();
+        if (fileList.length === 0 && removedSet.size === 0) continue;
 
         const fConfig = findFieldConfig(fieldKey);
         const isMulti = fConfig?.isMultiple || fieldKey.includes('1791881642219') || fieldKey.includes('1791544736052');
 
         if (isMulti) {
-          // Bitrix REST API multiple file upload requires array of [fileName, base64] tuples.
-          // To preserve existing files on record, include existing file IDs
+          // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
           const existingRaw = currentListing?.[fieldKey] || (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
           const existingList = Array.isArray(existingRaw) ? existingRaw : (existingRaw ? [existingRaw] : []);
-          const existingIds = existingList
+          const keptIds = existingList
             .map(it => (typeof it === 'object' ? (it.id || it.ID || it.fileId) : it))
-            .filter(Boolean);
+            .filter(Boolean)
+            .filter(id => !removedSet.has(String(id)));
 
           const newTuples = fileList.map(item => [item.name, item.dataUrl.split(',')[1] || '']);
-          payload[fieldKey] = [...existingIds, ...newTuples];
+          const combined = [...keptIds, ...newTuples];
+          payload[fieldKey] = combined.length ? combined : [''];
         } else {
-          // Single file field: Bitrix expects { fileData: [name, base64] }
-          const item = fileList[0];
-          const base64 = item.dataUrl.split(',')[1] || '';
-          payload[fieldKey] = { fileData: [item.name, base64] };
+          // Single file field
+          if (fileList.length > 0) {
+            const item = fileList[0];
+            const base64 = item.dataUrl.split(',')[1] || '';
+            payload[fieldKey] = { fileData: [item.name, base64] };
+          } else if (removedSet.size > 0) {
+            // Delete existing single file in Bitrix CRM
+            payload[fieldKey] = { del: 'Y' };
+          }
         }
       }
 
@@ -3026,6 +3129,7 @@
 
       showToast('✓ Listing updated successfully in Bitrix24!', 'success');
       pendingFileUploads = {};
+      removedFileIds = {};
       setDirty(false);
 
       await loadListingDetails(false);
@@ -3042,6 +3146,8 @@
   // 8. INITIALIZATION
   // ============================================================================
   async function loadListingDetails(showLoader = true) {
+    pendingFileUploads = {};
+    removedFileIds = {};
     if (showLoader) {
       loadingEl.style.display = 'flex';
       contentEl.style.display = 'none';
@@ -3100,6 +3206,7 @@
     getCurrentLayout: () => currentLayout,
     setLayout: (key) => renderLayout(key),
     getPendingUploads: () => pendingFileUploads,
+    getRemovedFileIds: () => removedFileIds,
     openLightbox,
     closeLightbox,
     showInWindowImage,
