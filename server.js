@@ -315,9 +315,64 @@ app.all('/listing-install', (req, res) => {
   res.sendFile(path.join(__dirname, 'views/listing-install.html'));
 });
 
+// In-memory cache for resolved Bitrix file names (fileId -> fileName)
+const fileNameCache = new Map();
+
+async function resolveFileName(fileObj) {
+  if (!fileObj || typeof fileObj !== 'object') return null;
+  const fid = fileObj.id || fileObj.fileId;
+  if (fileObj.name && !String(fileObj.name).startsWith('File #')) {
+    if (fid) fileNameCache.set(String(fid), String(fileObj.name));
+    return fileObj.name;
+  }
+  if (fid && fileNameCache.has(String(fid))) {
+    fileObj.name = fileNameCache.get(String(fid));
+    return fileObj.name;
+  }
+  const url = fileObj.urlMachine || fileObj.url;
+  if (!url) return null;
+  try {
+    const res = await axios.get(url, {
+      headers: { Range: 'bytes=0-0' },
+      timeout: 5000,
+      validateStatus: () => true
+    });
+    const disposition = res.headers['content-disposition'] || '';
+    const match = disposition.match(/filename\*?=(?:utf-8'')?"?([^";]+)"?/i);
+    if (match && match[1]) {
+      let resolved = match[1].trim();
+      try { resolved = decodeURIComponent(resolved); } catch (_) {}
+      if (resolved && resolved !== 'file' && resolved !== 'document.pdf') {
+        fileObj.name = resolved;
+        if (fid) fileNameCache.set(String(fid), resolved);
+        return resolved;
+      }
+    }
+  } catch (_) {}
+  return null;
+}
+
+async function enrichItemFileNames(item) {
+  if (!item || typeof item !== 'object') return item;
+  const files = [];
+  for (const val of Object.values(item)) {
+    if (Array.isArray(val)) {
+      for (const f of val) {
+        if (f && typeof f === 'object' && f.id) files.push(f);
+      }
+    } else if (val && typeof val === 'object' && val.id) {
+      files.push(val);
+    }
+  }
+  if (files.length > 0) {
+    await Promise.all(files.map(f => resolveFileName(f)));
+  }
+  return item;
+}
+
 /**
  * GET /api/listing/:id
- * Fetches Listing SPA item by ID
+ * Fetches Listing SPA item by ID and enriches attached file objects with real file names
  */
 app.get('/api/listing/:id', async (req, res) => {
   try {
@@ -329,7 +384,11 @@ app.get('/api/listing/:id', async (req, res) => {
       entityTypeId: 1058,
       id: listingId
     });
-    res.json({ success: true, item: result?.item || result });
+    const item = result?.item || result;
+    if (item) {
+      await enrichItemFileNames(item);
+    }
+    res.json({ success: true, item });
   } catch (err) {
     console.error(`[API] Error fetching listing #${req.params.id}:`, err.message);
     res.status(500).json({ success: false, error: err.message });
@@ -559,6 +618,12 @@ app.get('/api/file/proxy', async (req, res) => {
 
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    if (filename && filename !== 'file') {
+      const qFileId = parsed.searchParams.get('fileId');
+      if (qFileId) fileNameCache.set(String(qFileId), filename);
+      res.setHeader('X-File-Name', encodeURIComponent(filename));
+      res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, X-File-Name');
+    }
 
     if (response.headers['content-length']) {
       res.setHeader('Content-Length', response.headers['content-length']);

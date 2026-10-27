@@ -899,36 +899,39 @@
         return;
       }
 
-      window.BX24.callMethod('crm.item.get', {
-        entityTypeId: CONFIG.entityTypeId,
-        id: listingId
-      }, res => {
-        if (res.error()) {
-          fetch(`/api/listing/${listingId}`)
-            .then(r => r.json())
-            .then(data => {
-              if (data.success && data.item) resolve(data.item);
-              else reject(new Error(res.error().toString()));
-            })
-            .catch(() => reject(new Error(res.error().toString())));
-        } else {
-          const item = res.data()?.item || res.data();
-          // Concurrently fetch /api/listing to enrich files with signed urlMachine tokens
-          fetch(`/api/listing/${listingId}`)
-            .then(r => r.json())
-            .then(data => {
-              if (data.success && data.item) {
-                for (const [k, v] of Object.entries(data.item)) {
-                  if (Array.isArray(v) && v.length > 0 && v[0] && (v[0].urlMachine || v[0].token)) {
-                    item[k] = v;
-                  }
-                }
-              }
-              resolve(item);
-            })
-            .catch(() => resolve(item));
-        }
+      const bxPromise = new Promise(resBx => {
+        window.BX24.callMethod('crm.item.get', {
+          entityTypeId: CONFIG.entityTypeId,
+          id: listingId
+        }, res => {
+          if (!res.error()) resBx(res.data()?.item || res.data());
+          else resBx(null);
+        });
       });
+
+      const apiPromise = fetch(`/api/listing/${listingId}`)
+        .then(r => r.json())
+        .then(data => (data.success && data.item ? data.item : null))
+        .catch(() => null);
+
+      Promise.all([bxPromise, apiPromise])
+        .then(([bxItem, apiItem]) => {
+          const item = bxItem || apiItem;
+          if (!item) {
+            return reject(new Error('Failed to fetch listing'));
+          }
+          if (apiItem) {
+            for (const [k, v] of Object.entries(apiItem)) {
+              if (Array.isArray(v) && v.length > 0 && v[0] && (v[0].name || v[0].urlMachine)) {
+                item[k] = v;
+              } else if (v && typeof v === 'object' && (v.name || v.urlMachine)) {
+                item[k] = v;
+              }
+            }
+          }
+          resolve(item);
+        })
+        .catch(reject);
     });
   }
 
@@ -1511,7 +1514,16 @@
         if (!fileUrl && fid) {
           fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
         }
-        fileName = fileItem.name || (fid ? `File #${fid}` : `${field.label} #${idx + 1}`);
+        fileName = fileItem.name || fileItem.NAME || fileItem.fileName || fileItem.originalName || fileItem.ORIGINAL_NAME || '';
+        if (!fileName && fileUrl) {
+          const m = fileUrl.match(/filename=([^&]+)/i);
+          if (m && m[1]) {
+            try { fileName = decodeURIComponent(m[1]); } catch (_) { fileName = m[1]; }
+          }
+        }
+        if (!fileName) {
+          fileName = fid ? `File #${fid}` : `${field.label} #${idx + 1}`;
+        }
       } else if (typeof fileItem === 'number' || (typeof fileItem === 'string' && /^\d+$/.test(fileItem.trim()))) {
         const fid = String(fileItem).trim();
         fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
