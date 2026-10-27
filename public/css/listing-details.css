@@ -1302,7 +1302,8 @@ textarea.form-control {
   justify-content: center;
   padding: 0;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   animation: lbFadeIn 0.18s ease;
 }
 

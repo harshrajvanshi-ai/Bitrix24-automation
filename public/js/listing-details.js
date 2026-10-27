@@ -1319,23 +1319,48 @@
 
     // Inside Bitrix24 iframe tab or expanded document, position modal relative to user's current view
     const isEmbedded = (window.self !== window.top) || (document.documentElement.scrollHeight > (window.innerHeight + 150));
+    const contentEl = lightboxModal.querySelector('.lightbox-content');
     if (isEmbedded) {
-      let viewTop = 0;
+      const docHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight,
+        window.innerHeight
+      );
+      lightboxModal.style.position = 'absolute';
+      lightboxModal.style.top = '0px';
+      lightboxModal.style.left = '0px';
+      lightboxModal.style.width = '100%';
+      lightboxModal.style.height = docHeight + 'px';
+      lightboxModal.style.minHeight = '100%';
+      lightboxModal.style.alignItems = 'flex-start';
+
+      let targetTop = 40;
       if (sourceEl) {
         const elTop = sourceEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
-        viewTop = Math.max(0, elTop - 120);
+        targetTop = Math.max(20, elTop - 340);
       } else {
-        viewTop = Math.max(0, (window.pageYOffset || document.documentElement.scrollTop || 0));
+        const scrollPos = window.pageYOffset || document.documentElement.scrollTop || 0;
+        targetTop = Math.max(20, scrollPos + 40);
       }
-      lightboxModal.style.position = 'absolute';
-      lightboxModal.style.top = viewTop + 'px';
-      lightboxModal.style.height = (window.innerHeight || document.documentElement.clientHeight || 850) + 'px';
-      lightboxModal.style.maxHeight = (window.innerHeight || document.documentElement.clientHeight || 850) + 'px';
+
+      if (contentEl) {
+        contentEl.style.height = '85vh';
+        contentEl.style.maxHeight = '820px';
+        contentEl.style.marginTop = targetTop + 'px';
+      }
     } else {
       lightboxModal.style.position = 'fixed';
       lightboxModal.style.top = '0px';
+      lightboxModal.style.left = '0px';
+      lightboxModal.style.width = '100%';
       lightboxModal.style.height = '100vh';
       lightboxModal.style.maxHeight = '100vh';
+      lightboxModal.style.alignItems = 'center';
+      if (contentEl) {
+        contentEl.style.height = '100%';
+        contentEl.style.maxHeight = '100%';
+        contentEl.style.marginTop = '';
+      }
     }
 
     lightboxModal.style.display = 'flex';
@@ -1348,12 +1373,22 @@
       lightboxCleanup();
       lightboxCleanup = null;
     }
+    const contentEl = lightboxModal.querySelector('.lightbox-content');
+    if (contentEl) {
+      contentEl.style.height = '';
+      contentEl.style.maxHeight = '';
+      contentEl.style.marginTop = '';
+    }
     lightboxModal.style.display = 'none';
     lightboxModal.classList.remove('is-open');
     lightboxModal.style.position = '';
     lightboxModal.style.top = '';
+    lightboxModal.style.left = '';
+    lightboxModal.style.width = '';
     lightboxModal.style.height = '';
+    lightboxModal.style.minHeight = '';
     lightboxModal.style.maxHeight = '';
+    lightboxModal.style.alignItems = '';
     document.body.style.overflow = '';
     // Clear dynamic children
     const img = lightboxBody.querySelector('.lightbox-img');
