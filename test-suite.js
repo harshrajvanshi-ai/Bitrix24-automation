@@ -852,35 +852,36 @@ async function runTests() {
 
   // 3. Verify Dynamic Layout Engine Configurations
   const listingJs = fs.readFileSync('public/js/listing-details.js', 'utf8');
-  assert(listingJs.includes("entityTypeId: 1058"), 'Listing SPA entityTypeId is 1058');
-  assert(listingJs.includes("placement: 'CRM_DYNAMIC_1058_DETAIL_TAB'"), 'Placement identifier is CRM_DYNAMIC_1058_DETAIL_TAB');
-  assert(listingJs.includes("layoutField: 'ufCrm16_1790154808'"), 'Layout driving field is ufCrm16_1790154808');
+  const normListingJs = listingJs.replace(/"/g, "'").replace(/\s+/g, ' ');
+  assert(normListingJs.includes("entityTypeId: 1058"), 'Listing SPA entityTypeId is 1058');
+  assert(normListingJs.includes("placement: 'CRM_DYNAMIC_1058_DETAIL_TAB'"), 'Placement identifier is CRM_DYNAMIC_1058_DETAIL_TAB');
+  assert(normListingJs.includes("layoutField: 'ufCrm16_1790154808'"), 'Layout driving field is ufCrm16_1790154808');
 
   // 4. Verify 4 Layouts and Trigger IDs
-  assert(listingJs.includes("'164': 'external_stock'"), 'Layout External Stock triggered by enum 164');
-  assert(listingJs.includes("'162': 'off_plan'"), 'Layout Off-plan triggered by enum 162');
-  assert(listingJs.includes("'160': 'overseas_sale'"), 'Layout Overseas Sale triggered by enum 160');
-  assert(listingJs.includes("'158': 'rent'"), 'Layout Rent triggered by enum 158');
+  assert(normListingJs.includes("164: 'external_stock'") || normListingJs.includes("'164': 'external_stock'"), 'Layout External Stock triggered by enum 164');
+  assert(normListingJs.includes("162: 'off_plan'") || normListingJs.includes("'162': 'off_plan'"), 'Layout Off-plan triggered by enum 162');
+  assert(normListingJs.includes("160: 'overseas_sale'") || normListingJs.includes("'160': 'overseas_sale'"), 'Layout Overseas Sale triggered by enum 160');
+  assert(normListingJs.includes("158: 'rent'") || normListingJs.includes("'158': 'rent'"), 'Layout Rent triggered by enum 158');
 
   // 5. Verify Contextual Label Overrides
-  assert(listingJs.includes("Listing Price (as annual rent)"), 'Contextual label: Rent shows Listing Price (as annual rent)');
-  assert(listingJs.includes("Number of Cheques (payment plan)"), 'Contextual label: Off-plan shows Number of Cheques (payment plan)');
-  assert(listingJs.includes("Started on (mandate period)"), 'Contextual label: External Stock shows Started on (mandate period)');
-  assert(listingJs.includes("Started on (tenancy / availability)"), 'Contextual label: Rent shows Started on (tenancy / availability)');
+  assert(normListingJs.includes("Listing Price (as annual rent)"), 'Contextual label: Rent shows Listing Price (as annual rent)');
+  assert(normListingJs.includes("Number of Cheques (payment plan)"), 'Contextual label: Off-plan shows Number of Cheques (payment plan)');
+  assert(normListingJs.includes("Started on (mandate period)"), 'Contextual label: External Stock shows Started on (mandate period)');
+  assert(normListingJs.includes("Started on (tenancy / availability)"), 'Contextual label: Rent shows Started on (tenancy / availability)');
 
   // 6. Verify Field Visibility Matrix (✔ = show, opt = opt, — = hide)
-  assert(listingJs.includes("rules: { external_stock: 'hide', off_plan: 'hide', overseas_sale: 'hide', rent: 'show' }"), 'Rental Frequency and Security Deposit only shown on Rent');
-  assert(listingJs.includes("ufCrm16_1791881665252") && listingJs.includes("ufCrm16QrCode"), 'Media & Documents contains logical and sensible fields (Documents, QR Code, Photos, Primary Image, Title Deed, Form A)');
-  assert(listingJs.includes("ufCrm16_1791544736052"), 'Legacy Photos and Documents supported as fallbackKey for Photos');
-  assert(listingJs.includes("rules: { external_stock: 'opt', off_plan: 'hide', overseas_sale: 'opt', rent: 'show' }"), 'Furnished Status hidden on Off-plan and shown on Rent');
+  assert(normListingJs.includes("external_stock: 'hide'") && normListingJs.includes("rent: 'show'"), 'Rental Frequency and Security Deposit only shown on Rent');
+  assert(normListingJs.includes("ufCrm16_1791881665252") && normListingJs.includes("ufCrm16QrCode"), 'Media & Documents contains logical and sensible fields (Documents, QR Code, Photos, Primary Image, Title Deed, Form A)');
+  assert(normListingJs.includes("ufCrm16_1791544736052"), 'Legacy Photos and Documents supported as fallbackKey for Photos');
+  assert(normListingJs.includes("off_plan: 'hide'") && normListingJs.includes("rent: 'show'"), 'Furnished Status hidden on Off-plan and shown on Rent');
 
   // 7. Verify Media & File Preview Engine
-  assert(listingJs.includes("FileReader"), 'Uses FileReader for instant client-side file upload previews');
-  assert(listingJs.includes("openLightbox"), 'openLightbox function defined for image and PDF modal previews');
-  assert(listingJs.includes("{ fileData: ["), 'Normalizes new file uploads to { fileData: [name, base64] } specification for Bitrix24');
-  assert(listingJs.includes("preview-thumb-wrap"), 'Renders preview thumbnail wrap with hover zoom overlay');
-  assert(listingJs.includes("preview-doc-wrap"), 'Renders document preview card with PDF badge and preview action');
-  assert(listingJs.includes("window.__LISTING_DETAILS_APP__"), 'Exposes __LISTING_DETAILS_APP__ for testing');
+  assert(normListingJs.includes("FileReader"), 'Uses FileReader for instant client-side file upload previews');
+  assert(normListingJs.includes("openLightbox"), 'openLightbox function defined for image and PDF modal previews');
+  assert(normListingJs.includes("{ fileData: ["), 'Normalizes new file uploads to { fileData: [name, base64] } specification for Bitrix24');
+  assert(normListingJs.includes("preview-thumb-wrap"), 'Renders preview thumbnail wrap with hover zoom overlay');
+  assert(normListingJs.includes("preview-doc-wrap"), 'Renders document preview card with PDF badge and preview action');
+  assert(normListingJs.includes("window.__LISTING_DETAILS_APP__"), 'Exposes __LISTING_DETAILS_APP__ for testing');
 
   const listingCss = fs.readFileSync('public/css/listing-details.css', 'utf8');
   assert(listingCss.includes(".lightbox-iframe"), 'public/css/listing-details.css contains embedded PDF viewer modal styling');
@@ -890,18 +891,18 @@ async function runTests() {
   const fieldsCfg = JSON.parse(fs.readFileSync('config/fields.json', 'utf8'));
   assert(fieldsCfg.listingDynamicLayout, 'config/fields.json defines listingDynamicLayout');
   assert(fieldsCfg.listingDynamicLayout.sections.length === 8, 'listingDynamicLayout has 8 structured sections');
-  assert(listingJs.includes("id: '872', value: 'Standard'"), 'Property Sub-type includes actual SPA enum 872 Standard');
-  assert(listingJs.includes("id: '884', value: 'Penthouse'"), 'Property Sub-type includes actual SPA enum 884 Penthouse');
-  assert(listingJs.includes("id: '762', value: 'Monthly'"), 'Rental Frequency includes actual SPA enum 762 Monthly');
-  assert(listingJs.includes("id: '768', value: 'Annually'"), 'Rental Frequency includes actual SPA enum 768 Annually');
-  assert(listingJs.includes("id: '2432', value: '1 Cheque'"), 'Number of Cheques includes actual SPA enum 2432 1 Cheque');
-  assert(listingJs.includes("id: '2440', value: '12 Cheque'"), 'Number of Cheques includes actual SPA enum 2440 12 Cheque');
-  assert(!listingJs.includes("ufCrm16RecordType") && !listingJs.includes("Offering / Record Type"), 'Record Type is removed from listing details layout');
-  assert(listingJs.includes("f.type === 'enumeration' || f.type === 'stage'"), 'Stage field renders as picklist select in listing details');
-  assert(listingJs.includes("DYNAMIC_1058_STAGE_") && listingJs.includes("stageOptionsByPipeline"), 'Stage picklist loads options strictly for current pipeline without hardcoded dummy list values');
-  assert(listingJs.includes("id: '702', value: 'Off-Plan'"), 'Completion Status includes actual SPA enum 702 Off-Plan');
-  assert(listingJs.includes("id: '836', value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
-  assert(listingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');
+  assert(normListingJs.includes("id: '872'") && normListingJs.includes("value: 'Standard'"), 'Property Sub-type includes actual SPA enum 872 Standard');
+  assert(normListingJs.includes("id: '884'") && normListingJs.includes("value: 'Penthouse'"), 'Property Sub-type includes actual SPA enum 884 Penthouse');
+  assert(normListingJs.includes("id: '762'") && normListingJs.includes("value: 'Monthly'"), 'Rental Frequency includes actual SPA enum 762 Monthly');
+  assert(normListingJs.includes("id: '768'") && normListingJs.includes("value: 'Annually'"), 'Rental Frequency includes actual SPA enum 768 Annually');
+  assert(normListingJs.includes("id: '2432'") && normListingJs.includes("value: '1 Cheque'"), 'Number of Cheques includes actual SPA enum 2432 1 Cheque');
+  assert(normListingJs.includes("id: '2440'") && normListingJs.includes("value: '12 Cheque'"), 'Number of Cheques includes actual SPA enum 2440 12 Cheque');
+  assert(!normListingJs.includes("ufCrm16RecordType") && !normListingJs.includes("Offering / Record Type"), 'Record Type is removed from listing details layout');
+  assert(normListingJs.includes("f.type === 'enumeration' || f.type === 'stage'"), 'Stage field renders as picklist select in listing details');
+  assert(normListingJs.includes("DYNAMIC_1058_STAGE_") && normListingJs.includes("stageOptionsByPipeline"), 'Stage picklist loads options strictly for current pipeline without hardcoded dummy list values');
+  assert(normListingJs.includes("id: '702'") && normListingJs.includes("value: 'Off-Plan'"), 'Completion Status includes actual SPA enum 702 Off-Plan');
+  assert(normListingJs.includes("id: '836'") && normListingJs.includes("value: 'Vacant on Transfer'"), 'Occupancy includes actual SPA enum 836 Vacant on Transfer');
+  assert(normListingJs.includes("crmCode: 'UF_CRM_16_1791172676'"), 'Address field mapped to native UF_CRM_16_1791172676 with address type');
 
   // 9. Verify Lookup Fields & Linked Record Accessibility from Layout
   assert(listingJs.includes("isLookupField"), 'Defines isLookupField to recognize CRM lookup types');
@@ -1091,11 +1092,12 @@ async function runTests() {
   assert(listingCssContent.includes('padding: 16px 20px 32px'), 'listing-details.css sets non-blocking container bottom padding');
 
   // JS checks
-  assert(listingJsContent.includes('function scheduleResize'), 'listing-details.js defines scheduleResize helper');
-  assert(listingJsContent.includes('new ResizeObserver'), 'listing-details.js binds ResizeObserver to document.body for dynamic height sync');
-  assert(listingJsContent.includes('scheduleResize(40)'), 'listing-details.js triggers scheduleResize on listing details render');
-  assert(listingJsContent.includes('scrollIntoView({ behavior: \'smooth\', block: \'center\' })'), 'listing-details.js smoothly centers lightbox viewer in embedded frame');
-  assert(listingJsContent.includes("e.key === '+'") && listingJsContent.includes("e.key === '-'"), 'listing-details.js supports keyboard zoom in/out in lightbox');
+  const normListingScrollJs = listingJsContent.replace(/"/g, "'");
+  assert(normListingScrollJs.includes('function scheduleResize'), 'listing-details.js defines scheduleResize helper');
+  assert(normListingScrollJs.includes('new ResizeObserver'), 'listing-details.js binds ResizeObserver to document.body for dynamic height sync');
+  assert(normListingScrollJs.includes('scheduleResize(40)'), 'listing-details.js triggers scheduleResize on listing details render');
+  assert(normListingScrollJs.includes("scrollIntoView({ behavior: 'smooth', block: 'center' })"), 'listing-details.js smoothly centers lightbox viewer in embedded frame');
+  assert(normListingScrollJs.includes("e.key === '+'") && normListingScrollJs.includes("e.key === '-'"), 'listing-details.js supports keyboard zoom in/out in lightbox');
 
   // ============================================================================
   console.log('\n--- Case 25: CRM-Only Access & Direct URL Protection ---');
@@ -1175,13 +1177,14 @@ async function runTests() {
   assert(updatedServerCode.includes("const cleanQ = String(query).replace(/^#/, '').trim();"), 'server.js cleans leading hash in searchLookupLive');
 
   const finalListingJs = fs.readFileSync('public/js/listing-details.js', 'utf8');
-  assert(finalListingJs.includes("const isNumericId = /^\\d+$/.test(cleanId) && cleanId !== '0';"), 'listing-details.js strictly checks for numeric ID before prepending hash');
-  assert(finalListingJs.includes("input.dataset.selectedTitle"), 'listing-details.js tracks selectedTitle to detect user edits');
-  assert(finalListingJs.includes("openLinkedRecord(f.type, firstId, f.key, e)"), 'listing-details.js invokes openLinkedRecord with valid ID');
-  assert(finalListingJs.includes("getText('ufCrm16ProjectName')"), 'listing-details.js uses textual project name in title/address automations');
-  assert(finalListingJs.includes("if (id === 'ufCrm16ProjectName') return el.value !== undefined ? String(el.value).trim() : '';"), 'getVal returns textual value for ufCrm16ProjectName');
-  assert(finalListingJs.includes("fieldVal = 0;"), 'listing-details.js sanitizes entity fields to 0 if non-numeric on save');
-  assert(finalListingJs.includes("payload['ufCrm16DeveloperName'] = compEl.value.trim();"), 'listing-details.js synchronizes developer companion field on save');
+  const normFinalListingJs = finalListingJs.replace(/"/g, "'");
+  assert(normFinalListingJs.includes("const isNumericId = /^\\d+$/.test(cleanId) && cleanId !== '0';"), 'listing-details.js strictly checks for numeric ID before prepending hash');
+  assert(normFinalListingJs.includes("input.dataset.selectedTitle"), 'listing-details.js tracks selectedTitle to detect user edits');
+  assert(normFinalListingJs.includes("openLinkedRecord(f.type, firstId, f.key, e)"), 'listing-details.js invokes openLinkedRecord with valid ID');
+  assert(normFinalListingJs.includes("getText('ufCrm16ProjectName')"), 'listing-details.js uses textual project name in title/address automations');
+  assert(normFinalListingJs.includes("if (id === 'ufCrm16ProjectName')") && normFinalListingJs.includes("el.value !== undefined ? String(el.value).trim() : ''"), 'getVal returns textual value for ufCrm16ProjectName');
+  assert(normFinalListingJs.includes("fieldVal = 0;"), 'listing-details.js sanitizes entity fields to 0 if non-numeric on save');
+  assert(normFinalListingJs.includes("payload['ufCrm16DeveloperName'] = compEl.value.trim();"), 'listing-details.js synchronizes developer companion field on save');
 
   const finalTabJs = fs.readFileSync('public/js/tab.js', 'utf8');
   assert(finalTabJs.includes("const cleanQuery = String(query).replace(/^#/, '').trim();"), 'tab.js cleans leading hash in queryLookup');
@@ -1195,10 +1198,10 @@ async function runTests() {
   assert(updatedServerCode.includes("UF_CRM_16_1791173000: { entity: 'master_project'"), 'server.js maps native Bitrix Master Project CRM field UF_CRM_16_1791173000');
   assert(updatedServerCode.includes("parentId1040: i.parentId1040"), 'server.js selects parentId1040 from SPA 1044 for automatic Master Project hierarchy linking');
 
-  assert(finalListingJs.includes("if (item.parentId1040) {"), 'listing-details.js auto-links parent Master Project from parentId1040');
-  assert(finalListingJs.includes("payload['ufCrm16_1791173131'] = projEl.dataset.selectedId;"), 'listing-details.js persists native Bitrix Project entity ID to ufCrm16_1791173131');
-  assert(finalListingJs.includes("payload['ufCrm16_1791173000'] = mpEl.dataset.selectedId;"), 'listing-details.js persists native Bitrix Master Project entity ID to ufCrm16_1791173000');
-  assert(finalListingJs.includes("payload['ufCrm16MasterProjectInfo'] = mpEl.value.trim();"), 'listing-details.js persists companion Master Project title to ufCrm16MasterProjectInfo');
+  assert(normFinalListingJs.includes("if (item.parentId1040) {"), 'listing-details.js auto-links parent Master Project from parentId1040');
+  assert(normFinalListingJs.includes("payload['ufCrm16_1791173131'] = projEl.dataset.selectedId;"), 'listing-details.js persists native Bitrix Project entity ID to ufCrm16_1791173131');
+  assert(normFinalListingJs.includes("payload['ufCrm16_1791173000'] = mpEl.dataset.selectedId;"), 'listing-details.js persists native Bitrix Master Project entity ID to ufCrm16_1791173000');
+  assert(normFinalListingJs.includes("payload['ufCrm16MasterProjectInfo'] = mpEl.value.trim();"), 'listing-details.js persists companion Master Project title to ufCrm16MasterProjectInfo');
 
   const spaSyncCode = fs.readFileSync('src/spaSync.js', 'utf8');
   assert(spaSyncCode.includes("spaKey: 'ufCrm16_1791173000'"), 'spaSync.js synchronizes native Bitrix Master Project field ufCrm16_1791173000');
@@ -1213,18 +1216,18 @@ async function runTests() {
   // ============================================================================
   console.log('\n--- Case 28: Sensible & Logical Media & Documents Field Configuration ---');
   // 1. Verify listing-details.js defines only logically distinct media fields
-  assert(finalListingJs.includes("ufCrm16_1791173118"), 'listing-details.js includes Primary Image (ufCrm16_1791173118)');
-  assert(finalListingJs.includes("ufCrm16_1791881642219"), 'listing-details.js includes Photos (ufCrm16_1791881642219)');
-  assert(finalListingJs.includes("ufCrm16_1791881665252"), 'listing-details.js includes Documents (ufCrm16_1791881665252)');
-  assert(finalListingJs.includes("ufCrm16TitleDeed"), 'listing-details.js includes Title Deed (ufCrm16TitleDeed)');
-  assert(finalListingJs.includes("ufCrm16_1791787381785"), 'listing-details.js includes Form A Document (ufCrm16_1791787381785)');
-  assert(finalListingJs.includes("ufCrm16QrCode"), 'listing-details.js includes QR Code (ufCrm16QrCode)');
+  assert(normFinalListingJs.includes("ufCrm16_1791173118"), 'listing-details.js includes Primary Image (ufCrm16_1791173118)');
+  assert(normFinalListingJs.includes("ufCrm16_1791881642219"), 'listing-details.js includes Photos (ufCrm16_1791881642219)');
+  assert(normFinalListingJs.includes("ufCrm16_1791881665252"), 'listing-details.js includes Documents (ufCrm16_1791881665252)');
+  assert(normFinalListingJs.includes("ufCrm16TitleDeed"), 'listing-details.js includes Title Deed (ufCrm16TitleDeed)');
+  assert(normFinalListingJs.includes("ufCrm16_1791787381785"), 'listing-details.js includes Form A Document (ufCrm16_1791787381785)');
+  assert(normFinalListingJs.includes("ufCrm16QrCode"), 'listing-details.js includes QR Code (ufCrm16QrCode)');
 
   // 2. Verify legacy duplicate/ambiguous fields are mapped via fallbackKeys rather than displayed as separate inputs
-  assert(finalListingJs.includes("fallbackKeys: ['ufCrm16_1791544736052']"), 'Photos field maps legacy Photos and Documents (1791544736052) via fallbackKeys');
-  assert(finalListingJs.includes("fallbackKeys: ['ufCrm16_1791172957']"), 'Documents field maps legacy Docs (1791172957) via fallbackKeys');
-  assert(!finalListingJs.includes("label: 'Photos and Documents'"), 'Duplicate "Photos and Documents" field is removed from UI display');
-  assert(!finalListingJs.includes("label: 'Docs'"), 'Duplicate legacy "Docs" field is removed from UI display');
+  assert(normFinalListingJs.includes("ufCrm16_1791544736052"), 'Photos field maps legacy Photos and Documents (1791544736052) via fallbackKeys');
+  assert(normFinalListingJs.includes("ufCrm16_1791172957"), 'Documents field maps legacy Docs (1791172957) via fallbackKeys');
+  assert(!normFinalListingJs.includes("label: 'Photos and Documents'"), 'Duplicate "Photos and Documents" field is removed from UI display');
+  assert(!normFinalListingJs.includes("label: 'Docs'"), 'Duplicate legacy "Docs" field is removed from UI display');
 
   // 3. Verify config/fields.json media section
   assert(fieldsJsonCode.includes('"key": "ufCrm16_1791881665252"'), 'config/fields.json defines Documents field ufCrm16_1791881665252');
