@@ -167,7 +167,7 @@
           },
           {
             key: "ufCrm16ListingAgent",
-            crmCode: "UF_CRM_16_LISTING_AGENT",
+            crmCode: "UF_CRM_16_PORTAL_LISTING_AGENT",
             label: "Listing Agent / Broker",
             type: "lookup",
             lookupEntity: "broker",
