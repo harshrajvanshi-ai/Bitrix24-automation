@@ -494,8 +494,9 @@
       openDropdown();
 
       try {
+        const cleanQuery = String(query).replace(/^#/, '').trim();
         const refreshParam = refresh ? '&refresh=1' : '';
-        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(query)}${refreshParam}`, {
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanQuery)}${refreshParam}`, {
           headers: getCrmAuthHeaders()
         });
         const data = await res.json();
@@ -546,6 +547,7 @@
             input.value = item.title;
             input.dataset.selectedId = item.id;
             input.dataset.selectedRef = item.crmRef || item.id;
+            input.dataset.selectedTitle = item.title;
             clearBtn.style.display = 'block';
             openBtn.style.display = 'inline-flex';
             closeDropdown();
@@ -573,21 +575,56 @@
     }
 
     input.addEventListener('focus', () => {
-      queryLookup(input.value.trim());
+      const cleanVal = input.value.replace(/^#/, '').trim();
+      queryLookup(cleanVal);
     });
 
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeDropdown();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const firstItem = dropdown.querySelector('.lookup-item:not([style*="cursor: default"])');
+        if (firstItem) {
+          firstItem.click();
+        } else {
+          closeDropdown();
+        }
       }
     });
 
     input.addEventListener('input', () => {
-      clearBtn.style.display = input.value ? 'block' : 'none';
-      openBtn.style.display = input.value ? 'inline-flex' : 'none';
+      const val = input.value.trim();
+      clearBtn.style.display = val ? 'block' : 'none';
+
+      if (!val) {
+        input.dataset.selectedId = '';
+        input.dataset.selectedRef = '';
+        input.dataset.selectedTitle = '';
+        openBtn.style.display = 'none';
+        closeDropdown();
+
+        if (f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') {
+          const devNameInput = document.getElementById('field_UF_CRM_DEVELOPER_NAME');
+          if (devNameInput) devNameInput.value = '';
+        }
+      } else {
+        if (input.dataset.selectedTitle && input.dataset.selectedTitle !== val) {
+          input.dataset.selectedId = '';
+          input.dataset.selectedRef = '';
+          openBtn.style.display = 'none';
+        }
+        const numMatch = val.match(/^#?(\d+)$/);
+        if (numMatch) {
+          input.dataset.selectedId = numMatch[1];
+          openBtn.style.display = 'inline-flex';
+        }
+      }
+
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        queryLookup(input.value.trim());
+        const cleanQ = val.replace(/^#/, '').trim();
+        queryLookup(cleanQ);
       }, 250);
       markFieldDirty();
     });
@@ -596,6 +633,7 @@
       input.value = '';
       input.dataset.selectedId = '';
       input.dataset.selectedRef = '';
+      input.dataset.selectedTitle = '';
       clearBtn.style.display = 'none';
       openBtn.style.display = 'none';
       closeDropdown();

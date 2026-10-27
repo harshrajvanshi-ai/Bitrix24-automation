@@ -791,7 +791,7 @@ async function fetchAllContacts() {
 
 async function searchLookupLive(entity, query) {
   if (!query) return [];
-  const cleanQ = String(query).trim();
+  const cleanQ = String(query).replace(/^#/, '').trim();
   const idMatch = cleanQ.match(/^(?:DYNAMIC_\d+_|[A-Z]+_)?(\d+)$/i);
   const numericId = idMatch ? parseInt(idMatch[1], 10) : null;
 
@@ -1057,7 +1057,8 @@ async function normalizeLookupFields(fields) {
  */
 app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
   const entity = (req.query.entity || req.query.type || '').toLowerCase().trim();
-  const query = (req.query.q || '').toLowerCase().trim();
+  const rawQuery = (req.query.q || '').toLowerCase().trim();
+  const query = rawQuery.replace(/^#/, '').trim();
   const forceRefresh = req.query.refresh === '1' || req.query.refresh === 'true';
 
   if (!entity) {
@@ -1070,7 +1071,7 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
     const isNum = /^\d+$/.test(query);
     results = allItems.filter(item => {
       const titleMatch = item.title && item.title.toLowerCase().includes(query);
-      const idMatch = isNum ? String(item.id) === query : String(item.id).includes(query);
+      const idMatch = isNum ? (String(item.id) === query || item.crmRef?.endsWith(`_${query}`)) : String(item.id).includes(query);
       const refMatch = item.crmRef && item.crmRef.toLowerCase().includes(query);
       return titleMatch || idMatch || refMatch;
     });

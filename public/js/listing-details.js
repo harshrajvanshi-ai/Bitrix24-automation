@@ -2487,6 +2487,7 @@
     const getVal = (id) => {
       const el = getEl(id);
       if (!el) return '';
+      if (id === 'ufCrm16ProjectName') return el.value !== undefined ? String(el.value).trim() : '';
       if (el.dataset && el.dataset.id !== undefined && el.dataset.id !== '') return el.dataset.id;
       return el.value !== undefined ? String(el.value).trim() : '';
     };
@@ -2563,7 +2564,7 @@
     // 4. FIELD DERIVATION: Composite Title strictly from actual non-empty record fields
     const beds = getVal('ufCrm16_1791172802');
     const propType = getText('ufCrm16PropertyType');
-    const activeProject = getVal('ufCrm16ProjectName') || getVal('ufCrm16BuildingBayut');
+    const activeProject = getText('ufCrm16ProjectName') || getVal('ufCrm16BuildingBayut');
     const activeCommunity = getVal('ufCrm16_1791173032') || getVal('ufCrm16CommunityPropertyfinder');
     const city = getVal('ufCrm16_1791172815');
 
@@ -2633,7 +2634,6 @@
     } else if (rawVal !== null && rawVal !== undefined) {
       rawIdStr = String(rawVal).replace(/^#/, '');
     }
-    input.dataset.id = rawIdStr;
 
     // Check if known title is already present on listing object
     let knownTitle = '';
@@ -2653,22 +2653,51 @@
       knownTitle = currentListing[`${f.key}_NAME`];
     }
 
-    const hasValidId = rawIdStr && rawIdStr !== '0';
+    const cleanId = rawIdStr.replace(/^[A-Z]+_/, '').replace(/^DYNAMIC_\d+_/, '').replace(/^#/, '').trim();
+    const isNumericId = /^\d+$/.test(cleanId) && cleanId !== '0';
+    const hasValidId = isNumericId;
 
     if (knownTitle) {
       input.value = knownTitle;
-      input.title = `${knownTitle} (ID: ${rawIdStr})`;
-      input.dataset.selectedId = rawIdStr;
+      input.title = `${knownTitle} (ID: ${cleanId || rawIdStr})`;
+      input.dataset.selectedId = cleanId || rawIdStr;
       input.dataset.selectedRef = rawIdStr;
+      input.dataset.selectedTitle = knownTitle;
+      input.dataset.id = cleanId || rawIdStr;
     } else if (hasValidId) {
-      input.value = `#${rawIdStr}`;
-      input.title = `${meta.label} ID: ${rawIdStr}`;
-      input.dataset.selectedId = rawIdStr;
+      input.value = `#${cleanId}`;
+      input.title = `${meta.label} ID: ${cleanId}`;
+      input.dataset.selectedId = cleanId;
       input.dataset.selectedRef = rawIdStr;
+      input.dataset.id = cleanId;
     } else if (rawVal && typeof rawVal === 'string' && rawVal.trim()) {
-      input.value = rawVal.trim();
+      const plainTitle = rawVal.trim();
+      input.value = plainTitle;
+      input.title = plainTitle;
+      input.dataset.selectedTitle = plainTitle;
+      input.dataset.id = (f.key === 'ufCrm16ProjectName') ? plainTitle : '';
+      // Pre-resolve ID & CRM ref in background by title
+      fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(plainTitle)}`, {
+        headers: getCrmAuthHeaders()
+      })
+        .then(r => r.json())
+        .then(d => {
+          const match = (d.items || []).find(it => it.title && it.title.toLowerCase() === plainTitle.toLowerCase());
+          if (match && input.value === plainTitle) {
+            input.dataset.selectedId = String(match.id);
+            input.dataset.selectedRef = match.crmRef || match.id;
+            input.dataset.selectedTitle = match.title;
+            if (f.key !== 'ufCrm16ProjectName') input.dataset.id = String(match.id);
+            input.title = `${match.title} (ID: ${match.id})`;
+            openBtn.style.display = 'inline-flex';
+          }
+        })
+        .catch(() => {});
     } else {
       input.value = '';
+      input.dataset.id = '';
+      input.dataset.selectedId = '';
+      input.dataset.selectedRef = '';
     }
 
     const clearBtn = document.createElement('button');
@@ -2684,22 +2713,25 @@
     openBtn.className = 'lookup-open-btn';
     openBtn.innerHTML = `<span>↗</span>`;
     openBtn.title = `Open linked ${meta.label} in Bitrix24`;
-    openBtn.style.display = hasValidId ? 'inline-flex' : 'none';
+    openBtn.style.display = (hasValidId || input.dataset.selectedId || input.dataset.selectedRef) ? 'inline-flex' : 'none';
 
     // Fetch title in background via /api/lookup or Bitrix fallback
     if (hasValidId && !knownTitle) {
-      const cleanId = rawIdStr.replace(/^[A-Z]+_/, '').replace(/^DYNAMIC_\d+_/, '');
       fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`, {
         headers: getCrmAuthHeaders()
       })
         .then(r => r.json())
         .then(d => {
-          const match = (d.items || []).find(it => String(it.id) === cleanId) || (d.items && d.items[0]);
-          if (match && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
+          const match = (d.items || []).find(it => String(it.id) === cleanId || it.crmRef === rawIdStr);
+          if (match && (input.dataset.id === cleanId || !input.value || input.value === `#${cleanId}`)) {
             input.value = match.title;
-            input.title = `${match.title} (ID: ${rawIdStr})`;
+            input.title = `${match.title} (ID: ${cleanId})`;
             input.dataset.selectedRef = match.crmRef || rawIdStr;
+            input.dataset.selectedTitle = match.title;
+            input.dataset.selectedId = String(match.id);
+            input.dataset.id = String(match.id);
             clearBtn.style.display = 'block';
+            openBtn.style.display = 'inline-flex';
             if (f.key === 'ufCrm16_1791172932' || f.key === 'companyId') {
               const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
               if (devNameInput && !devNameInput.value) {
@@ -2709,11 +2741,13 @@
           }
         })
         .catch(() => {
-          fetchEntityTitle(f.type, rawIdStr, f.key, (resolvedTitle) => {
-            if (resolvedTitle && (input.dataset.id === rawIdStr || !input.value || input.value === `#${rawIdStr}`)) {
+          fetchEntityTitle(f.type, cleanId, f.key, (resolvedTitle) => {
+            if (resolvedTitle && (input.dataset.id === cleanId || !input.value || input.value === `#${cleanId}`)) {
               input.value = resolvedTitle;
-              input.title = `${resolvedTitle} (ID: ${rawIdStr})`;
+              input.title = `${resolvedTitle} (ID: ${cleanId})`;
+              input.dataset.selectedTitle = resolvedTitle;
               clearBtn.style.display = 'block';
+              openBtn.style.display = 'inline-flex';
             }
           });
         });
@@ -2765,8 +2799,9 @@
       openDropdown();
 
       try {
+        const cleanQuery = String(query).replace(/^#/, '').trim();
         const refreshParam = refresh ? '&refresh=1' : '';
-        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(query)}${refreshParam}`, {
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanQuery)}${refreshParam}`, {
           headers: getCrmAuthHeaders()
         });
         const data = await res.json();
@@ -2816,6 +2851,7 @@
             input.value = item.title;
             input.dataset.id = String(item.id);
             input.dataset.selectedId = String(item.id);
+            input.dataset.selectedTitle = item.title;
             input.dataset.selectedRef = item.crmRef || item.id;
             input.title = `${item.title} (ID: ${item.id})`;
             clearBtn.style.display = 'block';
@@ -2846,25 +2882,65 @@
     }
 
     input.addEventListener('focus', () => {
-      queryLookup(input.value.trim());
+      const cleanVal = input.value.replace(/^#/, '').trim();
+      queryLookup(cleanVal);
     });
 
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeDropdown();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        const firstItem = dropdown.querySelector('.lookup-item:not([style*="cursor: default"])');
+        if (firstItem) {
+          firstItem.click();
+        } else {
+          closeDropdown();
+        }
       }
     });
 
     input.addEventListener('input', () => {
       const val = input.value.trim();
-      input.dataset.id = val;
       clearBtn.style.display = val ? 'block' : 'none';
-      openBtn.style.display = (val && val !== '0') ? 'inline-flex' : 'none';
+
+      if (!val) {
+        input.dataset.id = '';
+        input.dataset.selectedId = '';
+        input.dataset.selectedRef = '';
+        input.dataset.selectedTitle = '';
+        input.title = '';
+        openBtn.style.display = 'none';
+        closeDropdown();
+
+        if (f.key === 'companyId' || f.key === 'ufCrm16_1791172932') {
+          const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
+          if (devNameInput) devNameInput.value = '';
+        }
+      } else {
+        if (input.dataset.selectedTitle && input.dataset.selectedTitle !== val) {
+          input.dataset.selectedId = '';
+          input.dataset.selectedRef = '';
+          openBtn.style.display = 'none';
+        }
+        const numMatch = val.match(/^#?(\d+)$/);
+        if (numMatch) {
+          input.dataset.id = numMatch[1];
+          input.dataset.selectedId = numMatch[1];
+          openBtn.style.display = 'inline-flex';
+        } else if (f.key === 'ufCrm16ProjectName') {
+          input.dataset.id = val;
+        } else {
+          input.dataset.id = '';
+        }
+      }
+
       setDirty(true);
 
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        queryLookup(val);
+        const cleanQ = val.replace(/^#/, '').trim();
+        queryLookup(cleanQ);
       }, 250);
       runListingAutomations({ isInitialLoad: false, triggerField: f.key });
     });
@@ -2874,6 +2950,7 @@
       input.dataset.id = '';
       input.dataset.selectedId = '';
       input.dataset.selectedRef = '';
+      input.dataset.selectedTitle = '';
       input.title = '';
       clearBtn.style.display = 'none';
       openBtn.style.display = 'none';
@@ -2890,7 +2967,11 @@
     });
 
     openBtn.addEventListener('click', (e) => {
-      const currentTargetId = input.dataset.id || input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();
+      const currentTargetId = input.dataset.selectedRef || input.dataset.selectedId || input.dataset.id;
+      if (!currentTargetId) {
+        showToast(`Please select a valid ${meta.label} first`, 'warning');
+        return;
+      }
       const firstId = currentTargetId.includes(',') ? currentTargetId.split(',')[0].trim() : currentTargetId;
       openLinkedRecord(f.type, firstId, f.key, e);
     });
@@ -3262,7 +3343,17 @@
           let fieldVal = (el.dataset.id !== undefined && el.dataset.id !== '') ? el.dataset.id : el.value;
           const fConfig = findFieldConfig(el.name);
           if (fConfig && (fConfig.key === 'ufCrm16ProjectName' || fConfig.crmCode === 'UF_CRM_16_PROJECT_NAME')) {
-            fieldVal = el.value;
+            fieldVal = el.value.trim();
+          } else if (fConfig && isLookupField(fConfig)) {
+            const selectedId = el.dataset.selectedId || el.dataset.id;
+            const isNumeric = /^\d+$/.test(String(selectedId || '').trim());
+            if (isNumeric) {
+              fieldVal = selectedId;
+            } else if (el.name === 'companyId' || el.name === 'parentId1052' || el.name === 'contactId' || el.name === 'assignedById') {
+              fieldVal = 0;
+            } else {
+              fieldVal = selectedId || '';
+            }
           } else if (fConfig && fConfig.type === 'money' && fieldVal && !String(fieldVal).includes('|')) {
             const numPart = String(fieldVal).replace(/[^\d.-]/g, '');
             fieldVal = numPart ? `${numPart}|AED` : '';
@@ -3270,6 +3361,12 @@
           payload[el.name] = fieldVal;
         }
       });
+
+      // Synchronize developer companion field ufCrm16DeveloperName if needed
+      if (payload['companyId'] && !payload['ufCrm16DeveloperName']) {
+        const compEl = document.getElementById('field_companyId');
+        if (compEl?.value) payload['ufCrm16DeveloperName'] = compEl.value.trim();
+      }
 
       if (payload['contactIds'] && typeof payload['contactIds'] === 'string' && payload['contactIds'].includes(',')) {
         payload['contactIds'] = payload['contactIds'].split(',').map(s => s.trim()).filter(Boolean);

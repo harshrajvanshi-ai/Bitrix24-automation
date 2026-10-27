@@ -1166,6 +1166,26 @@ async function runTests() {
   assert(updatedServerCode.includes("app.post('/api/b24/:method', apiLimiter, verifyCrmAccess,"), 'server.js protects POST /api/b24/:method with verifyCrmAccess');
 
   // ============================================================================
+  // Test Case 26: Lookup Fields Integrity & Entity Binding Validation
+  // ============================================================================
+  console.log('\n--- Case 26: Lookup Fields Integrity & Entity Binding Validation ---');
+  assert(updatedServerCode.includes("const query = rawQuery.replace(/^#/, '').trim();"), 'server.js cleans leading hash from /api/lookup query');
+  assert(updatedServerCode.includes("const cleanQ = String(query).replace(/^#/, '').trim();"), 'server.js cleans leading hash in searchLookupLive');
+
+  const finalListingJs = fs.readFileSync('public/js/listing-details.js', 'utf8');
+  assert(finalListingJs.includes("const isNumericId = /^\\d+$/.test(cleanId) && cleanId !== '0';"), 'listing-details.js strictly checks for numeric ID before prepending hash');
+  assert(finalListingJs.includes("input.dataset.selectedTitle"), 'listing-details.js tracks selectedTitle to detect user edits');
+  assert(finalListingJs.includes("openLinkedRecord(f.type, firstId, f.key, e)"), 'listing-details.js invokes openLinkedRecord with valid ID');
+  assert(finalListingJs.includes("getText('ufCrm16ProjectName')"), 'listing-details.js uses textual project name in title/address automations');
+  assert(finalListingJs.includes("if (id === 'ufCrm16ProjectName') return el.value !== undefined ? String(el.value).trim() : '';"), 'getVal returns textual value for ufCrm16ProjectName');
+  assert(finalListingJs.includes("fieldVal = 0;"), 'listing-details.js sanitizes entity fields to 0 if non-numeric on save');
+  assert(finalListingJs.includes("payload['ufCrm16DeveloperName'] = compEl.value.trim();"), 'listing-details.js synchronizes developer companion field on save');
+
+  const finalTabJs = fs.readFileSync('public/js/tab.js', 'utf8');
+  assert(finalTabJs.includes("const cleanQuery = String(query).replace(/^#/, '').trim();"), 'tab.js cleans leading hash in queryLookup');
+  assert(finalTabJs.includes("input.dataset.selectedTitle = item.title;"), 'tab.js tracks selectedTitle on item click');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
