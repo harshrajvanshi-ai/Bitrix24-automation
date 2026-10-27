@@ -341,7 +341,7 @@
           {
             key: 'ufCrm16ProjectName',
             crmCode: 'UF_CRM_16_PROJECT_NAME',
-            fallbackKeys: ['ufCrm16BuildingBayut', 'ufCrm16MasterProjectInfo', 'ufCrm16ProjectInfo'],
+            fallbackKeys: ['ufCrm16BuildingBayut', 'ufCrm16_1791173131', 'ufCrm16ProjectInfo'],
             label: 'Project / Building Name',
             type: 'lookup',
             lookupEntity: 'project',
@@ -351,6 +351,7 @@
           {
             key: 'ufCrm16MasterProject',
             crmCode: 'UF_CRM_16_MASTER_PROJECT',
+            fallbackKeys: ['ufCrm16_1791173000', 'ufCrm16MasterProjectInfo', 'ufCrm16OldMasterProject'],
             label: 'Master Project',
             type: 'lookup',
             lookupEntity: 'master_project',
@@ -2191,7 +2192,7 @@
     if (f.lookupEntity) return true;
     if (f.key === 'companyId' || f.key === 'contactId' || f.key === 'contactIds' || f.key === 'assignedById') return true;
     if (f.key && f.key.startsWith('parentId')) return true;
-    if (f.key === 'ufCrm16ProjectName' || f.key === 'ufCrm16MasterProject' || f.key === 'ufCrm16Layout' || f.key === 'ufCrm16Listing' || f.key === 'ufCrm16ListingAgent' || f.key === 'ufCrm16_1791172932') return true;
+    if (f.key === 'ufCrm16ProjectName' || f.key === 'ufCrm16MasterProject' || f.key === 'ufCrm16_1791173000' || f.key === 'ufCrm16_1791173131' || f.key === 'ufCrm16Layout' || f.key === 'ufCrm16Listing' || f.key === 'ufCrm16ListingAgent' || f.key === 'ufCrm16_1791172932') return true;
     return false;
   }
 
@@ -2208,8 +2209,8 @@
     if (k.includes('property') && !k.includes('masterproject')) return 'property';
     if (key === 'parentId1052' || type === 'crm_entity') return 'property';
     if (k.includes('layout')) return 'layout';
-    if (k.includes('masterproject') || k.includes('master_project')) return 'master_project';
-    if (k.includes('project')) return 'project';
+    if (k.includes('masterproject') || k.includes('master_project') || key === 'ufCrm16_1791173000') return 'master_project';
+    if (k.includes('project') || key === 'ufCrm16_1791173131') return 'project';
     if (k.includes('listingagent') || k.includes('broker') || k.includes('agent')) return 'broker';
     if (k.includes('listing')) return 'listing';
     if (key === 'assignedById' || type === 'user') return 'user';
@@ -2294,10 +2295,10 @@
     if (key === 'parentId1052' || k.includes('property')) {
       return `/crm/type/1052/details/${num}/`;
     }
-    if (k.includes('masterproject') || k.includes('master_project')) {
+    if (k.includes('masterproject') || k.includes('master_project') || key === 'ufCrm16_1791173000') {
       return `/crm/type/1040/details/${num}/`;
     }
-    if (k.includes('project')) {
+    if (k.includes('project') || key === 'ufCrm16_1791173131') {
       return `/crm/type/1044/details/${num}/`;
     }
     if (k.includes('layout')) {
@@ -2647,6 +2648,8 @@
       knownTitle = currentListing.assignedBy.name;
     } else if (f.key === 'parentId1052' && currentListing.parentId1052?.title) {
       knownTitle = currentListing.parentId1052.title;
+    } else if ((f.key === 'ufCrm16MasterProject' || f.key === 'ufCrm16_1791173000') && currentListing.ufCrm16MasterProjectInfo) {
+      knownTitle = currentListing.ufCrm16MasterProjectInfo;
     } else if (currentListing[`${f.key}_TITLE`]) {
       knownTitle = currentListing[`${f.key}_TITLE`];
     } else if (currentListing[`${f.key}_NAME`]) {
@@ -2863,9 +2866,36 @@
               const devNameInput = document.getElementById('field_ufCrm16DeveloperName');
               if (devNameInput) devNameInput.value = item.title;
             }
-            if (f.key === 'ufCrm16ProjectName' && item.title) {
+            if ((f.key === 'ufCrm16ProjectName' || f.key === 'ufCrm16_1791173131') && item.title) {
               const bayutInput = document.getElementById('field_ufCrm16BuildingBayut');
               if (bayutInput && !bayutInput.value) bayutInput.value = item.title;
+
+              // Auto-link Master Project if Project has a parent Master Project (parentId1040)
+              if (item.parentId1040) {
+                const mpInput = document.getElementById('field_ufCrm16MasterProject') || document.getElementById('field_ufCrm16_1791173000');
+                if (mpInput && (!mpInput.value || !mpInput.dataset.selectedId)) {
+                  fetch(`/api/lookup?entity=master_project&q=${item.parentId1040}`, {
+                    headers: getCrmAuthHeaders()
+                  })
+                    .then(r => r.json())
+                    .then(d => {
+                      const mpMatch = (d.items || []).find(it => String(it.id) === String(item.parentId1040));
+                      if (mpMatch && mpInput) {
+                        mpInput.value = mpMatch.title;
+                        mpInput.dataset.selectedId = String(mpMatch.id);
+                        mpInput.dataset.selectedRef = mpMatch.crmRef || String(mpMatch.id);
+                        mpInput.dataset.selectedTitle = mpMatch.title;
+                        mpInput.dataset.id = String(mpMatch.id);
+                        mpInput.title = `${mpMatch.title} (ID: ${mpMatch.id})`;
+                        const mpClear = mpInput.parentElement?.querySelector('.lookup-clear-btn');
+                        const mpOpen = mpInput.parentElement?.querySelector('.lookup-open-btn');
+                        if (mpClear) mpClear.style.display = 'block';
+                        if (mpOpen) mpOpen.style.display = 'inline-flex';
+                      }
+                    })
+                    .catch(() => {});
+                }
+              }
             }
 
             setDirty(true);
@@ -3366,6 +3396,31 @@
       if (payload['companyId'] && !payload['ufCrm16DeveloperName']) {
         const compEl = document.getElementById('field_companyId');
         if (compEl?.value) payload['ufCrm16DeveloperName'] = compEl.value.trim();
+      }
+
+      // Synchronize Project & Master Project companion and native Bitrix CRM binding fields
+      const projEl = document.getElementById('field_ufCrm16ProjectName');
+      if (projEl) {
+        payload['ufCrm16ProjectName'] = projEl.value.trim();
+        payload['ufCrm16BuildingBayut'] = payload['ufCrm16BuildingBayut'] || projEl.value.trim();
+        if (projEl.dataset.selectedId && /^\d+$/.test(projEl.dataset.selectedId)) {
+          payload['ufCrm16_1791173131'] = projEl.dataset.selectedId;
+        } else if (!projEl.value.trim()) {
+          payload['ufCrm16_1791173131'] = 0;
+        }
+      }
+
+      const mpEl = document.getElementById('field_ufCrm16MasterProject');
+      if (mpEl) {
+        if (mpEl.dataset.selectedId && /^\d+$/.test(mpEl.dataset.selectedId)) {
+          payload['ufCrm16_1791173000'] = mpEl.dataset.selectedId;
+          payload['ufCrm16MasterProjectInfo'] = mpEl.value.trim();
+          payload['ufCrm16MasterProject'] = mpEl.dataset.selectedId;
+        } else if (!mpEl.value.trim()) {
+          payload['ufCrm16_1791173000'] = 0;
+          payload['ufCrm16MasterProjectInfo'] = '';
+          payload['ufCrm16MasterProject'] = '';
+        }
       }
 
       if (payload['contactIds'] && typeof payload['contactIds'] === 'string' && payload['contactIds'].includes(',')) {

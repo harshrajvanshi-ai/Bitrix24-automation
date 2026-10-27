@@ -592,8 +592,11 @@
           {
             "code": "UF_CRM_PROJECT_NAME",
             "leadAltCode": "UF_CRM_PROJECT_1",
+            "leadAltCodes": ["UF_CRM_PROJECT_1", "UF_CRM_1791794196"],
             "spaKey": "ufCrm16ProjectName",
             "spaCrmCode": "UF_CRM_16_PROJECT_NAME",
+            "spaBindingCode": "UF_CRM_16_1791173131",
+            "fallbackKeys": ["ufCrm16BuildingBayut", "ufCrm16_1791173131", "ufCrm16ProjectInfo"],
             "label": "Project / Building Name",
             "bitrixLabel": "Project Name",
             "type": "lookup",
@@ -609,8 +612,11 @@
           {
             "code": "UF_CRM_PROJECT",
             "leadAltCode": "UF_CRM_1792558317",
+            "leadAltCodes": ["UF_CRM_1792558317"],
             "spaKey": "ufCrm16MasterProject",
             "spaCrmCode": "UF_CRM_16_MASTER_PROJECT",
+            "spaBindingCode": "UF_CRM_16_1791173000",
+            "fallbackKeys": ["ufCrm16_1791173000", "ufCrm16MasterProjectInfo", "ufCrm16OldMasterProject"],
             "label": "Master Project",
             "bitrixLabel": "Master Project",
             "type": "lookup",
@@ -6531,6 +6537,7 @@
           {
             "key": "ufCrm16ProjectName",
             "crmCode": "UF_CRM_16_PROJECT_NAME",
+            "fallbackKeys": ["ufCrm16BuildingBayut", "ufCrm16_1791173131", "ufCrm16ProjectInfo"],
             "label": "Project / Building Name",
             "type": "lookup",
             "placeholder": "e.g. Downtown Views II, Creek Horizon...",
@@ -6687,6 +6694,8 @@
           {
             "key": "ufCrm16MasterProject",
             "crmCode": "UF_CRM_16_MASTER_PROJECT",
+            "spaBindingCode": "UF_CRM_16_1791173000",
+            "fallbackKeys": ["ufCrm16_1791173000", "ufCrm16MasterProjectInfo", "ufCrm16OldMasterProject"],
             "label": "Master Project",
             "type": "lookup",
             "lookupEntity": "master_project",

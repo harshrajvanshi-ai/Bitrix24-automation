@@ -1186,6 +1186,27 @@ async function runTests() {
   assert(finalTabJs.includes("input.dataset.selectedTitle = item.title;"), 'tab.js tracks selectedTitle on item click');
 
   // ============================================================================
+  // Test Case 27: Project & Master Project CRM Field Mappings and Live Synchronization
+  // ============================================================================
+  console.log('\n--- Case 27: Project & Master Project CRM Field Mappings ---');
+  assert(updatedServerCode.includes("UF_CRM_16_1791173131: { entity: 'project'"), 'server.js maps native Bitrix Project CRM field UF_CRM_16_1791173131');
+  assert(updatedServerCode.includes("UF_CRM_16_1791173000: { entity: 'master_project'"), 'server.js maps native Bitrix Master Project CRM field UF_CRM_16_1791173000');
+  assert(updatedServerCode.includes("parentId1040: i.parentId1040"), 'server.js selects parentId1040 from SPA 1044 for automatic Master Project hierarchy linking');
+
+  assert(finalListingJs.includes("if (item.parentId1040) {"), 'listing-details.js auto-links parent Master Project from parentId1040');
+  assert(finalListingJs.includes("payload['ufCrm16_1791173131'] = projEl.dataset.selectedId;"), 'listing-details.js persists native Bitrix Project entity ID to ufCrm16_1791173131');
+  assert(finalListingJs.includes("payload['ufCrm16_1791173000'] = mpEl.dataset.selectedId;"), 'listing-details.js persists native Bitrix Master Project entity ID to ufCrm16_1791173000');
+  assert(finalListingJs.includes("payload['ufCrm16MasterProjectInfo'] = mpEl.value.trim();"), 'listing-details.js persists companion Master Project title to ufCrm16MasterProjectInfo');
+
+  const spaSyncCode = fs.readFileSync('src/spaSync.js', 'utf8');
+  assert(spaSyncCode.includes("spaKey: 'ufCrm16_1791173000'"), 'spaSync.js synchronizes native Bitrix Master Project field ufCrm16_1791173000');
+  assert(spaSyncCode.includes("spaKey: 'ufCrm16_1791173131'"), 'spaSync.js synchronizes native Bitrix Project field ufCrm16_1791173131');
+
+  const fieldsJsonCode = fs.readFileSync('config/fields.json', 'utf8');
+  assert(fieldsJsonCode.includes('"UF_CRM_16_1791173131"'), 'config/fields.json defines spaBindingCode UF_CRM_16_1791173131 for Project');
+  assert(fieldsJsonCode.includes('"UF_CRM_16_1791173000"'), 'config/fields.json defines spaBindingCode UF_CRM_16_1791173000 for Master Project');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

@@ -729,7 +729,7 @@ async function fetchAllSpaItems(entityTypeId, mapFn) {
   while (true) {
     const res = await BitrixClient.call('crm.item.list', {
       entityTypeId,
-      select: ['id', 'title'],
+      select: ['id', 'title', 'parentId1040'],
       order: { id: 'DESC' },
       start
     }).catch(err => {
@@ -813,7 +813,7 @@ async function searchLookupLive(entity, query) {
       const byId = await BitrixClient.call('crm.item.list', {
         entityTypeId: spa.entityTypeId,
         filter: { '=id': numericId },
-        select: ['id', 'title']
+        select: ['id', 'title', 'parentId1040']
       }).catch(() => ({ items: [] }));
       if (byId.items && byId.items.length > 0) {
         items.push(...byId.items);
@@ -822,7 +822,7 @@ async function searchLookupLive(entity, query) {
     const byTitle = await BitrixClient.call('crm.item.list', {
       entityTypeId: spa.entityTypeId,
       filter: { '%title': cleanQ },
-      select: ['id', 'title'],
+      select: ['id', 'title', 'parentId1040'],
       order: { id: 'DESC' }
     }).catch(() => ({ items: [] }));
     if (byTitle.items) {
@@ -833,7 +833,8 @@ async function searchLookupLive(entity, query) {
     return items.map(i => ({
       id: i.id,
       title: i.title || `${entity} #${i.id}`,
-      crmRef: `${spa.prefix}${i.id}`
+      crmRef: `${spa.prefix}${i.id}`,
+      parentId1040: i.parentId1040 || null
     }));
   }
 
@@ -881,7 +882,7 @@ async function fetchLookupData(entity, forceRefresh = false) {
     if (entity === 'master_project') {
       items = await fetchAllSpaItems(1040, i => ({ id: i.id, title: i.title || `Master Project #${i.id}`, crmRef: `DYNAMIC_1040_${i.id}` }));
     } else if (entity === 'project') {
-      items = await fetchAllSpaItems(1044, i => ({ id: i.id, title: i.title || `Project #${i.id}`, crmRef: `DYNAMIC_1044_${i.id}` }));
+      items = await fetchAllSpaItems(1044, i => ({ id: i.id, title: i.title || `Project #${i.id}`, crmRef: `DYNAMIC_1044_${i.id}`, parentId1040: i.parentId1040 || null }));
     } else if (entity === 'property') {
       items = await fetchAllSpaItems(1052, i => ({ id: i.id, title: i.title || `Property #${i.id}`, crmRef: `DYNAMIC_1052_${i.id}` }));
     } else if (entity === 'layout') {
@@ -920,8 +921,11 @@ const CRM_LOOKUP_CONFIG = {
   // Smart Process userfields in Bitrix natively store pure numeric ID (e.g. 402, 336, 326)
   UF_CRM_PROJECT_1: { entity: 'project', prefix: '' },
   UF_CRM_1791794196: { entity: 'project', prefix: '', isArray: true },
+  UF_CRM_16_1791173131: { entity: 'project', prefix: '' },
   UF_CRM_PROJECT: { entity: 'master_project', prefix: '' },
   UF_CRM_1792558317: { entity: 'master_project', prefix: '' },
+  UF_CRM_16_1791173000: { entity: 'master_project', prefix: '' },
+  UF_CRM_16_MASTER_PROJECT: { entity: 'master_project', prefix: '' },
   UF_CRM_PROPERTY: { entity: 'property', prefix: '' },
   UF_CRM_PROPERTY_PROPERTYFINDER: { entity: 'property', prefix: '' },
   UF_CRM_MASTERPROPERTY: { entity: 'property', prefix: '' },
