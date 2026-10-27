@@ -10,10 +10,49 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <!-- Bitrix24 Official JavaScript SDK -->
   <script src="//api.bitrix24.com/api/v1/"></script>
+  <!-- Security: Instant CRM context detection -->
+  <script>
+    (function () {
+      try {
+        if (window.self === window.top) {
+          document.documentElement.classList.add('crm-lockout-active');
+        }
+      } catch (_) {}
+    })();
+  </script>
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/css/matching-listings.css">
 </head>
 <body>
+  <!-- ── 0. CRM Access Lockout Shield (Rendered when accessed outside CRM) ── -->
+  <div id="crm-lockout-shield" class="crm-lockout-shield" style="display: none;">
+    <div class="lockout-card">
+      <div class="lockout-glow"></div>
+      <div class="lockout-icon-wrap">
+        <span class="lockout-icon">🔒</span>
+      </div>
+      <h1 class="lockout-title">Access Restricted</h1>
+      <p class="lockout-subtitle">Bitrix24 CRM Protected Application</p>
+      <p class="lockout-desc">
+        This custom application and its records can only be accessed securely from within your <strong>Bitrix24 CRM</strong>. Direct URL navigation outside of Bitrix24 is blocked to ensure confidential real estate data privacy.
+      </p>
+      <div class="lockout-meta">
+        <div class="lockout-item">
+          <span class="lockout-item-label">Authorized Portal</span>
+          <span class="lockout-item-val">csl.bitrix24.com</span>
+        </div>
+        <div class="lockout-item">
+          <span class="lockout-item-label">Security Policy</span>
+          <span class="lockout-item-val">Embedded CRM Placement Only</span>
+        </div>
+      </div>
+      <div class="lockout-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 16l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>
+        Enterprise CRM Privacy Enforced
+      </div>
+    </div>
+  </div>
+
   <div class="matching-container">
 
     <!-- ── Top Header Bar ─────────────────────────────────────────── -->

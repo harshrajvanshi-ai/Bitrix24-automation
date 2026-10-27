@@ -1096,6 +1096,76 @@ async function runTests() {
   assert(listingJsContent.includes("e.key === '+'") && listingJsContent.includes("e.key === '-'"), 'listing-details.js supports keyboard zoom in/out in lightbox');
 
   // ============================================================================
+  console.log('\n--- Case 25: CRM-Only Access & Direct URL Protection ---');
+  const authMiddleware = require('./src/middleware/auth');
+  assert(typeof authMiddleware.verifyCrmAccess === 'function', 'auth.js exports verifyCrmAccess middleware');
+  assert(typeof authMiddleware.registerCrmSessionToken === 'function', 'auth.js exports registerCrmSessionToken helper');
+
+  // Test middleware rejection of unauthorized direct access
+  let mockResStatus = null;
+  let mockResJson = null;
+  const mockReqUnauthorized = {
+    headers: {},
+    query: {},
+    body: {},
+    originalUrl: '/api/listing/208',
+    ip: '127.0.0.1'
+  };
+  const mockRes = {
+    status(code) { mockResStatus = code; return this; },
+    json(data) { mockResJson = data; return this; }
+  };
+  let nextCalled = false;
+  authMiddleware.verifyCrmAccess(mockReqUnauthorized, mockRes, () => { nextCalled = true; });
+  assert(mockResStatus === 403, 'verifyCrmAccess rejects direct unauthenticated URL request with HTTP 403');
+  assert(mockResJson && mockResJson.code === 'CRM_CONTEXT_REQUIRED', 'verifyCrmAccess returns CRM_CONTEXT_REQUIRED error code');
+  assert(!nextCalled, 'verifyCrmAccess does not call next() for unauthorized requests');
+
+  // Test middleware acceptance of valid CRM token
+  authMiddleware.registerCrmSessionToken('test_session_token_1234567890', 'csl.bitrix24.com');
+  const mockReqAuthorized = {
+    headers: { 'x-bitrix-auth': 'test_session_token_1234567890' },
+    query: {},
+    body: {},
+    originalUrl: '/api/listing/208',
+    ip: '127.0.0.1'
+  };
+  let authNextCalled = false;
+  authMiddleware.verifyCrmAccess(mockReqAuthorized, mockRes, () => { authNextCalled = true; });
+  assert(authNextCalled === true, 'verifyCrmAccess allows request with registered CRM session token');
+
+  // Test views contain framing check script and lockout shield
+  const viewsToCheck = [
+    { file: 'views/listing-details.html', css: 'public/css/listing-details.css', js: 'public/js/listing-details.js' },
+    { file: 'views/tab.html', css: 'public/css/tab.css', js: 'public/js/tab.js' },
+    { file: 'views/matching-listings.html', css: 'public/css/matching-listings.css', js: 'public/js/matching-listings.js' }
+  ];
+
+  for (const v of viewsToCheck) {
+    const html = fs.readFileSync(v.file, 'utf8');
+    const css = fs.readFileSync(v.css, 'utf8');
+    const js = fs.readFileSync(v.js, 'utf8');
+
+    assert(html.includes("window.self === window.top") && html.includes("crm-lockout-active"), `${v.file} contains instant framing check script`);
+    assert(html.includes('id="crm-lockout-shield"'), `${v.file} defines crm-lockout-shield element`);
+    assert(css.includes('html.crm-lockout-active body > *:not(#crm-lockout-shield)'), `${v.css} hides all UI elements when lockout is active`);
+    assert(css.includes('.crm-lockout-shield') && css.includes('.lockout-card'), `${v.css} styles the lockout shield and card`);
+    assert(js.includes('isEmbeddedInCrm'), `${v.js} defines isEmbeddedInCrm framing detector`);
+    assert(js.includes('renderCrmLockoutScreen'), `${v.js} defines renderCrmLockoutScreen`);
+    assert(js.includes('getCrmAuthHeaders'), `${v.js} defines getCrmAuthHeaders with X-Bitrix-Auth`);
+  }
+
+  // Verify server routes are protected
+  const updatedServerCode = fs.readFileSync('server.js', 'utf8');
+  assert(updatedServerCode.includes("app.get('/api/listing/:id', verifyCrmAccess,"), 'server.js protects GET /api/listing/:id with verifyCrmAccess');
+  assert(updatedServerCode.includes("app.all('/api/listing/:id/update', verifyCrmAccess,"), 'server.js protects /api/listing/:id/update with verifyCrmAccess');
+  assert(updatedServerCode.includes("app.get('/api/stages/listing', verifyCrmAccess,"), 'server.js protects GET /api/stages/listing with verifyCrmAccess');
+  assert(updatedServerCode.includes("app.get('/api/lookup', verifyCrmAccess,"), 'server.js protects GET /api/lookup with verifyCrmAccess');
+  assert(updatedServerCode.includes("app.get('/api/lead/:id', apiLimiter, verifyCrmAccess,"), 'server.js protects GET /api/lead/:id with verifyCrmAccess');
+  assert(updatedServerCode.includes("app.post('/api/lead/:id', apiLimiter, verifyCrmAccess,"), 'server.js protects POST /api/lead/:id with verifyCrmAccess');
+  assert(updatedServerCode.includes("app.post('/api/b24/:method', apiLimiter, verifyCrmAccess,"), 'server.js protects POST /api/b24/:method with verifyCrmAccess');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

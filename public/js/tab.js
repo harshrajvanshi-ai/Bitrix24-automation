@@ -92,6 +92,38 @@
     }
   }
 
+  function isEmbeddedInCrm() {
+    try {
+      return window.self !== window.top;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  function renderCrmLockoutScreen() {
+    document.documentElement.classList.add('crm-lockout-active');
+    const shield = document.getElementById('crm-lockout-shield');
+    if (shield) shield.style.display = 'flex';
+    const lEl = document.getElementById('loading');
+    const cEl = document.getElementById('content');
+    if (lEl) lEl.style.display = 'none';
+    if (cEl) cEl.style.display = 'none';
+  }
+
+  function getCrmAuthHeaders() {
+    const headers = {
+      'X-Requested-With': 'Bitrix24-CRM-App'
+    };
+    if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+      const auth = window.BX24.getAuth();
+      if (auth && auth.access_token) {
+        headers['X-Bitrix-Auth'] = auth.access_token;
+        headers['X-Bitrix-Domain'] = auth.domain || 'csl.bitrix24.com';
+      }
+    }
+    return headers;
+  }
+
   function resolveLeadId() {
     if (window.__INITIAL_LEAD_ID__) return window.__INITIAL_LEAD_ID__;
 
@@ -116,7 +148,9 @@
 
   async function loadConfig() {
     try {
-      const res = await fetch('/api/config');
+      const res = await fetch('/api/config', {
+        headers: getCrmAuthHeaders()
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       tabConfig = await res.json();
       return tabConfig;
@@ -129,8 +163,15 @@
 
   function fetchLead(leadId) {
     return new Promise((resolve, reject) => {
+      if (!isEmbeddedInCrm()) {
+        renderCrmLockoutScreen();
+        return reject(new Error('Application is only accessible within Bitrix24 CRM'));
+      }
+
       if (!window.BX24) {
-        fetch(`/api/lead/${leadId}`)
+        fetch(`/api/lead/${leadId}`, {
+          headers: getCrmAuthHeaders()
+        })
           .then(r => r.json())
           .then(data => resolve(data.result || data))
           .catch(reject);
@@ -354,7 +395,9 @@
         const cleanId = refMatch[1];
         input.dataset.selectedId = cleanId;
         input.dataset.selectedRef = rawVal;
-        fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`)
+        fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`, {
+          headers: getCrmAuthHeaders()
+        })
           .then(r => r.json())
           .then(d => {
             const match = (d.items || []).find(it => String(it.id) === cleanId) || (d.items && d.items[0]);
@@ -367,7 +410,9 @@
           .catch(() => {});
       } else {
         // Plain text title passed (e.g. from legacy data), pre-resolve ID and CRM reference
-        fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(String(rawVal).trim())}`)
+        fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(String(rawVal).trim())}`, {
+          headers: getCrmAuthHeaders()
+        })
           .then(r => r.json())
           .then(d => {
             const match = (d.items || []).find(it => it.title.toLowerCase() === String(rawVal).trim().toLowerCase()) || (d.items && d.items[0]);
@@ -450,7 +495,9 @@
 
       try {
         const refreshParam = refresh ? '&refresh=1' : '';
-        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(query)}${refreshParam}`);
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(query)}${refreshParam}`, {
+          headers: getCrmAuthHeaders()
+        });
         const data = await res.json();
         const items = data.items || [];
 
@@ -1268,7 +1315,10 @@
     try {
       const res = await fetch(`/api/lead/${currentLeadId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getCrmAuthHeaders()
+        },
         body: JSON.stringify({ fields: { [leadTypeField]: typeId } })
       });
       const data = await res.json();
@@ -1553,7 +1603,10 @@
     try {
       const res = await fetch(`/api/lead/${currentLeadId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getCrmAuthHeaders()
+        },
         body: JSON.stringify({ fields: payload })
       });
 
@@ -1604,6 +1657,12 @@
   }
 
   async function init() {
+    if (!isEmbeddedInCrm()) {
+      console.warn('[SECURITY] Standalone URL access blocked. App is only accessible inside Bitrix24 CRM.');
+      renderCrmLockoutScreen();
+      return;
+    }
+
     try {
       currentLeadId = resolveLeadId();
       if (!currentLeadId) {
@@ -1650,7 +1709,9 @@
     getCurrentLead: () => currentLead
   };
 
-  if (window.BX24 && typeof window.BX24.init === 'function') {
+  if (!isEmbeddedInCrm()) {
+    renderCrmLockoutScreen();
+  } else if (window.BX24 && typeof window.BX24.init === 'function') {
     window.BX24.init(safeInit);
     setTimeout(safeInit, 2000);
   } else {

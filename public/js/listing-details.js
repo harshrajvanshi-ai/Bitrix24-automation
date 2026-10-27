@@ -834,6 +834,37 @@
     }, 3500);
   }
 
+  function isEmbeddedInCrm() {
+    try {
+      return window.self !== window.top;
+    } catch (_) {
+      // Cross-origin iframe throwing SecurityError means it IS embedded in parent Bitrix24
+      return true;
+    }
+  }
+
+  function renderCrmLockoutScreen() {
+    document.documentElement.classList.add('crm-lockout-active');
+    const shield = document.getElementById('crm-lockout-shield');
+    if (shield) shield.style.display = 'flex';
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'none';
+  }
+
+  function getCrmAuthHeaders() {
+    const headers = {
+      'X-Requested-With': 'Bitrix24-CRM-App'
+    };
+    if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+      const auth = window.BX24.getAuth();
+      if (auth && auth.access_token) {
+        headers['X-Bitrix-Auth'] = auth.access_token;
+        headers['X-Bitrix-Domain'] = auth.domain || 'csl.bitrix24.com';
+      }
+    }
+    return headers;
+  }
+
   let resizeTimer = null;
   function scheduleResize(delay = 60) {
     clearTimeout(resizeTimer);
@@ -919,8 +950,15 @@
   // ============================================================================
   function fetchListing(listingId) {
     return new Promise((resolve, reject) => {
+      if (!isEmbeddedInCrm()) {
+        renderCrmLockoutScreen();
+        return reject(new Error('Application is only accessible within Bitrix24 CRM'));
+      }
+
       if (!window.BX24) {
-        fetch(`/api/listing/${listingId}`)
+        fetch(`/api/listing/${listingId}`, {
+          headers: getCrmAuthHeaders()
+        })
           .then(r => r.json())
           .then(data => {
             if (data.success && data.item) resolve(data.item);
@@ -940,7 +978,9 @@
         });
       });
 
-      const apiPromise = fetch(`/api/listing/${listingId}`)
+      const apiPromise = fetch(`/api/listing/${listingId}`, {
+        headers: getCrmAuthHeaders()
+      })
         .then(r => r.json())
         .then(data => (data.success && data.item ? data.item : null))
         .catch(() => null);
@@ -968,10 +1008,18 @@
 
   function updateListing(listingId, fieldsPayload) {
     return new Promise((resolve, reject) => {
+      if (!isEmbeddedInCrm()) {
+        renderCrmLockoutScreen();
+        return reject(new Error('Application is only accessible within Bitrix24 CRM'));
+      }
+
       if (!window.BX24) {
         fetch(`/api/listing/${listingId}/update`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...getCrmAuthHeaders()
+          },
           body: JSON.stringify({ fields: fieldsPayload })
         })
           .then(r => r.json())
@@ -1059,7 +1107,9 @@
   }
 
   function fetchFallbackStages(pipelineId, resolve) {
-    fetch(`/api/stages/listing?categoryId=${pipelineId}`)
+    fetch(`/api/stages/listing?categoryId=${pipelineId}`, {
+      headers: getCrmAuthHeaders()
+    })
       .then(r => r.json())
       .then(data => {
         if (data.success && Array.isArray(data.stages)) {
@@ -2639,7 +2689,9 @@
     // Fetch title in background via /api/lookup or Bitrix fallback
     if (hasValidId && !knownTitle) {
       const cleanId = rawIdStr.replace(/^[A-Z]+_/, '').replace(/^DYNAMIC_\d+_/, '');
-      fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`)
+      fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`, {
+        headers: getCrmAuthHeaders()
+      })
         .then(r => r.json())
         .then(d => {
           const match = (d.items || []).find(it => String(it.id) === cleanId) || (d.items && d.items[0]);
@@ -2714,7 +2766,9 @@
 
       try {
         const refreshParam = refresh ? '&refresh=1' : '';
-        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(query)}${refreshParam}`);
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(query)}${refreshParam}`, {
+          headers: getCrmAuthHeaders()
+        });
         const data = await res.json();
         const items = data.items || [];
 
@@ -3282,6 +3336,12 @@
   // 8. INITIALIZATION
   // ============================================================================
   async function loadListingDetails(showLoader = true) {
+    if (!isEmbeddedInCrm()) {
+      console.warn('[SECURITY] Standalone URL access blocked. App is only accessible inside Bitrix24 CRM.');
+      renderCrmLockoutScreen();
+      return;
+    }
+
     pendingFileUploads = {};
     removedFileIds = {};
     if (showLoader) {
@@ -3356,7 +3416,9 @@
     runListingAutomations
   };
 
-  if (window.BX24) {
+  if (!isEmbeddedInCrm()) {
+    renderCrmLockoutScreen();
+  } else if (window.BX24) {
     window.BX24.init(() => loadListingDetails(true));
   } else {
     window.addEventListener('DOMContentLoaded', () => loadListingDetails(true));

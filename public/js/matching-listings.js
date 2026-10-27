@@ -174,11 +174,46 @@
     }
   }
 
+  function isEmbeddedInCrm() {
+    try {
+      return window.self !== window.top;
+    } catch (_) {
+      return true;
+    }
+  }
+
+  function renderCrmLockoutScreen() {
+    document.documentElement.classList.add('crm-lockout-active');
+    const shield = document.getElementById('crm-lockout-shield');
+    if (shield) shield.style.display = 'flex';
+    const container = document.querySelector('.matching-container');
+    if (container) container.style.display = 'none';
+  }
+
+  function getCrmAuthHeaders() {
+    const headers = {
+      'X-Requested-With': 'Bitrix24-CRM-App'
+    };
+    if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+      const auth = window.BX24.getAuth();
+      if (auth && auth.access_token) {
+        headers['X-Bitrix-Auth'] = auth.access_token;
+        headers['X-Bitrix-Domain'] = auth.domain || 'csl.bitrix24.com';
+      }
+    }
+    return headers;
+  }
+
   /**
    * Promise-wrapped BX24.callMethod helper
    */
   function callMethod(method, params = {}) {
     return new Promise((resolve, reject) => {
+      if (!isEmbeddedInCrm()) {
+        renderCrmLockoutScreen();
+        return reject(new Error('Application is only accessible within Bitrix24 CRM'));
+      }
+
       if (window.BX24 && typeof window.BX24.callMethod === 'function') {
         window.BX24.callMethod(method, params, function (result) {
           if (result.error()) {
@@ -196,7 +231,10 @@
         // Fallback to local server proxy in non-iframe/dev mode
         fetch('/api/b24/' + method, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...getCrmAuthHeaders()
+          },
           body: JSON.stringify(params)
         })
           .then(res => res.json())
@@ -359,6 +397,12 @@
   // ============================================================================
 
   async function loadEnquiryAndInit() {
+    if (!isEmbeddedInCrm()) {
+      console.warn('[SECURITY] Standalone URL access blocked. App is only accessible inside Bitrix24 CRM.');
+      renderCrmLockoutScreen();
+      return;
+    }
+
     populateDropdownOptions();
 
     currentEnquiryId = resolveEnquiryId();
@@ -1039,12 +1083,13 @@
   // ============================================================================
   // 11. BOOTSTRAP INITIALIZATION
   // ============================================================================
-  if (window.BX24 && typeof window.BX24.init === 'function') {
+  if (!isEmbeddedInCrm()) {
+    renderCrmLockoutScreen();
+  } else if (window.BX24 && typeof window.BX24.init === 'function') {
     window.BX24.init(function () {
       loadEnquiryAndInit();
     });
   } else {
-    // Direct browser access fallback
     document.addEventListener('DOMContentLoaded', loadEnquiryAndInit);
   }
 

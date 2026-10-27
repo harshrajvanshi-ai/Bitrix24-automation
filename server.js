@@ -31,7 +31,12 @@ const {
   STATE_ENUM_TO_LABEL,
   STATE_LABEL_TO_ENUM
 } = require('./src/spaSync');
-const { verifyBitrixEventToken, verifyAdminSecret } = require('./src/middleware/auth');
+const {
+  verifyBitrixEventToken,
+  verifyAdminSecret,
+  verifyCrmAccess,
+  registerCrmSessionToken
+} = require('./src/middleware/auth');
 const { apiLimiter, eventLimiter } = require('./src/middleware/rateLimiter');
 
 const app = express();
@@ -206,6 +211,7 @@ app.all('/tab', (req, res) => {
 
   // If Bitrix24 POSTs auth details to the tab, update storage in background
   if (req.body?.AUTH_ID && req.body?.DOMAIN) {
+    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
     StorageManager.saveAuth({
       access_token: req.body.AUTH_ID,
       refresh_token: req.body.REFRESH_ID,
@@ -264,6 +270,7 @@ app.all('/matching-listings', (req, res) => {
   res.removeHeader('X-Frame-Options');
 
   if (req.body?.AUTH_ID && req.body?.DOMAIN) {
+    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
     StorageManager.saveAuth({
       access_token: req.body.AUTH_ID,
       refresh_token: req.body.REFRESH_ID,
@@ -295,6 +302,7 @@ app.all('/listing-details', (req, res) => {
   res.removeHeader('X-Frame-Options');
 
   if (req.body?.AUTH_ID && req.body?.DOMAIN) {
+    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
     StorageManager.saveAuth({
       access_token: req.body.AUTH_ID,
       refresh_token: req.body.REFRESH_ID,
@@ -374,7 +382,7 @@ async function enrichItemFileNames(item) {
  * GET /api/listing/:id
  * Fetches Listing SPA item by ID and enriches attached file objects with real file names
  */
-app.get('/api/listing/:id', async (req, res) => {
+app.get('/api/listing/:id', verifyCrmAccess, async (req, res) => {
   try {
     const listingId = parseInt(req.params.id, 10);
     if (!listingId) {
@@ -399,7 +407,7 @@ app.get('/api/listing/:id', async (req, res) => {
  * POST/PUT /api/listing/:id/update
  * Updates Listing SPA item by ID
  */
-app.all('/api/listing/:id/update', async (req, res) => {
+app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
   try {
     const listingId = parseInt(req.params.id, 10);
     if (!listingId) {
@@ -427,7 +435,7 @@ app.all('/api/listing/:id/update', async (req, res) => {
  * GET /api/stages/listing
  * Returns stages for Listing SPA (entityTypeId 1058 or 16)
  */
-app.get('/api/stages/listing', async (req, res) => {
+app.get('/api/stages/listing', verifyCrmAccess, async (req, res) => {
   try {
     const categoryId = req.query.categoryId !== undefined ? req.query.categoryId : (req.query.category || 22);
     let stages = [];
@@ -474,7 +482,7 @@ app.get('/api/stages/listing', async (req, res) => {
  * POST /api/b24/:method
  * Secure proxy endpoint for Bitrix24 REST methods (supporting dev & testing)
  */
-app.post('/api/b24/:method', apiLimiter, async (req, res) => {
+app.post('/api/b24/:method', apiLimiter, verifyCrmAccess, async (req, res) => {
   try {
     const method = req.params.method;
     const params = req.body || {};
@@ -1047,7 +1055,7 @@ async function normalizeLookupFields(fields) {
  * GET /api/lookup
  * Query lookup data for Master Projects, Projects, Properties, Developers, Contacts
  */
-app.get('/api/lookup', async (req, res) => {
+app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
   const entity = (req.query.entity || req.query.type || '').toLowerCase().trim();
   const query = (req.query.q || '').toLowerCase().trim();
   const forceRefresh = req.query.refresh === '1' || req.query.refresh === 'true';
@@ -1187,7 +1195,7 @@ function normalizeFileFields(fields) {
  * POST /api/lead/:id
  * Saves lead edits back to Bitrix24 via crm.lead.update
  */
-app.post('/api/lead/:id', apiLimiter, async (req, res) => {
+app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
   const leadId = req.params.id;
   let fields = req.body?.fields || {};
 
@@ -1402,7 +1410,7 @@ app.get('/api/mapping/listing', (req, res) => {
  * POST /api/lead/:id/sync-listing
  * On-demand endpoint to synchronize Lead with its linked Listing SPA item
  */
-app.post('/api/lead/:id/sync-listing', async (req, res) => {
+app.post('/api/lead/:id/sync-listing', verifyCrmAccess, async (req, res) => {
   try {
     const result = await syncListingSpaFromLead(req.params.id);
     res.json({ success: true, result });
@@ -1415,7 +1423,7 @@ app.post('/api/lead/:id/sync-listing', async (req, res) => {
  * GET /api/lead/:id
  * Direct API endpoint to fetch a lead (used as fallback if BX24 SDK unavailable)
  */
-app.get('/api/lead/:id', apiLimiter, async (req, res) => {
+app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
   try {
     const lead = await BitrixClient.crmLeadGet(req.params.id);
     if (lead) {
