@@ -1290,9 +1290,23 @@
     _lbSetCounter();
     _lbSetNavState();
 
+    // Inside Bitrix24 iframe, position modal relative to current scroll offset to prevent offscreen clipping
+    const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
+    if (scrollY > 0) {
+      lightboxModal.style.top = scrollY + 'px';
+      lightboxModal.style.height = (window.innerHeight || document.documentElement.clientHeight || 800) + 'px';
+    } else {
+      lightboxModal.style.top = '0px';
+      lightboxModal.style.height = '100vh';
+    }
+
     lightboxModal.style.display = 'flex';
     lightboxModal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
+
+    if (window.BX24 && typeof window.BX24.scrollParentWindow === 'function') {
+      try { window.BX24.scrollParentWindow(0); } catch (_) {}
+    }
   }
 
   function closeLightbox() {
@@ -1302,6 +1316,8 @@
     }
     lightboxModal.style.display = 'none';
     lightboxModal.classList.remove('is-open');
+    lightboxModal.style.top = '';
+    lightboxModal.style.height = '';
     // Clear dynamic children
     const img = lightboxBody.querySelector('.lightbox-img');
     const iframe = lightboxBody.querySelector('.lightbox-iframe');
@@ -1332,6 +1348,21 @@
   lightboxModal.addEventListener('click', (e) => { if (e.target === lightboxModal) closeLightbox(); });
   lbNavPrev.addEventListener('click', () => _lbGoTo(_lbIndex - 1));
   lbNavNext.addEventListener('click', () => _lbGoTo(_lbIndex + 1));
+
+  // Native Bitrix24 Viewer '•••' more options button (opens path natively in Bitrix24 or new tab)
+  const b24ViewerMoreBtn = document.getElementById('b24-viewer-more-btn');
+  if (b24ViewerMoreBtn) {
+    b24ViewerMoreBtn.addEventListener('click', () => {
+      const item = _lbGallery[_lbIndex];
+      if (item && item.url) {
+        if (window.BX24 && typeof window.BX24.openPath === 'function') {
+          window.BX24.openPath(item.url);
+        } else {
+          window.open(item.url, '_blank');
+        }
+      }
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
     if (lightboxModal.style.display !== 'flex') return;

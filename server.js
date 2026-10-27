@@ -442,10 +442,18 @@ app.get('/api/file/proxy', async (req, res) => {
     if (!rawUrl) {
       return res.status(400).send('Missing file url');
     }
-    const decodedUrl = decodeURIComponent(rawUrl);
+    // Express req.query.url is already decoded once. Do NOT double-decode if it's already an http(s) URL
+    // Double decoding turns token '%2B' into '+' which invalidates Bitrix signature tokens
+    let targetUrl = rawUrl;
+    if (typeof targetUrl === 'string' && !targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+      try {
+        targetUrl = decodeURIComponent(targetUrl);
+      } catch (_) {}
+    }
+
     let parsed;
     try {
-      parsed = new URL(decodedUrl);
+      parsed = new URL(targetUrl);
     } catch (_) {
       return res.status(400).send('Invalid url');
     }
@@ -463,18 +471,23 @@ app.get('/api/file/proxy', async (req, res) => {
 
     const response = await axios({
       method: 'get',
-      url: decodedUrl,
+      url: targetUrl,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': '*/*'
+      },
       responseType: 'stream',
-      timeout: 20000,
+      timeout: 25000,
       validateStatus: (status) => status < 400
     });
 
     // Remove frame restrictions so PDF and media can be rendered in iframes
     res.removeHeader('X-Frame-Options');
+    res.removeHeader('Content-Security-Policy');
 
     // Extract filename from Bitrix Content-Disposition if present
     const rawDisposition = response.headers['content-disposition'] || '';
-    let filename = 'document.pdf';
+    let filename = 'file';
     const match = rawDisposition.match(/filename\*?=(?:utf-8'')?"?([^";]+)"?/i);
     if (match && match[1]) {
       try {
@@ -485,8 +498,14 @@ app.get('/api/file/proxy', async (req, res) => {
     }
 
     let contentType = response.headers['content-type'] || 'application/octet-stream';
-    if (filename.toLowerCase().endsWith('.pdf') || decodedUrl.toLowerCase().includes('.pdf')) {
+    if (filename.toLowerCase().endsWith('.pdf') || targetUrl.toLowerCase().includes('.pdf')) {
       contentType = 'application/pdf';
+    } else if (filename.toLowerCase().endsWith('.jpg') || filename.toLowerCase().endsWith('.jpeg')) {
+      contentType = 'image/jpeg';
+    } else if (filename.toLowerCase().endsWith('.png')) {
+      contentType = 'image/png';
+    } else if (filename.toLowerCase().endsWith('.webp')) {
+      contentType = 'image/webp';
     }
 
     res.setHeader('Content-Type', contentType);
