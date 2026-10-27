@@ -1082,6 +1082,20 @@ async function runTests() {
   assert(listingJsContent.includes('getRemovedFileIds'), 'listing-details.js exports getRemovedFileIds');
 
   // ============================================================================
+  console.log('\n--- Case 24: Normal Tab Scrolling & High-Fidelity Preview Enhancements ---');
+  // CSS checks
+  assert(listingCssContent.includes('scroll-behavior: smooth'), 'listing-details.css configures smooth scrolling on html');
+  assert(listingCssContent.includes('.form-actions-bar') && listingCssContent.includes('position: sticky'), 'listing-details.css styles form-actions-bar with position: sticky');
+  assert(listingCssContent.includes('padding: 16px 20px 32px'), 'listing-details.css sets non-blocking container bottom padding');
+
+  // JS checks
+  assert(listingJsContent.includes('function scheduleResize'), 'listing-details.js defines scheduleResize helper');
+  assert(listingJsContent.includes('new ResizeObserver'), 'listing-details.js binds ResizeObserver to document.body for dynamic height sync');
+  assert(listingJsContent.includes('scheduleResize(40)'), 'listing-details.js triggers scheduleResize on listing details render');
+  assert(listingJsContent.includes('scrollIntoView({ behavior: \'smooth\', block: \'center\' })'), 'listing-details.js smoothly centers lightbox viewer in embedded frame');
+  assert(listingJsContent.includes("e.key === '+'") && listingJsContent.includes("e.key === '-'"), 'listing-details.js supports keyboard zoom in/out in lightbox');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

@@ -834,11 +834,41 @@
     }, 3500);
   }
 
+  let resizeTimer = null;
+  function scheduleResize(delay = 60) {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      resizeWindow();
+    }, delay);
+  }
+
   function resizeWindow() {
     if (window.BX24 && typeof window.BX24.fitWindow === 'function') {
       window.BX24.fitWindow();
     }
+    try {
+      const h = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight
+      );
+      if (window.BX24 && typeof window.BX24.resizeWindow === 'function') {
+        window.BX24.resizeWindow(null, h + 30);
+      }
+    } catch (_) {}
   }
+
+  if (typeof ResizeObserver !== 'undefined') {
+    try {
+      const ro = new ResizeObserver(() => {
+        scheduleResize(50);
+      });
+      ro.observe(document.body);
+    } catch (_) {}
+  }
+
+  window.addEventListener('load', () => scheduleResize(100));
 
   function setDirty(state) {
     isDirty = state;
@@ -1398,6 +1428,9 @@
         contentEl.style.height = '85vh';
         contentEl.style.maxHeight = '820px';
         contentEl.style.marginTop = targetTop + 'px';
+        try {
+          contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } catch (_) {}
       }
     } else {
       lightboxModal.style.position = 'fixed';
@@ -1468,7 +1501,11 @@
 
   // Event listeners
   lightboxCloseBtn.addEventListener('click', closeLightbox);
-  lightboxModal.addEventListener('click', (e) => { if (e.target === lightboxModal) closeLightbox(); });
+  lightboxModal.addEventListener('click', (e) => {
+    if (e.target === lightboxModal || e.target.classList.contains('b24-native-viewer')) {
+      closeLightbox();
+    }
+  });
   lbNavPrev.addEventListener('click', () => _lbGoTo(_lbIndex - 1));
   lbNavNext.addEventListener('click', () => _lbGoTo(_lbIndex + 1));
 
@@ -1488,6 +1525,21 @@
     if (e.key === 'Escape') { closeLightbox(); return; }
     if (e.key === 'ArrowLeft')  { _lbGoTo(_lbIndex - 1); return; }
     if (e.key === 'ArrowRight') { _lbGoTo(_lbIndex + 1); return; }
+    if (e.key === '+' || e.key === '=') {
+      const zbIn = document.getElementById('lb-zoom-in-btn');
+      if (zbIn) zbIn.click();
+      return;
+    }
+    if (e.key === '-' || e.key === '_') {
+      const zbOut = document.getElementById('lb-zoom-out-btn');
+      if (zbOut) zbOut.click();
+      return;
+    }
+    if (e.key === '0') {
+      const zbReset = document.getElementById('lb-zoom-reset-btn');
+      if (zbReset) zbReset.click();
+      return;
+    }
   });
 
   // ============================================================================
@@ -1903,7 +1955,7 @@
           if (listVw) {
             listVw.addEventListener('click', (ev) => {
               ev.stopPropagation();
-              openLightbox(file.name, dataUrl, false);
+              openLightbox(file.name, dataUrl, false, null, 0, thumb);
               stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
               thumb.classList.add('active');
             });
@@ -1911,7 +1963,7 @@
 
           thumb.addEventListener('click', (ev) => {
             if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
-            openLightbox(file.name, dataUrl, false);
+            openLightbox(file.name, dataUrl, false, null, 0, thumb);
             stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
           });
@@ -1949,7 +2001,7 @@
             viewportBox.style.display = 'none';
             viewportBox.innerHTML = '';
             setDirty(true);
-            resizeWindow();
+            scheduleResize(40);
           };
 
           docThumb.querySelector('.thumb-remove-btn').addEventListener('click', removeDocItem);
@@ -1960,7 +2012,7 @@
           if (docListVw) {
             docListVw.addEventListener('click', (ev) => {
               ev.stopPropagation();
-              openLightbox(file.name, dataUrl, isPdf);
+              openLightbox(file.name, dataUrl, isPdf, null, 0, docThumb);
               stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
               docThumb.classList.add('active');
             });
@@ -1968,7 +2020,7 @@
 
           docThumb.addEventListener('click', (ev) => {
             if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
-            openLightbox(file.name, dataUrl, isPdf);
+            openLightbox(file.name, dataUrl, isPdf, null, 0, docThumb);
             stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
             docThumb.classList.add('active');
           });
@@ -2052,6 +2104,7 @@
       `;
       header.addEventListener('click', () => {
         card.classList.toggle('collapsed');
+        scheduleResize(50);
       });
       card.appendChild(header);
 
@@ -3119,6 +3172,7 @@
       card.classList.toggle('collapsed', allSectionsCollapsed);
     });
     toggleAllBtn.textContent = allSectionsCollapsed ? 'Expand All' : 'Collapse All';
+    scheduleResize(50);
   });
 
   // Refresh
@@ -3267,6 +3321,8 @@
       setDirty(false);
       loadingEl.style.display = 'none';
       contentEl.style.display = 'block';
+      scheduleResize(40);
+      setTimeout(() => scheduleResize(300), 300);
     } catch (err) {
       console.error('[LISTING] Init error:', err);
       loadingEl.innerHTML = `
