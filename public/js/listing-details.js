@@ -904,10 +904,29 @@
         id: listingId
       }, res => {
         if (res.error()) {
-          reject(new Error(res.error().toString()));
+          fetch(`/api/listing/${listingId}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.success && data.item) resolve(data.item);
+              else reject(new Error(res.error().toString()));
+            })
+            .catch(() => reject(new Error(res.error().toString())));
         } else {
           const item = res.data()?.item || res.data();
-          resolve(item);
+          // Concurrently fetch /api/listing to enrich files with signed urlMachine tokens
+          fetch(`/api/listing/${listingId}`)
+            .then(r => r.json())
+            .then(data => {
+              if (data.success && data.item) {
+                for (const [k, v] of Object.entries(data.item)) {
+                  if (Array.isArray(v) && v.length > 0 && v[0] && (v[0].urlMachine || v[0].token)) {
+                    item[k] = v;
+                  }
+                }
+              }
+              resolve(item);
+            })
+            .catch(() => resolve(item));
         }
       });
     });
@@ -1162,9 +1181,13 @@
       img.src = item.url;
       img.alt = item.name;
       img.onerror = () => {
-        if (!img.dataset.proxied && item.url && item.url.startsWith('http')) {
+        if (!img.dataset.proxied) {
           img.dataset.proxied = '1';
-          img.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+          let target = item.url;
+          if (target.includes('/api/file/proxy?url=')) {
+            try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) {}
+          }
+          img.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
           return;
         }
         img.style.display = 'none';
@@ -1276,7 +1299,7 @@
    * @param {Array} gallery  - optional array of {url,name,isImage,isPdf} for multi-item galleries
    * @param {number} startIdx - index in gallery to open
    */
-  function openLightbox(title, url, isPdf = false, gallery = null, startIdx = 0) {
+  function openLightbox(title, url, isPdf = false, gallery = null, startIdx = 0, sourceEl = null) {
     if (gallery && gallery.length > 1) {
       _lbGallery = gallery;
       _lbIndex = startIdx;
@@ -1290,23 +1313,30 @@
     _lbSetCounter();
     _lbSetNavState();
 
-    // Inside Bitrix24 iframe, position modal relative to current scroll offset to prevent offscreen clipping
-    const scrollY = window.pageYOffset || document.documentElement.scrollTop || window.scrollY || 0;
-    if (scrollY > 0) {
-      lightboxModal.style.top = scrollY + 'px';
-      lightboxModal.style.height = (window.innerHeight || document.documentElement.clientHeight || 800) + 'px';
+    // Inside Bitrix24 iframe tab or expanded document, position modal relative to user's current view
+    const isEmbedded = (window.self !== window.top) || (document.documentElement.scrollHeight > (window.innerHeight + 150));
+    if (isEmbedded) {
+      let viewTop = 0;
+      if (sourceEl) {
+        const elTop = sourceEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+        viewTop = Math.max(0, elTop - 120);
+      } else {
+        viewTop = Math.max(0, (window.pageYOffset || document.documentElement.scrollTop || 0));
+      }
+      lightboxModal.style.position = 'absolute';
+      lightboxModal.style.top = viewTop + 'px';
+      lightboxModal.style.height = (window.innerHeight || document.documentElement.clientHeight || 850) + 'px';
+      lightboxModal.style.maxHeight = (window.innerHeight || document.documentElement.clientHeight || 850) + 'px';
     } else {
+      lightboxModal.style.position = 'fixed';
       lightboxModal.style.top = '0px';
       lightboxModal.style.height = '100vh';
+      lightboxModal.style.maxHeight = '100vh';
     }
 
     lightboxModal.style.display = 'flex';
     lightboxModal.classList.add('is-open');
     document.body.style.overflow = 'hidden';
-
-    if (window.BX24 && typeof window.BX24.scrollParentWindow === 'function') {
-      try { window.BX24.scrollParentWindow(0); } catch (_) {}
-    }
   }
 
   function closeLightbox() {
@@ -1316,8 +1346,11 @@
     }
     lightboxModal.style.display = 'none';
     lightboxModal.classList.remove('is-open');
+    lightboxModal.style.position = '';
     lightboxModal.style.top = '';
     lightboxModal.style.height = '';
+    lightboxModal.style.maxHeight = '';
+    document.body.style.overflow = '';
     // Clear dynamic children
     const img = lightboxBody.querySelector('.lightbox-img');
     const iframe = lightboxBody.querySelector('.lightbox-iframe');
@@ -1522,9 +1555,13 @@
 
         const thumbImg = thumb.querySelector('.thumb-item-img');
         thumbImg.onerror = function () {
-          if (!this.dataset.proxied && item.url.startsWith('http')) {
+          if (!this.dataset.proxied) {
             this.dataset.proxied = '1';
-            this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+            let target = item.url;
+            if (target.includes('/api/file/proxy?url=')) {
+              try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) {}
+            }
+            this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
           } else {
             this.onerror = null;
             thumb.querySelector('.b24-tile-thumb-wrap').innerHTML = `
@@ -1535,7 +1572,7 @@
         };
 
         thumb.addEventListener('click', () => {
-          openLightbox(item.name, item.url, false, fieldGallery, itemIdx);
+          openLightbox(item.name, item.url, false, fieldGallery, itemIdx, thumb);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
         });
@@ -1559,7 +1596,7 @@
         `;
 
         docThumb.addEventListener('click', () => {
-          openLightbox(item.name, item.url, item.isPdf, fieldGallery, itemIdx);
+          openLightbox(item.name, item.url, item.isPdf, fieldGallery, itemIdx, docThumb);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           docThumb.classList.add('active');
         });
@@ -1609,7 +1646,7 @@
     };
     viewportBox.appendChild(img);
 
-    const openViewer = () => openLightbox(name, url, false, gallery, index);
+    const openViewer = () => openLightbox(name, url, false, gallery, index, viewportBox);
     viewportBox.querySelector('.zoom-btn').addEventListener('click', openViewer);
     img.addEventListener('click', openViewer);
     viewportBox.classList.remove('is-pdf-viewport');
@@ -1645,7 +1682,7 @@
       </iframe>
     `;
 
-    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, true, gallery, index));
+    viewportBox.querySelector('.zoom-btn').addEventListener('click', () => openLightbox(name, url, true, gallery, index, viewportBox));
     viewportBox.querySelector('.inline-preview-close').addEventListener('click', () => {
       viewportBox.classList.remove('is-pdf-viewport');
       viewportBox.style.display = 'none';

@@ -469,6 +469,55 @@ app.get('/api/file/proxy', async (req, res) => {
       return res.status(403).send('Forbidden domain');
     }
 
+    // If URL is an internal Bitrix ajax.php endpoint without a token, resolve the signed urlMachine via BitrixClient
+    if (parsed.pathname.includes('ajax.php') && !parsed.searchParams.has('token')) {
+      const entityTypeId = parsed.searchParams.get('entityTypeId') || 1058;
+      const id = parsed.searchParams.get('id');
+      const fieldName = parsed.searchParams.get('fieldName');
+      const fileId = parsed.searchParams.get('fileId');
+
+      if (id && fileId) {
+        try {
+          const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id });
+          const item = itemRes?.item || itemRes;
+          if (item) {
+            let found = null;
+            if (fieldName) {
+              let fileList = item[fieldName];
+              if (!fileList) {
+                const cleanTarget = fieldName.replace(/_/g, '').toLowerCase();
+                for (const [k, v] of Object.entries(item)) {
+                  if (k.replace(/_/g, '').toLowerCase() === cleanTarget) {
+                    fileList = v;
+                    break;
+                  }
+                }
+              }
+              const list = Array.isArray(fileList) ? fileList : [fileList];
+              found = list.find(f => f && String(f.id) === String(fileId));
+            }
+            if (!found) {
+              // Search across all properties for fileId
+              for (const val of Object.values(item)) {
+                if (Array.isArray(val)) {
+                  const match = val.find(f => f && typeof f === 'object' && String(f.id) === String(fileId));
+                  if (match) { found = match; break; }
+                } else if (val && typeof val === 'object' && String(val.id) === String(fileId)) {
+                  found = val;
+                  break;
+                }
+              }
+            }
+            if (found && found.urlMachine) {
+              targetUrl = found.urlMachine;
+            }
+          }
+        } catch (resolveErr) {
+          console.warn('[FILE PROXY] Could not resolve urlMachine for ajax URL:', resolveErr.message);
+        }
+      }
+    }
+
     const response = await axios({
       method: 'get',
       url: targetUrl,
