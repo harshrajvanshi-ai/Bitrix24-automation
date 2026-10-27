@@ -932,6 +932,8 @@ const CRM_LOOKUP_CONFIG = {
   UF_CRM_LAYOUT: { entity: 'layout', prefix: '' },
   UF_CRM_PROPERTY_LAYOUT: { entity: 'layout', prefix: '' },
   UF_CRM_PORTAL_LISTING_AGENT: { entity: 'broker', prefix: '' },
+  UF_CRM_16_PORTAL_LISTING_AGENT: { entity: 'broker', prefix: '' },
+  UF_CRM_16_LISTING_AGENT: { entity: 'broker', prefix: '' },
   UF_CRM_REFERRAL_AGENT_SELLER: { entity: 'broker', prefix: '' },
   UF_CRM_ASSIGNED_TO_BROKER: { entity: 'broker', prefix: '' },
   UF_CRM_LISTINGAGENT: { entity: 'broker', prefix: '' },

@@ -451,6 +451,7 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_1791952650167', leadAltCodes: ['UF_CRM_LISTING_TYPE'], spaKey: 'ufCrm16_1790154808', spaCrmCode: 'UF_CRM_16_1790154808', type: 'enumeration', enumCategory: 'listingType', label: 'Listing Type' },
   { leadCode: 'UF_CRM_1791970897872', leadAltCodes: ['UF_CRM_EXCLUSIVE'], spaKey: 'ufCrm16Exclusive', spaCrmCode: 'UF_CRM_16_EXCLUSIVE', type: 'boolean', label: 'Listing Agreement' },
   { leadCode: 'XML_ID', leadAltCodes: ['UF_CRM_LISTING_ID', 'ID'], spaKey: 'xmlId', spaCrmCode: 'XML_ID', type: 'string', label: 'External ID' },
+  { leadCode: 'UF_CRM_PORTAL_LISTING_AGENT', leadAltCodes: ['UF_CRM_LISTINGAGENT', 'UF_CRM_ASSIGNED_TO_BROKER'], spaKey: 'ufCrm16ListingAgent', spaCrmCode: 'UF_CRM_16_PORTAL_LISTING_AGENT', spaAltKeys: ['ufCrm16PortalListingAgent', 'UF_CRM_16_LISTING_AGENT'], type: 'crm_entity', label: 'Listing Agent / Broker' },
 
   // 2. Seller & Source
   { leadCode: 'COMPANY_ID', leadAltCodes: ['UF_CRM_DEVELOPER_1', 'UF_CRM_YOUR_COMPANY_DETAILS'], spaKey: 'companyId', spaCrmCode: 'COMPANY_ID', spaAltKeys: ['ufCrm16_1791172932', 'mycompanyId'], type: 'crm_company', label: 'Company' },

@@ -168,8 +168,10 @@
           {
             "code": "UF_CRM_LISTINGAGENT",
             "leadAltCode": "UF_CRM_ASSIGNED_TO_BROKER",
+            "leadAltCodes": ["UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_ASSIGNED_TO_BROKER"],
             "spaKey": "ufCrm16ListingAgent",
-            "spaCrmCode": "UF_CRM_16_LISTING_AGENT",
+            "spaCrmCode": "UF_CRM_16_PORTAL_LISTING_AGENT",
+            "fallbackKeys": ["ufCrm16PortalListingAgent", "UF_CRM_16_PORTAL_LISTING_AGENT", "UF_CRM_16_LISTING_AGENT", "UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_LISTINGAGENT"],
             "label": "Listing Agent / Broker",
             "bitrixLabel": "Listing Agent",
             "type": "lookup",
@@ -6180,7 +6182,8 @@
           },
           {
             "key": "ufCrm16ListingAgent",
-            "crmCode": "UF_CRM_16_LISTING_AGENT",
+            "crmCode": "UF_CRM_16_PORTAL_LISTING_AGENT",
+            "fallbackKeys": ["ufCrm16PortalListingAgent", "UF_CRM_16_PORTAL_LISTING_AGENT", "UF_CRM_16_LISTING_AGENT", "UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_LISTINGAGENT"],
             "label": "Listing Agent / Broker",
             "type": "lookup",
             "lookupEntity": "broker",

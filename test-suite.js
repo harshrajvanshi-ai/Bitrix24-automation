@@ -1238,6 +1238,26 @@ async function runTests() {
   assert(spaSyncCode.includes("spaKey: 'ufCrm16QrCode'"), 'spaSync.js synchronizes QR Code field ufCrm16QrCode');
 
   // ============================================================================
+  // Test Case 29: Listing Agent / Broker Field Mapping and Live Synchronization
+  // ============================================================================
+  console.log('\n--- Case 29: Listing Agent / Broker Field Mapping & Synchronization ---');
+  const finalListingAgentJs = fs.readFileSync('public/js/listing-details.js', 'utf8').replace(/"/g, "'");
+  assert(finalListingAgentJs.includes("crmCode: 'UF_CRM_16_PORTAL_LISTING_AGENT'"), 'listing-details.js configures Listing Agent with UF_CRM_16_PORTAL_LISTING_AGENT');
+  assert(finalListingAgentJs.includes("ufCrm16PortalListingAgent"), 'listing-details.js includes ufCrm16PortalListingAgent in fallbackKeys');
+  assert(finalListingAgentJs.includes("payload['ufCrm16PortalListingAgent'] = agentId;"), 'listing-details.js persists companion ufCrm16PortalListingAgent on save');
+  assert(finalListingAgentJs.includes("payload['UF_CRM_16_PORTAL_LISTING_AGENT'] = agentId;"), 'listing-details.js persists native UF_CRM_16_PORTAL_LISTING_AGENT on save');
+
+  const finalServerCode = fs.readFileSync('server.js', 'utf8');
+  assert(finalServerCode.includes("UF_CRM_16_PORTAL_LISTING_AGENT: { entity: 'broker'"), 'server.js maps UF_CRM_16_PORTAL_LISTING_AGENT to broker entity');
+  assert(finalServerCode.includes("UF_CRM_16_LISTING_AGENT: { entity: 'broker'"), 'server.js maps UF_CRM_16_LISTING_AGENT to broker entity');
+
+  const finalFieldsCode = fs.readFileSync('config/fields.json', 'utf8');
+  assert(finalFieldsCode.includes('"UF_CRM_16_PORTAL_LISTING_AGENT"'), 'config/fields.json defines spaCrmCode UF_CRM_16_PORTAL_LISTING_AGENT for Listing Agent');
+
+  const finalSpaSyncCode = fs.readFileSync('src/spaSync.js', 'utf8');
+  assert(finalSpaSyncCode.includes("spaCrmCode: 'UF_CRM_16_PORTAL_LISTING_AGENT'"), 'spaSync.js synchronizes Listing Agent / Broker UF_CRM_16_PORTAL_LISTING_AGENT');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

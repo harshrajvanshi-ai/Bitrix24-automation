@@ -168,6 +168,14 @@
           {
             key: "ufCrm16ListingAgent",
             crmCode: "UF_CRM_16_PORTAL_LISTING_AGENT",
+            fallbackKeys: [
+              "ufCrm16PortalListingAgent",
+              "UF_CRM_16_PORTAL_LISTING_AGENT",
+              "UF_CRM_16_LISTING_AGENT",
+              "UF_CRM_PORTAL_LISTING_AGENT",
+              "UF_CRM_LISTINGAGENT",
+              "UF_CRM_ASSIGNED_TO_BROKER",
+            ],
             label: "Listing Agent / Broker",
             type: "lookup",
             lookupEntity: "broker",
@@ -4352,6 +4360,21 @@
           payload["ufCrm16_1791173000"] = 0;
           payload["ufCrm16MasterProjectInfo"] = "";
           payload["ufCrm16MasterProject"] = "";
+        }
+      }
+
+      // Synchronize Listing Agent / Broker native and camelCase field variants
+      const agentEl = document.getElementById("field_ufCrm16ListingAgent");
+      if (agentEl) {
+        const agentId = agentEl.dataset.selectedId || agentEl.dataset.id;
+        if (agentId && /^\d+$/.test(agentId)) {
+          payload["ufCrm16ListingAgent"] = agentId;
+          payload["ufCrm16PortalListingAgent"] = agentId;
+          payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = agentId;
+        } else if (!agentEl.value.trim()) {
+          payload["ufCrm16ListingAgent"] = 0;
+          payload["ufCrm16PortalListingAgent"] = 0;
+          payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = 0;
         }
       }
 
