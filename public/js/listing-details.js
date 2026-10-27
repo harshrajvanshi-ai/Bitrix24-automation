@@ -1053,6 +1053,34 @@
   let _lbImgX    = 0;
   let _lbImgY    = 0;
 
+  // Bitrix attachment URLs are frequently protected from the app iframe by
+  // browser cookie/frame rules. Keep the original URL for Bitrix's native
+  // viewer, but use our same-origin proxy for rendering and downloading.
+  function getPreviewUrl(url) {
+    if (!url || url.startsWith('data:') || url.includes('/api/file/proxy?url=')) return url;
+    return /^https?:\/\//i.test(url) ? `/api/file/proxy?url=${encodeURIComponent(url)}` : url;
+  }
+
+  function getNativeFileUrl(url) {
+    const marker = '/api/file/proxy?url=';
+    if (!url || !url.includes(marker)) return url;
+    try {
+      return decodeURIComponent(url.slice(url.indexOf(marker) + marker.length));
+    } catch (_) {
+      return url;
+    }
+  }
+
+  function openInBitrixViewer(url) {
+    const nativeUrl = getNativeFileUrl(url);
+    if (!nativeUrl) return;
+    if (window.BX24 && typeof window.BX24.openPath === 'function' && !nativeUrl.startsWith('data:')) {
+      window.BX24.openPath(nativeUrl);
+      return;
+    }
+    window.open(nativeUrl, '_blank', 'noopener');
+  }
+
   function _lbSetCounter() {
     if (_lbGallery.length > 1) {
       lightboxCounter.textContent = `${_lbIndex + 1} / ${_lbGallery.length}`;
@@ -1143,25 +1171,23 @@
 
     const item = _lbGallery[_lbIndex];
     lightboxTitle.textContent = item.name || 'Preview';
-    lightboxDownloadLink.href = item.url;
+    lightboxDownloadLink.href = getPreviewUrl(item.url);
     lightboxDownloadLink.setAttribute('download', item.name || 'download');
 
     const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
 
-    if (item.isPdf || !item.isImage) {
+    if (item.isPdf) {
       if (lightboxFileIcon) lightboxFileIcon.textContent = '📄';
       if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
       if (lbZoomControls) lbZoomControls.style.display = 'none';
 
-      const proxyUrl = (item.url.startsWith('http') && !item.url.includes('/api/file/proxy'))
-        ? `/api/file/proxy?url=${encodeURIComponent(item.url)}`
-        : item.url;
+      const proxyUrl = getPreviewUrl(item.url);
 
       const iframe = document.createElement('iframe');
       iframe.className = 'lightbox-iframe';
       iframe.src = proxyUrl;
       lightboxBody.appendChild(iframe);
-    } else {
+    } else if (item.isImage) {
       // Image
       if (lightboxFileIcon) lightboxFileIcon.textContent = '🖼️';
       if (lbZoomControls) lbZoomControls.style.display = 'flex';
@@ -1292,6 +1318,31 @@
         if (zbReset) zbReset.onclick = null;
         if (zoomToggleBtn) zoomToggleBtn.onclick = null;
       };
+    } else {
+      // Bitrix previews PDFs inline. Other document types (DOCX, XLSX, ZIP,
+      // etc.) must be handed back to Bitrix rather than being forced into a
+      // PDF iframe, which is the source of the blank/broken preview bug.
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '📎';
+      if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
+      if (lbZoomControls) lbZoomControls.style.display = 'none';
+
+      const panel = document.createElement('div');
+      panel.className = 'lb-document-panel';
+      const icon = document.createElement('span');
+      icon.className = 'lb-document-icon';
+      icon.textContent = '📄';
+      const name = document.createElement('strong');
+      name.className = 'lb-document-name';
+      name.textContent = item.name || 'Document';
+      const message = document.createElement('p');
+      message.textContent = 'Open this file using the Bitrix24 viewer.';
+      const openButton = document.createElement('button');
+      openButton.type = 'button';
+      openButton.className = 'lb-document-open';
+      openButton.textContent = 'Open in Bitrix24';
+      openButton.addEventListener('click', () => openInBitrixViewer(item.url));
+      panel.append(icon, name, message, openButton);
+      lightboxBody.appendChild(panel);
     }
   }
 
@@ -1427,11 +1478,7 @@
     b24ViewerMoreBtn.addEventListener('click', () => {
       const item = _lbGallery[_lbIndex];
       if (item && item.url) {
-        if (window.BX24 && typeof window.BX24.openPath === 'function') {
-          window.BX24.openPath(item.url);
-        } else {
-          window.open(item.url, '_blank');
-        }
+        openInBitrixViewer(item.url);
       }
     });
   }
@@ -1687,7 +1734,7 @@
         listViewBtn.addEventListener('click', (ev) => {
           ev.stopPropagation();
           const currIdx = Math.max(0, fieldGallery.indexOf(item));
-          openLightbox(item.name, item.url, !item.isImage, fieldGallery, currIdx, thumb);
+          openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
         });
@@ -1698,7 +1745,7 @@
           return;
         }
         const currIdx = Math.max(0, fieldGallery.indexOf(item));
-        openLightbox(item.name, item.url, !item.isImage, fieldGallery, currIdx, thumb);
+        openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
         stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
         thumb.classList.add('active');
       });

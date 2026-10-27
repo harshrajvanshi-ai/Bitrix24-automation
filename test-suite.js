@@ -1059,6 +1059,9 @@ async function runTests() {
   assert(listingCssContent.includes('.lb-nav-btn'), 'listing-details.css contains .lb-nav-btn navigation arrow styling');
   assert(listingCssContent.includes('.lb-error-box'), 'listing-details.css contains .lb-error-box image error fallback styling');
   assert(listingCssContent.includes('@media (max-width: 640px)'), 'listing-details.css contains responsive media queries for gallery lightbox');
+  assert(listingJsContent.includes('if (item.isPdf)') && listingJsContent.includes('else if (item.isImage)'), 'listing-details.js previews only PDFs inline and keeps image rendering separate');
+  assert(listingJsContent.includes('openInBitrixViewer') && listingJsContent.includes('Open in Bitrix24'), 'listing-details.js hands unsupported documents to the native Bitrix viewer');
+  assert(listingCssContent.includes('.lb-document-panel'), 'listing-details.css styles the native document handoff panel');
 
   // ============================================================================
   console.log('\n--- Case 23: File Removal & Responsive View Switcher Controls ---');

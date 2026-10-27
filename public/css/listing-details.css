@@ -1388,6 +1388,27 @@ textarea.form-control {
   letter-spacing: 0.2px;
 }
 
+/* Native-style handoff panel for files Bitrix does not render as a PDF. */
+.lb-document-panel {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: min(420px, calc(100% - 32px));
+  padding: 36px 40px;
+  text-align: center;
+  color: #fff;
+  background: rgba(38, 45, 56, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.32);
+}
+.lb-document-icon { font-size: 42px; line-height: 1; }
+.lb-document-name { max-width: 100%; overflow-wrap: anywhere; font-size: 15px; }
+.lb-document-panel p { margin: 0; color: rgba(255, 255, 255, 0.7); font-size: 13px; }
+.lb-document-open { padding: 9px 16px; color: #fff; background: #2fc6f6; border: 0; border-radius: 4px; cursor: pointer; font: inherit; }
+.lb-document-open:hover { background: #20b3e4; }
 .lightbox-counter {
   font-size: 11px;
   font-weight: 600;
