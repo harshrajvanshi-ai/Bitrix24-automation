@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node test-suite.js",
+    "test": "node test-suite.js && node test_tab_fields.js",
     "test:e2e": "node test_e2e_pipeline.js"
   },
   "keywords": [

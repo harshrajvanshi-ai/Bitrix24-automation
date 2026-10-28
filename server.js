@@ -1241,7 +1241,7 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
   }
 
   // Sync Deal Value / Budget / Price with native Bitrix OPPORTUNITY & CURRENCY_ID
-  const dealAmount = fields.UF_CRM_DEAL_VALUE_1 || fields.UF_CRM_LISTINGPRICE_MAX || fields.UF_CRM_LISTINGPRICE;
+  const dealAmount = fields.UF_CRM_DEAL_VALUE_1 || fields.UF_CRM_LISTINGPRICE_MAX || fields.UF_CRM_LISTINGPRICE || fields.UF_CRM_LISTING_PRICE;
   if (dealAmount) {
     const parts = String(dealAmount).split('|');
     const num = parseFloat(parts[0]);

@@ -661,14 +661,15 @@
    * Normalize Bitrix ISO 8601 date string (e.g. 2026-10-30T03:00:00+03:00) to HTML5 YYYY-MM-DD
    */
   function formatDateForInput(val) {
-    if (!val) return '';
+    if (!val || val === 'N' || val === '0000-00-00' || val === '0' || val === '01.01.1970') return '';
     const s = String(val).trim();
+    if (s === 'N' || s === '0000-00-00' || s === '0' || s === '01.01.1970') return '';
     const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2})/);
-    if (isoMatch) return isoMatch[1];
+    if (isoMatch && !isoMatch[1].startsWith('0000')) return isoMatch[1];
     const b24Match = s.match(/^(\d{2})\.(\d{2})\.(\d{4})/);
-    if (b24Match) return `${b24Match[3]}-${b24Match[2]}-${b24Match[1]}`;
+    if (b24Match && b24Match[3] !== '0000' && b24Match[3] !== '1970') return `${b24Match[3]}-${b24Match[2]}-${b24Match[1]}`;
     const d = new Date(s);
-    if (!isNaN(d.getTime())) {
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
@@ -681,12 +682,13 @@
    * Normalize Bitrix ISO 8601 datetime string to HTML5 YYYY-MM-DDTHH:mm
    */
   function formatDateTimeForInput(val) {
-    if (!val) return '';
+    if (!val || val === 'N' || val === '0000-00-00' || val === '0' || val === '01.01.1970') return '';
     const s = String(val).trim();
+    if (s === 'N' || s === '0000-00-00' || s === '0' || s === '01.01.1970') return '';
     const isoMatch = s.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
-    if (isoMatch) return isoMatch[1];
+    if (isoMatch && !isoMatch[1].startsWith('0000')) return isoMatch[1];
     const d = new Date(s);
-    if (!isNaN(d.getTime())) {
+    if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
       const year = d.getFullYear();
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const day = String(d.getDate()).padStart(2, '0');
@@ -761,12 +763,13 @@
       container.appendChild(wrap);
 
       initialFormValues[f.code] = inputElement.checked;
-    } else if (f.type === 'text') {
+    } else if (f.type === 'text' || f.type === 'textarea') {
       inputElement = document.createElement('textarea');
       inputElement.className = 'form-control';
       inputElement.id = `field_${f.code}`;
       inputElement.name = f.code;
       inputElement.placeholder = f.placeholder || '';
+      if (f.rows) inputElement.rows = f.rows;
       inputElement.value = Array.isArray(currentVal) ? currentVal.join(', ') : (currentVal || '');
 
       container.appendChild(inputElement);
@@ -869,7 +872,7 @@
 
       if (f.type === 'number' || f.type === 'integer' || f.type === 'double') {
         inputElement.type = 'number';
-        if (f.type === 'double') inputElement.step = 'any';
+        if (f.type === 'number' || f.type === 'double') inputElement.step = 'any';
         inputElement.value = currentVal !== undefined && currentVal !== null ? currentVal : '';
       } else if (f.type === 'date') {
         inputElement.type = 'date';
@@ -1028,10 +1031,12 @@
     }
 
     // 2. Composite Title & Portal Title from actual non-empty record fields
-    const beds = getVal(['UF_CRM_1791952093551', 'UF_CRM_BEDROOM']);
+    let beds = getVal(['UF_CRM_BEDROOMS', 'UF_CRM_1791966366775', 'UF_CRM_1791952093551', 'UF_CRM_BEDROOM']);
+    const enumToNum = { '1834': '0', '1836': '1', '1838': '2', '1840': '3', '1842': '4', '1844': '5' };
+    if (enumToNum[beds]) beds = enumToNum[beds];
     const propType = getText(['UF_CRM_1791952050535', 'UF_CRM_PROPERTY_TYPE']);
     const project = getText(['UF_CRM_1791952285159', 'UF_CRM_PROJECT_NAME', 'UF_CRM_PROJECT_1']);
-    const community = getVal(['UF_CRM_1791952328751', 'UF_CRM_COMMUNITY']);
+    const community = getVal(['UF_CRM_1791952328751', 'UF_CRM_COMMUNITY', 'UF_CRM_NEIGHBORHOOD']);
     const city = getVal(['UF_CRM_1791952345511', 'UF_CRM_CITY']);
 
     if (propType) {
@@ -1066,7 +1071,7 @@
    */
   function createFormGroup(f, currentVal) {
     const formGroup = document.createElement('div');
-    formGroup.className = `form-group ${f.fullWidth || f.type === 'text' ? 'full-width' : ''}`;
+    formGroup.className = `form-group ${f.fullWidth || f.type === 'text' || f.type === 'textarea' ? 'full-width' : ''}`;
     formGroup.setAttribute('data-field-code', f.code);
     formGroup.setAttribute('data-field-label', (f.label || '').toLowerCase());
 
@@ -1605,10 +1610,27 @@
         }
       } else if (f.type === 'lookup' || isLookupField(f)) {
         payload[f.code] = input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();
+      } else if (f.type === 'money') {
+        const rawMoney = input.value.trim();
+        if (rawMoney) {
+          const cleanNum = rawMoney.split('|')[0].replace(/[^\d.-]/g, '');
+          payload[f.code] = cleanNum ? `${cleanNum}|AED` : '';
+        } else {
+          payload[f.code] = '';
+        }
       } else {
         payload[f.code] = input.value.trim();
       }
     });
+
+    // Synchronize native Bitrix OPPORTUNITY from Listing Price or Deal Value
+    if ((payload.UF_CRM_LISTING_PRICE || payload.UF_CRM_DEAL_VALUE_1) && !payload.OPPORTUNITY) {
+      const pVal = payload.UF_CRM_LISTING_PRICE || payload.UF_CRM_DEAL_VALUE_1;
+      const pNum = parseFloat(String(pVal).split('|')[0]);
+      if (!isNaN(pNum) && pNum > 0) {
+        payload.OPPORTUNITY = pNum;
+      }
+    }
 
     if (payload.UF_CRM_LISTING_NAME && !payload.UF_CRM_1791952409183) {
       payload.UF_CRM_1791952409183 = payload.UF_CRM_LISTING_NAME;
