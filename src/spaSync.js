@@ -518,6 +518,20 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_UK_SUMMARY_DESCRIPTION', leadAltCodes: ['UF_CRM_DESCRIPTION_OUTRO_TEXT', 'UF_CRM_SUMMARY', 'TITLE'], spaKey: 'ufCrm16SummaryDescription', spaCrmCode: 'UF_CRM_16_SUMMARY_DESCRIPTION', spaAltKeys: ['ufCrm16Combinedtitle', 'title'], type: 'string', label: 'Portal Title' },
   { leadCode: 'UF_CRM_DESCRIPTION', leadAltCodes: ['UF_CRM_DESCRIPTION_INTRO_TEXT', 'UF_CRM_DESCRIPTION_1', 'UF_CRM_DESCRIPTION_AUTO'], spaKey: 'ufCrm16Description', spaCrmCode: 'UF_CRM_16_DESCRIPTION', spaAltKeys: ['ufCrm16DescriptionIntroText', 'ufCrm16DescriptionAuto', 'sourceDescription'], type: 'textarea', label: 'Portal Description' },
 
+  // Listing Description & Features
+  { leadCode: 'UF_CRM_DESCRIPTION_INTRO_TEXT', spaKey: 'ufCrm16DescriptionIntroText', spaCrmCode: 'UF_CRM_16_DESCRIPTION_INTRO_TEXT', type: 'textarea', label: 'Description - Intro Text' },
+  { leadCode: 'UF_CRM_FEATURE_1', spaKey: 'ufCrm16Feature1', spaCrmCode: 'UF_CRM_16_FEATURE_1', type: 'string', label: 'Feature 1' },
+  { leadCode: 'UF_CRM_FEATURE_2', spaKey: 'ufCrm16Feature2', spaCrmCode: 'UF_CRM_16_FEATURE_2', type: 'string', label: 'Feature 2' },
+  { leadCode: 'UF_CRM_FEATURE_3', spaKey: 'ufCrm16Feature3', spaCrmCode: 'UF_CRM_16_FEATURE_3', type: 'string', label: 'Feature 3' },
+  { leadCode: 'UF_CRM_FEATURE_4', spaKey: 'ufCrm16Feature4', spaCrmCode: 'UF_CRM_16_FEATURE_4', type: 'string', label: 'Feature 4' },
+  { leadCode: 'UF_CRM_FEATURE_5', spaKey: 'ufCrm16Feature5', spaCrmCode: 'UF_CRM_16_FEATURE_5', type: 'string', label: 'Feature 5' },
+  { leadCode: 'UF_CRM_FEATURE_6', spaKey: 'ufCrm16Feature6', spaCrmCode: 'UF_CRM_16_FEATURE_6', type: 'string', label: 'Feature 6' },
+  { leadCode: 'UF_CRM_FEATURE_7', spaKey: 'ufCrm16Feature7', spaCrmCode: 'UF_CRM_16_FEATURE_7', type: 'string', label: 'Feature 7' },
+  { leadCode: 'UF_CRM_FEATURE_8', spaKey: 'ufCrm16Feature8', spaCrmCode: 'UF_CRM_16_FEATURE_8', type: 'string', label: 'Feature 8' },
+  { leadCode: 'UF_CRM_FEATURE_9', spaKey: 'ufCrm16Feature9', spaCrmCode: 'UF_CRM_16_FEATURE_9', type: 'string', label: 'Feature 9' },
+  { leadCode: 'UF_CRM_FEATURE_10', spaKey: 'ufCrm16Feature10', spaCrmCode: 'UF_CRM_16_FEATURE_10', type: 'string', label: 'Feature 10' },
+  { leadCode: 'UF_CRM_DESCRIPTION_OUTRO_TEXT', spaKey: 'ufCrm16DescriptionOutroText', spaCrmCode: 'UF_CRM_16_DESCRIPTION_OUTRO_TEXT', type: 'textarea', label: 'Description - Outro Text' },
+
   // 8. Media & Documents
   { leadCode: 'UF_CRM_PRIMARY_IMAGE', leadAltCodes: ['UF_CRM_PRIMARY_IMAGE_1'], spaKey: 'ufCrm16_1791173118', spaCrmCode: 'UF_CRM_16_1791173118', type: 'file', label: 'Primary Image' },
   { leadCode: 'UF_CRM_PHOTOS', leadAltCodes: ['UF_CRM_PHOTOS_AND_DOCUMENTS'], spaKey: 'ufCrm16_1791881642219', spaCrmCode: 'UF_CRM_16_1791881642219', spaAltKeys: ['ufCrm16_1791544736052'], type: 'file', label: 'Photos' },

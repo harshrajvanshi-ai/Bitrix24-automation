@@ -1053,6 +1053,254 @@
         ],
       },
       {
+        id: "listing_description",
+        title: "Listing Description",
+        icon: "📝",
+        desc: "Description intro text, property features 1 to 10, and outro text",
+        fields: [
+          {
+            key: "ufCrm16DescriptionIntroText",
+            crmCode: "UF_CRM_16_DESCRIPTION_INTRO_TEXT",
+            fallbackKeys: [
+              "UF_CRM_DESCRIPTION_INTRO_TEXT",
+              "ufCrmDescriptionIntroText",
+              "descriptionIntroText",
+              "description_intro_text",
+            ],
+            label: "Description - Intro Text",
+            type: "textarea",
+            fullWidth: true,
+            placeholder: "Introduction text for listing description...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature1",
+            crmCode: "UF_CRM_16_FEATURE_1",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_1",
+              "ufCrmFeature1",
+              "feature_1",
+              "feature1",
+            ],
+            label: "Feature 1",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 1...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature2",
+            crmCode: "UF_CRM_16_FEATURE_2",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_2",
+              "ufCrmFeature2",
+              "feature_2",
+              "feature2",
+            ],
+            label: "Feature 2",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 2...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature3",
+            crmCode: "UF_CRM_16_FEATURE_3",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_3",
+              "ufCrmFeature3",
+              "feature_3",
+              "feature3",
+            ],
+            label: "Feature 3",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 3...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature4",
+            crmCode: "UF_CRM_16_FEATURE_4",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_4",
+              "ufCrmFeature4",
+              "feature_4",
+              "feature4",
+            ],
+            label: "Feature 4",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 4...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature5",
+            crmCode: "UF_CRM_16_FEATURE_5",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_5",
+              "ufCrmFeature5",
+              "feature_5",
+              "feature5",
+            ],
+            label: "Feature 5",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 5...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature6",
+            crmCode: "UF_CRM_16_FEATURE_6",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_6",
+              "ufCrmFeature6",
+              "feature_6",
+              "feature6",
+            ],
+            label: "Feature 6",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 6...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature7",
+            crmCode: "UF_CRM_16_FEATURE_7",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_7",
+              "ufCrmFeature7",
+              "feature_7",
+              "feature7",
+            ],
+            label: "Feature 7",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 7...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature8",
+            crmCode: "UF_CRM_16_FEATURE_8",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_8",
+              "ufCrmFeature8",
+              "feature_8",
+              "feature8",
+            ],
+            label: "Feature 8",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 8...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature9",
+            crmCode: "UF_CRM_16_FEATURE_9",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_9",
+              "ufCrmFeature9",
+              "feature_9",
+              "feature9",
+            ],
+            label: "Feature 9",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 9...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16Feature10",
+            crmCode: "UF_CRM_16_FEATURE_10",
+            fallbackKeys: [
+              "UF_CRM_FEATURE_10",
+              "ufCrmFeature10",
+              "feature_10",
+              "feature10",
+            ],
+            label: "Feature 10",
+            type: "string",
+            fullWidth: true,
+            placeholder: "Feature / Highlight 10...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+          {
+            key: "ufCrm16DescriptionOutroText",
+            crmCode: "UF_CRM_16_DESCRIPTION_OUTRO_TEXT",
+            fallbackKeys: [
+              "UF_CRM_DESCRIPTION_OUTRO_TEXT",
+              "ufCrmDescriptionOutroText",
+              "descriptionOutroText",
+              "description_outro_text",
+            ],
+            label: "Description - Outro Text",
+            type: "textarea",
+            fullWidth: true,
+            placeholder: "Closing/call-to-action text for listing description...",
+            rules: {
+              external_stock: "show",
+              off_plan: "show",
+              overseas_sale: "show",
+              rent: "show",
+            },
+          },
+        ],
+      },
+      {
         id: "media",
         title: "Media & Documents",
         icon: "📸",
@@ -3427,6 +3675,26 @@
         setVal("ufCrm16_1791172676", addrParts.join(", "), !isInitialLoad);
       }
     }
+
+    // 6. FIELD DERIVATION: Portal Description composition from Intro, Features 1-10, and Outro Text
+    const introText = getVal("ufCrm16DescriptionIntroText");
+    const outroText = getVal("ufCrm16DescriptionOutroText");
+    const featuresList = [];
+    for (let i = 1; i <= 10; i++) {
+      const featVal = getVal(`ufCrm16Feature${i}`);
+      if (featVal) featuresList.push(`• ${featVal}`);
+    }
+    if (introText || featuresList.length > 0 || outroText) {
+      const compositeParts = [];
+      if (introText) compositeParts.push(introText);
+      if (featuresList.length > 0) compositeParts.push(featuresList.join("\n"));
+      if (outroText) compositeParts.push(outroText);
+      const autoDesc = compositeParts.join("\n\n");
+      const currentDesc = getVal("ufCrm16Description");
+      if (!currentDesc && autoDesc) {
+        setVal("ufCrm16Description", autoDesc, !isInitialLoad);
+      }
+    }
   }
 
   function renderLookupField(f, rawVal, group, displayLabel) {
@@ -4473,6 +4741,31 @@
         payload["UF_CRM_16_SIZE"] = valToSave;
         payload["ufCrm16Size"] = valToSave;
       }
+
+      // Synchronize Description Intro/Outro and Features 1-10 with native Bitrix UF_CRM_16_* fields
+      [
+        ["ufCrm16DescriptionIntroText", "UF_CRM_16_DESCRIPTION_INTRO_TEXT"],
+        ["ufCrm16Feature1", "UF_CRM_16_FEATURE_1"],
+        ["ufCrm16Feature2", "UF_CRM_16_FEATURE_2"],
+        ["ufCrm16Feature3", "UF_CRM_16_FEATURE_3"],
+        ["ufCrm16Feature4", "UF_CRM_16_FEATURE_4"],
+        ["ufCrm16Feature5", "UF_CRM_16_FEATURE_5"],
+        ["ufCrm16Feature6", "UF_CRM_16_FEATURE_6"],
+        ["ufCrm16Feature7", "UF_CRM_16_FEATURE_7"],
+        ["ufCrm16Feature8", "UF_CRM_16_FEATURE_8"],
+        ["ufCrm16Feature9", "UF_CRM_16_FEATURE_9"],
+        ["ufCrm16Feature10", "UF_CRM_16_FEATURE_10"],
+        ["ufCrm16DescriptionOutroText", "UF_CRM_16_DESCRIPTION_OUTRO_TEXT"],
+      ].forEach(([camel, upper]) => {
+        const el = document.getElementById(`field_${camel}`);
+        if (el && el.value !== undefined) {
+          const val = el.value.trim();
+          payload[camel] = val;
+          payload[upper] = val;
+        } else if (payload[camel] !== undefined) {
+          payload[upper] = payload[camel];
+        }
+      });
 
       if (
         payload["contactIds"] &&
