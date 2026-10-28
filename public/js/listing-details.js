@@ -949,7 +949,7 @@
             key: "ufCrm16QrCodeLink",
             crmCode: "UF_CRM_16_QR_CODE_LINK",
             fallbackKeys: ["ufCrm16QrCode"],
-            label: "DLD QR / Permit URL",
+            label: "DLD Permit URL",
             type: "url",
             placeholder: "https://dubailand.gov.ae/en/eservices/licensing/...",
             rules: {
