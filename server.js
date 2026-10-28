@@ -31,6 +31,7 @@ const {
   STATE_ENUM_TO_LABEL,
   STATE_LABEL_TO_ENUM
 } = require('./src/spaSync');
+const { resolveCountryCode } = require('./src/countryMapping');
 const {
   verifyBitrixEventToken,
   verifyAdminSecret,
@@ -1265,6 +1266,18 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
     fields.ADDRESS_PROVINCE = STATE_ENUM_TO_LABEL[String(fields.UF_CRM_STATE)] || fields.UF_CRM_STATE;
   }
 
+  // Auto-populate Country Code on Lead according to Country Name with fallback to blank
+  if (fields.UF_CRM_COUNTRY !== undefined || fields.ADDRESS_COUNTRY !== undefined || fields.UF_CRM_COUNTRY_CODE !== undefined || fields.ADDRESS_COUNTRY_CODE !== undefined) {
+    const countryName = fields.UF_CRM_COUNTRY || fields.ADDRESS_COUNTRY || '';
+    const code = resolveCountryCode(countryName);
+    fields.UF_CRM_COUNTRY_CODE = code;
+    fields.ADDRESS_COUNTRY_CODE = code;
+    if (countryName) {
+      fields.UF_CRM_COUNTRY = countryName;
+      fields.ADDRESS_COUNTRY = countryName;
+    }
+  }
+
   // Sync Master Project companion fields (UF_CRM_PROJECT <-> UF_CRM_1792558317)
   if (fields.UF_CRM_PROJECT && !fields.UF_CRM_1792558317) {
     fields.UF_CRM_1792558317 = fields.UF_CRM_PROJECT;
@@ -1614,6 +1627,13 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
         lead.UF_CRM_PLOT_AREA = effPlot;
         lead.UF_CRM_PLOT_SIZE = effPlot;
         lead.UF_CRM_LOTSIZE = effPlot;
+      }
+
+      // Auto-populate Country Code fallback on Lead if missing
+      if (!lead.UF_CRM_COUNTRY_CODE && !lead.ADDRESS_COUNTRY_CODE && (lead.UF_CRM_COUNTRY || lead.ADDRESS_COUNTRY)) {
+        const code = resolveCountryCode(lead.UF_CRM_COUNTRY || lead.ADDRESS_COUNTRY);
+        lead.UF_CRM_COUNTRY_CODE = code;
+        lead.ADDRESS_COUNTRY_CODE = code;
       }
 
       // Enrich CRM lookup fields with resolved titles and references

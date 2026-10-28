@@ -1335,6 +1335,63 @@ async function runTests() {
   assert(trakheesiSyncJs.includes('leadUpdates[\'UF_CRM_PLOT_SIZE\'] = targetVal;'), 'spaSync.js synchronizes companion Plot Area to Lead');
 
   // ============================================================================
+  // Test Case 34: Auto-populate Country Code on Lead & Fallback to Blank
+  // ============================================================================
+  console.log('\n--- Case 34: Auto-populate Country Code on Lead & Fallback to Blank ---');
+  const { resolveCountryCode } = require('./src/countryMapping');
+  assert(typeof resolveCountryCode === 'function', 'resolveCountryCode is exported as a function');
+  assert(resolveCountryCode('United Arab Emirates') === 'AE', 'Resolves UAE full name to AE');
+  assert(resolveCountryCode('uae') === 'AE', 'Resolves uae lowercase alias to AE');
+  assert(resolveCountryCode('Dubai') === 'AE', 'Resolves Dubai city to AE');
+  assert(resolveCountryCode('United Kingdom') === 'GB', 'Resolves United Kingdom to GB');
+  assert(resolveCountryCode('UK') === 'GB', 'Resolves UK to GB');
+  assert(resolveCountryCode('United States') === 'US', 'Resolves United States to US');
+  assert(resolveCountryCode('USA') === 'US', 'Resolves USA to US');
+  assert(resolveCountryCode('Saudi Arabia') === 'SA', 'Resolves Saudi Arabia to SA');
+  assert(resolveCountryCode('KSA') === 'SA', 'Resolves KSA to SA');
+  assert(resolveCountryCode('France') === 'FR', 'Resolves France to FR');
+  assert(resolveCountryCode('Germany') === 'DE', 'Resolves Germany to DE');
+  assert(resolveCountryCode('India') === 'IN', 'Resolves India to IN');
+  assert(resolveCountryCode('AE') === 'AE', 'Passes through 2-letter ISO code AE');
+  assert(resolveCountryCode('GB') === 'GB', 'Passes through 2-letter ISO code GB');
+  // Fallback checks
+  assert(resolveCountryCode('Atlantis') === '', 'Falls back to blank string for unknown country Atlantis');
+  assert(resolveCountryCode('Narnia') === '', 'Falls back to blank string for unknown country Narnia');
+  assert(resolveCountryCode('') === '', 'Falls back to blank string for empty input');
+  assert(resolveCountryCode(null) === '', 'Falls back to blank string for null input');
+  assert(resolveCountryCode(undefined) === '', 'Falls back to blank string for undefined input');
+
+  // Schema checks
+  assert(fieldsJsonContent.includes('"UF_CRM_COUNTRY_CODE"'), 'config/fields.json defines UF_CRM_COUNTRY_CODE');
+  assert(fieldsJsonContent.includes('"ADDRESS_COUNTRY_CODE"'), 'config/fields.json defines ADDRESS_COUNTRY_CODE as leadAltCode');
+  assert(fieldsJsonContent.includes('"ufCrm16CountryCode"'), 'config/fields.json defines ufCrm16CountryCode SPA key');
+  assert(fieldsJsonContent.includes('"UF_CRM_16_COUNTRY_CODE"'), 'config/fields.json defines UF_CRM_16_COUNTRY_CODE SPA crm code');
+
+  // UI checks (tab.js)
+  assert(tabJs.includes('resolveCountryCode'), 'tab.js implements resolveCountryCode');
+  assert(tabJs.includes('UF_CRM_COUNTRY_CODE'), 'tab.js manages UF_CRM_COUNTRY_CODE');
+  assert(tabJs.includes('ADDRESS_COUNTRY_CODE'), 'tab.js manages ADDRESS_COUNTRY_CODE');
+  assert(tabJs.includes('syncCountryCode'), 'tab.js binds real-time sync for country code');
+
+  // Backend checks (server.js)
+  assert(serverJsContent.includes('resolveCountryCode'), 'server.js imports and uses resolveCountryCode');
+  assert(serverJsContent.includes('fields.UF_CRM_COUNTRY_CODE = code;'), 'server.js auto-populates UF_CRM_COUNTRY_CODE on save');
+  assert(serverJsContent.includes('fields.ADDRESS_COUNTRY_CODE = code;'), 'server.js auto-populates ADDRESS_COUNTRY_CODE on save');
+  assert(serverJsContent.includes('resolveCountryCode(lead.UF_CRM_COUNTRY || lead.ADDRESS_COUNTRY)'), 'server.js resolves fallback Country Code on GET');
+
+  // SPA Sync checks (spaSync.js)
+  assert(trakheesiSyncJs.includes("leadCode: 'UF_CRM_COUNTRY_CODE'") && trakheesiSyncJs.includes("spaKey: 'ufCrm16CountryCode'"), 'spaSync.js maps UF_CRM_COUNTRY_CODE in LISTING_FIELD_MAP');
+  assert(trakheesiSyncJs.includes('updates.ufCrm16CountryCode = cCode;'), 'spaSync.js sets ufCrm16CountryCode when syncing SPA from Lead');
+  assert(trakheesiSyncJs.includes("leadUpdates['UF_CRM_COUNTRY_CODE'] = cCode;"), 'spaSync.js sets UF_CRM_COUNTRY_CODE when syncing Lead from SPA');
+  assert(trakheesiSyncJs.includes("leadUpdates['ADDRESS_COUNTRY_CODE'] = cCode;"), 'spaSync.js sets ADDRESS_COUNTRY_CODE when syncing Lead from SPA');
+
+  // Listing Details checks (listing-details.js)
+  const listingDetailsJs = fs.readFileSync('public/js/listing-details.js', 'utf8');
+  assert(listingDetailsJs.includes('key: "ufCrm16CountryCode"'), 'listing-details.js defines ufCrm16CountryCode field');
+  assert(listingDetailsJs.includes('resolveCountryCode'), 'listing-details.js includes resolveCountryCode helper');
+  assert(listingDetailsJs.includes('payload["ufCrm16CountryCode"] = resolvedCode;'), 'listing-details.js synchronizes Country Code on save');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
