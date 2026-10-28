@@ -1079,9 +1079,10 @@
             },
           },
           {
-            key: "ufCrm16Feature1",
+            key: "ufCrm_16_FEATURE_1",
             crmCode: "UF_CRM_16_FEATURE_1",
             fallbackKeys: [
+              "ufCrm16Feature1",
               "UF_CRM_FEATURE_1",
               "ufCrmFeature1",
               "feature_1",
@@ -1099,9 +1100,10 @@
             },
           },
           {
-            key: "ufCrm16Feature2",
+            key: "ufCrm_16_FEATURE_2",
             crmCode: "UF_CRM_16_FEATURE_2",
             fallbackKeys: [
+              "ufCrm16Feature2",
               "UF_CRM_FEATURE_2",
               "ufCrmFeature2",
               "feature_2",
@@ -1119,9 +1121,10 @@
             },
           },
           {
-            key: "ufCrm16Feature3",
+            key: "ufCrm_16_FEATURE_3",
             crmCode: "UF_CRM_16_FEATURE_3",
             fallbackKeys: [
+              "ufCrm16Feature3",
               "UF_CRM_FEATURE_3",
               "ufCrmFeature3",
               "feature_3",
@@ -1139,9 +1142,10 @@
             },
           },
           {
-            key: "ufCrm16Feature4",
+            key: "ufCrm_16_FEATURE_4",
             crmCode: "UF_CRM_16_FEATURE_4",
             fallbackKeys: [
+              "ufCrm16Feature4",
               "UF_CRM_FEATURE_4",
               "ufCrmFeature4",
               "feature_4",
@@ -1159,9 +1163,10 @@
             },
           },
           {
-            key: "ufCrm16Feature5",
+            key: "ufCrm_16_FEATURE_5",
             crmCode: "UF_CRM_16_FEATURE_5",
             fallbackKeys: [
+              "ufCrm16Feature5",
               "UF_CRM_FEATURE_5",
               "ufCrmFeature5",
               "feature_5",
@@ -1179,9 +1184,10 @@
             },
           },
           {
-            key: "ufCrm16Feature6",
+            key: "ufCrm_16_FEATURE_6",
             crmCode: "UF_CRM_16_FEATURE_6",
             fallbackKeys: [
+              "ufCrm16Feature6",
               "UF_CRM_FEATURE_6",
               "ufCrmFeature6",
               "feature_6",
@@ -1199,9 +1205,10 @@
             },
           },
           {
-            key: "ufCrm16Feature7",
+            key: "ufCrm_16_FEATURE_7",
             crmCode: "UF_CRM_16_FEATURE_7",
             fallbackKeys: [
+              "ufCrm16Feature7",
               "UF_CRM_FEATURE_7",
               "ufCrmFeature7",
               "feature_7",
@@ -1219,9 +1226,10 @@
             },
           },
           {
-            key: "ufCrm16Feature8",
+            key: "ufCrm_16_FEATURE_8",
             crmCode: "UF_CRM_16_FEATURE_8",
             fallbackKeys: [
+              "ufCrm16Feature8",
               "UF_CRM_FEATURE_8",
               "ufCrmFeature8",
               "feature_8",
@@ -1239,9 +1247,10 @@
             },
           },
           {
-            key: "ufCrm16Feature9",
+            key: "ufCrm_16_FEATURE_9",
             crmCode: "UF_CRM_16_FEATURE_9",
             fallbackKeys: [
+              "ufCrm16Feature9",
               "UF_CRM_FEATURE_9",
               "ufCrmFeature9",
               "feature_9",
@@ -1259,9 +1268,10 @@
             },
           },
           {
-            key: "ufCrm16Feature10",
+            key: "ufCrm_16_FEATURE_10",
             crmCode: "UF_CRM_16_FEATURE_10",
             fallbackKeys: [
+              "ufCrm16Feature10",
               "UF_CRM_FEATURE_10",
               "ufCrmFeature10",
               "feature_10",
@@ -3681,7 +3691,8 @@
     const outroText = getVal("ufCrm16DescriptionOutroText");
     const featuresList = [];
     for (let i = 1; i <= 10; i++) {
-      const featVal = getVal(`ufCrm16Feature${i}`);
+      const featVal =
+        getVal(`ufCrm_16_FEATURE_${i}`) || getVal(`ufCrm16Feature${i}`);
       if (featVal) featuresList.push(`• ${featVal}`);
     }
     if (introText || featuresList.length > 0 || outroText) {
@@ -4743,18 +4754,25 @@
       }
 
       // Synchronize Description Intro/Outro and Features 1-10 with native Bitrix UF_CRM_16_* fields
+      for (let i = 1; i <= 10; i++) {
+        const featureKey = `ufCrm_16_FEATURE_${i}`;
+        const upper = `UF_CRM_16_FEATURE_${i}`;
+        const camel = `ufCrm16Feature${i}`;
+        const el =
+          document.getElementById(`field_${featureKey}`) ||
+          document.getElementById(`field_${camel}`);
+        if (el && el.value !== undefined) {
+          const val = el.value.trim();
+          payload[featureKey] = val;
+          payload[upper] = val;
+          payload[camel] = val;
+        } else if (payload[featureKey] !== undefined) {
+          payload[upper] = payload[featureKey];
+          payload[camel] = payload[featureKey];
+        }
+      }
       [
         ["ufCrm16DescriptionIntroText", "UF_CRM_16_DESCRIPTION_INTRO_TEXT"],
-        ["ufCrm16Feature1", "UF_CRM_16_FEATURE_1"],
-        ["ufCrm16Feature2", "UF_CRM_16_FEATURE_2"],
-        ["ufCrm16Feature3", "UF_CRM_16_FEATURE_3"],
-        ["ufCrm16Feature4", "UF_CRM_16_FEATURE_4"],
-        ["ufCrm16Feature5", "UF_CRM_16_FEATURE_5"],
-        ["ufCrm16Feature6", "UF_CRM_16_FEATURE_6"],
-        ["ufCrm16Feature7", "UF_CRM_16_FEATURE_7"],
-        ["ufCrm16Feature8", "UF_CRM_16_FEATURE_8"],
-        ["ufCrm16Feature9", "UF_CRM_16_FEATURE_9"],
-        ["ufCrm16Feature10", "UF_CRM_16_FEATURE_10"],
         ["ufCrm16DescriptionOutroText", "UF_CRM_16_DESCRIPTION_OUTRO_TEXT"],
       ].forEach(([camel, upper]) => {
         const el = document.getElementById(`field_${camel}`);
