@@ -658,65 +658,6 @@
   }
 
   /**
-   * Country code mapping dictionary (ISO 3166-1 alpha-2)
-   */
-  const COUNTRY_NAME_TO_CODE = {
-    'united arab emirates': 'AE', 'uae': 'AE', 'emirates': 'AE', 'dubai': 'AE', 'abu dhabi': 'AE',
-    'sharjah': 'AE', 'ajman': 'AE', 'ras al khaimah': 'AE', 'fujairah': 'AE', 'umm al quwain': 'AE',
-    'saudi arabia': 'SA', 'ksa': 'SA', 'kingdom of saudi arabia': 'SA', 'qatar': 'QA', 'oman': 'OM',
-    'kuwait': 'KW', 'bahrain': 'BH', 'lebanon': 'LB', 'jordan': 'JO', 'iraq': 'IQ', 'iran': 'IR',
-    'israel': 'IL', 'yemen': 'YE', 'syria': 'SY', 'united kingdom': 'GB', 'uk': 'GB', 'great britain': 'GB',
-    'britain': 'GB', 'england': 'GB', 'scotland': 'GB', 'wales': 'GB', 'northern ireland': 'GB',
-    'ireland': 'IE', 'france': 'FR', 'germany': 'DE', 'deutschland': 'DE', 'italy': 'IT', 'italia': 'IT',
-    'spain': 'ES', 'espana': 'ES', 'españa': 'ES', 'portugal': 'PT', 'greece': 'GR', 'cyprus': 'CY',
-    'switzerland': 'CH', 'austria': 'AT', 'netherlands': 'NL', 'holland': 'NL', 'belgium': 'BE',
-    'sweden': 'SE', 'norway': 'NO', 'denmark': 'DK', 'finland': 'FI', 'poland': 'PL', 'czech republic': 'CZ',
-    'czechia': 'CZ', 'hungary': 'HU', 'romania': 'RO', 'bulgaria': 'BG', 'croatia': 'HR', 'serbia': 'RS',
-    'slovakia': 'SK', 'slovenia': 'SI', 'estonia': 'EE', 'latvia': 'LV', 'lithuania': 'LT', 'luxembourg': 'LU',
-    'monaco': 'MC', 'malta': 'MT', 'iceland': 'IS', 'united states': 'US', 'united states of america': 'US',
-    'usa': 'US', 'us': 'US', 'canada': 'CA', 'mexico': 'MX', 'brazil': 'BR', 'brasil': 'BR',
-    'argentina': 'AR', 'colombia': 'CO', 'chile': 'CL', 'peru': 'PE', 'india': 'IN', 'bharat': 'IN',
-    'pakistan': 'PK', 'bangladesh': 'BD', 'sri lanka': 'LK', 'nepal': 'NP', 'maldives': 'MV',
-    'china': 'CN', 'hong kong': 'HK', 'macau': 'MO', 'taiwan': 'TW', 'singapore': 'SG', 'malaysia': 'MY',
-    'indonesia': 'ID', 'thailand': 'TH', 'philippines': 'PH', 'vietnam': 'VN', 'japan': 'JP',
-    'south korea': 'KR', 'korea': 'KR', 'australia': 'AU', 'new zealand': 'NZ', 'russia': 'RU',
-    'russian federation': 'RU', 'ukraine': 'UA', 'turkey': 'TR', 'turkiye': 'TR', 'türkiye': 'TR',
-    'georgia': 'GE', 'armenia': 'AM', 'azerbaijan': 'AZ', 'kazakhstan': 'KZ', 'uzbekistan': 'UZ',
-    'egypt': 'EG', 'south africa': 'ZA', 'nigeria': 'NG', 'kenya': 'KE', 'morocco': 'MA', 'tunisia': 'TN',
-    'algeria': 'DZ', 'ethiopia': 'ET', 'ghana': 'GH', 'tanzania': 'TZ', 'uganda': 'UG', 'mauritius': 'MU',
-    'seychelles': 'SC'
-  };
-
-  const VALID_ISO_CODES = new Set(Object.values(COUNTRY_NAME_TO_CODE));
-
-  /**
-   * Resolve standard ISO 3166-1 alpha-2 country code from country name or alias.
-   * Fallback condition: Returns empty string '' if no match found.
-   */
-  function resolveCountryCode(countryName) {
-    if (!countryName) return '';
-    const clean = String(countryName).trim();
-    if (!clean) return '';
-    const upper = clean.toUpperCase();
-    if (clean.length === 2 && VALID_ISO_CODES.has(upper)) {
-      return upper;
-    }
-    const norm = clean.toLowerCase()
-      .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim();
-    if (COUNTRY_NAME_TO_CODE[norm]) {
-      return COUNTRY_NAME_TO_CODE[norm];
-    }
-    for (const [key, code] of Object.entries(COUNTRY_NAME_TO_CODE)) {
-      if (norm === key || norm.startsWith(`${key} `) || norm.endsWith(` ${key}`)) {
-        return code;
-      }
-    }
-    return '';
-  }
-
-  /**
    * Normalize Bitrix ISO 8601 date string (e.g. 2026-10-30T03:00:00+03:00) to HTML5 YYYY-MM-DD
    */
   function formatDateForInput(val) {
@@ -1122,13 +1063,6 @@
         setVal(portalTitleCodes, autoTitle, !isInitialLoad);
       }
     }
-
-    // 3. AUTO-POPULATION: Country Code from Country Name (fallback to blank)
-    const countryName = getVal(['UF_CRM_COUNTRY', 'ADDRESS_COUNTRY']);
-    if (trigger === 'UF_CRM_COUNTRY' || trigger === 'ADDRESS_COUNTRY' || isInitialLoad) {
-      const countryCode = resolveCountryCode(countryName);
-      setVal(['UF_CRM_COUNTRY_CODE', 'ADDRESS_COUNTRY_CODE'], countryCode, !isInitialLoad);
-    }
   }
   
 
@@ -1192,21 +1126,6 @@
           applyListingSubLayout(detected);
         }
       });
-    }
-
-    // Bind real-time Country Code auto-population when Country changes
-    if (f.code === 'UF_CRM_COUNTRY' || f.code === 'ADDRESS_COUNTRY') {
-      const syncCountryCode = (e) => {
-        const cVal = e.target.value;
-        const cCode = resolveCountryCode(cVal);
-        const codeInput = document.getElementById('field_UF_CRM_COUNTRY_CODE') || document.getElementById('field_ADDRESS_COUNTRY_CODE');
-        if (codeInput) {
-          codeInput.value = cCode;
-          markFieldDirty();
-        }
-      };
-      inputObj.inputElement?.addEventListener('input', syncCountryCode);
-      inputObj.inputElement?.addEventListener('change', syncCountryCode);
     }
 
     formGroup.appendChild(inputObj.container);
@@ -1426,9 +1345,6 @@
         }
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_1792151466') {
           currentVal = lead['UF_CRM_PF_ID'] || '';
-        }
-        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_COUNTRY_CODE' || f.code === 'ADDRESS_COUNTRY_CODE')) {
-          currentVal = resolveCountryCode(lead['UF_CRM_COUNTRY'] || lead['ADDRESS_COUNTRY'] || '');
         }
         if (f.code === 'UF_CRM_1792563228880' || f.code === 'UF_CRM_LEAD_SOURCE_TYPE') {
           if (!currentVal) {
@@ -1847,18 +1763,6 @@
       const nativeSource = sourceToNativeMap[srcVal];
       if (nativeSource && !payload.SOURCE_ID) {
         payload.SOURCE_ID = nativeSource;
-      }
-    }
-
-    // Auto-populate Country Code on Lead according to Country Name with fallback to blank
-    if (payload.UF_CRM_COUNTRY !== undefined || payload.ADDRESS_COUNTRY !== undefined || payload.UF_CRM_COUNTRY_CODE !== undefined || payload.ADDRESS_COUNTRY_CODE !== undefined) {
-      const countryName = payload.UF_CRM_COUNTRY || payload.ADDRESS_COUNTRY || '';
-      const code = resolveCountryCode(countryName);
-      payload.UF_CRM_COUNTRY_CODE = code;
-      payload.ADDRESS_COUNTRY_CODE = code;
-      if (countryName) {
-        payload.UF_CRM_COUNTRY = countryName;
-        payload.ADDRESS_COUNTRY = countryName;
       }
     }
 

@@ -753,22 +753,6 @@
             }
           },
           {
-            "code": "UF_CRM_COUNTRY_CODE",
-            "leadAltCode": "ADDRESS_COUNTRY_CODE",
-            "spaKey": "ufCrm16CountryCode",
-            "spaCrmCode": "UF_CRM_16_COUNTRY_CODE",
-            "label": "Country Code",
-            "bitrixLabel": "Country Code",
-            "type": "string",
-            "placeholder": "e.g. AE",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "show",
-              "rent": "opt"
-            }
-          },
-          {
             "code": "UF_CRM_STREET",
             "spaKey": "ufCrm16Street",
             "spaCrmCode": "UF_CRM_16_STREET",
@@ -6426,21 +6410,6 @@
               "rent": "opt"
             },
             "leadCode": "UF_CRM_COUNTRY"
-          },
-          {
-            "key": "ufCrm16CountryCode",
-            "crmCode": "UF_CRM_16_COUNTRY_CODE",
-            "label": "Country Code",
-            "type": "string",
-            "placeholder": "e.g. AE",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "show",
-              "rent": "opt"
-            },
-            "leadCode": "UF_CRM_COUNTRY_CODE",
-            "leadAltCode": "ADDRESS_COUNTRY_CODE"
           },
           {
             "key": "ufCrm16Street",

@@ -40,7 +40,6 @@ function formatSyncDate(val) {
  */
 
 const BitrixClient = require('./bitrixClient');
-const { resolveCountryCode } = require('./countryMapping');
 
 // 1. Lead Source Type Translation Map (Lead enum ID <-> SPA 1062 enum ID)
 const LEAD_SOURCE_TYPE_MAP = {
@@ -518,8 +517,7 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_SUB_COMMUNITY_PROPERTYFINDER', spaKey: 'ufCrm16SubCommunityPropertyfinder', spaCrmCode: 'UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER', type: 'string', label: 'Sub-Community' },
   { leadCode: 'UF_CRM_NEIGHBORHOOD', leadAltCodes: ['UF_CRM_COMMUNITY', 'UF_CRM_COMMUNITY_PROPERTYFINDER', 'UF_CRM_LOCATIONTEXT_DUBIZZLE'], spaKey: 'ufCrm16_1791173032', spaCrmCode: 'UF_CRM_16_1791173032', spaAltKeys: ['ufCrm16CommunityPropertyfinder', 'ufCrm16_1791172692', 'ufCrm16SubCommunityPropertyfinder'], type: 'string', label: 'Neighborhood / Community' },
   { leadCode: 'UF_CRM_CITY', leadAltCodes: ['UF_CRM_CITY_BAYUT', 'UF_CRM_CITY_PF'], spaKey: 'ufCrm16_1791172815', spaCrmCode: 'UF_CRM_16_1791172815', spaAltKeys: ['ufCrm16_1791172830', 'ufCrm16_1791172841'], type: 'string', label: 'City' },
-  { leadCode: 'UF_CRM_COUNTRY', leadAltCodes: ['ADDRESS_COUNTRY'], spaKey: 'ufCrm16_1791172854', spaCrmCode: 'UF_CRM_16_1791172854', type: 'string', label: 'Country' },
-  { leadCode: 'UF_CRM_COUNTRY_CODE', leadAltCodes: ['ADDRESS_COUNTRY_CODE'], spaKey: 'ufCrm16CountryCode', spaCrmCode: 'UF_CRM_16_COUNTRY_CODE', type: 'string', label: 'Country Code' },
+  { leadCode: 'UF_CRM_COUNTRY', spaKey: 'ufCrm16_1791172854', spaCrmCode: 'UF_CRM_16_1791172854', spaAltKeys: ['ufCrm16CountryCode'], type: 'string', label: 'Country' },
   { leadCode: 'UF_CRM_STREET', leadAltCodes: ['UF_CRM_STREETNAME'], spaKey: 'ufCrm16Street', spaCrmCode: 'UF_CRM_16_STREET', spaAltKeys: ['ufCrm16DisplayAddress', 'ufCrm16DisplayedAddress'], type: 'string', label: 'Street' },
   { leadCode: 'UF_CRM_1791970638065', leadAltCodes: ['ADDRESS'], spaKey: 'ufCrm16_1791172676', spaCrmCode: 'UF_CRM_16_1791172676', type: 'address', label: 'Address' },
   { leadCode: 'UF_CRM_LATITUDE', spaKey: 'ufCrm16Latitude', spaCrmCode: 'UF_CRM_16_LATITUDE', type: 'number', label: 'Latitude' },
@@ -752,14 +750,6 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
       }
     }
 
-    // Auto-populate Country Code on Listing SPA item if Country is set
-    const effCountry = updates.ufCrm16_1791172854 || spaItem.ufCrm16_1791172854 || lead.UF_CRM_COUNTRY || lead.ADDRESS_COUNTRY;
-    if (effCountry) {
-      const cCode = resolveCountryCode(effCountry);
-      updates.ufCrm16CountryCode = cCode;
-      updates.UF_CRM_16_COUNTRY_CODE = cCode;
-    }
-
     // 3. Apply updates to Bitrix Listing SPA item
     if (Object.keys(updates).length > 0) {
       console.log(`[SPA SYNC] Updating Listing SPA Item #${spaItemId} from Lead #${cleanLeadId}:`, Object.keys(updates));
@@ -858,16 +848,6 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
         leadUpdates['UF_CRM_PLOT_AREA'] = targetVal;
         leadUpdates['UF_CRM_PLOT_SIZE'] = targetVal;
         leadUpdates['UF_CRM_LOTSIZE'] = targetVal;
-      } else if (mapping.leadCode === 'UF_CRM_COUNTRY') {
-        leadUpdates['UF_CRM_COUNTRY'] = targetVal;
-        leadUpdates['ADDRESS_COUNTRY'] = targetVal;
-        const cCode = resolveCountryCode(targetVal);
-        leadUpdates['UF_CRM_COUNTRY_CODE'] = cCode;
-        leadUpdates['ADDRESS_COUNTRY_CODE'] = cCode;
-      } else if (mapping.leadCode === 'UF_CRM_COUNTRY_CODE') {
-        const cCode = resolveCountryCode(targetVal);
-        leadUpdates['UF_CRM_COUNTRY_CODE'] = cCode;
-        leadUpdates['ADDRESS_COUNTRY_CODE'] = cCode;
       } else {
         leadUpdates[mapping.leadCode] = targetVal;
       }

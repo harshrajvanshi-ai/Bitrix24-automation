@@ -141,32 +141,6 @@ check(tabJsContent.includes('UF_CRM_PLOT_SIZE'), `tab.js resolves Plot Area fall
 check(tabJsContent.includes('1834') && tabJsContent.includes('1836'), `tab.js normalizes Bedrooms enum IDs to numeric numbers`);
 
 // ---------------------------------------------------------------------------
-// 5b. Country Code Auto-Population & Fallback Verification
-// ---------------------------------------------------------------------------
-console.log('\n--- 5b. Country Code Auto-Population & Fallback Verification ---');
-
-check(tabJsContent.includes('resolveCountryCode'), 'tab.js defines resolveCountryCode function');
-check(tabJsContent.includes('COUNTRY_NAME_TO_CODE'), 'tab.js defines COUNTRY_NAME_TO_CODE dictionary');
-check(tabJsContent.includes('UF_CRM_COUNTRY_CODE') && tabJsContent.includes('ADDRESS_COUNTRY_CODE'), 'tab.js references UF_CRM_COUNTRY_CODE and ADDRESS_COUNTRY_CODE');
-check(tabJsContent.includes('syncCountryCode'), 'tab.js binds real-time syncCountryCode handler on Country input');
-
-const { resolveCountryCode: resolveCodeUtil } = require('./src/countryMapping');
-check(resolveCodeUtil('United Arab Emirates') === 'AE', 'resolveCountryCode maps "United Arab Emirates" to "AE"');
-check(resolveCodeUtil('UAE') === 'AE', 'resolveCountryCode maps "UAE" to "AE"');
-check(resolveCodeUtil('United Kingdom') === 'GB', 'resolveCountryCode maps "United Kingdom" to "GB"');
-check(resolveCodeUtil('UK') === 'GB', 'resolveCountryCode maps "UK" to "GB"');
-check(resolveCodeUtil('USA') === 'US', 'resolveCountryCode maps "USA" to "US"');
-check(resolveCodeUtil('Saudi Arabia') === 'SA', 'resolveCountryCode maps "Saudi Arabia" to "SA"');
-check(resolveCodeUtil('France') === 'FR', 'resolveCountryCode maps "France" to "FR"');
-check(resolveCodeUtil('Germany') === 'DE', 'resolveCountryCode maps "Germany" to "DE"');
-check(resolveCodeUtil('India') === 'IN', 'resolveCountryCode maps "India" to "IN"');
-check(resolveCodeUtil('Atlantis') === '', 'resolveCountryCode falls back to "" for unknown country "Atlantis"');
-check(resolveCodeUtil('Unknown Country') === '', 'resolveCountryCode falls back to "" for "Unknown Country"');
-check(resolveCodeUtil('') === '', 'resolveCountryCode falls back to "" for empty string');
-check(resolveCodeUtil(null) === '', 'resolveCountryCode falls back to "" for null');
-check(resolveCodeUtil(undefined) === '', 'resolveCountryCode falls back to "" for undefined');
-
-// ---------------------------------------------------------------------------
 // 6. Comprehensive Field-by-Field Execution Simulation (All 204 Fields)
 // ---------------------------------------------------------------------------
 console.log('\n--- 6. Field-by-Field Mock DOM Rendering & Extraction Simulation ---');
