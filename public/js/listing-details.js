@@ -359,9 +359,9 @@
             },
           },
           {
-            key: "ufCrm16SqFt",
+            key: "ufCrm16Size",
             crmCode: "UF_CRM_16_SIZE",
-            fallbackKeys: ["ufCrm16Size"],
+            fallbackKeys: ["UF_CRM_16_SIZE", "ufCrm16SqFt", "UF_CRM_16_SQ_FT"],
             label: "Built-up Area (Sq Ft)",
             type: "number",
             addon: "Sq Ft",
@@ -3127,7 +3127,12 @@
   function findFieldConfig(key) {
     if (!CONFIG.sections) return null;
     for (const sec of CONFIG.sections) {
-      const found = sec.fields.find((f) => f.key === key || f.crmCode === key);
+      const found = sec.fields.find(
+        (f) =>
+          f.key === key ||
+          f.crmCode === key ||
+          (Array.isArray(f.fallbackKeys) && f.fallbackKeys.includes(key)),
+      );
       if (found) return found;
     }
     return null;
@@ -3235,7 +3240,16 @@
     const isInitialLoad = !!options.isInitialLoad;
     const trigger = options.triggerField || "";
 
-    const getEl = (id) => document.getElementById(`field_${id}`);
+    const getEl = (id) =>
+      document.getElementById(`field_${id}`) ||
+      (id === "ufCrm16Size"
+        ? document.getElementById("field_UF_CRM_16_SIZE") ||
+          document.getElementById("field_ufCrm16SqFt")
+        : id === "UF_CRM_16_SIZE" || id === "ufCrm16SqFt"
+          ? document.getElementById("field_ufCrm16Size") ||
+            document.getElementById("field_UF_CRM_16_SIZE") ||
+            document.getElementById("field_ufCrm16SqFt")
+          : null);
     const getVal = (id) => {
       const el = getEl(id);
       if (!el) return "";
@@ -3288,7 +3302,10 @@
 
     // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area
     const price = getNum("ufCrm16_1790154936");
-    const sqft = getNum("ufCrm16Size");
+    const sqft =
+      getNum("ufCrm16Size") ||
+      getNum("UF_CRM_16_SIZE") ||
+      getNum("ufCrm16SqFt");
     const pricePerSqFt = getNum("ufCrm16ListPricePerSqFt");
 
     if (price > 0 && sqft > 0) {
@@ -3296,7 +3313,9 @@
         !pricePerSqFt ||
         isInitialLoad ||
         trigger === "ufCrm16_1790154936" ||
-        trigger === "ufCrm16Size"
+        trigger === "ufCrm16Size" ||
+        trigger === "UF_CRM_16_SIZE" ||
+        trigger === "ufCrm16SqFt"
       ) {
         const calcPricePerSqFt = (price / sqft).toFixed(2);
         setVal("ufCrm16ListPricePerSqFt", calcPricePerSqFt, !isInitialLoad);
@@ -4376,6 +4395,41 @@
           payload["ufCrm16PortalListingAgent"] = 0;
           payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = 0;
         }
+      }
+
+      // Synchronize Built-up Area / Sq Ft field with Bitrix UF_CRM_16_SIZE and ufCrm16Size
+      const sqftEl =
+        document.getElementById("field_ufCrm16Size") ||
+        document.getElementById("field_UF_CRM_16_SIZE") ||
+        document.getElementById("field_ufCrm16SqFt");
+      if (sqftEl) {
+        const rawSqft =
+          sqftEl.value !== undefined ? String(sqftEl.value).trim() : "";
+        if (rawSqft !== "") {
+          const numSqft = Number(rawSqft);
+          const valToSave = !isNaN(numSqft) ? numSqft : rawSqft;
+          payload["UF_CRM_16_SIZE"] = valToSave;
+          payload["ufCrm16Size"] = valToSave;
+        } else {
+          payload["UF_CRM_16_SIZE"] = "";
+          payload["ufCrm16Size"] = "";
+        }
+      } else if (
+        payload["ufCrm16Size"] !== undefined ||
+        payload["UF_CRM_16_SIZE"] !== undefined ||
+        payload["ufCrm16SqFt"] !== undefined
+      ) {
+        const rawSqft =
+          payload["UF_CRM_16_SIZE"] !== undefined
+            ? payload["UF_CRM_16_SIZE"]
+            : payload["ufCrm16Size"] !== undefined
+              ? payload["ufCrm16Size"]
+              : payload["ufCrm16SqFt"];
+        const numSqft = Number(rawSqft);
+        const valToSave =
+          rawSqft === "" ? "" : !isNaN(numSqft) ? numSqft : rawSqft;
+        payload["UF_CRM_16_SIZE"] = valToSave;
+        payload["ufCrm16Size"] = valToSave;
       }
 
       if (

@@ -1258,6 +1258,17 @@ async function runTests() {
   assert(finalSpaSyncCode.includes("spaCrmCode: 'UF_CRM_16_PORTAL_LISTING_AGENT'"), 'spaSync.js synchronizes Listing Agent / Broker UF_CRM_16_PORTAL_LISTING_AGENT');
 
   // ============================================================================
+  // Test Case 30: Built-up Area (Sq Ft) UF_CRM_16_SIZE Bitrix Field Mapping & Persistence
+  // ============================================================================
+  console.log('\n--- Case 30: Built-up Area / Sq Ft UF_CRM_16_SIZE Field Mapping & Persistence ---');
+  const finalSqftJs = fs.readFileSync('public/js/listing-details.js', 'utf8').replace(/"/g, "'");
+  assert(finalSqftJs.includes("key: 'ufCrm16Size'"), 'listing-details.js configures Built-up Area with key ufCrm16Size');
+  assert(finalSqftJs.includes("crmCode: 'UF_CRM_16_SIZE'"), 'listing-details.js configures Built-up Area with crmCode UF_CRM_16_SIZE');
+  assert(finalSqftJs.includes("'UF_CRM_16_SIZE'") && finalSqftJs.includes("'ufCrm16SqFt'"), 'listing-details.js includes fallback keys for UF_CRM_16_SIZE');
+  assert(finalSqftJs.includes("payload['UF_CRM_16_SIZE'] ="), 'listing-details.js persists native Bitrix field UF_CRM_16_SIZE on save');
+  assert(finalSqftJs.includes("payload['ufCrm16Size'] ="), 'listing-details.js persists camelCase ufCrm16Size on save');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
