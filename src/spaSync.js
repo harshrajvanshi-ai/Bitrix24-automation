@@ -396,7 +396,7 @@ const LISTING_ENUM_MAPS = {
     },
     spaToLead: {
       '2432': '2440',
-      '2434': '2446',
+      '2434': '2442',
       '2436': '2446',
       '2438': '2448',
       '2440': '2450'
@@ -466,7 +466,7 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_PROPERTY_SUB_TYPE', spaKey: 'ufCrm16PropertySubType', spaCrmCode: 'UF_CRM_16_PROPERTY_SUB_TYPE', type: 'enumeration', enumCategory: 'propertySubType', label: 'Property Sub-type' },
   { leadCode: 'UF_CRM_BEDROOMS', leadAltCodes: ['UF_CRM_1791966366775'], spaKey: 'ufCrm16_1791172802', spaCrmCode: 'UF_CRM_16_1791172802', type: 'number', label: 'Bedrooms' },
   { leadCode: 'UF_CRM_BATHROOMS', leadAltCodes: ['UF_CRM_1791966408374'], spaKey: 'ufCrm16_1791172787', spaCrmCode: 'UF_CRM_16_1791172787', type: 'number', label: 'Bathrooms' },
-  { leadCode: 'UF_CRM_BUA', leadAltCodes: ['UF_CRM_TOTALAREA'], spaKey: 'ufCrm16SqFt', spaCrmCode: 'UF_CRM_16_SQ_FT', spaAltKeys: ['ufCrm16Size'], type: 'number', label: 'Built-up Area (Sq Ft)' },
+  { leadCode: 'UF_CRM_BUA', leadAltCodes: ['UF_CRM_TOTALAREA'], spaKey: 'ufCrm16Size', spaCrmCode: 'UF_CRM_16_SIZE', spaAltKeys: ['ufCrm16SqFt'], type: 'number', label: 'Built-up Area (Sq Ft)' },
   { leadCode: 'UF_CRM_PLOT_AREA', leadAltCodes: ['UF_CRM_PLOT_SIZE'], spaKey: 'ufCrm16PlotSize', spaCrmCode: 'UF_CRM_16_PLOT_SIZE', spaAltKeys: ['ufCrm16LotSize'], type: 'number', label: 'Plot Area (Sq Ft)' },
   { leadCode: 'UF_CRM_UNIT_NO', spaKey: 'ufCrm16UnitNumber', spaCrmCode: 'UF_CRM_16_UNIT_NUMBER', type: 'string', label: 'Unit Number' },
   { leadCode: 'UF_CRM_FLOOR', spaKey: 'ufCrm16Floor', spaCrmCode: 'UF_CRM_16_FLOOR', type: 'integer', label: 'Floor Number' },

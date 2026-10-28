@@ -3289,7 +3289,22 @@
       ).trim();
       if (currentVal !== formattedNew) {
         el.value = formattedNew;
-        if (el.dataset) el.dataset.id = formattedNew;
+        if (el.dataset) {
+          el.dataset.id = formattedNew;
+          if (!formattedNew) {
+            el.dataset.selectedId = "";
+            el.dataset.selectedRef = "";
+            el.dataset.selectedTitle = "";
+            el.title = "";
+          }
+        }
+        const container = el.closest(".lookup-container");
+        if (container) {
+          const clearBtn = container.querySelector(".lookup-clear-btn");
+          const openBtn = container.querySelector(".lookup-open-btn");
+          if (clearBtn) clearBtn.style.display = formattedNew ? "block" : "none";
+          if (openBtn && !formattedNew) openBtn.style.display = "none";
+        }
         if (isInitialLoad) {
           initialFormValues[id] = formattedNew;
         } else if (markDirty) {
@@ -3333,19 +3348,31 @@
     // 2. FIELD MIRRORING: Project Name <-> Bayut Building Name
     const projName = getVal("ufCrm16ProjectName");
     const bayutBuilding = getVal("ufCrm16BuildingBayut");
-    if (projName && !bayutBuilding) {
+    if (trigger === "ufCrm16ProjectName") {
       setVal("ufCrm16BuildingBayut", projName, !isInitialLoad);
-    } else if (bayutBuilding && !projName) {
+    } else if (trigger === "ufCrm16BuildingBayut") {
       setVal("ufCrm16ProjectName", bayutBuilding, !isInitialLoad);
+    } else if (isInitialLoad) {
+      if (projName && !bayutBuilding) {
+        setVal("ufCrm16BuildingBayut", projName, false);
+      } else if (bayutBuilding && !projName) {
+        setVal("ufCrm16ProjectName", bayutBuilding, false);
+      }
     }
 
     // 3. FIELD MIRRORING: Community <-> Propertyfinder Community
     const community = getVal("ufCrm16_1791173032");
     const pfCommunity = getVal("ufCrm16CommunityPropertyfinder");
-    if (community && !pfCommunity) {
+    if (trigger === "ufCrm16_1791173032") {
       setVal("ufCrm16CommunityPropertyfinder", community, !isInitialLoad);
-    } else if (pfCommunity && !community) {
+    } else if (trigger === "ufCrm16CommunityPropertyfinder") {
       setVal("ufCrm16_1791173032", pfCommunity, !isInitialLoad);
+    } else if (isInitialLoad) {
+      if (community && !pfCommunity) {
+        setVal("ufCrm16CommunityPropertyfinder", community, false);
+      } else if (pfCommunity && !community) {
+        setVal("ufCrm16_1791173032", pfCommunity, false);
+      }
     }
 
     // 4. FIELD DERIVATION: Composite Title strictly from actual non-empty record fields
@@ -3719,7 +3746,7 @@
               const bayutInput = document.getElementById(
                 "field_ufCrm16BuildingBayut",
               );
-              if (bayutInput && !bayutInput.value)
+              if (bayutInput)
                 bayutInput.value = item.title;
 
               // Auto-link Master Project if Project has a parent Master Project (parentId1040)
@@ -3816,13 +3843,18 @@
         input.dataset.selectedTitle = "";
         input.title = "";
         openBtn.style.display = "none";
-        closeDropdown();
 
         if (f.key === "companyId" || f.key === "ufCrm16_1791172932") {
           const devNameInput = document.getElementById(
             "field_ufCrm16DeveloperName",
           );
           if (devNameInput) devNameInput.value = "";
+        }
+        if (f.key === "ufCrm16ProjectName") {
+          const bayutInput = document.getElementById(
+            "field_ufCrm16BuildingBayut",
+          );
+          if (bayutInput) bayutInput.value = "";
         }
       } else {
         if (
@@ -3871,6 +3903,12 @@
           "field_ufCrm16DeveloperName",
         );
         if (devNameInput) devNameInput.value = "";
+      }
+      if (f.key === "ufCrm16ProjectName") {
+        const bayutInput = document.getElementById(
+          "field_ufCrm16BuildingBayut",
+        );
+        if (bayutInput) bayutInput.value = "";
       }
 
       setDirty(true);
@@ -4356,16 +4394,20 @@
       // Synchronize Project & Master Project companion and native Bitrix CRM binding fields
       const projEl = document.getElementById("field_ufCrm16ProjectName");
       if (projEl) {
-        payload["ufCrm16ProjectName"] = projEl.value.trim();
-        payload["ufCrm16BuildingBayut"] =
-          payload["ufCrm16BuildingBayut"] || projEl.value.trim();
-        if (
-          projEl.dataset.selectedId &&
-          /^\d+$/.test(projEl.dataset.selectedId)
-        ) {
-          payload["ufCrm16_1791173131"] = projEl.dataset.selectedId;
-        } else if (!projEl.value.trim()) {
+        const trimmedProj = projEl.value.trim();
+        payload["ufCrm16ProjectName"] = trimmedProj;
+        if (!trimmedProj) {
+          payload["ufCrm16BuildingBayut"] = "";
           payload["ufCrm16_1791173131"] = 0;
+        } else {
+          payload["ufCrm16BuildingBayut"] =
+            payload["ufCrm16BuildingBayut"] || trimmedProj;
+          if (
+            projEl.dataset.selectedId &&
+            /^\d+$/.test(projEl.dataset.selectedId)
+          ) {
+            payload["ufCrm16_1791173131"] = projEl.dataset.selectedId;
+          }
         }
       }
 

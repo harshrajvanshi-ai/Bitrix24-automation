@@ -168,10 +168,19 @@
           {
             "code": "UF_CRM_LISTINGAGENT",
             "leadAltCode": "UF_CRM_ASSIGNED_TO_BROKER",
-            "leadAltCodes": ["UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_ASSIGNED_TO_BROKER"],
+            "leadAltCodes": [
+              "UF_CRM_PORTAL_LISTING_AGENT",
+              "UF_CRM_ASSIGNED_TO_BROKER"
+            ],
             "spaKey": "ufCrm16ListingAgent",
             "spaCrmCode": "UF_CRM_16_PORTAL_LISTING_AGENT",
-            "fallbackKeys": ["ufCrm16PortalListingAgent", "UF_CRM_16_PORTAL_LISTING_AGENT", "UF_CRM_16_LISTING_AGENT", "UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_LISTINGAGENT"],
+            "fallbackKeys": [
+              "ufCrm16PortalListingAgent",
+              "UF_CRM_16_PORTAL_LISTING_AGENT",
+              "UF_CRM_16_LISTING_AGENT",
+              "UF_CRM_PORTAL_LISTING_AGENT",
+              "UF_CRM_LISTINGAGENT"
+            ],
             "label": "Listing Agent / Broker",
             "bitrixLabel": "Listing Agent",
             "type": "lookup",
@@ -594,11 +603,18 @@
           {
             "code": "UF_CRM_PROJECT_NAME",
             "leadAltCode": "UF_CRM_PROJECT_1",
-            "leadAltCodes": ["UF_CRM_PROJECT_1", "UF_CRM_1791794196"],
+            "leadAltCodes": [
+              "UF_CRM_PROJECT_1",
+              "UF_CRM_1791794196"
+            ],
             "spaKey": "ufCrm16ProjectName",
             "spaCrmCode": "UF_CRM_16_PROJECT_NAME",
             "spaBindingCode": "UF_CRM_16_1791173131",
-            "fallbackKeys": ["ufCrm16BuildingBayut", "ufCrm16_1791173131", "ufCrm16ProjectInfo"],
+            "fallbackKeys": [
+              "ufCrm16BuildingBayut",
+              "ufCrm16_1791173131",
+              "ufCrm16ProjectInfo"
+            ],
             "label": "Project / Building Name",
             "bitrixLabel": "Project Name",
             "type": "lookup",
@@ -614,11 +630,17 @@
           {
             "code": "UF_CRM_PROJECT",
             "leadAltCode": "UF_CRM_1792558317",
-            "leadAltCodes": ["UF_CRM_1792558317"],
+            "leadAltCodes": [
+              "UF_CRM_1792558317"
+            ],
             "spaKey": "ufCrm16MasterProject",
             "spaCrmCode": "UF_CRM_16_MASTER_PROJECT",
             "spaBindingCode": "UF_CRM_16_1791173000",
-            "fallbackKeys": ["ufCrm16_1791173000", "ufCrm16MasterProjectInfo", "ufCrm16OldMasterProject"],
+            "fallbackKeys": [
+              "ufCrm16_1791173000",
+              "ufCrm16MasterProjectInfo",
+              "ufCrm16OldMasterProject"
+            ],
             "label": "Master Project",
             "bitrixLabel": "Master Project",
             "type": "lookup",
@@ -1198,20 +1220,6 @@
             }
           },
           {
-            "code": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
-            "spaKey": "ufCrm16_1791787502111",
-            "spaCrmCode": "UF_CRM_16_1791787502111",
-            "label": "Trakheesi Permit Expiry Date (Alternative)",
-            "bitrixLabel": "Trakheesi Permit Expiry Date",
-            "type": "date",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "hide",
-              "rent": "show"
-            }
-          },
-          {
             "code": "UF_CRM_QR_CODE_LINK",
             "spaKey": "ufCrm16QrCodeLink",
             "spaCrmCode": "UF_CRM_16_QR_CODE_LINK",
@@ -1224,20 +1232,6 @@
               "off_plan": "show",
               "overseas_sale": "hide",
               "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_QR_CODE",
-            "spaKey": "ufCrm16QrCodeFile",
-            "spaCrmCode": "UF_CRM_16_QR_CODE_FILE",
-            "label": "DLD QR Code Attachment",
-            "bitrixLabel": "QR Code File",
-            "type": "file",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "hide",
-              "rent": "opt"
             }
           },
           {
@@ -1262,21 +1256,6 @@
             "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
             "label": "Property Finder Listing Id",
             "bitrixLabel": "Property Finder Listing Id",
-            "type": "string",
-            "placeholder": "e.g. PF-981273",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "hide",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_PF_ID",
-            "spaKey": "ufCrm16PropertyFinderListingId",
-            "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
-            "label": "Propertyfinder Listing ID",
-            "bitrixLabel": "PF ID",
             "type": "string",
             "placeholder": "e.g. PF-981273",
             "rules": {
@@ -1404,10 +1383,14 @@
           },
           {
             "code": "UF_CRM_PHOTOS",
-            "leadAltCodes": ["UF_CRM_PHOTOS_AND_DOCUMENTS"],
+            "leadAltCodes": [
+              "UF_CRM_PHOTOS_AND_DOCUMENTS"
+            ],
             "spaKey": "ufCrm16_1791881642219",
             "spaCrmCode": "UF_CRM_16_1791881642219",
-            "fallbackKeys": ["ufCrm16_1791544736052"],
+            "fallbackKeys": [
+              "ufCrm16_1791544736052"
+            ],
             "label": "Photos",
             "bitrixLabel": "Photos",
             "type": "file",
@@ -1422,10 +1405,15 @@
           },
           {
             "code": "UF_CRM_DOCUMENTS",
-            "leadAltCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"],
+            "leadAltCodes": [
+              "UF_CRM_DOCS",
+              "UF_CRM_DOCS_1"
+            ],
             "spaKey": "ufCrm16_1791881665252",
             "spaCrmCode": "UF_CRM_16_1791881665252",
-            "fallbackKeys": ["ufCrm16_1791172957"],
+            "fallbackKeys": [
+              "ufCrm16_1791172957"
+            ],
             "label": "Documents",
             "bitrixLabel": "Documents",
             "type": "file",
@@ -1455,7 +1443,9 @@
           },
           {
             "code": "UF_CRM_FORM_A_DOC",
-            "leadAltCodes": ["UF_CRM_FORM_A_DOCUMENT"],
+            "leadAltCodes": [
+              "UF_CRM_FORM_A_DOCUMENT"
+            ],
             "spaKey": "ufCrm16_1791787381785",
             "spaCrmCode": "UF_CRM_16_1791787381785",
             "label": "Form A Document",
@@ -1865,37 +1855,9 @@
             "placeholder": "e.g., 2,500,000"
           },
           {
-            "code": "UF_CRM_TAXMIN",
-            "label": "Tax Min",
-            "bitrixLabel": "Tax Min",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
-            "code": "UF_CRM_TAXMAX",
-            "label": "Tax Max",
-            "bitrixLabel": "Tax Max",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
             "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
             "label": "Purchase Amount of Home",
             "bitrixLabel": "Purchase Amount of Home",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
-            "code": "UF_CRM_EPPRAISALVALUATION",
-            "label": "Eppraisal Valuation",
-            "bitrixLabel": "Eppraisal Valuation",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
-            "code": "UF_CRM_ESTATEDVALUATION",
-            "label": "Estated Valuation",
-            "bitrixLabel": "Estated Valuation",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
           }
@@ -2105,20 +2067,6 @@
             "label": "Lot Size - max",
             "bitrixLabel": "Lot Size - max",
             "type": "double",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_ACREMIN",
-            "label": "Acre Min",
-            "bitrixLabel": "Acre Min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_ACREMAX",
-            "label": "Acre Max",
-            "bitrixLabel": "Acre Max",
-            "type": "integer",
             "placeholder": ""
           },
           {
@@ -2335,27 +2283,6 @@
             "bitrixLabel": "Adult Community",
             "type": "boolean",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_DAYSONMARKETMIN",
-            "label": "Days On Market Min",
-            "bitrixLabel": "Days On Market Min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_DAYSONMARKETMAX",
-            "label": "Days On Market Max",
-            "bitrixLabel": "Days On Market Max",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_CHEQUES",
-            "label": "Cheques",
-            "bitrixLabel": "Number of Cheques",
-            "type": "string",
-            "placeholder": "Enter cheques requirement..."
           }
         ]
       },
@@ -2498,14 +2425,6 @@
             "bitrixLabel": "School",
             "type": "string",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SCHOOLATTENDANCEZONES",
-            "label": "School Attendance Zones",
-            "bitrixLabel": "School Attendance Zones",
-            "type": "text",
-            "placeholder": "",
-            "fullWidth": true
           },
           {
             "code": "UF_CRM_SCHOOLDISTRICTS",
@@ -2741,13 +2660,6 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_PARKINGMIN",
-            "label": "Parking Min",
-            "bitrixLabel": "Parking Min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_PARKING_SPACES_MIN",
             "label": "Parking Spaces - min",
             "bitrixLabel": "Parking Spaces - min",
@@ -2825,25 +2737,11 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_FIREPLACE",
-            "label": "Fireplace",
-            "bitrixLabel": "Fireplace",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_FLOORINGTYPE",
             "label": "Flooring Type",
             "bitrixLabel": "Flooring Type",
-            "type": "integer",
+            "type": "string",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BASEMENT_BOOL",
-            "label": "Basement",
-            "bitrixLabel": "Basement",
-            "type": "boolean",
-            "placeholder": "Has Basement"
           },
           {
             "code": "UF_CRM_BASEMENTTYPE",
@@ -2955,7 +2853,7 @@
             "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
             "label": "Is Website Saved Search",
             "bitrixLabel": "Is Website Saved Search",
-            "type": "url",
+            "type": "boolean",
             "placeholder": ""
           },
           {
@@ -2983,7 +2881,7 @@
             "code": "UF_CRM_WEBSITESEARCHTYPE",
             "label": "Website Search Type",
             "bitrixLabel": "Website Search Type",
-            "type": "url",
+            "type": "string",
             "placeholder": ""
           },
           {
@@ -3004,7 +2902,7 @@
             "code": "UF_CRM_INCLUDESALLCHANGES",
             "label": "Includes All Changes",
             "bitrixLabel": "Includes All Changes",
-            "type": "string",
+            "type": "boolean",
             "placeholder": ""
           },
           {
@@ -3018,7 +2916,7 @@
             "code": "UF_CRM_INCLUDESPRICECHANGES",
             "label": "Includes Price Changes",
             "bitrixLabel": "Includes Price Changes",
-            "type": "money",
+            "type": "boolean",
             "placeholder": "e.g., 2,500,000"
           },
           {
@@ -3032,28 +2930,7 @@
             "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
             "label": "Includes Open House Changes",
             "bitrixLabel": "Includes Open House Changes",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SATURDAYOPENHOUSE",
-            "label": "Saturday Open House",
-            "bitrixLabel": "Saturday Open House",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SUNDAYOPENHOUSE",
-            "label": "Sunday Open House",
-            "bitrixLabel": "Sunday Open House",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_THISWEEKOPENHOUSE",
-            "label": "This Week Open House",
-            "bitrixLabel": "This Week Open House",
-            "type": "date",
+            "type": "boolean",
             "placeholder": ""
           },
           {
@@ -4188,20 +4065,6 @@
       }
     },
     {
-      "code": "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
-      "spaKey": "ufCrm16_1791787502111",
-      "spaCrmCode": "UF_CRM_16_1791787502111",
-      "label": "Trakheesi Permit Expiry Date (Alternative)",
-      "bitrixLabel": "Trakheesi Permit Expiry Date",
-      "type": "date",
-      "rules": {
-        "external_stock": "opt",
-        "off_plan": "show",
-        "overseas_sale": "hide",
-        "rent": "show"
-      }
-    },
-    {
       "code": "UF_CRM_QR_CODE_LINK",
       "spaKey": "ufCrm16QrCodeLink",
       "spaCrmCode": "UF_CRM_16_QR_CODE_LINK",
@@ -4214,20 +4077,6 @@
         "off_plan": "show",
         "overseas_sale": "hide",
         "rent": "show"
-      }
-    },
-    {
-      "code": "UF_CRM_QR_CODE",
-      "spaKey": "ufCrm16QrCodeFile",
-      "spaCrmCode": "UF_CRM_16_QR_CODE_FILE",
-      "label": "DLD QR Code Attachment",
-      "bitrixLabel": "QR Code File",
-      "type": "file",
-      "rules": {
-        "external_stock": "opt",
-        "off_plan": "opt",
-        "overseas_sale": "hide",
-        "rent": "opt"
       }
     },
     {
@@ -4252,21 +4101,6 @@
       "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
       "label": "Property Finder Listing Id",
       "bitrixLabel": "Property Finder Listing Id",
-      "type": "string",
-      "placeholder": "e.g. PF-981273",
-      "rules": {
-        "external_stock": "opt",
-        "off_plan": "show",
-        "overseas_sale": "hide",
-        "rent": "show"
-      }
-    },
-    {
-      "code": "UF_CRM_PF_ID",
-      "spaKey": "ufCrm16PropertyFinderListingId",
-      "spaCrmCode": "UF_CRM_16_PROPERTY_FINDER_LISTING_ID",
-      "label": "Propertyfinder Listing ID",
-      "bitrixLabel": "PF ID",
       "type": "string",
       "placeholder": "e.g. PF-981273",
       "rules": {
@@ -4386,10 +4220,14 @@
     },
     {
       "code": "UF_CRM_PHOTOS",
-      "leadAltCodes": ["UF_CRM_PHOTOS_AND_DOCUMENTS"],
+      "leadAltCodes": [
+        "UF_CRM_PHOTOS_AND_DOCUMENTS"
+      ],
       "spaKey": "ufCrm16_1791881642219",
       "spaCrmCode": "UF_CRM_16_1791881642219",
-      "fallbackKeys": ["ufCrm16_1791544736052"],
+      "fallbackKeys": [
+        "ufCrm16_1791544736052"
+      ],
       "label": "Photos",
       "bitrixLabel": "Photos",
       "type": "file",
@@ -4404,10 +4242,15 @@
     },
     {
       "code": "UF_CRM_DOCUMENTS",
-      "leadAltCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"],
+      "leadAltCodes": [
+        "UF_CRM_DOCS",
+        "UF_CRM_DOCS_1"
+      ],
       "spaKey": "ufCrm16_1791881665252",
       "spaCrmCode": "UF_CRM_16_1791881665252",
-      "fallbackKeys": ["ufCrm16_1791172957"],
+      "fallbackKeys": [
+        "ufCrm16_1791172957"
+      ],
       "label": "Documents",
       "bitrixLabel": "Documents",
       "type": "file",
@@ -4437,7 +4280,9 @@
     },
     {
       "code": "UF_CRM_FORM_A_DOC",
-      "leadAltCodes": ["UF_CRM_FORM_A_DOCUMENT"],
+      "leadAltCodes": [
+        "UF_CRM_FORM_A_DOCUMENT"
+      ],
       "spaKey": "ufCrm16_1791787381785",
       "spaCrmCode": "UF_CRM_16_1791787381785",
       "label": "Form A Document",
@@ -4831,37 +4676,9 @@
       "placeholder": "e.g., 2,500,000"
     },
     {
-      "code": "UF_CRM_TAXMIN",
-      "label": "Tax Min",
-      "bitrixLabel": "Tax Min",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_TAXMAX",
-      "label": "Tax Max",
-      "bitrixLabel": "Tax Max",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
       "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
       "label": "Purchase Amount of Home",
       "bitrixLabel": "Purchase Amount of Home",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_EPPRAISALVALUATION",
-      "label": "Eppraisal Valuation",
-      "bitrixLabel": "Eppraisal Valuation",
-      "type": "money",
-      "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_ESTATEDVALUATION",
-      "label": "Estated Valuation",
-      "bitrixLabel": "Estated Valuation",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
     },
@@ -5057,20 +4874,6 @@
       "label": "Lot Size - max",
       "bitrixLabel": "Lot Size - max",
       "type": "double",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_ACREMIN",
-      "label": "Acre Min",
-      "bitrixLabel": "Acre Min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_ACREMAX",
-      "label": "Acre Max",
-      "bitrixLabel": "Acre Max",
-      "type": "integer",
       "placeholder": ""
     },
     {
@@ -5289,27 +5092,6 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_DAYSONMARKETMIN",
-      "label": "Days On Market Min",
-      "bitrixLabel": "Days On Market Min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_DAYSONMARKETMAX",
-      "label": "Days On Market Max",
-      "bitrixLabel": "Days On Market Max",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_CHEQUES",
-      "label": "Cheques",
-      "bitrixLabel": "Number of Cheques",
-      "type": "string",
-      "placeholder": "Enter cheques requirement..."
-    },
-    {
       "code": "UF_CRM_AREA",
       "label": "Area",
       "bitrixLabel": "Area",
@@ -5443,14 +5225,6 @@
       "bitrixLabel": "School",
       "type": "string",
       "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SCHOOLATTENDANCEZONES",
-      "label": "School Attendance Zones",
-      "bitrixLabel": "School Attendance Zones",
-      "type": "text",
-      "placeholder": "",
-      "fullWidth": true
     },
     {
       "code": "UF_CRM_SCHOOLDISTRICTS",
@@ -5672,13 +5446,6 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_PARKINGMIN",
-      "label": "Parking Min",
-      "bitrixLabel": "Parking Min",
-      "type": "integer",
-      "placeholder": ""
-    },
-    {
       "code": "UF_CRM_PARKING_SPACES_MIN",
       "label": "Parking Spaces - min",
       "bitrixLabel": "Parking Spaces - min",
@@ -5756,25 +5523,11 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_FIREPLACE",
-      "label": "Fireplace",
-      "bitrixLabel": "Fireplace",
-      "type": "boolean",
-      "placeholder": ""
-    },
-    {
       "code": "UF_CRM_FLOORINGTYPE",
       "label": "Flooring Type",
       "bitrixLabel": "Flooring Type",
-      "type": "integer",
+      "type": "string",
       "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BASEMENT_BOOL",
-      "label": "Basement",
-      "bitrixLabel": "Basement",
-      "type": "boolean",
-      "placeholder": "Has Basement"
     },
     {
       "code": "UF_CRM_BASEMENTTYPE",
@@ -5879,7 +5632,7 @@
       "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
       "label": "Is Website Saved Search",
       "bitrixLabel": "Is Website Saved Search",
-      "type": "url",
+      "type": "boolean",
       "placeholder": ""
     },
     {
@@ -5907,7 +5660,7 @@
       "code": "UF_CRM_WEBSITESEARCHTYPE",
       "label": "Website Search Type",
       "bitrixLabel": "Website Search Type",
-      "type": "url",
+      "type": "string",
       "placeholder": ""
     },
     {
@@ -5928,7 +5681,7 @@
       "code": "UF_CRM_INCLUDESALLCHANGES",
       "label": "Includes All Changes",
       "bitrixLabel": "Includes All Changes",
-      "type": "string",
+      "type": "boolean",
       "placeholder": ""
     },
     {
@@ -5942,7 +5695,7 @@
       "code": "UF_CRM_INCLUDESPRICECHANGES",
       "label": "Includes Price Changes",
       "bitrixLabel": "Includes Price Changes",
-      "type": "money",
+      "type": "boolean",
       "placeholder": "e.g., 2,500,000"
     },
     {
@@ -5956,28 +5709,7 @@
       "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
       "label": "Includes Open House Changes",
       "bitrixLabel": "Includes Open House Changes",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SATURDAYOPENHOUSE",
-      "label": "Saturday Open House",
-      "bitrixLabel": "Saturday Open House",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_SUNDAYOPENHOUSE",
-      "label": "Sunday Open House",
-      "bitrixLabel": "Sunday Open House",
-      "type": "date",
-      "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_THISWEEKOPENHOUSE",
-      "label": "This Week Open House",
-      "bitrixLabel": "This Week Open House",
-      "type": "date",
+      "type": "boolean",
       "placeholder": ""
     },
     {
@@ -6183,7 +5915,13 @@
           {
             "key": "ufCrm16ListingAgent",
             "crmCode": "UF_CRM_16_PORTAL_LISTING_AGENT",
-            "fallbackKeys": ["ufCrm16PortalListingAgent", "UF_CRM_16_PORTAL_LISTING_AGENT", "UF_CRM_16_LISTING_AGENT", "UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_LISTINGAGENT"],
+            "fallbackKeys": [
+              "ufCrm16PortalListingAgent",
+              "UF_CRM_16_PORTAL_LISTING_AGENT",
+              "UF_CRM_16_LISTING_AGENT",
+              "UF_CRM_PORTAL_LISTING_AGENT",
+              "UF_CRM_LISTINGAGENT"
+            ],
             "label": "Listing Agent / Broker",
             "type": "lookup",
             "lookupEntity": "broker",
@@ -6423,8 +6161,8 @@
             "leadAltCode": "UF_CRM_1791966408374"
           },
           {
-            "key": "ufCrm16SqFt",
-            "crmCode": "UF_CRM_16_SQ_FT",
+            "key": "ufCrm16Size",
+            "crmCode": "UF_CRM_16_SIZE",
             "label": "Built-up Area (Sq Ft)",
             "type": "number",
             "addon": "Sq Ft",
@@ -6435,7 +6173,12 @@
               "overseas_sale": "show",
               "rent": "show"
             },
-            "leadCode": "UF_CRM_BUA"
+            "leadCode": "UF_CRM_BUA",
+            "fallbackKeys": [
+              "UF_CRM_16_SIZE",
+              "ufCrm16SqFt",
+              "UF_CRM_16_SQ_FT"
+            ]
           },
           {
             "key": "ufCrm16PlotSize",
@@ -6548,7 +6291,11 @@
           {
             "key": "ufCrm16ProjectName",
             "crmCode": "UF_CRM_16_PROJECT_NAME",
-            "fallbackKeys": ["ufCrm16BuildingBayut", "ufCrm16_1791173131", "ufCrm16ProjectInfo"],
+            "fallbackKeys": [
+              "ufCrm16BuildingBayut",
+              "ufCrm16_1791173131",
+              "ufCrm16ProjectInfo"
+            ],
             "label": "Project / Building Name",
             "type": "lookup",
             "placeholder": "e.g. Downtown Views II, Creek Horizon...",
@@ -6706,7 +6453,11 @@
             "key": "ufCrm16MasterProject",
             "crmCode": "UF_CRM_16_MASTER_PROJECT",
             "spaBindingCode": "UF_CRM_16_1791173000",
-            "fallbackKeys": ["ufCrm16_1791173000", "ufCrm16MasterProjectInfo", "ufCrm16OldMasterProject"],
+            "fallbackKeys": [
+              "ufCrm16_1791173000",
+              "ufCrm16MasterProjectInfo",
+              "ufCrm16OldMasterProject"
+            ],
             "label": "Master Project",
             "type": "lookup",
             "lookupEntity": "master_project",
@@ -7191,19 +6942,6 @@
             "leadCode": "UF_CRM_DESCRIPTION"
           },
           {
-            "key": "ufCrm16QrCodeFile",
-            "crmCode": "UF_CRM_16_QR_CODE_FILE",
-            "label": "DLD QR Code Attachment",
-            "type": "file",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "hide",
-              "rent": "opt"
-            },
-            "leadCode": "UF_CRM_QR_CODE"
-          },
-          {
             "key": "ufCrm16PortalListingId",
             "crmCode": "UF_CRM_16_PORTAL_LISTING_ID",
             "label": "Portal Listing ID",
@@ -7257,7 +6995,9 @@
           {
             "key": "ufCrm16_1791881642219",
             "crmCode": "UF_CRM_16_1791881642219",
-            "fallbackKeys": ["ufCrm16_1791544736052"],
+            "fallbackKeys": [
+              "ufCrm16_1791544736052"
+            ],
             "label": "Photos",
             "type": "file",
             "isImage": true,
@@ -7269,12 +7009,16 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_PHOTOS",
-            "leadAltCodes": ["UF_CRM_PHOTOS_AND_DOCUMENTS"]
+            "leadAltCodes": [
+              "UF_CRM_PHOTOS_AND_DOCUMENTS"
+            ]
           },
           {
             "key": "ufCrm16_1791881665252",
             "crmCode": "UF_CRM_16_1791881665252",
-            "fallbackKeys": ["ufCrm16_1791172957"],
+            "fallbackKeys": [
+              "ufCrm16_1791172957"
+            ],
             "label": "Documents",
             "type": "file",
             "isDoc": true,
@@ -7286,7 +7030,10 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_DOCUMENTS",
-            "leadAltCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"]
+            "leadAltCodes": [
+              "UF_CRM_DOCS",
+              "UF_CRM_DOCS_1"
+            ]
           },
           {
             "key": "ufCrm16TitleDeed",
@@ -7315,7 +7062,9 @@
               "rent": "show"
             },
             "leadCode": "UF_CRM_FORM_A_DOC",
-            "leadAltCodes": ["UF_CRM_FORM_A_DOCUMENT"]
+            "leadAltCodes": [
+              "UF_CRM_FORM_A_DOCUMENT"
+            ]
           },
           {
             "key": "ufCrm16QrCode",

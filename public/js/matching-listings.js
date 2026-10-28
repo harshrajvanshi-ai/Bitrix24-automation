@@ -55,7 +55,7 @@
         area: 'ufCrm16_1791172692',               // Area string
         community: 'ufCrm16CommunityPropertyfinder',
         subCommunity: 'ufCrm16SubCommunityPropertyfinder',
-        price: 'ufCrm16Price',                    // Listing Price
+        price: 'ufCrm16_1790154936',             // Listing Price (native Bitrix field)
         listingPrice: 'ufCrm16_1790154936',
         opportunity: 'opportunity',               // Native Opportunity
         currencyId: 'currencyId',

@@ -252,8 +252,8 @@ const synchronizedListingSections = [
       },
       {
         code: 'UF_CRM_BUA',
-        spaKey: 'ufCrm16SqFt',
-        spaCrmCode: 'UF_CRM_16_SQ_FT',
+        spaKey: 'ufCrm16Size',
+        spaCrmCode: 'UF_CRM_16_SIZE',
         label: 'Built-up Area (Sq Ft)',
         bitrixLabel: 'Built-up Area (Sq. Ft.)',
         type: 'number',
@@ -705,15 +705,6 @@ const synchronizedListingSections = [
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
       },
       {
-        code: 'UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE',
-        spaKey: 'ufCrm16_1791787502111',
-        spaCrmCode: 'UF_CRM_16_1791787502111',
-        label: 'Trakheesi Permit Expiry Date (Alternative)',
-        bitrixLabel: 'Trakheesi Permit Expiry Date',
-        type: 'date',
-        rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
-      },
-      {
         code: 'UF_CRM_QR_CODE_LINK',
         spaKey: 'ufCrm16QrCodeLink',
         spaCrmCode: 'UF_CRM_16_QR_CODE_LINK',
@@ -722,15 +713,6 @@ const synchronizedListingSections = [
         type: 'url',
         placeholder: 'https://dubailand.gov.ae/en/eservices/licensing/...',
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
-      },
-      {
-        code: 'UF_CRM_QR_CODE',
-        spaKey: 'ufCrm16QrCodeFile',
-        spaCrmCode: 'UF_CRM_16_QR_CODE_FILE',
-        label: 'DLD QR Code Attachment',
-        bitrixLabel: 'QR Code File',
-        type: 'file',
-        rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'hide', rent: 'opt' }
       },
       {
         code: 'UF_CRM_BAYUT_ID',
@@ -749,16 +731,6 @@ const synchronizedListingSections = [
         spaCrmCode: 'UF_CRM_16_PROPERTY_FINDER_LISTING_ID',
         label: 'Property Finder Listing Id',
         bitrixLabel: 'Property Finder Listing Id',
-        type: 'string',
-        placeholder: 'e.g. PF-981273',
-        rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
-      },
-      {
-        code: 'UF_CRM_PF_ID',
-        spaKey: 'ufCrm16PropertyFinderListingId',
-        spaCrmCode: 'UF_CRM_16_PROPERTY_FINDER_LISTING_ID',
-        label: 'Propertyfinder Listing ID',
-        bitrixLabel: 'PF ID',
         type: 'string',
         placeholder: 'e.g. PF-981273',
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
@@ -852,28 +824,6 @@ const synchronizedListingSections = [
         bitrixLabel: 'Photos',
         type: 'file',
         isImage: true,
-        isMultiple: true,
-        rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-      },
-      {
-        code: 'UF_CRM_DOCS',
-        spaKey: 'ufCrm16_1791172957',
-        spaCrmCode: 'UF_CRM_16_1791172957',
-        label: 'Docs',
-        bitrixLabel: 'Docs',
-        type: 'file',
-        isDoc: true,
-        isMultiple: true,
-        rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
-      },
-      {
-        code: 'UF_CRM_PHOTOS_AND_DOCUMENTS',
-        spaKey: 'ufCrm16_1791544736052',
-        spaCrmCode: 'UF_CRM_16_1791544736052',
-        label: 'Photos and Documents',
-        bitrixLabel: 'Photos and Documents',
-        type: 'file',
-        isDoc: true,
         isMultiple: true,
         rules: { external_stock: 'show', off_plan: 'show', overseas_sale: 'show', rent: 'show' }
       },

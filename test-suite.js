@@ -1269,6 +1269,16 @@ async function runTests() {
   assert(finalSqftJs.includes("payload['ufCrm16Size'] ="), 'listing-details.js persists camelCase ufCrm16Size on save');
 
   // ============================================================================
+  // Test Case 31: Project / Building Name Clearing and Mirroring Integrity
+  // ============================================================================
+  console.log('\n--- Case 31: Project / Building Name Clearing and Mirroring Integrity ---');
+  const projCleanJs = fs.readFileSync('public/js/listing-details.js', 'utf8').replace(/"/g, "'");
+  assert(projCleanJs.includes("if (trigger === 'ufCrm16ProjectName') {\n      setVal('ufCrm16BuildingBayut', projName, !isInitialLoad);") || projCleanJs.includes("if (trigger === 'ufCrm16ProjectName')"), 'listing-details.js updates Bayut Building from Project Name without resurrecting on empty');
+  assert(projCleanJs.includes("bayutInput.value = '';") || projCleanJs.includes('bayutInput.value = "";'), 'listing-details.js clears companion Bayut Building on Project clearing');
+  assert(projCleanJs.includes("payload['ufCrm16BuildingBayut'] = '';") || projCleanJs.includes('payload["ufCrm16BuildingBayut"] = "";'), 'listing-details.js clears Bayut Building payload when Project is empty');
+  assert(projCleanJs.includes("payload['ufCrm16_1791173131'] = 0;"), 'listing-details.js resets Bitrix CRM project entity ID to 0 when cleared');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');
