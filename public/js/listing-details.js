@@ -3288,7 +3288,7 @@
 
     // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area
     const price = getNum("ufCrm16_1790154936");
-    const sqft = getNum("ufCrm16SqFt");
+    const sqft = getNum("ufCrm16Size");
     const pricePerSqFt = getNum("ufCrm16ListPricePerSqFt");
 
     if (price > 0 && sqft > 0) {
@@ -3296,7 +3296,7 @@
         !pricePerSqFt ||
         isInitialLoad ||
         trigger === "ufCrm16_1790154936" ||
-        trigger === "ufCrm16SqFt"
+        trigger === "ufCrm16Size"
       ) {
         const calcPricePerSqFt = (price / sqft).toFixed(2);
         setVal("ufCrm16ListPricePerSqFt", calcPricePerSqFt, !isInitialLoad);
