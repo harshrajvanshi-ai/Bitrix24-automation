@@ -907,29 +907,41 @@
             key: "ufCrm16_1791787455285",
             crmCode: "UF_CRM_16_1791787455285",
             fallbackKeys: [
+              "UF_CRM_16_1791787455285",
               "ufCrm16DtcmPermitNumber",
+              "UF_CRM_16_DTCM_PERMIT_NUMBER",
               "ufCrm16ReraPermitNumber",
+              "UF_CRM_16_RERA_PERMIT_NUMBER",
+              "UF_CRM_TRAKHEESI_PERMIT_NO",
             ],
             label: "Trakheesi Permit No",
             type: "string",
             placeholder: "e.g. TRK-982145",
             rules: {
-              external_stock: "opt",
+              external_stock: "show",
               off_plan: "show",
-              overseas_sale: "hide",
+              overseas_sale: "opt",
               rent: "show",
             },
           },
           {
             key: "ufCrm16_1791787502111",
             crmCode: "UF_CRM_16_1791787502111",
-            fallbackKeys: ["ufCrm16FormAExpiryDate"],
+            fallbackKeys: [
+              "UF_CRM_16_1791787502111",
+              "ufCrm16FormAExpiryDate",
+              "UF_CRM_16_FORM_A_EXPIRY_DATE",
+              "ufCrm16TrakheesiExpiry",
+              "UF_CRM_TRAKHEESI_EXPIRY",
+              "UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE",
+              "UF_CRM_FORM_A_EXPIRY_DATE",
+            ],
             label: "Trakheesi Permit Expiry Date",
             type: "date",
             rules: {
-              external_stock: "opt",
+              external_stock: "show",
               off_plan: "show",
-              overseas_sale: "hide",
+              overseas_sale: "opt",
               rent: "show",
             },
           },
@@ -3405,6 +3417,21 @@
     for (const key of candidates) {
       if (item[key] !== undefined && item[key] !== null && item[key] !== "") {
         const val = item[key];
+        // If date field has an empty / placeholder value ("N", false, "0", "0000-00-00", etc.), continue to fallback
+        if (f.type === "date") {
+          if (
+            val === "N" ||
+            val === false ||
+            val === 0 ||
+            val === "0" ||
+            val === "0000-00-00" ||
+            val === "00.00.0000" ||
+            val === "01.01.1970" ||
+            val === "1970-01-01"
+          ) {
+            continue;
+          }
+        }
         // If lookup field has '0' or 0, continue to fallback
         if (
           (f.type === "crm_company" || f.key === "companyId") &&
@@ -3470,7 +3497,25 @@
 
   function formatDateForInput(val) {
     if (!val) return "";
+    if (val instanceof Date) {
+      if (isNaN(val.getTime())) return "";
+      return val.toISOString().slice(0, 10);
+    }
     const str = String(val).trim();
+    if (
+      str === "" ||
+      str === "N" ||
+      str === "false" ||
+      str === "0" ||
+      str === "0000-00-00" ||
+      str === "00.00.0000" ||
+      str === "01.01.1970" ||
+      str === "1970-01-01" ||
+      str === "null" ||
+      str === "undefined"
+    ) {
+      return "";
+    }
     if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
       return str.slice(0, 10);
     }
@@ -3488,7 +3533,11 @@
         return d.toISOString().slice(0, 10);
       }
     }
-    return str.slice(0, 10);
+    const parsed = new Date(str);
+    if (!isNaN(parsed.getTime()) && parsed.getFullYear() > 1970 && parsed.getFullYear() < 2100) {
+      return parsed.toISOString().slice(0, 10);
+    }
+    return "";
   }
 
   // ============================================================================
@@ -4784,6 +4833,61 @@
           payload[upper] = payload[camel];
         }
       });
+
+      // Synchronize Trakheesi Permit Expiry Date across all variants
+      const trakheesiExpiryEl =
+        document.getElementById("field_ufCrm16_1791787502111") ||
+        document.getElementById("field_UF_CRM_16_1791787502111") ||
+        document.getElementById("field_ufCrm16FormAExpiryDate");
+      if (trakheesiExpiryEl) {
+        const rawExpiry =
+          trakheesiExpiryEl.value !== undefined
+            ? String(trakheesiExpiryEl.value).trim()
+            : "";
+        const formattedDate = formatDateForInput(rawExpiry);
+        payload["ufCrm16_1791787502111"] = formattedDate;
+        payload["UF_CRM_16_1791787502111"] = formattedDate;
+        payload["ufCrm16FormAExpiryDate"] = formattedDate;
+        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;
+      } else if (
+        payload["ufCrm16_1791787502111"] !== undefined ||
+        payload["UF_CRM_16_1791787502111"] !== undefined ||
+        payload["ufCrm16FormAExpiryDate"] !== undefined ||
+        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] !== undefined
+      ) {
+        const val =
+          payload["ufCrm16_1791787502111"] ??
+          payload["UF_CRM_16_1791787502111"] ??
+          payload["ufCrm16FormAExpiryDate"] ??
+          payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] ??
+          "";
+        const formattedDate = formatDateForInput(val);
+        payload["ufCrm16_1791787502111"] = formattedDate;
+        payload["UF_CRM_16_1791787502111"] = formattedDate;
+        payload["ufCrm16FormAExpiryDate"] = formattedDate;
+        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;
+      }
+
+      // Synchronize Trakheesi Permit No across all variants
+      const trakheesiNoEl =
+        document.getElementById("field_ufCrm16_1791787455285") ||
+        document.getElementById("field_UF_CRM_16_1791787455285") ||
+        document.getElementById("field_ufCrm16DtcmPermitNumber") ||
+        document.getElementById("field_ufCrm16ReraPermitNumber");
+      if (trakheesiNoEl) {
+        const rawNo =
+          trakheesiNoEl.value !== undefined
+            ? String(trakheesiNoEl.value).trim()
+            : "";
+        payload["ufCrm16_1791787455285"] = rawNo;
+        payload["UF_CRM_16_1791787455285"] = rawNo;
+        if (!payload["ufCrm16DtcmPermitNumber"])
+          payload["ufCrm16DtcmPermitNumber"] = rawNo;
+        if (!payload["UF_CRM_16_DTCM_PERMIT_NUMBER"])
+          payload["UF_CRM_16_DTCM_PERMIT_NUMBER"] = rawNo;
+      } else if (payload["ufCrm16_1791787455285"] !== undefined) {
+        payload["UF_CRM_16_1791787455285"] = payload["ufCrm16_1791787455285"];
+      }
 
       if (
         payload["contactIds"] &&

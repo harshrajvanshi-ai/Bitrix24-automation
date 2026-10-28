@@ -1279,6 +1279,27 @@ async function runTests() {
   assert(projCleanJs.includes("payload['ufCrm16_1791173131'] = 0;"), 'listing-details.js resets Bitrix CRM project entity ID to 0 when cleared');
 
   // ============================================================================
+  // Test Case 32: Trakheesi Permit Expiry Date Mapping, Validation & Synchronization
+  // ============================================================================
+  console.log('\n--- Case 32: Trakheesi Permit Expiry Date Mapping, Validation & Synchronization ---');
+  const trakheesiJs = fs.readFileSync('public/js/listing-details.js', 'utf8');
+  assert(trakheesiJs.includes('ufCrm16_1791787502111'), 'listing-details.js defines key ufCrm16_1791787502111 for Trakheesi Permit Expiry Date');
+  assert(trakheesiJs.includes('UF_CRM_16_1791787502111'), 'listing-details.js defines crmCode UF_CRM_16_1791787502111 for Trakheesi Permit Expiry Date');
+  assert(trakheesiJs.includes('ufCrm16FormAExpiryDate'), 'listing-details.js defines fallbackKey ufCrm16FormAExpiryDate');
+  assert(trakheesiJs.includes('UF_CRM_16_FORM_A_EXPIRY_DATE'), 'listing-details.js defines fallbackKey UF_CRM_16_FORM_A_EXPIRY_DATE');
+  assert(trakheesiJs.includes('val === "N" ||') && trakheesiJs.includes('val === "0000-00-00"'), 'listing-details.js skips "N" and "0000-00-00" placeholders in date field getFieldValue');
+  assert(trakheesiJs.includes('str === "N"') && trakheesiJs.includes('str === "0000-00-00"'), 'formatDateForInput discards "N" and "0000-00-00" placeholder strings');
+  assert(trakheesiJs.includes('payload["ufCrm16_1791787502111"] = formattedDate;') && trakheesiJs.includes('payload["UF_CRM_16_1791787502111"] = formattedDate;'), 'listing-details.js persists both camelCase and uppercase Trakheesi Expiry to payload');
+  assert(trakheesiJs.includes('payload["ufCrm16FormAExpiryDate"] = formattedDate;') && trakheesiJs.includes('payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;'), 'listing-details.js synchronizes companion Form A expiry date fields');
+
+  const trakheesiSyncJs = fs.readFileSync('src/spaSync.js', 'utf8');
+  assert(trakheesiSyncJs.includes('UF_CRM_TRAKHEESI_EXPIRY'), 'spaSync.js maps UF_CRM_TRAKHEESI_EXPIRY lead field');
+  assert(trakheesiSyncJs.includes('ufCrm16_1791787502111'), 'spaSync.js maps to ufCrm16_1791787502111 SPA property');
+  assert(trakheesiSyncJs.includes('UF_CRM_16_1791787502111'), 'spaSync.js maps to UF_CRM_16_1791787502111 uppercase code');
+  assert(trakheesiSyncJs.includes('formatSyncDate'), 'spaSync.js provides formatSyncDate helper for date sanitization');
+  assert(trakheesiSyncJs.includes('isInvalidDate'), 'spaSync.js guards against "N" and invalid dates during lead synchronization');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

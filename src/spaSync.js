@@ -1,3 +1,38 @@
+function formatSyncDate(val) {
+  if (!val) return '';
+  const str = String(val).trim();
+  if (
+    str === '' ||
+    str === 'N' ||
+    str === 'false' ||
+    str === '0' ||
+    str === '0000-00-00' ||
+    str === '00.00.0000' ||
+    str === '01.01.1970' ||
+    str === '1970-01-01' ||
+    str === 'null' ||
+    str === 'undefined'
+  ) {
+    return '';
+  }
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    return str.slice(0, 10);
+  }
+  if (/^\d{2}\.\d{2}\.\d{4}/.test(str)) {
+    const parts = str.split('.');
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+  }
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+    const parts = str.split('/');
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+  }
+  const d = new Date(str);
+  if (!isNaN(d.getTime()) && d.getFullYear() > 1970 && d.getFullYear() < 2100) {
+    return d.toISOString().slice(0, 10);
+  }
+  return '';
+}
+
 /**
  * src/spaSync.js
  * Cross-entity synchronizer between Bitrix24 Leads and Enquiry Smart Process Automation (SPA 1062).
@@ -508,8 +543,8 @@ const LISTING_FIELD_MAP = [
 
   // 7. Portals & Marketing
   { leadCode: 'UF_CRM_1791970864836', leadAltCodes: ['UF_CRM_RERA_PERMIT'], spaKey: 'ufCrm16ReraPermitNumber', spaCrmCode: 'UF_CRM_16_RERA_PERMIT_NUMBER', type: 'string', label: 'RERA Permit Number' },
-  { leadCode: 'UF_CRM_TRAKHEESI_PERMIT_NO', leadAltCodes: ['UF_CRM_RERA_PERMIT', 'UF_CRM_1791970864836'], spaKey: 'ufCrm16_1791787455285', spaCrmCode: 'UF_CRM_16_1791787455285', spaAltKeys: ['ufCrm16DtcmPermitNumber', 'ufCrm16ReraPermitNumber'], type: 'string', label: 'Trakheesi Permit No' },
-  { leadCode: 'UF_CRM_TRAKHEESI_EXPIRY', leadAltCodes: ['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE'], spaKey: 'ufCrm16_1791787502111', spaCrmCode: 'UF_CRM_16_1791787502111', spaAltKeys: ['ufCrm16FormAExpiryDate'], type: 'date', label: 'Trakheesi Permit Expiry Date' },
+  { leadCode: 'UF_CRM_TRAKHEESI_PERMIT_NO', leadAltCodes: ['UF_CRM_RERA_PERMIT', 'UF_CRM_1791970864836'], spaKey: 'ufCrm16_1791787455285', spaCrmCode: 'UF_CRM_16_1791787455285', spaAltKeys: ['UF_CRM_16_1791787455285', 'ufCrm16DtcmPermitNumber', 'UF_CRM_16_DTCM_PERMIT_NUMBER', 'ufCrm16ReraPermitNumber', 'UF_CRM_16_RERA_PERMIT_NUMBER'], type: 'string', label: 'Trakheesi Permit No' },
+  { leadCode: 'UF_CRM_TRAKHEESI_EXPIRY', leadAltCodes: ['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE', 'UF_CRM_FORM_A_EXPIRY_DATE', 'UF_CRM_1791787502111'], spaKey: 'ufCrm16_1791787502111', spaCrmCode: 'UF_CRM_16_1791787502111', spaAltKeys: ['UF_CRM_16_1791787502111', 'ufCrm16FormAExpiryDate', 'UF_CRM_16_FORM_A_EXPIRY_DATE'], type: 'date', label: 'Trakheesi Permit Expiry Date' },
   { leadCode: 'UF_CRM_QR_CODE_LINK', leadAltCodes: ['UF_CRM_QR_CODE'], spaKey: 'ufCrm16QrCodeLink', spaCrmCode: 'UF_CRM_16_QR_CODE_LINK', spaAltKeys: ['ufCrm16QrCode'], type: 'url', label: 'DLD QR / Permit URL' },
   { leadCode: 'UF_CRM_BAYUT_ID', spaKey: 'ufCrm16_1790155092', spaCrmCode: 'UF_CRM_16_1790155092', type: 'string', label: 'Bayut Listing ID' },
   { leadCode: 'UF_CRM_PF_ID', leadAltCodes: ['UF_CRM_1792151466'], spaKey: 'ufCrm16PropertyFinderListingId', spaCrmCode: 'UF_CRM_16_PROPERTY_FINDER_LISTING_ID', type: 'string', label: 'Propertyfinder Listing ID' },
@@ -666,10 +701,23 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
         targetVal = (rawVal === 'Y' || rawVal === true || rawVal === 1 || rawVal === '1') ? 'Y' : 'N';
       }
 
+      if (mapping.type === 'date') {
+        targetVal = formatSyncDate(targetVal);
+        if (!targetVal) continue;
+      }
+
       // Check if SPA item value actually differs
       const existingVal = spaItem[targetKey];
       if (String(existingVal ?? '') !== String(targetVal ?? '')) {
         updates[targetKey] = targetVal;
+        if (mapping.spaCrmCode) {
+          updates[mapping.spaCrmCode] = targetVal;
+        }
+        if (mapping.spaAltKeys) {
+          for (const alt of mapping.spaAltKeys) {
+            updates[alt] = targetVal;
+          }
+        }
       }
     }
 
@@ -733,17 +781,25 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
     const leadUpdates = {};
     for (const mapping of LISTING_FIELD_MAP) {
       let rawVal = item[mapping.spaKey];
-      if ((rawVal === undefined || rawVal === null || rawVal === '' || rawVal === 0 || rawVal === '0') && mapping.spaAltKeys) {
+      const isDate = mapping.type === 'date';
+      const isInvalidDate = isDate && (rawVal === 'N' || rawVal === false || rawVal === '0000-00-00' || rawVal === '0' || rawVal === '01.01.1970');
+      if ((rawVal === undefined || rawVal === null || rawVal === '' || rawVal === 0 || rawVal === '0' || isInvalidDate) && mapping.spaAltKeys) {
         for (const alt of mapping.spaAltKeys) {
-          if (item[alt] !== undefined && item[alt] !== null && item[alt] !== '' && item[alt] !== 0 && item[alt] !== '0') {
-            rawVal = item[alt];
+          const altVal = item[alt];
+          const altInvalid = isDate && (altVal === 'N' || altVal === false || altVal === '0000-00-00' || altVal === '0' || altVal === '01.01.1970');
+          if (altVal !== undefined && altVal !== null && altVal !== '' && altVal !== 0 && altVal !== '0' && !altInvalid) {
+            rawVal = altVal;
             break;
           }
         }
       }
-      if (rawVal === undefined || rawVal === null || rawVal === '') continue;
+      if (rawVal === undefined || rawVal === null || rawVal === '' || (isDate && (rawVal === 'N' || rawVal === '0000-00-00' || rawVal === '0' || rawVal === '01.01.1970'))) continue;
 
       let targetVal = rawVal;
+      if (isDate) {
+        targetVal = formatSyncDate(rawVal);
+        if (!targetVal) continue;
+      }
       if (mapping.type === 'enumeration' && mapping.enumCategory && LISTING_ENUM_MAPS[mapping.enumCategory]) {
         const mapCategory = LISTING_ENUM_MAPS[mapping.enumCategory];
         const key = String(rawVal).trim().toLowerCase();
