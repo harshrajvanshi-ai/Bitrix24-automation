@@ -155,7 +155,7 @@
           {
             key: "xmlId",
             crmCode: "XML_ID",
-            label: "External ID (xmlId)",
+            label: "External ID ",
             type: "string",
             placeholder: "e.g. EXT-984210",
             rules: {
@@ -241,7 +241,7 @@
           {
             key: "parentId1052",
             crmCode: "PARENT_ID_1052",
-            label: "Master Property (parentId1052)",
+            label: "Master Property",
             type: "lookup",
             lookupEntity: "property",
             placeholder: "Search Master Property...",
