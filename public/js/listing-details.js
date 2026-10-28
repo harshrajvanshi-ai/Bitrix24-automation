@@ -360,7 +360,7 @@
           },
           {
             key: "ufCrm16SqFt",
-            crmCode: "UF_CRM_16_SQ_FT",
+            crmCode: "UF_CRM_16_SIZE",
             fallbackKeys: ["ufCrm16Size"],
             label: "Built-up Area (Sq Ft)",
             type: "number",
