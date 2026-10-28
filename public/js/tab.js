@@ -1278,6 +1278,48 @@
 
       (sec.fields || []).forEach(f => {
         let currentVal = lead[f.code + '_TITLE'] || lead[f.code];
+
+        // Dynamic fallbacks from leadAltCode & leadAltCodes
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.leadAltCode) {
+          currentVal = lead[f.leadAltCode + '_TITLE'] || lead[f.leadAltCode];
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && Array.isArray(f.leadAltCodes)) {
+          for (const alt of f.leadAltCodes) {
+            if (lead[alt] !== undefined && lead[alt] !== null && lead[alt] !== '') {
+              currentVal = lead[alt + '_TITLE'] || lead[alt];
+              break;
+            }
+          }
+        }
+
+        // Specific fallbacks for Bedrooms, Bathrooms, Built-up Area, and Plot Area
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_BEDROOMS' || f.code === 'UF_CRM_1791966366775')) {
+          currentVal = lead['UF_CRM_1791966366775'] ?? lead['UF_CRM_BEDROOMS'] ?? lead['UF_CRM_BEDS_MIN'] ?? '';
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_BATHROOMS' || f.code === 'UF_CRM_1791966408374')) {
+          currentVal = lead['UF_CRM_1791966408374'] ?? lead['UF_CRM_BATHROOMS'] ?? lead['UF_CRM_BATHS_MIN'] ?? lead['UF_CRM_TOTALBATHROOMS'] ?? '';
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_BUA' || f.code === 'UF_CRM_1791970770635' || f.code === 'UF_CRM_TOTALAREA')) {
+          currentVal = lead['UF_CRM_BUA'] ?? lead['UF_CRM_1791970770635'] ?? lead['UF_CRM_TOTALAREA'] ?? lead['UF_CRM_SIZE_MIN'] ?? '';
+        }
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_PLOT_AREA' || f.code === 'UF_CRM_PLOT_SIZE' || f.code === 'UF_CRM_LOTSIZE')) {
+          currentVal = lead['UF_CRM_PLOT_AREA'] ?? lead['UF_CRM_PLOT_SIZE'] ?? lead['UF_CRM_LOTSIZE'] ?? '';
+        }
+
+        // Normalize Bedrooms value if stored as enum ID or string label
+        if ((f.code === 'UF_CRM_BEDROOMS' || f.code === 'UF_CRM_1791966366775') && currentVal !== '' && currentVal !== null && currentVal !== undefined) {
+          const s = String(currentVal).trim();
+          const enumToNum = { '1834': 0, '1836': 1, '1838': 2, '1840': 3, '1842': 4, '1844': 5 };
+          if (enumToNum[s] !== undefined) {
+            currentVal = enumToNum[s];
+          } else if (/studio/i.test(s)) {
+            currentVal = 0;
+          } else {
+            const m = s.match(/\d+/);
+            if (m) currentVal = m[0];
+          }
+        }
+
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_LISTING_NAME') {
           currentVal = lead['UF_CRM_1791952409183'] || '';
         }
@@ -1616,6 +1658,72 @@
 
     if (payload.UF_CRM_1792151466 && !payload.UF_CRM_PF_ID) {
       payload.UF_CRM_PF_ID = payload.UF_CRM_1792151466;
+    }
+
+    // Synchronize Bedrooms across numeric UF_CRM_1791966366775 and enumeration UF_CRM_BEDROOMS
+    if (payload.UF_CRM_BEDROOMS !== undefined || payload.UF_CRM_1791966366775 !== undefined) {
+      const rawBeds = payload.UF_CRM_BEDROOMS !== undefined ? String(payload.UF_CRM_BEDROOMS).trim() : String(payload.UF_CRM_1791966366775 || '').trim();
+      if (rawBeds !== '') {
+        const numBeds = parseFloat(rawBeds);
+        if (!isNaN(numBeds)) {
+          payload.UF_CRM_1791966366775 = numBeds;
+          payload.UF_CRM_BEDROOMS = numBeds;
+          const bedsEnumMap = { 0: '1834', 1: '1836', 2: '1838', 3: '1840', 4: '1842', 5: '1844' };
+          const enumId = bedsEnumMap[Math.floor(numBeds)] || (numBeds >= 5 ? '1844' : null);
+          if (enumId) {
+            payload.UF_CRM_BEDROOMS_ENUM = enumId;
+          }
+        }
+      } else {
+        payload.UF_CRM_1791966366775 = '';
+        payload.UF_CRM_BEDROOMS = '';
+      }
+    }
+
+    // Synchronize Bathrooms across UF_CRM_BATHROOMS and UF_CRM_1791966408374
+    if (payload.UF_CRM_BATHROOMS !== undefined || payload.UF_CRM_1791966408374 !== undefined) {
+      const rawBaths = payload.UF_CRM_BATHROOMS !== undefined ? String(payload.UF_CRM_BATHROOMS).trim() : String(payload.UF_CRM_1791966408374 || '').trim();
+      if (rawBaths !== '') {
+        const numBaths = parseFloat(rawBaths);
+        const valToSet = !isNaN(numBaths) ? numBaths : rawBaths;
+        payload.UF_CRM_BATHROOMS = valToSet;
+        payload.UF_CRM_1791966408374 = valToSet;
+      } else {
+        payload.UF_CRM_BATHROOMS = '';
+        payload.UF_CRM_1791966408374 = '';
+      }
+    }
+
+    // Synchronize Built-up Area across UF_CRM_BUA, UF_CRM_1791970770635, and UF_CRM_TOTALAREA
+    if (payload.UF_CRM_BUA !== undefined || payload.UF_CRM_1791970770635 !== undefined || payload.UF_CRM_TOTALAREA !== undefined) {
+      const rawBua = payload.UF_CRM_BUA !== undefined ? String(payload.UF_CRM_BUA).trim() : String(payload.UF_CRM_1791970770635 || payload.UF_CRM_TOTALAREA || '').trim();
+      if (rawBua !== '') {
+        const numBua = parseFloat(rawBua);
+        const valToSet = !isNaN(numBua) ? numBua : rawBua;
+        payload.UF_CRM_BUA = valToSet;
+        payload.UF_CRM_1791970770635 = valToSet;
+        payload.UF_CRM_TOTALAREA = valToSet;
+      } else {
+        payload.UF_CRM_BUA = '';
+        payload.UF_CRM_1791970770635 = '';
+        payload.UF_CRM_TOTALAREA = '';
+      }
+    }
+
+    // Synchronize Plot Area across UF_CRM_PLOT_AREA, UF_CRM_PLOT_SIZE, and UF_CRM_LOTSIZE
+    if (payload.UF_CRM_PLOT_AREA !== undefined || payload.UF_CRM_PLOT_SIZE !== undefined || payload.UF_CRM_LOTSIZE !== undefined) {
+      const rawPlot = payload.UF_CRM_PLOT_AREA !== undefined ? String(payload.UF_CRM_PLOT_AREA).trim() : String(payload.UF_CRM_PLOT_SIZE || payload.UF_CRM_LOTSIZE || '').trim();
+      if (rawPlot !== '') {
+        const numPlot = parseFloat(rawPlot);
+        const valToSet = !isNaN(numPlot) ? numPlot : rawPlot;
+        payload.UF_CRM_PLOT_AREA = valToSet;
+        payload.UF_CRM_PLOT_SIZE = valToSet;
+        payload.UF_CRM_LOTSIZE = valToSet;
+      } else {
+        payload.UF_CRM_PLOT_AREA = '';
+        payload.UF_CRM_PLOT_SIZE = '';
+        payload.UF_CRM_LOTSIZE = '';
+      }
     }
 
     if (payload.UF_CRM_1792563228880 || payload.UF_CRM_LEAD_SOURCE_TYPE) {

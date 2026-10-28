@@ -1319,6 +1319,69 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
     fields.UF_CRM_PF_ID = fields.UF_CRM_1792151466;
   }
 
+  // Handle Bedrooms mapping: sync numeric UF_CRM_1791966366775 and enumeration UF_CRM_BEDROOMS
+  if (fields.UF_CRM_BEDROOMS !== undefined || fields.UF_CRM_1791966366775 !== undefined) {
+    const rawBeds = fields.UF_CRM_BEDROOMS !== undefined ? String(fields.UF_CRM_BEDROOMS).trim() : String(fields.UF_CRM_1791966366775 || '').trim();
+    if (rawBeds !== '') {
+      const numBeds = parseFloat(rawBeds);
+      if (!isNaN(numBeds)) {
+        fields.UF_CRM_1791966366775 = numBeds;
+        const bedsEnumMap = { 0: '1834', 1: '1836', 2: '1838', 3: '1840', 4: '1842', 5: '1844' };
+        const enumId = bedsEnumMap[Math.floor(numBeds)] || (numBeds >= 5 ? '1844' : null);
+        fields.UF_CRM_BEDROOMS = enumId || numBeds;
+      }
+    } else {
+      fields.UF_CRM_1791966366775 = '';
+      fields.UF_CRM_BEDROOMS = '';
+    }
+  }
+
+  // Handle Bathrooms mapping: sync UF_CRM_BATHROOMS and UF_CRM_1791966408374
+  if (fields.UF_CRM_BATHROOMS !== undefined || fields.UF_CRM_1791966408374 !== undefined) {
+    const rawBaths = fields.UF_CRM_BATHROOMS !== undefined ? String(fields.UF_CRM_BATHROOMS).trim() : String(fields.UF_CRM_1791966408374 || '').trim();
+    if (rawBaths !== '') {
+      const numBaths = parseFloat(rawBaths);
+      const valToSet = !isNaN(numBaths) ? numBaths : rawBaths;
+      fields.UF_CRM_BATHROOMS = valToSet;
+      fields.UF_CRM_1791966408374 = valToSet;
+    } else {
+      fields.UF_CRM_BATHROOMS = '';
+      fields.UF_CRM_1791966408374 = '';
+    }
+  }
+
+  // Handle Built-up Area mapping: sync UF_CRM_BUA, UF_CRM_1791970770635, and UF_CRM_TOTALAREA
+  if (fields.UF_CRM_BUA !== undefined || fields.UF_CRM_1791970770635 !== undefined || fields.UF_CRM_TOTALAREA !== undefined) {
+    const rawBua = fields.UF_CRM_BUA !== undefined ? String(fields.UF_CRM_BUA).trim() : String(fields.UF_CRM_1791970770635 || fields.UF_CRM_TOTALAREA || '').trim();
+    if (rawBua !== '') {
+      const numBua = parseFloat(rawBua);
+      const valToSet = !isNaN(numBua) ? numBua : rawBua;
+      fields.UF_CRM_BUA = valToSet;
+      fields.UF_CRM_1791970770635 = valToSet;
+      fields.UF_CRM_TOTALAREA = valToSet;
+    } else {
+      fields.UF_CRM_BUA = '';
+      fields.UF_CRM_1791970770635 = '';
+      fields.UF_CRM_TOTALAREA = '';
+    }
+  }
+
+  // Handle Plot Area mapping: sync UF_CRM_PLOT_AREA, UF_CRM_PLOT_SIZE, and UF_CRM_LOTSIZE
+  if (fields.UF_CRM_PLOT_AREA !== undefined || fields.UF_CRM_PLOT_SIZE !== undefined || fields.UF_CRM_LOTSIZE !== undefined) {
+    const rawPlot = fields.UF_CRM_PLOT_AREA !== undefined ? String(fields.UF_CRM_PLOT_AREA).trim() : String(fields.UF_CRM_PLOT_SIZE || fields.UF_CRM_LOTSIZE || '').trim();
+    if (rawPlot !== '') {
+      const numPlot = parseFloat(rawPlot);
+      const valToSet = !isNaN(numPlot) ? numPlot : rawPlot;
+      fields.UF_CRM_PLOT_AREA = valToSet;
+      fields.UF_CRM_PLOT_SIZE = valToSet;
+      fields.UF_CRM_LOTSIZE = valToSet;
+    } else {
+      fields.UF_CRM_PLOT_AREA = '';
+      fields.UF_CRM_PLOT_SIZE = '';
+      fields.UF_CRM_LOTSIZE = '';
+    }
+  }
+
   // Handle Lead Source Type mapping: sync native UF_CRM_1792563228880, UF_CRM_LEAD_SOURCE_TYPE, and native SOURCE_ID
   if (fields.UF_CRM_1792563228880 && !fields.UF_CRM_LEAD_SOURCE_TYPE) {
     fields.UF_CRM_LEAD_SOURCE_TYPE = fields.UF_CRM_1792563228880;
@@ -1521,6 +1584,36 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
       }
       if (!lead.UF_CRM_PF_ID && lead.UF_CRM_1792151466) {
         lead.UF_CRM_PF_ID = lead.UF_CRM_1792151466;
+      }
+
+      // Resolve Bedrooms fallback across UF_CRM_1791966366775, UF_CRM_BEDROOMS, and UF_CRM_BEDS_MIN
+      const effBeds = lead.UF_CRM_1791966366775 ?? lead.UF_CRM_BEDROOMS ?? lead.UF_CRM_BEDS_MIN;
+      if (effBeds !== undefined && effBeds !== null && effBeds !== '') {
+        lead.UF_CRM_BEDROOMS = effBeds;
+        lead.UF_CRM_1791966366775 = effBeds;
+      }
+
+      // Resolve Bathrooms fallback across UF_CRM_1791966408374, UF_CRM_BATHROOMS, UF_CRM_BATHS_MIN, and UF_CRM_TOTALBATHROOMS
+      const effBaths = lead.UF_CRM_1791966408374 ?? lead.UF_CRM_BATHROOMS ?? lead.UF_CRM_BATHS_MIN ?? lead.UF_CRM_TOTALBATHROOMS;
+      if (effBaths !== undefined && effBaths !== null && effBaths !== '') {
+        lead.UF_CRM_BATHROOMS = effBaths;
+        lead.UF_CRM_1791966408374 = effBaths;
+      }
+
+      // Resolve Built-up Area fallback across UF_CRM_BUA, UF_CRM_1791970770635, UF_CRM_TOTALAREA, and UF_CRM_SIZE_MIN
+      const effBua = lead.UF_CRM_BUA ?? lead.UF_CRM_1791970770635 ?? lead.UF_CRM_TOTALAREA ?? lead.UF_CRM_SIZE_MIN;
+      if (effBua !== undefined && effBua !== null && effBua !== '') {
+        lead.UF_CRM_BUA = effBua;
+        lead.UF_CRM_1791970770635 = effBua;
+        lead.UF_CRM_TOTALAREA = effBua;
+      }
+
+      // Resolve Plot Area fallback across UF_CRM_PLOT_AREA, UF_CRM_PLOT_SIZE, and UF_CRM_LOTSIZE
+      const effPlot = lead.UF_CRM_PLOT_AREA ?? lead.UF_CRM_PLOT_SIZE ?? lead.UF_CRM_LOTSIZE;
+      if (effPlot !== undefined && effPlot !== null && effPlot !== '') {
+        lead.UF_CRM_PLOT_AREA = effPlot;
+        lead.UF_CRM_PLOT_SIZE = effPlot;
+        lead.UF_CRM_LOTSIZE = effPlot;
       }
 
       // Enrich CRM lookup fields with resolved titles and references

@@ -1300,6 +1300,41 @@ async function runTests() {
   assert(trakheesiSyncJs.includes('isInvalidDate'), 'spaSync.js guards against "N" and invalid dates during lead synchronization');
 
   // ============================================================================
+  // Test Case 33: Lead Specifications (Bedrooms, Bathrooms, BUA, Plot Area) Loading & Synchronization
+  // ============================================================================
+  console.log('\n--- Case 33: Lead Specifications (Bedrooms, Bathrooms, BUA, Plot Area) Loading & Synchronization ---');
+  const tabJs = fs.readFileSync('public/js/tab.js', 'utf8');
+  assert(tabJs.includes('f.leadAltCode') && tabJs.includes('f.leadAltCodes'), 'tab.js checks dynamic leadAltCode & leadAltCodes fallbacks during field rendering');
+  assert(tabJs.includes('UF_CRM_1791966366775'), 'tab.js checks UF_CRM_1791966366775 fallback for Bedrooms');
+  assert(tabJs.includes('UF_CRM_1791966408374'), 'tab.js checks UF_CRM_1791966408374 fallback for Bathrooms');
+  assert(tabJs.includes('UF_CRM_1791970770635') && tabJs.includes('UF_CRM_TOTALAREA'), 'tab.js checks UF_CRM_1791970770635 and UF_CRM_TOTALAREA fallbacks for Built-up Area');
+  assert(tabJs.includes('UF_CRM_PLOT_SIZE') && tabJs.includes('UF_CRM_LOTSIZE'), 'tab.js checks UF_CRM_PLOT_SIZE and UF_CRM_LOTSIZE fallbacks for Plot Area');
+  assert(tabJs.includes('1834') && tabJs.includes('1836') && tabJs.includes('1844'), 'tab.js normalizes Bedrooms Bitrix enumeration IDs to numeric values');
+  assert(tabJs.includes('payload.UF_CRM_1791966366775 = numBeds'), 'tab.js synchronizes numeric Bedrooms field on save');
+  assert(tabJs.includes('payload.UF_CRM_1791966408374 = valToSet'), 'tab.js synchronizes companion Bathrooms field on save');
+  assert(tabJs.includes('payload.UF_CRM_1791970770635 = valToSet'), 'tab.js synchronizes companion BUA field on save');
+  assert(tabJs.includes('payload.UF_CRM_PLOT_SIZE = valToSet'), 'tab.js synchronizes companion Plot Area field on save');
+
+  const serverJsContent = fs.readFileSync('server.js', 'utf8');
+  assert(serverJsContent.includes('fields.UF_CRM_1791966366775 = numBeds;'), 'server.js POST /api/lead/:id synchronizes numeric Bedrooms');
+  assert(serverJsContent.includes('fields.UF_CRM_1791966408374 = valToSet;'), 'server.js POST /api/lead/:id synchronizes companion Bathrooms');
+  assert(serverJsContent.includes('fields.UF_CRM_1791970770635 = valToSet;'), 'server.js POST /api/lead/:id synchronizes companion Built-up Area');
+  assert(serverJsContent.includes('fields.UF_CRM_PLOT_SIZE = valToSet;'), 'server.js POST /api/lead/:id synchronizes companion Plot Area');
+  assert(serverJsContent.includes('lead.UF_CRM_1791966366775 ?? lead.UF_CRM_BEDROOMS'), 'server.js GET /api/lead/:id resolves Bedrooms fallbacks');
+  assert(serverJsContent.includes('lead.UF_CRM_1791966408374 ?? lead.UF_CRM_BATHROOMS'), 'server.js GET /api/lead/:id resolves Bathrooms fallbacks');
+  assert(serverJsContent.includes('lead.UF_CRM_BUA ?? lead.UF_CRM_1791970770635'), 'server.js GET /api/lead/:id resolves Built-up Area fallbacks');
+  assert(serverJsContent.includes('lead.UF_CRM_PLOT_AREA ?? lead.UF_CRM_PLOT_SIZE'), 'server.js GET /api/lead/:id resolves Plot Area fallbacks');
+
+  const fieldsJsonContent = fs.readFileSync('config/fields.json', 'utf8');
+  assert(fieldsJsonContent.includes('"UF_CRM_1791970770635"'), 'config/fields.json defines UF_CRM_1791970770635 as leadAltCode for BUA');
+  assert(fieldsJsonContent.includes('"UF_CRM_PLOT_SIZE"'), 'config/fields.json defines UF_CRM_PLOT_SIZE as leadAltCode for Plot Area');
+
+  assert(trakheesiSyncJs.includes('leadUpdates[\'UF_CRM_1791966366775\'] = numBeds;'), 'spaSync.js synchronizes numeric Bedrooms to Lead');
+  assert(trakheesiSyncJs.includes('leadUpdates[\'UF_CRM_1791966408374\'] = targetVal;'), 'spaSync.js synchronizes companion Bathrooms to Lead');
+  assert(trakheesiSyncJs.includes('leadUpdates[\'UF_CRM_1791970770635\'] = targetVal;'), 'spaSync.js synchronizes companion BUA to Lead');
+  assert(trakheesiSyncJs.includes('leadUpdates[\'UF_CRM_PLOT_SIZE\'] = targetVal;'), 'spaSync.js synchronizes companion Plot Area to Lead');
+
+  // ============================================================================
   // Summary
   // ============================================================================
   console.log('\n===============================================================');

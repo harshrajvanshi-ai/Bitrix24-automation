@@ -499,10 +499,10 @@ const LISTING_FIELD_MAP = [
   // 3. Property Specifications
   { leadCode: 'UF_CRM_1791952050535', spaKey: 'ufCrm16PropertyType', spaCrmCode: 'UF_CRM_16_PROPERTY_TYPE', type: 'enumeration', enumCategory: 'propertyType', label: 'Property Type' },
   { leadCode: 'UF_CRM_PROPERTY_SUB_TYPE', spaKey: 'ufCrm16PropertySubType', spaCrmCode: 'UF_CRM_16_PROPERTY_SUB_TYPE', type: 'enumeration', enumCategory: 'propertySubType', label: 'Property Sub-type' },
-  { leadCode: 'UF_CRM_BEDROOMS', leadAltCodes: ['UF_CRM_1791966366775'], spaKey: 'ufCrm16_1791172802', spaCrmCode: 'UF_CRM_16_1791172802', type: 'number', label: 'Bedrooms' },
-  { leadCode: 'UF_CRM_BATHROOMS', leadAltCodes: ['UF_CRM_1791966408374'], spaKey: 'ufCrm16_1791172787', spaCrmCode: 'UF_CRM_16_1791172787', type: 'number', label: 'Bathrooms' },
-  { leadCode: 'UF_CRM_BUA', leadAltCodes: ['UF_CRM_TOTALAREA'], spaKey: 'ufCrm16Size', spaCrmCode: 'UF_CRM_16_SIZE', spaAltKeys: ['ufCrm16SqFt'], type: 'number', label: 'Built-up Area (Sq Ft)' },
-  { leadCode: 'UF_CRM_PLOT_AREA', leadAltCodes: ['UF_CRM_PLOT_SIZE'], spaKey: 'ufCrm16PlotSize', spaCrmCode: 'UF_CRM_16_PLOT_SIZE', spaAltKeys: ['ufCrm16LotSize'], type: 'number', label: 'Plot Area (Sq Ft)' },
+  { leadCode: 'UF_CRM_BEDROOMS', leadAltCodes: ['UF_CRM_1791966366775', 'UF_CRM_BEDS_MIN'], spaKey: 'ufCrm16_1791172802', spaCrmCode: 'UF_CRM_16_1791172802', type: 'number', label: 'Bedrooms' },
+  { leadCode: 'UF_CRM_BATHROOMS', leadAltCodes: ['UF_CRM_1791966408374', 'UF_CRM_BATHS_MIN', 'UF_CRM_TOTALBATHROOMS'], spaKey: 'ufCrm16_1791172787', spaCrmCode: 'UF_CRM_16_1791172787', type: 'number', label: 'Bathrooms' },
+  { leadCode: 'UF_CRM_BUA', leadAltCodes: ['UF_CRM_TOTALAREA', 'UF_CRM_1791970770635', 'UF_CRM_SIZE_MIN'], spaKey: 'ufCrm16Size', spaCrmCode: 'UF_CRM_16_SIZE', spaAltKeys: ['ufCrm16SqFt'], type: 'number', label: 'Built-up Area (Sq Ft)' },
+  { leadCode: 'UF_CRM_PLOT_AREA', leadAltCodes: ['UF_CRM_PLOT_SIZE', 'UF_CRM_LOTSIZE'], spaKey: 'ufCrm16PlotSize', spaCrmCode: 'UF_CRM_16_PLOT_SIZE', spaAltKeys: ['ufCrm16LotSize'], type: 'number', label: 'Plot Area (Sq Ft)' },
   { leadCode: 'UF_CRM_UNIT_NO', spaKey: 'ufCrm16UnitNumber', spaCrmCode: 'UF_CRM_16_UNIT_NUMBER', type: 'string', label: 'Unit Number' },
   { leadCode: 'UF_CRM_FLOOR', spaKey: 'ufCrm16Floor', spaCrmCode: 'UF_CRM_16_FLOOR', type: 'integer', label: 'Floor Number' },
   { leadCode: 'UF_CRM_1791969936048', spaKey: 'ufCrm16Furnished', spaCrmCode: 'UF_CRM_16_FURNISHED', type: 'enumeration', enumCategory: 'furnished', label: 'Furnished Status' },
@@ -669,6 +669,24 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
       const targetKey = mapping.spaKey;
       let targetVal = rawVal;
 
+      // Handle Bedrooms normalization if Lead provides Bitrix enum ID
+      if (mapping.leadCode === 'UF_CRM_BEDROOMS') {
+        if (lead['UF_CRM_1791966366775'] !== undefined && lead['UF_CRM_1791966366775'] !== null && lead['UF_CRM_1791966366775'] !== '') {
+          rawVal = lead['UF_CRM_1791966366775'];
+          targetVal = rawVal;
+        } else {
+          const enumToNum = { '1834': 0, '1836': 1, '1838': 2, '1840': 3, '1842': 4, '1844': 5 };
+          const s = String(rawVal).trim();
+          if (enumToNum[s] !== undefined) {
+            rawVal = enumToNum[s];
+            targetVal = rawVal;
+          } else if (/studio/i.test(s)) {
+            rawVal = 0;
+            targetVal = 0;
+          }
+        }
+      }
+
       // Handle URL fields when Lead provides an object with url / showUrl (e.g. UF_CRM_QR_CODE)
       if (mapping.type === 'url' && rawVal && typeof rawVal === 'object') {
         targetVal = rawVal.urlMachine || rawVal.url || rawVal.showUrl || rawVal.src || '';
@@ -809,7 +827,30 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
         }
       }
 
-      leadUpdates[mapping.leadCode] = targetVal;
+      if (mapping.leadCode === 'UF_CRM_BEDROOMS') {
+        const numBeds = parseFloat(targetVal);
+        if (!isNaN(numBeds)) {
+          leadUpdates['UF_CRM_1791966366775'] = numBeds;
+          const bedsEnumMap = { 0: '1834', 1: '1836', 2: '1838', 3: '1840', 4: '1842', 5: '1844' };
+          const enumId = bedsEnumMap[Math.floor(numBeds)] || (numBeds >= 5 ? '1844' : null);
+          leadUpdates['UF_CRM_BEDROOMS'] = enumId || numBeds;
+        } else {
+          leadUpdates['UF_CRM_BEDROOMS'] = targetVal;
+        }
+      } else if (mapping.leadCode === 'UF_CRM_BATHROOMS') {
+        leadUpdates['UF_CRM_BATHROOMS'] = targetVal;
+        leadUpdates['UF_CRM_1791966408374'] = targetVal;
+      } else if (mapping.leadCode === 'UF_CRM_BUA') {
+        leadUpdates['UF_CRM_BUA'] = targetVal;
+        leadUpdates['UF_CRM_1791970770635'] = targetVal;
+        leadUpdates['UF_CRM_TOTALAREA'] = targetVal;
+      } else if (mapping.leadCode === 'UF_CRM_PLOT_AREA') {
+        leadUpdates['UF_CRM_PLOT_AREA'] = targetVal;
+        leadUpdates['UF_CRM_PLOT_SIZE'] = targetVal;
+        leadUpdates['UF_CRM_LOTSIZE'] = targetVal;
+      } else {
+        leadUpdates[mapping.leadCode] = targetVal;
+      }
     }
 
     if (Object.keys(leadUpdates).length > 0) {
