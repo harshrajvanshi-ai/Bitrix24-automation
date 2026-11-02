@@ -191,8 +191,7 @@ function verifyCrmAccess(req, res, next) {
   const referer = req.headers['referer'] || '';
   const isFromAppIframe = referer.includes('/listing-details') ||
                           referer.includes('/tab') ||
-                          referer.includes('/matching-listings') ||
-                          referer.includes('/dashboard');
+                          referer.includes('/matching-listings');
 
   if (isFromAppIframe && req.headers['x-requested-with'] === 'Bitrix24-CRM-App') {
     return next();

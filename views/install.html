@@ -77,7 +77,6 @@
       <div id="step-placement" class="step-item">○ Registering 'Lead Details' tab (CRM_LEAD_DETAIL_TAB)</div>
       <div id="step-placement-matching" class="step-item">○ Registering 'Matching Listings' tab (CRM_DYNAMIC_1062_DETAIL_TAB)</div>
       <div id="step-placement-listing" class="step-item">○ Registering 'Listing Details' tab (CRM_DYNAMIC_1058_DETAIL_TAB)</div>
-      <div id="step-placement-dashboard" class="step-item">○ Registering 'Executive Dashboard' (LEFT_MENU & CRM_ANALYTICS_MENU)</div>
       <div id="step-events" class="step-item">○ Subscribing to ONCRMLEADADD and ONCRMLEADUPDATE</div>
       <div id="step-discovery" class="step-item">○ Discovering Lead Type field and pipeline stages</div>
     </div>
@@ -224,26 +223,6 @@
           HANDLER: publicUrl + '/listing-details',
           TITLE: 'Listing Details'
         });
-
-        // Step 2d: Register Executive Dashboard placements (LEFT_MENU, CRM_ANALYTICS_MENU, CRM_LEAD_LIST_MENU)
-        updateStep('step-placement-dashboard', 'active');
-        statusEl.textContent = 'Registering Executive Dashboard placements...';
-        await bx24Call('placement.bind', {
-          PLACEMENT: 'LEFT_MENU',
-          HANDLER: publicUrl + '/dashboard',
-          TITLE: 'Real Estate Dashboard'
-        });
-        await bx24Call('placement.bind', {
-          PLACEMENT: 'CRM_ANALYTICS_MENU',
-          HANDLER: publicUrl + '/dashboard',
-          TITLE: 'Real Estate Dashboard'
-        });
-        await bx24Call('placement.bind', {
-          PLACEMENT: 'CRM_LEAD_LIST_MENU',
-          HANDLER: publicUrl + '/dashboard',
-          TITLE: 'Real Estate Dashboard'
-        });
-        updateStep('step-placement-dashboard', 'done');
 
         // Step 3: Register Events
         updateStep('step-events', 'active');

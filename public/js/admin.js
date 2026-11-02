@@ -275,29 +275,9 @@
             HANDLER: publicUrl + '/matching-listings',
             TITLE: 'Matching Listings'
           });
-          window.BX24.callMethod('placement.bind', {
-            PLACEMENT: 'CRM_DYNAMIC_1058_DETAIL_TAB',
-            HANDLER: publicUrl + '/listing-details',
-            TITLE: 'Listing Details'
-          });
-          window.BX24.callMethod('placement.bind', {
-            PLACEMENT: 'CRM_DYNAMIC_16_DETAIL_TAB',
-            HANDLER: publicUrl + '/listing-details',
-            TITLE: 'Listing Details'
-          });
-          window.BX24.callMethod('placement.bind', {
-            PLACEMENT: 'LEFT_MENU',
-            HANDLER: publicUrl + '/dashboard',
-            TITLE: 'Real Estate Dashboard'
-          });
-          window.BX24.callMethod('placement.bind', {
-            PLACEMENT: 'CRM_ANALYTICS_MENU',
-            HANDLER: publicUrl + '/dashboard',
-            TITLE: 'Real Estate Dashboard'
-          });
         }
 
-        showToast('App placements synchronized! Dashboard, Lead Details, Matching & Listing tabs active.', 'success');
+        showToast('App placements synchronized! Lead Details & Matching Listings tabs are active.', 'success');
       } catch (err) {
         showToast(`Sync error: ${err.message}`, 'error');
       } finally {

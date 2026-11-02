@@ -89,27 +89,10 @@ app.use((req, res, next) => {
 // ------------------------------------------------------------------------------
 /**
  * GET/POST /
- * Primary application entry point inside Bitrix24
- * Serves Executive Dashboard by default, or redirects to /install if query ?install=true
+ * Primary entry point redirects to /install
  */
 app.all('/', (req, res) => {
-  res.removeHeader('X-Frame-Options');
-
-  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
-    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
-    StorageManager.saveAuth({
-      access_token: req.body.AUTH_ID,
-      refresh_token: req.body.REFRESH_ID,
-      domain: req.body.DOMAIN,
-      member_id: req.body.member_id
-    });
-  }
-
-  if (req.query?.install === 'true') {
-    return res.redirect('/install');
-  }
-
-  res.sendFile(path.join(__dirname, 'views/dashboard.html'));
+  res.redirect('/install');
 });
 
 /**
@@ -200,8 +183,6 @@ app.post('/api/install-setup', async (req, res) => {
         await BitrixClient.placementBind('CRM_DYNAMIC_18_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
         await BitrixClient.placementBind('CRM_DYNAMIC_1058_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
         await BitrixClient.placementBind('CRM_DYNAMIC_16_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
-        await BitrixClient.placementBind('LEFT_MENU', `${publicUrl}/dashboard`, 'Real Estate Dashboard', domain);
-        await BitrixClient.placementBind('CRM_ANALYTICS_MENU', `${publicUrl}/dashboard`, 'Real Estate Dashboard', domain);
         await BitrixClient.eventBind('ONCRMLEADADD', `${publicUrl}/events`, domain);
         await BitrixClient.eventBind('ONCRMLEADUPDATE', `${publicUrl}/events`, domain);
         await DiscoveryService.runFullDiscovery(true, domain);
@@ -340,38 +321,6 @@ app.all('/listing-details', (req, res) => {
 app.all('/listing-install', (req, res) => {
   res.removeHeader('X-Frame-Options');
   res.sendFile(path.join(__dirname, 'views/listing-install.html'));
-});
-
-// ------------------------------------------------------------------------------
-// 2d. Real Estate Executive Dashboard Placement Handler (/dashboard)
-// ------------------------------------------------------------------------------
-/**
- * GET/POST /dashboard
- * Renders the Real Estate Executive Dashboard (placement: LEFT_MENU / CRM_ANALYTICS_MENU / CRM Tab)
- */
-app.all('/dashboard', (req, res) => {
-  res.removeHeader('X-Frame-Options');
-
-  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
-    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
-    StorageManager.saveAuth({
-      access_token: req.body.AUTH_ID,
-      refresh_token: req.body.REFRESH_ID,
-      domain: req.body.DOMAIN,
-      member_id: req.body.member_id
-    });
-  }
-
-  res.sendFile(path.join(__dirname, 'views/dashboard.html'));
-});
-
-/**
- * GET/POST /dashboard-install
- * Placement manager and manual activation interface for Dashboard placements
- */
-app.all('/dashboard-install', (req, res) => {
-  res.removeHeader('X-Frame-Options');
-  res.sendFile(path.join(__dirname, 'views/dashboard-install.html'));
 });
 
 // In-memory cache for resolved Bitrix file names (fileId -> fileName)
@@ -1697,246 +1646,6 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------
-// 4b. Real Estate Executive Dashboard Analytics API (/api/dashboard/stats)
-// ------------------------------------------------------------------------------
-/**
- * GET /api/dashboard/stats
- * Real Estate Executive Dashboard Metrics & Analytics Endpoint
- * Aggregates CRM Leads, SPA 1058 (Listings), and SPA 1062 (Enquiries)
- */
-app.get('/api/dashboard/stats', verifyCrmAccess, async (req, res) => {
-  try {
-    const period = req.query.period || '30d';
-
-    // 1. Fetch CRM Leads with safety timeout
-    let leads = [];
-    try {
-      const leadsRes = await BitrixClient.call('crm.lead.list', {
-        order: { ID: 'DESC' },
-        select: ['ID', 'TITLE', 'STATUS_ID', 'STATUS_SEMANTIC_ID', 'OPPORTUNITY', 'CURRENCY_ID', 'DATE_CREATE', 'UF_CRM_1791354310417', 'UF_CRM_COMMUNITY', 'UF_CRM_PROPERTY_TYPE']
-      });
-      if (Array.isArray(leadsRes)) {
-        leads = leadsRes;
-      } else if (leadsRes?.result && Array.isArray(leadsRes.result)) {
-        leads = leadsRes.result;
-      }
-    } catch (e) {
-      console.warn('[DASHBOARD STATS] Could not fetch crm.lead.list:', e.message);
-    }
-
-    // 2. Fetch Listings SPA items (1058) with safety timeout
-    let listings = [];
-    try {
-      const listRes = await BitrixClient.call('crm.item.list', {
-        entityTypeId: 1058,
-        order: { id: 'DESC' },
-        select: ['id', 'title', 'stageId', 'ufCrm16Price', 'ufCrm16Size', 'ufCrm16_1791787502111', 'ufCrm16FormAExpiryDate', 'ufCrm16DtcmPermitNumber', 'ufCrm16ReraPermitNumber', 'ufCrm16CommunityPropertyfinder', 'ufCrm16PropertyType', 'ufCrm16_1791172815', 'createdTime', 'assignedById']
-      });
-      if (Array.isArray(listRes)) {
-        listings = listRes;
-      } else if (listRes?.items && Array.isArray(listRes.items)) {
-        listings = listRes.items;
-      }
-    } catch (e) {
-      console.warn('[DASHBOARD STATS] Could not fetch crm.item.list (1058):', e.message);
-    }
-
-    // 3. Fetch Enquiries SPA items (1062) with safety timeout
-    let enquiries = [];
-    try {
-      const enqRes = await BitrixClient.call('crm.item.list', {
-        entityTypeId: 1062,
-        order: { id: 'DESC' },
-        select: ['id', 'title', 'stageId', 'opportunity', 'ufCrm18PriceFrom', 'ufCrm18PriceTo', 'ufCrm18PropertyType', 'ufCrm18Bedrooms', 'ufCrm18Community', 'createdTime', 'assignedById']
-      });
-      if (Array.isArray(enqRes)) {
-        enquiries = enqRes;
-      } else if (enqRes?.items && Array.isArray(enqRes.items)) {
-        enquiries = enqRes.items;
-      }
-    } catch (e) {
-      console.warn('[DASHBOARD STATS] Could not fetch crm.item.list (1062):', e.message);
-    }
-
-    // Aggregations
-    // A. Pipeline Funnel
-    const totalLeads = leads.length;
-    let listingLeads = 0;
-    let enquiryLeads = 0;
-    let convertedLeads = 0;
-
-    for (const l of leads) {
-      if (l.STATUS_ID === 'LISTING_LEADS' || String(l.UF_CRM_1791354310417) === '1596') {
-        listingLeads++;
-      } else if (l.STATUS_ID === 'ENQUIRY_LEADS' || String(l.UF_CRM_1791354310417) === '1594') {
-        enquiryLeads++;
-      }
-      if (l.STATUS_SEMANTIC_ID === 'S' || l.STATUS_ID === 'CONVERTED') {
-        convertedLeads++;
-      }
-    }
-
-    const conversionRate = totalLeads > 0 ? ((convertedLeads / totalLeads) * 100).toFixed(1) : '34.6';
-
-    // B. Portfolio Valuation & Trakheesi Compliance
-    let totalPortfolioVal = 0;
-    let totalSqFt = 0;
-    let validPermits = 0;
-    let expiringSoon = 0;
-    let expiredPermits = 0;
-    const watchlist = [];
-    const communityMap = new Map();
-    const typeMap = new Map();
-    const bedMap = new Map();
-
-    const now = new Date();
-
-    for (const item of listings) {
-      // Clean price
-      const priceRaw = item.ufCrm16Price || item.price || 0;
-      const price = parseFloat(String(priceRaw).replace(/[^0-9.]/g, '')) || 0;
-      totalPortfolioVal += price;
-
-      // Size
-      const sizeRaw = item.ufCrm16Size || item.size || 0;
-      const size = parseFloat(String(sizeRaw).replace(/[^0-9.]/g, '')) || 0;
-      totalSqFt += size;
-
-      // Trakheesi Permit Expiry
-      const expDateStr = item.ufCrm16_1791787502111 || item.ufCrm16FormAExpiryDate;
-      const permitNo = item.ufCrm16DtcmPermitNumber || item.ufCrm16ReraPermitNumber || 'TRK-' + (item.id || '0000');
-      if (expDateStr && expDateStr !== 'N' && expDateStr !== '0000-00-00') {
-        const expDate = new Date(expDateStr);
-        if (!isNaN(expDate.getTime())) {
-          const diffDays = Math.ceil((expDate - now) / (1000 * 60 * 60 * 24));
-          let status = 'valid';
-          if (diffDays < 0) {
-            status = 'expired';
-            expiredPermits++;
-          } else if (diffDays <= 30) {
-            status = 'urgent';
-            expiringSoon++;
-          } else {
-            validPermits++;
-          }
-
-          if (diffDays <= 45) {
-            watchlist.push({
-              id: item.id,
-              title: item.title || `Property #${item.id}`,
-              permit: permitNo,
-              expiry: expDateStr.split('T')[0],
-              daysLeft: diffDays,
-              status
-            });
-          }
-        }
-      }
-
-      // Community
-      const comm = item.ufCrm16CommunityPropertyfinder || item.community || 'Downtown Dubai';
-      if (!communityMap.has(comm)) {
-        communityMap.set(comm, { name: comm, count: 0, value: 0 });
-      }
-      const cEntry = communityMap.get(comm);
-      cEntry.count++;
-      cEntry.value += price;
-
-      // Property Type
-      const pType = item.ufCrm16PropertyType || 'Apartment';
-      typeMap.set(pType, (typeMap.get(pType) || 0) + 1);
-
-      // Bedrooms
-      const beds = item.ufCrm16_1791172815 || '2 BR';
-      bedMap.set(beds, (bedMap.get(beds) || 0) + 1);
-    }
-
-    // Sort watchlist by urgency
-    watchlist.sort((a, b) => a.daysLeft - b.daysLeft);
-
-    // C. Buyer Enquiries
-    let totalBuyerBudget = 0;
-    for (const enq of enquiries) {
-      const oppRaw = enq.opportunity || enq.ufCrm18PriceTo || 0;
-      const opp = parseFloat(String(oppRaw).replace(/[^0-9.]/g, '')) || 0;
-      totalBuyerBudget += opp;
-    }
-
-    // Communities list sorted by count
-    let communities = Array.from(communityMap.values()).sort((a, b) => b.count - a.count).slice(0, 5);
-
-    // Sensible Dubai luxury real estate defaults if database is empty/fresh
-    if (totalPortfolioVal === 0) totalPortfolioVal = 485250000;
-    if (totalBuyerBudget === 0) totalBuyerBudget = 312800000;
-    if (communities.length === 0) {
-      communities = [
-        { name: 'Downtown Dubai', count: 28, value: 168000000, avgPricePerSqFt: 2850 },
-        { name: 'Palm Jumeirah', count: 18, value: 145000000, avgPricePerSqFt: 4200 },
-        { name: 'Business Bay', count: 22, value: 72000000, avgPricePerSqFt: 1950 },
-        { name: 'Dubai Marina', count: 16, value: 58000000, avgPricePerSqFt: 1800 },
-        { name: 'Dubai Hills Estate', count: 12, value: 42250000, avgPricePerSqFt: 2100 }
-      ];
-    }
-    if (watchlist.length === 0) {
-      watchlist.push(
-        { id: 101, title: 'Downtown Burj Crown Suite #1402', permit: 'TRK-982145', expiry: '2026-11-09', daysLeft: 7, status: 'urgent' },
-        { id: 102, title: 'Palm Jumeirah Villa Frond K-22', permit: 'TRK-881204', expiry: '2026-11-16', daysLeft: 14, status: 'urgent' },
-        { id: 103, title: 'Business Bay Executive Bay Tower', permit: 'TRK-774910', expiry: '2026-11-28', daysLeft: 26, status: 'urgent' },
-        { id: 104, title: 'Dubai Marina Marina Gate II Apt 34', permit: 'TRK-661902', expiry: '2026-10-30', daysLeft: -3, status: 'expired' },
-        { id: 105, title: 'Dubai Hills Club Villas #12', permit: 'TRK-554210', expiry: '2027-04-12', daysLeft: 161, status: 'valid' }
-      );
-    }
-
-    const totalPermits = validPermits + expiringSoon + expiredPermits;
-    const complianceRate = totalPermits > 0
-      ? (((validPermits + expiringSoon) / totalPermits) * 100).toFixed(1)
-      : '96.4';
-
-    const matches = [
-      { id: 1, score: 98, leadName: 'Ahmed Al-Mansoor', propertyTitle: '2BR Boulevard Point, Downtown Dubai', budget: 'AED 3,400,000', type: '2BR Apartment', location: 'Downtown Dubai' },
-      { id: 2, score: 94, leadName: 'Sarah Jenkins', propertyTitle: '4BR Signature Villa, Palm Jumeirah', budget: 'AED 24,000,000', type: 'Luxury Villa', location: 'Palm Jumeirah' },
-      { id: 3, score: 89, leadName: 'Tariq Al-Hashemi', propertyTitle: '1BR Marina Gate II, Dubai Marina', budget: 'AED 1,950,000', type: '1BR Apartment', location: 'Dubai Marina' }
-    ];
-
-    res.json({
-      success: true,
-      period,
-      portfolio: {
-        totalValue: totalPortfolioVal,
-        activeListings: listings.length || 86,
-        totalSqFt: totalSqFt || 184500
-      },
-      enquiries: {
-        totalBudget: totalBuyerBudget,
-        activeEnquiries: enquiries.length || 124
-      },
-      pipeline: {
-        totalLeads: totalLeads || 128,
-        listingLeads: listingLeads || 52,
-        enquiryLeads: enquiryLeads || 64,
-        activeItems: (listings.length + enquiries.length) || 86,
-        convertedLeads: convertedLeads || 42,
-        conversionRate,
-        avgPricePerSqFt: totalSqFt > 0 ? Math.round(totalPortfolioVal / totalSqFt) : 2450
-      },
-      compliance: {
-        complianceRate,
-        expiringSoon: expiringSoon || 3,
-        expiredPermits: expiredPermits || 1,
-        watchlist: watchlist.slice(0, 10)
-      },
-      communities,
-      matches,
-      propertyTypes: Object.fromEntries(typeMap),
-      bedrooms: Object.fromEntries(bedMap)
-    });
-  } catch (err) {
-    console.error('[DASHBOARD STATS] Error calculating stats:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// ------------------------------------------------------------------------------
 // 5. Admin & Field Manager Endpoints (/admin)
 // ------------------------------------------------------------------------------
 /**
@@ -2044,21 +1753,6 @@ app.post('/api/admin/bind-placements', verifyAdminSecret, async (req, res) => {
       results.push({ placement: 'CRM_DYNAMIC_16_DETAIL_TAB', status: 'bound', title: 'Listing Details' });
     } catch (e) {
       results.push({ placement: 'CRM_DYNAMIC_16_DETAIL_TAB', status: 'error', error: e.message });
-    }
-
-    // 4. Executive Real Estate Dashboard (LEFT_MENU & CRM_ANALYTICS_MENU)
-    try {
-      await BitrixClient.placementBind('LEFT_MENU', `${publicUrl}/dashboard`, 'Real Estate Dashboard', domain);
-      results.push({ placement: 'LEFT_MENU', status: 'bound', title: 'Real Estate Dashboard' });
-    } catch (e) {
-      results.push({ placement: 'LEFT_MENU', status: 'error', error: e.message });
-    }
-
-    try {
-      await BitrixClient.placementBind('CRM_ANALYTICS_MENU', `${publicUrl}/dashboard`, 'Real Estate Dashboard', domain);
-      results.push({ placement: 'CRM_ANALYTICS_MENU', status: 'bound', title: 'Real Estate Dashboard' });
-    } catch (e) {
-      results.push({ placement: 'CRM_ANALYTICS_MENU', status: 'error', error: e.message });
     }
 
     res.json({ success: true, results });
