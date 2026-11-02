@@ -496,11 +496,65 @@
       try {
         const cleanQuery = String(query).replace(/^#/, '').trim();
         const refreshParam = refresh ? '&refresh=1' : '';
-        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanQuery)}${refreshParam}`, {
+
+        // Extract dependent linkage query parameters
+        let extraParams = '';
+        if (f.code === 'UF_CRM_PROJECT_1') {
+          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpId = mpInput?.dataset?.selectedId;
+          if (mpId) extraParams += `&master_project_id=${encodeURIComponent(mpId)}`;
+        } else if (f.code === 'UF_CRM_PROPERTY_LAYOUT') {
+          const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
+          const pId = pInput?.dataset?.selectedId;
+          if (pId) extraParams += `&project_id=${encodeURIComponent(pId)}`;
+        } else if (f.code === 'UF_CRM_LISTING') {
+          const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
+          const pId = pInput?.dataset?.selectedId;
+          if (pId) extraParams += `&project_id=${encodeURIComponent(pId)}`;
+          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpId = mpInput?.dataset?.selectedId;
+          if (mpId) extraParams += `&master_project_id=${encodeURIComponent(mpId)}`;
+          const lInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
+          const lId = lInput?.dataset?.selectedId;
+          if (lId) extraParams += `&layout_id=${encodeURIComponent(lId)}`;
+        }
+
+        const res = await fetch(`/api/lookup?entity=${encodeURIComponent(f.lookupEntity || 'master_project')}&q=${encodeURIComponent(cleanQuery)}${refreshParam}${extraParams}`, {
           headers: getCrmAuthHeaders()
         });
         const data = await res.json();
-        const items = data.items || [];
+        let items = data.items || [];
+
+        // Apply local dependent filters
+        if (f.code === 'UF_CRM_PROJECT_1') {
+          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpId = mpInput?.dataset?.selectedId;
+          if (mpId) {
+            items = items.filter(it => !it.parentId1040 || String(it.parentId1040) === String(mpId));
+          }
+        } else if (f.code === 'UF_CRM_PROPERTY_LAYOUT') {
+          const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
+          const pId = pInput?.dataset?.selectedId;
+          if (pId) {
+            items = items.filter(it => !it.parentId1044 || String(it.parentId1044) === String(pId));
+          }
+        } else if (f.code === 'UF_CRM_LISTING') {
+          const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
+          const pId = pInput?.dataset?.selectedId;
+          if (pId) {
+            items = items.filter(it => !it.parentId1044 || String(it.parentId1044) === String(pId));
+          }
+          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpId = mpInput?.dataset?.selectedId;
+          if (mpId) {
+            items = items.filter(it => !it.parentId1040 || String(it.parentId1040) === String(mpId));
+          }
+          const lInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
+          const lId = lInput?.dataset?.selectedId;
+          if (lId) {
+            items = items.filter(it => !it.parentId1048 || String(it.parentId1048) === String(lId));
+          }
+        }
 
         dropdown.innerHTML = '';
 
@@ -560,6 +614,64 @@
             if ((f.code === 'UF_CRM_PROJECT_NAME' || f.code === 'UF_CRM_PROJECT_1') && item.title) {
               const altEl = document.getElementById(f.code === 'UF_CRM_PROJECT_NAME' ? 'field_UF_CRM_PROJECT_1' : 'field_UF_CRM_PROJECT_NAME');
               if (altEl) altEl.value = item.title;
+            }
+
+            // Helper to auto-populate dependent lookup input
+            const setDependentLookup = (targetCode, entityName, targetId, targetTitle) => {
+              const targetInput = document.getElementById(`field_${targetCode}`);
+              if (!targetInput || !targetId) return;
+              targetInput.dataset.selectedId = String(targetId);
+              targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : '1058'}_${targetId}`;
+              if (targetTitle) {
+                targetInput.value = targetTitle;
+                targetInput.dataset.selectedTitle = targetTitle;
+              } else {
+                fetch(`/api/lookup?entity=${encodeURIComponent(entityName)}&q=${encodeURIComponent(targetId)}`, { headers: getCrmAuthHeaders() })
+                  .then(r => r.json())
+                  .then(d => {
+                    const match = (d.items || []).find(it => String(it.id) === String(targetId)) || d.items?.[0];
+                    if (match && targetInput) {
+                      targetInput.value = match.title;
+                      targetInput.dataset.selectedTitle = match.title;
+                    }
+                  }).catch(() => {});
+              }
+              const targetClear = targetInput.parentElement?.querySelector('.lookup-clear-btn');
+              const targetOpen = targetInput.parentElement?.querySelector('.lookup-open-btn');
+              if (targetClear) targetClear.style.display = 'block';
+              if (targetOpen) targetOpen.style.display = 'inline-flex';
+            };
+
+            // Cascading Dependent Lookups (Listing, Master Project, Project, Layout)
+            if (f.code === 'UF_CRM_LISTING') {
+              // 1. Listing selected: auto-fill linked Master Project, Project, and Layout
+              if (item.parentId1040) setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
+              if (item.parentId1044) setDependentLookup('UF_CRM_PROJECT_1', 'project', item.parentId1044);
+              if (item.parentId1048) setDependentLookup('UF_CRM_PROPERTY_LAYOUT', 'layout', item.parentId1048);
+
+              fetch(`/api/listing/${item.id}`, { headers: getCrmAuthHeaders() })
+                .then(r => r.json())
+                .then(lData => {
+                  const l = lData.listing;
+                  if (l) {
+                    if (l.parentId1040 || l.UF_CRM_16_1791173000) setDependentLookup('UF_CRM_PROJECT', 'master_project', l.parentId1040 || l.UF_CRM_16_1791173000);
+                    if (l.parentId1044 || l.UF_CRM_16_1791173131) setDependentLookup('UF_CRM_PROJECT_1', 'project', l.parentId1044 || l.UF_CRM_16_1791173131);
+                    if (l.parentId1048) setDependentLookup('UF_CRM_PROPERTY_LAYOUT', 'layout', l.parentId1048);
+                  }
+                }).catch(() => {});
+            } else if (f.code === 'UF_CRM_PROJECT_1') {
+              // 2. Project selected: auto-fill Master Project if project belongs to one
+              if (item.parentId1040) {
+                setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
+              }
+            } else if (f.code === 'UF_CRM_PROPERTY_LAYOUT') {
+              // 3. Layout selected: auto-fill Project & Master Project
+              if (item.parentId1044) {
+                setDependentLookup('UF_CRM_PROJECT_1', 'project', item.parentId1044);
+              }
+              if (item.parentId1040) {
+                setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
+              }
             }
 
             markFieldDirty();
@@ -711,6 +823,27 @@
     const container = document.createElement('div');
     let inputElement;
 
+    // Automated Read-only fields (e.g. First Contacted Date)
+    if (f.code === 'UF_CRM_FIRST_CONTACTED_DATE' || f.automated) {
+      inputElement = document.createElement('input');
+      inputElement.type = 'text';
+      inputElement.className = 'form-control readonly-automated-input';
+      inputElement.id = `field_${f.code}`;
+      inputElement.name = f.code;
+      inputElement.readOnly = true;
+      inputElement.title = 'Automated based on activity and events in Bitrix24 CRM';
+
+      let formattedDate = currentVal ? formatDateTimeForInput(currentVal) : '';
+      if (formattedDate) {
+        formattedDate = formattedDate.replace('T', ' ');
+      }
+      inputElement.value = formattedDate || 'Not contacted yet (Automated via CRM)';
+
+      container.appendChild(inputElement);
+      initialFormValues[f.code] = currentVal || '';
+      return { container, inputElement };
+    }
+
     if (f.type === 'enumeration') {
       inputElement = document.createElement('select');
       inputElement.className = 'form-control';
@@ -756,7 +889,7 @@
 
       const span = document.createElement('span');
       span.className = 'checkbox-label-text';
-      span.textContent = f.placeholder || 'Yes / Confirmed';
+      span.textContent = (f.placeholder && f.placeholder !== 'Yes / Confirmed') ? f.placeholder : 'Yes';
 
       wrap.appendChild(inputElement);
       wrap.appendChild(span);
@@ -898,6 +1031,83 @@
     }
 
     return { container, inputElement };
+  }
+
+  function applyEnquirySubLayout(enquiryTypeRaw) {
+    if (currentLayout !== 'enquiry') return;
+    const str = String(enquiryTypeRaw || '').toLowerCase().trim();
+    let sub = 'all';
+    if (str.includes('rent') && str.includes('commercial')) {
+      sub = 'commercial_rent';
+    } else if ((str.includes('buy') || str.includes('sale')) && str.includes('commercial')) {
+      sub = 'commercial_buy';
+    } else if (str.includes('rent') || str === '2578') {
+      sub = 'rent';
+    } else if (str.includes('buy') || str.includes('sale') || str === '2580') {
+      sub = 'buy';
+    }
+
+    // Rules for enquiry requirement fields:
+    // Rent: show monthly rent min/max, number of cheques, move date. Hide price min/max, purchase amount, finance.
+    // Buy: show price min/max, purchase amount, finance. Hide rent min/max, number of cheques.
+    const rentFieldCodes = [
+      'UF_CRM_MONTHLYRENTMIN',
+      'UF_CRM_MONTHLYRENTMAX',
+      'UF_CRM_1792139023' // Number of Cheques
+    ];
+    const buyFieldCodes = [
+      'UF_CRM_LISTINGPRICE_MIN',
+      'UF_CRM_LISTINGPRICE_MAX',
+      'UF_CRM_PURCHASEAMOUNTOFHOME',
+      'UF_CRM_FINANCE'
+    ];
+
+    let totalActive = 0;
+    const sections = tabConfig?.enquiryLayout?.sections || [];
+
+    sections.forEach((sec, sIdx) => {
+      const secId = `section_${sec.id || sIdx}`;
+      const sectionCard = document.getElementById(secId);
+      let secActiveCount = 0;
+
+      (sec.fields || []).forEach(f => {
+        const fg = document.querySelector(`.form-group[data-field-code="${f.code}"]`);
+        let isVisible = true;
+
+        if (sub === 'rent') {
+          if (buyFieldCodes.includes(f.code)) isVisible = false;
+        } else if (sub === 'buy') {
+          if (rentFieldCodes.includes(f.code)) isVisible = false;
+        } else if (sub === 'commercial_rent') {
+          if (buyFieldCodes.includes(f.code)) isVisible = false;
+        } else if (sub === 'commercial_buy') {
+          if (rentFieldCodes.includes(f.code)) isVisible = false;
+        }
+
+        if (fg) {
+          fg.style.display = isVisible ? '' : 'none';
+        }
+        if (isVisible) secActiveCount++;
+      });
+
+      totalActive += secActiveCount;
+
+      if (sectionCard) {
+        const badgeCount = sectionCard.querySelector('.section-badge-count');
+        if (badgeCount) badgeCount.textContent = `${secActiveCount} fields`;
+        sectionCard.style.display = secActiveCount === 0 ? 'none' : '';
+      }
+
+      const pill = sectionNavPills.children[sIdx + 1];
+      if (pill) {
+        pill.style.display = secActiveCount === 0 ? 'none' : '';
+      }
+    });
+
+    if (fieldsCountBadge) {
+      fieldsCountBadge.textContent = `${totalActive} fields in ${sections.length} sections`;
+    }
+    resizeWindow();
   }
 
   function applyListingSubLayout(subLayout) {
@@ -1099,6 +1309,13 @@
       star.textContent = '*';
       label.appendChild(star);
     }
+    if (f.automated || f.code === 'UF_CRM_FIRST_CONTACTED_DATE') {
+      const badge = document.createElement('span');
+      badge.className = 'automated-badge';
+      badge.textContent = 'Automated';
+      badge.title = 'Automated based on activity and events in Bitrix24 CRM';
+      label.appendChild(badge);
+    }
     formGroup.appendChild(label);
 
     const feedback = document.createElement('div');
@@ -1126,6 +1343,15 @@
           applyListingSubLayout(detected);
         }
       });
+    }
+
+    // Bind real-time enquiry requirement form switching when Enquiry Type changes
+    if (currentLayout === 'enquiry' && (f.code === 'UF_CRM_1791952650167' || f.code === 'UF_CRM_ENQUIRY_TYPE')) {
+      const enqHandler = (e) => {
+        applyEnquirySubLayout(e.target.value);
+      };
+      inputObj.inputElement?.addEventListener('change', enqHandler);
+      inputObj.inputElement?.addEventListener('input', enqHandler);
     }
 
     formGroup.appendChild(inputObj.container);
@@ -1165,6 +1391,10 @@
       stageBadge.textContent = 'Enquiry Record';
       if (stageInfoText) stageInfoText.innerHTML = '🔍 Presenting <strong>Enquiry Layout</strong>';
       if (listingLayoutBadge) listingLayoutBadge.style.display = 'none';
+      setTimeout(() => {
+        const enqVal = lead?.UF_CRM_1791952650167 || lead?.UF_CRM_ENQUIRY_TYPE || '';
+        applyEnquirySubLayout(enqVal);
+      }, 50);
     }
 
     const layoutDef = layout === 'listing' ? tabConfig.listingLayout : tabConfig.enquiryLayout;

@@ -1495,14 +1495,6 @@
         "icon": "👤",
         "fields": [
           {
-            "code": "UF_CRM_ENQUIRY_NAME",
-            "label": "Enquiry Name",
-            "bitrixLabel": "Enquiry Name",
-            "type": "string",
-            "placeholder": "Enter enquiry name...",
-            "fullWidth": true
-          },
-          {
             "code": "UF_CRM_1792563228880",
             "label": "Lead source Type",
             "bitrixLabel": "Lead source Type",
@@ -1536,63 +1528,6 @@
             ]
           },
           {
-            "code": "UF_CRM_OWNER_ENQUIRY",
-            "label": "Owner - Enquiry",
-            "bitrixLabel": "Owner - Enquiry",
-            "type": "lookup",
-            "placeholder": "Search Owner - Enquiry...",
-            "lookupEntity": "contact"
-          },
-          {
-            "code": "UF_CRM_STATUS",
-            "label": "Enquiry status",
-            "bitrixLabel": "Status",
-            "type": "enumeration",
-            "placeholder": "-- Select Enquiry status --",
-            "options": [
-              {
-                "id": "2132",
-                "value": "Active"
-              },
-              {
-                "id": "2134",
-                "value": "Under Offer"
-              },
-              {
-                "id": "2136",
-                "value": "Reserved"
-              },
-              {
-                "id": "2138",
-                "value": "Sold"
-              },
-              {
-                "id": "2140",
-                "value": "Rented"
-              },
-              {
-                "id": "2142",
-                "value": "Off-Market"
-              },
-              {
-                "id": "2144",
-                "value": "Withdrawn"
-              },
-              {
-                "id": "2146",
-                "value": "Expired"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_CONTACTS",
-            "label": "Contact",
-            "bitrixLabel": "Contacts",
-            "type": "lookup",
-            "placeholder": "Search Contact...",
-            "lookupEntity": "contact"
-          },
-          {
             "code": "UF_CRM_IS_A_REAL_ESTATE_BROKER",
             "label": "Is a Real Estate Broker",
             "bitrixLabel": "Is a Real Estate Broker",
@@ -1601,26 +1536,26 @@
           },
           {
             "code": "UF_CRM_1791952650167",
-            "label": "Listing Type",
-            "bitrixLabel": "Listing type",
+            "label": "Enquiry Type",
+            "bitrixLabel": "Enquiry Type",
             "type": "enumeration",
-            "placeholder": "-- Select Listing Type --",
+            "placeholder": "-- Select Enquiry Type --",
             "options": [
               {
-                "id": "2578",
-                "value": "RENT"
+                "id": "2580",
+                "value": "Buy (Sale)"
               },
               {
-                "id": "2580",
-                "value": "Overseas Sale"
+                "id": "2578",
+                "value": "Rent"
               },
               {
                 "id": "2582",
-                "value": "Off-plan Listing"
+                "value": "Commercial Buy"
               },
               {
                 "id": "2584",
-                "value": "External Stock"
+                "value": "Commercial Rent"
               }
             ]
           },
@@ -1646,50 +1581,11 @@
             ]
           },
           {
-            "code": "UF_CRM_NORMAL_LOW_HIGH_URGENT",
-            "label": "Urgency",
-            "bitrixLabel": "Normal Low High Urgent",
-            "type": "enumeration",
-            "placeholder": "-- Select Urgency --",
-            "options": [
-              {
-                "id": "2370",
-                "value": "Low"
-              },
-              {
-                "id": "2372",
-                "value": "Normal"
-              },
-              {
-                "id": "2374",
-                "value": "High"
-              },
-              {
-                "id": "2376",
-                "value": "Urgent"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_DEAL_VALUE_1",
-            "label": "Deal Value",
-            "bitrixLabel": "Deal Value",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
             "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
             "label": "Days since last contacted",
             "bitrixLabel": "Days since last contacted",
             "type": "integer",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_ENQUIRY_LOCKED_2",
-            "label": "Enquiry Locked",
-            "bitrixLabel": "Enquiry Locked",
-            "type": "boolean",
-            "placeholder": "Enquiry Locked"
           },
           {
             "code": "UF_CRM_MOVE_DATE",
@@ -1718,7 +1614,10 @@
             "label": "First Contacted Date",
             "bitrixLabel": "First Contacted Date",
             "type": "datetime",
-            "placeholder": ""
+            "placeholder": "",
+            "readOnly": true,
+            "automated": true,
+            "helperText": "Automated via CRM activities & events"
           },
           {
             "code": "UF_CRM_FIRST_VIEWING_DATE",
@@ -1817,30 +1716,11 @@
             "code": "UF_CRM_1792139023",
             "label": "Number of Cheques",
             "bitrixLabel": "Number of Cheques",
-            "type": "enumeration",
-            "placeholder": "-- Select Number of Cheques --",
-            "options": [
-              {
-                "id": "2442",
-                "value": "1 Cheque"
-              },
-              {
-                "id": "2444",
-                "value": "2 Cheques"
-              },
-              {
-                "id": "2446",
-                "value": "4 Cheques"
-              },
-              {
-                "id": "2448",
-                "value": "6 Cheques"
-              },
-              {
-                "id": "2450",
-                "value": "12 Cheques"
-              }
-            ]
+            "type": "integer",
+            "placeholder": "e.g. 4",
+            "min": 1,
+            "max": 12,
+            "step": 1
           },
           {
             "code": "UF_CRM_FINANCE",
@@ -1869,69 +1749,6 @@
             "bitrixLabel": "Purchase Amount of Home",
             "type": "money",
             "placeholder": "e.g., 2,500,000"
-          }
-        ]
-      },
-      {
-        "id": "mortgage_finance",
-        "title": "Mortgage & Home Financing",
-        "icon": "🏦",
-        "fields": [
-          {
-            "code": "UF_CRM_MORTGAGEDATE",
-            "label": "Mortgage Date",
-            "bitrixLabel": "Mortgage Date",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
-            "label": "eMortgage Auto Referral",
-            "bitrixLabel": "eMortgage Auto Referral",
-            "type": "boolean",
-            "placeholder": "Yes / Auto Referral"
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_BROKER",
-            "label": "eMortgage Broker",
-            "bitrixLabel": "eMortgage Broker",
-            "type": "string",
-            "placeholder": "Search eMortgage Broker..."
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
-            "label": "eMortgage Broker email",
-            "bitrixLabel": "eMortgage Broker email",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
-            "label": "eMortgage Broker number",
-            "bitrixLabel": "eMortgage Broker number",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
-            "label": "eMortgage Referral Date",
-            "bitrixLabel": "eMortgage Referral Date",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
-            "label": "eMortgage Referred By",
-            "bitrixLabel": "eMortgage Referred By",
-            "type": "string",
-            "placeholder": "Search eMortgage Referred By..."
-          },
-          {
-            "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
-            "label": "eMortgage Skip Send",
-            "bitrixLabel": "eMortgage Skip Send",
-            "type": "boolean",
-            "placeholder": "Yes / Skip Send"
           }
         ]
       },
@@ -2065,76 +1882,6 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_LOTSIZE_MIN",
-            "label": "Lot Size - min",
-            "bitrixLabel": "Lot Size - min",
-            "type": "double",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LOTSIZE_MAX",
-            "label": "Lot Size - max",
-            "bitrixLabel": "Lot Size - max",
-            "type": "double",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_FLOOR_MIN",
-            "label": "Floor - min",
-            "bitrixLabel": "Floor - min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_FLOOR_MAX",
-            "label": "Floor - max",
-            "bitrixLabel": "Floor - max",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_STORIES_MIN",
-            "label": "Stories - min",
-            "bitrixLabel": "Stories - min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_STORIES_MAX",
-            "label": "Stories - max",
-            "bitrixLabel": "Stories - max",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_STORIES_1",
-            "label": "Stories",
-            "bitrixLabel": "Stories",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UNIT_NO",
-            "label": "Unit Number",
-            "bitrixLabel": "Unit Number",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UNITSMIN",
-            "label": "Units Min",
-            "bitrixLabel": "Units Min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_UNITSMAX",
-            "label": "Units Max",
-            "bitrixLabel": "Units Max",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_MEASUREMENT",
             "label": "Measurement",
             "bitrixLabel": "Measurement",
@@ -2171,13 +1918,6 @@
                 "value": "Unfurnished"
               }
             ]
-          },
-          {
-            "code": "UF_CRM_STYLE_1",
-            "label": "Style",
-            "bitrixLabel": "Style",
-            "type": "string",
-            "placeholder": ""
           },
           {
             "code": "UF_CRM_CONSTRUCTION",
@@ -2285,13 +2025,6 @@
                 "value": "Canal View"
               }
             ]
-          },
-          {
-            "code": "UF_CRM_ADULTCOMMUNITY",
-            "label": "Adult Community",
-            "bitrixLabel": "Adult Community",
-            "type": "boolean",
-            "placeholder": ""
           }
         ]
       },
@@ -2483,147 +2216,6 @@
             "lookupEntity": "layout"
           },
           {
-            "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
-            "label": "Buildings and Developments",
-            "bitrixLabel": "Buildings and Developments",
-            "type": "text",
-            "placeholder": "Search Buildings and Developments...",
-            "fullWidth": true
-          },
-          {
-            "code": "UF_CRM_RECOMMENDED_LISTINGS",
-            "label": "Recommended_Listings",
-            "bitrixLabel": "Recommended_Listings",
-            "type": "text",
-            "placeholder": "",
-            "fullWidth": true
-          },
-          {
-            "code": "UF_CRM_BUILDING_DUBIZZLE",
-            "label": "Building - Bayut",
-            "bitrixLabel": "Building - Bayut",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
-            "label": "Locationtext - Bayut",
-            "bitrixLabel": "LocationText - Bayut",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_CITY_BAYUT",
-            "label": "City - Bayut",
-            "bitrixLabel": "City (Bayut)",
-            "type": "enumeration",
-            "placeholder": "-- Select City - Bayut --",
-            "options": [
-              {
-                "id": "2546",
-                "value": "Dubai"
-              },
-              {
-                "id": "2548",
-                "value": "Abu Dhabi"
-              },
-              {
-                "id": "2550",
-                "value": "Sharjah"
-              },
-              {
-                "id": "2552",
-                "value": "Ajman"
-              },
-              {
-                "id": "2554",
-                "value": "Ras Al Khaimah"
-              },
-              {
-                "id": "2556",
-                "value": "Fujairah"
-              },
-              {
-                "id": "2558",
-                "value": "Umm Al Quwain"
-              },
-              {
-                "id": "2560",
-                "value": "Al Ain"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
-            "label": "Property - Propertyfinder",
-            "bitrixLabel": "Property - Propertyfinder",
-            "type": "lookup",
-            "placeholder": "Search Property - Propertyfinder...",
-            "lookupEntity": "property"
-          },
-          {
-            "code": "UF_CRM_PROPERTYFINDER_REGION",
-            "label": "Propertyfinder Region",
-            "bitrixLabel": "Propertyfinder Region",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
-            "label": "Community - Propertyfinder",
-            "bitrixLabel": "Community - Propertyfinder",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
-            "label": "Sub Community - Propertyfinder",
-            "bitrixLabel": "Sub Community - Propertyfinder",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_CITY_PF",
-            "label": "City - Propertyfinder",
-            "bitrixLabel": "City (Propertyfinder)",
-            "type": "enumeration",
-            "placeholder": "-- Select City - Propertyfinder --",
-            "options": [
-              {
-                "id": "2562",
-                "value": "Dubai"
-              },
-              {
-                "id": "2564",
-                "value": "Abu Dhabi"
-              },
-              {
-                "id": "2566",
-                "value": "Sharjah"
-              },
-              {
-                "id": "2568",
-                "value": "Ajman"
-              },
-              {
-                "id": "2570",
-                "value": "Ras Al Khaimah"
-              },
-              {
-                "id": "2572",
-                "value": "Fujairah"
-              },
-              {
-                "id": "2574",
-                "value": "Umm Al Quwain"
-              },
-              {
-                "id": "2576",
-                "value": "Al Ain"
-              }
-            ]
-          },
-          {
             "code": "UF_CRM_DEVELOPER_1",
             "label": "Developer",
             "bitrixLabel": "Developer",
@@ -2662,34 +2254,6 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_NUMBEROFPARKINGSPACES",
-            "label": "Number of Parking Spaces",
-            "bitrixLabel": "Number of Parking Spaces",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PARKING_SPACES_MIN",
-            "label": "Parking Spaces - min",
-            "bitrixLabel": "Parking Spaces - min",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_PARKING_SPACES_MAX",
-            "label": "Parking Spaces - max",
-            "bitrixLabel": "Parking Spaces - max",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_GARAGESPACEMAX",
-            "label": "Garage Space Max",
-            "bitrixLabel": "Garage Space Max",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_POOL",
             "label": "Pool",
             "bitrixLabel": "Pool",
@@ -2708,13 +2272,6 @@
             "label": "Beachfront",
             "bitrixLabel": "Beachfront",
             "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BODYOFWATER",
-            "label": "Body of Water",
-            "bitrixLabel": "Body of Water",
-            "type": "string",
             "placeholder": ""
           },
           {
@@ -2743,13 +2300,6 @@
             "label": "Pets Allowed",
             "bitrixLabel": "Pets Allowed",
             "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_FLOORINGTYPE",
-            "label": "Flooring Type",
-            "bitrixLabel": "Flooring Type",
-            "type": "string",
             "placeholder": ""
           },
           {
@@ -2842,155 +2392,6 @@
                 "value": "None / Not Applicable"
               }
             ]
-          },
-          {
-            "code": "UF_CRM_KEYWORDS",
-            "label": "Keywords",
-            "bitrixLabel": "Keywords",
-            "type": "text",
-            "placeholder": "",
-            "fullWidth": true
-          }
-        ]
-      },
-      {
-        "id": "website_searches",
-        "title": "Website Searches & Open House Notifications",
-        "icon": "🌐",
-        "fields": [
-          {
-            "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
-            "label": "Is Website Saved Search",
-            "bitrixLabel": "Is Website Saved Search",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_WEBSITEID",
-            "label": "Website ID",
-            "bitrixLabel": "Website ID",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_WEBSITEMLSID",
-            "label": "Website MLS ID",
-            "bitrixLabel": "Website MLS ID",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_WEBSITESEARCHID",
-            "label": "Website Search ID",
-            "bitrixLabel": "Website Search ID",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_WEBSITESEARCHTYPE",
-            "label": "Website Search Type",
-            "bitrixLabel": "Website Search Type",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_WEBSITESEARCHURL",
-            "label": "Website Search URL",
-            "bitrixLabel": "Website Search URL",
-            "type": "url",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_EMAILFREQUENCY",
-            "label": "Email Frequency",
-            "bitrixLabel": "Email Frequency",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_INCLUDESALLCHANGES",
-            "label": "Includes All Changes",
-            "bitrixLabel": "Includes All Changes",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_INCLUDESNEWLISTINGS",
-            "label": "Includes New Listings",
-            "bitrixLabel": "Includes New Listings",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_INCLUDESPRICECHANGES",
-            "label": "Includes Price Changes",
-            "bitrixLabel": "Includes Price Changes",
-            "type": "boolean",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
-            "code": "UF_CRM_INCLUDESSTATUSCHANGES",
-            "label": "Includes Status Changes",
-            "bitrixLabel": "Includes Status Changes",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
-            "label": "Includes Open House Changes",
-            "bitrixLabel": "Includes Open House Changes",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SAVED_SEARCH_NAME",
-            "label": "Saved Search Name",
-            "bitrixLabel": "Saved Search Name",
-            "type": "string",
-            "placeholder": "Enter saved search name..."
-          }
-        ]
-      },
-      {
-        "id": "disqualification_spam",
-        "title": "Disqualification & Spam Records",
-        "icon": "⚠️",
-        "fields": [
-          {
-            "code": "UF_CRM_DISQUALIFY_DATE",
-            "label": "Disqualify Date",
-            "bitrixLabel": "Disqualify Date",
-            "type": "date",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_DISQUALIFY_REASON",
-            "label": "Disqualify Reason",
-            "bitrixLabel": "Disqualify Reason",
-            "type": "string",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
-            "label": "Disqualify Reason Other",
-            "bitrixLabel": "Disqualify Reason Other",
-            "type": "string",
-            "placeholder": "",
-            "fullWidth": true
-          },
-          {
-            "code": "UF_CRM_SPAM_ENQUIRY",
-            "label": "Spam Enquiry",
-            "bitrixLabel": "Spam Enquiry",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_SPAM_REASON",
-            "label": "Spam Reason",
-            "bitrixLabel": "Spam Reason",
-            "type": "string",
-            "placeholder": ""
           }
         ]
       }
@@ -4429,26 +3830,26 @@
     },
     {
       "code": "UF_CRM_1791952650167",
-      "label": "Listing Type",
-      "bitrixLabel": "Listing type",
+      "label": "Enquiry Type",
+      "bitrixLabel": "Enquiry Type",
       "type": "enumeration",
-      "placeholder": "-- Select Listing Type --",
+      "placeholder": "-- Select Enquiry Type --",
       "options": [
         {
-          "id": "2578",
-          "value": "RENT"
+          "id": "2580",
+          "value": "Buy (Sale)"
         },
         {
-          "id": "2580",
-          "value": "Overseas Sale"
+          "id": "2578",
+          "value": "Rent"
         },
         {
           "id": "2582",
-          "value": "Off-plan Listing"
+          "value": "Commercial Buy"
         },
         {
           "id": "2584",
-          "value": "External Stock"
+          "value": "Commercial Rent"
         }
       ]
     },
@@ -4638,30 +4039,11 @@
       "code": "UF_CRM_1792139023",
       "label": "Number of Cheques",
       "bitrixLabel": "Number of Cheques",
-      "type": "enumeration",
-      "placeholder": "-- Select Number of Cheques --",
-      "options": [
-        {
-          "id": "2442",
-          "value": "1 Cheque"
-        },
-        {
-          "id": "2444",
-          "value": "2 Cheques"
-        },
-        {
-          "id": "2446",
-          "value": "4 Cheques"
-        },
-        {
-          "id": "2448",
-          "value": "6 Cheques"
-        },
-        {
-          "id": "2450",
-          "value": "12 Cheques"
-        }
-      ]
+      "type": "integer",
+      "placeholder": "e.g. 4",
+      "min": 1,
+      "max": 12,
+      "step": 1
     },
     {
       "code": "UF_CRM_FINANCE",

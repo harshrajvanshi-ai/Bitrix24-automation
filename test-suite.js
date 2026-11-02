@@ -332,7 +332,7 @@ async function runTests() {
   assert(fieldsWithTextIds.length === 0, 'All enumeration options have numeric Bitrix item IDs');
 
   // Specific check on enquiry status and source type
-  const enquiryStatus = allEnumFields.find(f => f.code === 'UF_CRM_STATUS');
+  const enquiryStatus = allEnumFields.find(f => f.code === 'UF_CRM_STATUS') || fieldCfg.enquiryFields?.find(f => f.code === 'UF_CRM_STATUS');
   assert(enquiryStatus && enquiryStatus.options.some(o => o.id === '2132' && o.value === 'Active'), 'UF_CRM_STATUS mapped to numeric ID 2132 for Active');
 
   const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_1792563228880' || f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
@@ -737,9 +737,7 @@ async function runTests() {
 
   // 6. Verify City - Bayut schema and translation
   const { CITY_BAYUT_MAP, CITY_PROPERTYFINDER_MAP } = require('./src/spaSync');
-  const cityBayutField = fieldsConfig.enquiryLayout?.sections
-    ?.flatMap(s => s.fields || [])
-    ?.find(f => f.code === 'UF_CRM_CITY_BAYUT');
+  const cityBayutField = (fieldsConfig.enquiryLayout?.sections?.flatMap(s => s.fields || []) || []).find(f => f.code === 'UF_CRM_CITY_BAYUT') || fieldsConfig.enquiryFields?.find(f => f.code === 'UF_CRM_CITY_BAYUT') || fieldsConfig.listingFields?.find(f => f.code === 'UF_CRM_CITY_BAYUT');
   assert(cityBayutField && cityBayutField.type === 'enumeration', 'UF_CRM_CITY_BAYUT is configured as type enumeration');
   assert(Array.isArray(cityBayutField.options) && cityBayutField.options.length === 8, 'UF_CRM_CITY_BAYUT has exactly 8 UAE city options');
   assert(cityBayutField.options.some(o => o.value === 'Dubai' && String(o.id) === '2546'), 'UF_CRM_CITY_BAYUT includes Dubai (2546)');
@@ -748,9 +746,7 @@ async function runTests() {
   assert(CITY_BAYUT_MAP['2560'] === 1148, 'City Bayut Al Ain (2560) maps to SPA 1148');
 
   // 7. Verify City - Propertyfinder schema and translation
-  const cityPfField = fieldsConfig.enquiryLayout?.sections
-    ?.flatMap(s => s.fields || [])
-    ?.find(f => f.code === 'UF_CRM_CITY_PF');
+  const cityPfField = (fieldsConfig.enquiryLayout?.sections?.flatMap(s => s.fields || []) || []).find(f => f.code === 'UF_CRM_CITY_PF') || fieldsConfig.enquiryFields?.find(f => f.code === 'UF_CRM_CITY_PF') || fieldsConfig.listingFields?.find(f => f.code === 'UF_CRM_CITY_PF');
   assert(cityPfField && cityPfField.type === 'enumeration', 'UF_CRM_CITY_PF is configured as type enumeration');
   assert(Array.isArray(cityPfField.options) && cityPfField.options.length === 8, 'UF_CRM_CITY_PF has exactly 8 UAE city options');
   assert(cityPfField.options.some(o => o.value === 'Dubai' && String(o.id) === '2562'), 'UF_CRM_CITY_PF includes Dubai (2562)');

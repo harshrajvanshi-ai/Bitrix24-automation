@@ -650,14 +650,65 @@ textarea.form-control {
 
 select.form-control {
   cursor: pointer;
+  background-color: #ffffff;
+  color: var(--text-dark, #1f2937);
+  color-scheme: light;
   background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M1%201L5%205L9%201%22%20stroke%3D%22%230284c7%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 11px center;
   background-size: 10px 6px;
-  padding-right: 30px;
+  padding-right: 32px;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: normal;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+select.form-control option {
+  background-color: #ffffff;
+  color: #1f2937;
+  padding: 6px 10px;
+}
+
+/* Automated Badge & Read-only automated field styling */
+.automated-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: #0284c7;
+  background: #e0f2fe;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.readonly-automated-input {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  cursor: default !important;
+  border-color: #e2e8f0 !important;
+}
+
+.lookup-linked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-left: 5px;
 }
 
 [dir="rtl"] select.form-control {

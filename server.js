@@ -729,7 +729,7 @@ async function fetchAllSpaItems(entityTypeId, mapFn) {
   while (true) {
     const res = await BitrixClient.call('crm.item.list', {
       entityTypeId,
-      select: ['id', 'title', 'parentId1040'],
+      select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052'],
       order: { id: 'DESC' },
       start
     }).catch(err => {
@@ -880,17 +880,46 @@ async function fetchLookupData(entity, forceRefresh = false) {
   let items = [];
   try {
     if (entity === 'master_project') {
-      items = await fetchAllSpaItems(1040, i => ({ id: i.id, title: i.title || `Master Project #${i.id}`, crmRef: `DYNAMIC_1040_${i.id}` }));
+      items = await fetchAllSpaItems(1040, i => ({
+        id: i.id,
+        title: i.title || `Master Project #${i.id}`,
+        crmRef: `DYNAMIC_1040_${i.id}`
+      }));
     } else if (entity === 'project') {
-      items = await fetchAllSpaItems(1044, i => ({ id: i.id, title: i.title || `Project #${i.id}`, crmRef: `DYNAMIC_1044_${i.id}`, parentId1040: i.parentId1040 || null }));
+      items = await fetchAllSpaItems(1044, i => ({
+        id: i.id,
+        title: i.title || `Project #${i.id}`,
+        crmRef: `DYNAMIC_1044_${i.id}`,
+        parentId1040: i.parentId1040 || i.UF_CRM_16_1791173000 || null
+      }));
     } else if (entity === 'property') {
-      items = await fetchAllSpaItems(1052, i => ({ id: i.id, title: i.title || `Property #${i.id}`, crmRef: `DYNAMIC_1052_${i.id}` }));
+      items = await fetchAllSpaItems(1052, i => ({
+        id: i.id,
+        title: i.title || `Property #${i.id}`,
+        crmRef: `DYNAMIC_1052_${i.id}`,
+        parentId1040: i.parentId1040 || null,
+        parentId1044: i.parentId1044 || null
+      }));
     } else if (entity === 'layout') {
-      items = await fetchAllSpaItems(1048, i => ({ id: i.id, title: i.title || `Layout #${i.id}`, crmRef: `DYNAMIC_1048_${i.id}` }));
+      items = await fetchAllSpaItems(1048, i => ({
+        id: i.id,
+        title: i.title || `Layout #${i.id}`,
+        crmRef: `DYNAMIC_1048_${i.id}`,
+        parentId1040: i.parentId1040 || null,
+        parentId1044: i.parentId1044 || null
+      }));
     } else if (entity === 'broker' || entity === 'agent') {
       items = await fetchAllSpaItems(1094, i => ({ id: i.id, title: i.title || `Broker #${i.id}`, crmRef: `DYNAMIC_1094_${i.id}` }));
     } else if (entity === 'listing') {
-      items = await fetchAllSpaItems(1058, i => ({ id: i.id, title: i.title || `Listing #${i.id}`, crmRef: `DYNAMIC_1058_${i.id}` }));
+      items = await fetchAllSpaItems(1058, i => ({
+        id: i.id,
+        title: i.title || `Listing #${i.id}`,
+        crmRef: `DYNAMIC_1058_${i.id}`,
+        parentId1040: i.parentId1040 || i.UF_CRM_16_1791173000 || i.ufCrm16_1791173000 || null,
+        parentId1044: i.parentId1044 || i.UF_CRM_16_1791173131 || i.ufCrm16_1791173131 || null,
+        parentId1048: i.parentId1048 || null,
+        parentId1052: i.parentId1052 || null
+      }));
     } else if (entity === 'enquiry') {
       items = await fetchAllSpaItems(1062, i => ({ id: i.id, title: i.title || `Enquiry #${i.id}`, crmRef: `DYNAMIC_1062_${i.id}` }));
     } else if (entity === 'developer' || entity === 'company') {
@@ -1073,6 +1102,21 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
 
   let allItems = await fetchLookupData(entity, forceRefresh);
   let results = allItems;
+
+  const masterProjectId = req.query.master_project_id || req.query.parentId1040;
+  const projectId = req.query.project_id || req.query.parentId1044;
+  const layoutId = req.query.layout_id || req.query.parentId1048;
+
+  if (masterProjectId) {
+    results = results.filter(item => !item.parentId1040 || String(item.parentId1040) === String(masterProjectId));
+  }
+  if (projectId) {
+    results = results.filter(item => !item.parentId1044 || String(item.parentId1044) === String(projectId));
+  }
+  if (layoutId) {
+    results = results.filter(item => !item.parentId1048 || String(item.parentId1048) === String(layoutId));
+  }
+
   if (query) {
     const isNum = /^\d+$/.test(query);
     results = allItems.filter(item => {
@@ -1637,6 +1681,23 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
           }
         }
       }
+      // Resolve UF_CRM_FIRST_CONTACTED_DATE via CRM Activity if not yet set
+      if (!lead.UF_CRM_FIRST_CONTACTED_DATE) {
+        try {
+          const actRes = await BitrixClient.call('crm.activity.list', {
+            filter: { 'BINDINGS.OWNER_TYPE_ID': 1, 'BINDINGS.OWNER_ID': req.params.id },
+            order: { 'CREATED': 'ASC' },
+            select: ['ID', 'CREATED', 'START_TIME'],
+            limit: 1
+          }).catch(() => null);
+          if (actRes && actRes.length > 0 && actRes[0].CREATED) {
+            lead.UF_CRM_FIRST_CONTACTED_DATE = actRes[0].CREATED;
+            // Asynchronously persist to Bitrix Lead
+            BitrixClient.crmLeadUpdate(req.params.id, { UF_CRM_FIRST_CONTACTED_DATE: actRes[0].CREATED }).catch(() => {});
+          }
+        } catch (e) {}
+      }
+
       // Note: Enquiry Name and Listing Name are kept separate from native Lead Name (lead.TITLE)
     }
     res.json({ success: true, result: lead });
