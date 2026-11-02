@@ -1490,99 +1490,875 @@
   "enquiryLayout": {
     "sections": [
       {
-        "id": "property_requirements",
-        "title": "Client & Property Requirements",
-        "icon": "🏠",
-        "description": "Core requirement parameters, property category, location, and specification preferences",
-        "defaultOpen": true,
+        "id": "enquiry_overview",
+        "title": "Client & Enquiry Overview",
+        "icon": "👤",
         "fields": [
           {
-            "code": "UF_CRM_REQUIREMENT_TYPE",
-            "label": "Requirement Type",
-            "bitrixLabel": "Requirement type",
+            "code": "UF_CRM_ENQUIRY_NAME",
+            "label": "Enquiry Name",
+            "bitrixLabel": "Enquiry Name",
+            "type": "string",
+            "placeholder": "Enter enquiry name...",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_1792563228880",
+            "label": "Lead source Type",
+            "bitrixLabel": "Lead source Type",
             "type": "enumeration",
-            "required": true,
-            "placeholder": "-- Select Requirement Type --",
-            "leadAltCode": "UF_CRM_1791952650167",
+            "placeholder": "-- Select Lead source Type --",
             "options": [
               {
-                "id": "1",
-                "value": "Buy"
+                "id": "2506",
+                "value": "Inbound Portal"
               },
               {
-                "id": "2",
-                "value": "Rent"
+                "id": "2504",
+                "value": "Paid Ad Campaign"
+              },
+              {
+                "id": "2502",
+                "value": "Organic Search"
+              },
+              {
+                "id": "2500",
+                "value": "Direct Message"
+              },
+              {
+                "id": "2498",
+                "value": "Cold Outreach"
+              },
+              {
+                "id": "2496",
+                "value": "Partner Broker"
               }
             ]
           },
+          {
+            "code": "UF_CRM_OWNER_ENQUIRY",
+            "label": "Owner - Enquiry",
+            "bitrixLabel": "Owner - Enquiry",
+            "type": "lookup",
+            "placeholder": "Search Owner - Enquiry...",
+            "lookupEntity": "contact"
+          },
+          {
+            "code": "UF_CRM_STATUS",
+            "label": "Enquiry status",
+            "bitrixLabel": "Status",
+            "type": "enumeration",
+            "placeholder": "-- Select Enquiry status --",
+            "options": [
+              {
+                "id": "2132",
+                "value": "Active"
+              },
+              {
+                "id": "2134",
+                "value": "Under Offer"
+              },
+              {
+                "id": "2136",
+                "value": "Reserved"
+              },
+              {
+                "id": "2138",
+                "value": "Sold"
+              },
+              {
+                "id": "2140",
+                "value": "Rented"
+              },
+              {
+                "id": "2142",
+                "value": "Off-Market"
+              },
+              {
+                "id": "2144",
+                "value": "Withdrawn"
+              },
+              {
+                "id": "2146",
+                "value": "Expired"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_CONTACTS",
+            "label": "Contact",
+            "bitrixLabel": "Contacts",
+            "type": "lookup",
+            "placeholder": "Search Contact...",
+            "lookupEntity": "contact"
+          },
+          {
+            "code": "UF_CRM_IS_A_REAL_ESTATE_BROKER",
+            "label": "Is a Real Estate Broker",
+            "bitrixLabel": "Is a Real Estate Broker",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_1791952650167",
+            "label": "Listing Type",
+            "bitrixLabel": "Listing type",
+            "type": "enumeration",
+            "placeholder": "-- Select Listing Type --",
+            "options": [
+              {
+                "id": "2578",
+                "value": "RENT"
+              },
+              {
+                "id": "2580",
+                "value": "Overseas Sale"
+              },
+              {
+                "id": "2582",
+                "value": "Off-plan Listing"
+              },
+              {
+                "id": "2584",
+                "value": "External Stock"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_1791962499457",
+            "label": "Priority",
+            "bitrixLabel": "Priority",
+            "type": "enumeration",
+            "placeholder": "-- Select Priority --",
+            "options": [
+              {
+                "id": "1788",
+                "value": "HIGH"
+              },
+              {
+                "id": "1790",
+                "value": "MEDIUM"
+              },
+              {
+                "id": "1792",
+                "value": "LOW"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_NORMAL_LOW_HIGH_URGENT",
+            "label": "Urgency",
+            "bitrixLabel": "Normal Low High Urgent",
+            "type": "enumeration",
+            "placeholder": "-- Select Urgency --",
+            "options": [
+              {
+                "id": "2370",
+                "value": "Low"
+              },
+              {
+                "id": "2372",
+                "value": "Normal"
+              },
+              {
+                "id": "2374",
+                "value": "High"
+              },
+              {
+                "id": "2376",
+                "value": "Urgent"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_DEAL_VALUE_1",
+            "label": "Deal Value",
+            "bitrixLabel": "Deal Value",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
+            "label": "Days since last contacted",
+            "bitrixLabel": "Days since last contacted",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_ENQUIRY_LOCKED_2",
+            "label": "Enquiry Locked",
+            "bitrixLabel": "Enquiry Locked",
+            "type": "boolean",
+            "placeholder": "Enquiry Locked"
+          },
+          {
+            "code": "UF_CRM_MOVE_DATE",
+            "label": "Move Date",
+            "bitrixLabel": "Move Date",
+            "type": "date",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_AD_ID",
+            "label": "Ad ID",
+            "bitrixLabel": "Ad ID",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_COMMENTS_1",
+            "label": "Comments",
+            "bitrixLabel": "Comments",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_FIRST_CONTACTED_DATE",
+            "label": "First Contacted Date",
+            "bitrixLabel": "First Contacted Date",
+            "type": "datetime",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_FIRST_VIEWING_DATE",
+            "label": "First Viewing Date",
+            "bitrixLabel": "First Viewing Date",
+            "type": "date",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
+            "label": "Date Assigned to Broker",
+            "bitrixLabel": "Date Assigned to Broker",
+            "type": "datetime",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_DEFERRAL_DATE",
+            "label": "Deferral Date",
+            "bitrixLabel": "Deferral Date",
+            "type": "date",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_ASSIGNED_TO_BROKER",
+            "label": "Assigned to Broker",
+            "bitrixLabel": "Assigned to Broker",
+            "type": "lookup",
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
+          },
+          {
+            "code": "UF_CRM_LISTINGAGENT",
+            "label": "Listing Agent",
+            "bitrixLabel": "Listing Agent",
+            "type": "lookup",
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
+          },
+          {
+            "code": "UF_CRM_IS_CLAIMABLE",
+            "label": "Is Claimable",
+            "bitrixLabel": "Is Claimable",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_IS_CONTACT_VIEWABLE",
+            "label": "Is Contact Viewable",
+            "bitrixLabel": "Is Contact Viewable",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BROKER_COMPANY",
+            "label": "Broker Company",
+            "bitrixLabel": "Broker Company",
+            "type": "string",
+            "placeholder": "Enter broker company..."
+          }
+        ]
+      },
+      {
+        "id": "budget_financials",
+        "title": "Budget, Pricing & Rent Terms",
+        "icon": "💰",
+        "fields": [
+          {
+            "code": "UF_CRM_LISTINGPRICE_MIN",
+            "label": "Price - min",
+            "bitrixLabel": "Price - min",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_LISTINGPRICE_MAX",
+            "label": "Price - max",
+            "bitrixLabel": "Price - max",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_MONTHLYRENTMIN",
+            "label": "Monthly Rent - min",
+            "bitrixLabel": "Monthly Rent - min",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_MONTHLYRENTMAX",
+            "label": "Monthly Rent - max",
+            "bitrixLabel": "Monthly Rent - max",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_1792139023",
+            "label": "Number of Cheques",
+            "bitrixLabel": "Number of Cheques",
+            "type": "enumeration",
+            "placeholder": "-- Select Number of Cheques --",
+            "options": [
+              {
+                "id": "2442",
+                "value": "1 Cheque"
+              },
+              {
+                "id": "2444",
+                "value": "2 Cheques"
+              },
+              {
+                "id": "2446",
+                "value": "4 Cheques"
+              },
+              {
+                "id": "2448",
+                "value": "6 Cheques"
+              },
+              {
+                "id": "2450",
+                "value": "12 Cheques"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_FINANCE",
+            "label": "Finance",
+            "bitrixLabel": "Finance",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_HOAFEESMIN",
+            "label": "HOA Fees Min",
+            "bitrixLabel": "HOA Fees Min",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_HOAFEESMAX",
+            "label": "HOA Fees Max",
+            "bitrixLabel": "HOA Fees Max",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
+            "label": "Purchase Amount of Home",
+            "bitrixLabel": "Purchase Amount of Home",
+            "type": "money",
+            "placeholder": "e.g., 2,500,000"
+          }
+        ]
+      },
+      {
+        "id": "mortgage_finance",
+        "title": "Mortgage & Home Financing",
+        "icon": "🏦",
+        "fields": [
+          {
+            "code": "UF_CRM_MORTGAGEDATE",
+            "label": "Mortgage Date",
+            "bitrixLabel": "Mortgage Date",
+            "type": "date",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_AUTO_REFERRAL",
+            "label": "eMortgage Auto Referral",
+            "bitrixLabel": "eMortgage Auto Referral",
+            "type": "boolean",
+            "placeholder": "Yes / Auto Referral"
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_BROKER",
+            "label": "eMortgage Broker",
+            "bitrixLabel": "eMortgage Broker",
+            "type": "string",
+            "placeholder": "Search eMortgage Broker..."
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_BROKER_EMAIL",
+            "label": "eMortgage Broker email",
+            "bitrixLabel": "eMortgage Broker email",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_BROKER_NUMBER",
+            "label": "eMortgage Broker number",
+            "bitrixLabel": "eMortgage Broker number",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_REFERRAL_DATE",
+            "label": "eMortgage Referral Date",
+            "bitrixLabel": "eMortgage Referral Date",
+            "type": "date",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_REFERRED_BY",
+            "label": "eMortgage Referred By",
+            "bitrixLabel": "eMortgage Referred By",
+            "type": "string",
+            "placeholder": "Search eMortgage Referred By..."
+          },
+          {
+            "code": "UF_CRM_EMORTGAGE_SKIP_SEND",
+            "label": "eMortgage Skip Send",
+            "bitrixLabel": "eMortgage Skip Send",
+            "type": "boolean",
+            "placeholder": "Yes / Skip Send"
+          }
+        ]
+      },
+      {
+        "id": "property_specs",
+        "title": "Property Specifications & Criteria",
+        "icon": "📐",
+        "fields": [
           {
             "code": "UF_CRM_1791952050535",
             "label": "Property Type",
-            "bitrixLabel": "Property type",
+            "bitrixLabel": "Property Type",
             "type": "enumeration",
-            "multiple": true,
-            "required": true,
-            "placeholder": "-- Select Property Types --",
+            "placeholder": "-- Select Property Type --",
             "options": [
               {
-                "id": "1",
+                "id": "1754",
                 "value": "Apartment"
               },
               {
-                "id": "2",
+                "id": "1756",
                 "value": "Villa"
               },
               {
-                "id": "3",
+                "id": "1758",
                 "value": "Townhouse"
               },
               {
-                "id": "4",
+                "id": "1760",
                 "value": "Penthouse"
               },
               {
-                "id": "5",
+                "id": "1762",
                 "value": "Duplex"
               },
               {
-                "id": "6",
-                "value": "Residential Plot"
+                "id": "1764",
+                "value": "Land"
               },
               {
-                "id": "7",
-                "value": "Commercial Property"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_PROPERTY_PURPOSE",
-            "label": "Property Purpose",
-            "bitrixLabel": "Property purpose",
-            "type": "enumeration",
-            "placeholder": "-- Select Purpose --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Residential"
-              },
-              {
-                "id": "2",
+                "id": "1766",
                 "value": "Commercial"
               },
               {
-                "id": "3",
-                "value": "Investment"
+                "id": "1768",
+                "value": "Office"
+              },
+              {
+                "id": "1770",
+                "value": "Retail"
               }
             ]
           },
           {
-            "code": "UF_CRM_STATE",
-            "label": "Preferred Emirate",
-            "bitrixLabel": "State / Emirate",
+            "code": "UF_CRM_PROPERTY_SUB_TYPE",
+            "label": "Property Subtype",
+            "bitrixLabel": "Property Sub Type",
             "type": "enumeration",
-            "multiple": true,
-            "required": true,
-            "placeholder": "-- Select Emirates --",
+            "placeholder": "-- Select Property Subtype --",
+            "options": [
+              {
+                "id": "2098",
+                "value": "Standard"
+              },
+              {
+                "id": "2100",
+                "value": "Luxury"
+              },
+              {
+                "id": "2102",
+                "value": "Ultra Luxury"
+              },
+              {
+                "id": "2104",
+                "value": "Simplex"
+              },
+              {
+                "id": "2106",
+                "value": "Duplex"
+              },
+              {
+                "id": "2108",
+                "value": "Triplex"
+              },
+              {
+                "id": "2110",
+                "value": "Penthouse"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_BEDS_MIN",
+            "label": "Bedrooms - min",
+            "bitrixLabel": "Bedrooms Min",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BEDS_MAX",
+            "label": "Bedrooms - max",
+            "bitrixLabel": "Bedrooms Max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BATHS_MIN",
+            "label": "Bathrooms - min",
+            "bitrixLabel": "Bathrooms Min",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BATHS_MAX",
+            "label": "Bathrooms - max",
+            "bitrixLabel": "Bathrooms Max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_TOTALAREA_MIN",
+            "label": "Size - min",
+            "bitrixLabel": "Size - min",
+            "type": "double",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_TOTALAREA_MAX",
+            "label": "Size - max",
+            "bitrixLabel": "Size - max",
+            "type": "double",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_LOTSIZE_MIN",
+            "label": "Lot Size - min",
+            "bitrixLabel": "Lot Size - min",
+            "type": "double",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_LOTSIZE_MAX",
+            "label": "Lot Size - max",
+            "bitrixLabel": "Lot Size - max",
+            "type": "double",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_FLOOR_MIN",
+            "label": "Floor - min",
+            "bitrixLabel": "Floor - min",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_FLOOR_MAX",
+            "label": "Floor - max",
+            "bitrixLabel": "Floor - max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_STORIES_MIN",
+            "label": "Stories - min",
+            "bitrixLabel": "Stories - min",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_STORIES_MAX",
+            "label": "Stories - max",
+            "bitrixLabel": "Stories - max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_STORIES_1",
+            "label": "Stories",
+            "bitrixLabel": "Stories",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_UNIT_NO",
+            "label": "Unit Number",
+            "bitrixLabel": "Unit Number",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_UNITSMIN",
+            "label": "Units Min",
+            "bitrixLabel": "Units Min",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_UNITSMAX",
+            "label": "Units Max",
+            "bitrixLabel": "Units Max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_MEASUREMENT",
+            "label": "Measurement",
+            "bitrixLabel": "Measurement",
+            "type": "enumeration",
+            "placeholder": "-- Select Measurement --",
+            "options": [
+              {
+                "id": "2068",
+                "value": "Sq.Ft."
+              },
+              {
+                "id": "2070",
+                "value": "Sq.M."
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_1791969936048",
+            "label": "Furnished",
+            "bitrixLabel": "Furnished",
+            "type": "enumeration",
+            "placeholder": "-- Select Furnished --",
+            "options": [
+              {
+                "id": "1794",
+                "value": "Fully-Furnished"
+              },
+              {
+                "id": "1796",
+                "value": "Semi-Furnished"
+              },
+              {
+                "id": "1798",
+                "value": "Unfurnished"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_STYLE_1",
+            "label": "Style",
+            "bitrixLabel": "Style",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_CONSTRUCTION",
+            "label": "Construction",
+            "bitrixLabel": "Construction",
+            "type": "enumeration",
+            "placeholder": "-- Select Construction --",
+            "options": [
+              {
+                "id": "2266",
+                "value": "Concrete Frame"
+              },
+              {
+                "id": "2268",
+                "value": "Steel Structure"
+              },
+              {
+                "id": "2270",
+                "value": "Pre-Cast Concrete"
+              },
+              {
+                "id": "2272",
+                "value": "Brick / Masonry"
+              },
+              {
+                "id": "2274",
+                "value": "Timber / Wood Frame"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_NEWCONSTRUCTION",
+            "label": "New Construction",
+            "bitrixLabel": "New Construction",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_YEARBUILT_MIN",
+            "label": "Year Built - min",
+            "bitrixLabel": "Year Built - min",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_YEARBUILT_MAX",
+            "label": "Year Built - max",
+            "bitrixLabel": "Year Built - max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_1791970130059",
+            "label": "View",
+            "bitrixLabel": "View",
+            "type": "enumeration",
+            "placeholder": "-- Select View --",
+            "options": [
+              {
+                "id": "1800",
+                "value": "Sea View"
+              },
+              {
+                "id": "1802",
+                "value": "Burj Khalifa View"
+              },
+              {
+                "id": "1804",
+                "value": "Marina View"
+              },
+              {
+                "id": "1806",
+                "value": "Palm View"
+              },
+              {
+                "id": "1808",
+                "value": "Golf Course View"
+              },
+              {
+                "id": "1810",
+                "value": "Pool View"
+              },
+              {
+                "id": "1812",
+                "value": "Garden View"
+              },
+              {
+                "id": "1814",
+                "value": "Park View"
+              },
+              {
+                "id": "1816",
+                "value": "City View"
+              },
+              {
+                "id": "1818",
+                "value": "Community View"
+              },
+              {
+                "id": "1820",
+                "value": "Street View"
+              },
+              {
+                "id": "1822",
+                "value": "Canal View"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_ADULTCOMMUNITY",
+            "label": "Adult Community",
+            "bitrixLabel": "Adult Community",
+            "type": "boolean",
+            "placeholder": ""
+          }
+        ]
+      },
+      {
+        "id": "locations_districts",
+        "title": "Locations, Communities & Schools",
+        "icon": "📍",
+        "fields": [
+          {
+            "code": "UF_CRM_AREA",
+            "label": "Area",
+            "bitrixLabel": "Area",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_CITY",
+            "label": "City",
+            "bitrixLabel": "City (Emirate)",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_ADDITIONALCITIES",
+            "label": "Additional Cities",
+            "bitrixLabel": "Additional Cities",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_ADDITIONALPOSTALCODES",
+            "label": "Additional Postal Codes",
+            "bitrixLabel": "Additional Postal Codes",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_COUNTIES",
+            "label": "Counties",
+            "bitrixLabel": "Counties",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_1791970638065",
+            "label": "Property Address",
+            "bitrixLabel": "Property Address",
+            "type": "string",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_POSTALCODE",
+            "label": "Zip/Postal Code",
+            "bitrixLabel": "Zip/Postal Code",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_STATE",
+            "label": "State",
+            "bitrixLabel": "State",
+            "type": "enumeration",
+            "placeholder": "-- Select State --",
             "options": [
               {
                 "id": "2532",
@@ -1615,770 +2391,606 @@
             ]
           },
           {
-            "code": "UF_CRM_COMMUNITY",
-            "label": "Preferred Community",
-            "bitrixLabel": "Preferred community / area",
-            "type": "enumeration",
-            "multiple": true,
-            "placeholder": "-- Select Communities / Areas --",
-            "leadAltCodes": [
-              "UF_CRM_AREA",
-              "UF_CRM_NEIGHBORHOODS",
-              "UF_CRM_COMMUNITY_PROPERTYFINDER"
-            ],
-            "options": [
-              {
-                "id": "1",
-                "value": "Downtown Dubai"
-              },
-              {
-                "id": "2",
-                "value": "Dubai Marina"
-              },
-              {
-                "id": "3",
-                "value": "Business Bay"
-              },
-              {
-                "id": "4",
-                "value": "Palm Jumeirah"
-              },
-              {
-                "id": "5",
-                "value": "Dubai Hills Estate"
-              },
-              {
-                "id": "6",
-                "value": "Arabian Ranches"
-              },
-              {
-                "id": "7",
-                "value": "JVC (Jumeirah Village Circle)"
-              },
-              {
-                "id": "8",
-                "value": "JLT (Jumeirah Lake Towers)"
-              },
-              {
-                "id": "9",
-                "value": "DIFC"
-              },
-              {
-                "id": "10",
-                "value": "Dubai Creek Harbour"
-              },
-              {
-                "id": "11",
-                "value": "Damac Hills"
-              },
-              {
-                "id": "12",
-                "value": "Saadiyat Island (Abu Dhabi)"
-              },
-              {
-                "id": "13",
-                "value": "Yas Island (Abu Dhabi)"
-              },
-              {
-                "id": "14",
-                "value": "Al Reem Island (Abu Dhabi)"
-              },
-              {
-                "id": "15",
-                "value": "Al Majaz (Sharjah)"
-              },
-              {
-                "id": "16",
-                "value": "Al Zahia (Sharjah)"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_PROJECT_NAME",
-            "label": "Preferred Project",
-            "bitrixLabel": "Project name",
+            "code": "UF_CRM_STREETNAME",
+            "label": "Street Name",
+            "bitrixLabel": "Street Name",
             "type": "string",
-            "placeholder": "e.g., Burj Crown, Address Residences, Creek Waters",
-            "leadAltCodes": [
-              "UF_CRM_PROJECT_1",
-              "UF_CRM_PROJECT"
-            ]
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_BEDROOMS",
-            "label": "Preferred Bedrooms",
-            "bitrixLabel": "Bedrooms",
-            "type": "enumeration",
-            "multiple": true,
-            "placeholder": "-- Select Bedroom Options --",
-            "leadAltCodes": [
-              "UF_CRM_BEDS_MIN",
-              "UF_CRM_1791966366775"
-            ],
-            "options": [
-              {
-                "id": "1834",
-                "value": "Studio"
-              },
-              {
-                "id": "1836",
-                "value": "1 Bedroom"
-              },
-              {
-                "id": "1838",
-                "value": "2 Bedrooms"
-              },
-              {
-                "id": "1840",
-                "value": "3 Bedrooms"
-              },
-              {
-                "id": "1842",
-                "value": "4 Bedrooms"
-              },
-              {
-                "id": "1844",
-                "value": "5 Bedrooms"
-              },
-              {
-                "id": "1846",
-                "value": "6+ Bedrooms"
-              }
-            ]
+            "code": "UF_CRM_NEIGHBORHOODS",
+            "label": "Neighborhoods",
+            "bitrixLabel": "Neighborhoods",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
-            "code": "UF_CRM_BATHROOMS",
-            "label": "Preferred Bathrooms",
-            "bitrixLabel": "Bathrooms",
-            "type": "enumeration",
-            "placeholder": "-- Select Bathrooms --",
-            "leadAltCodes": [
-              "UF_CRM_BATHS_MIN",
-              "UF_CRM_1791966408374"
-            ],
-            "options": [
-              {
-                "id": "1",
-                "value": "1"
-              },
-              {
-                "id": "2",
-                "value": "2"
-              },
-              {
-                "id": "3",
-                "value": "3"
-              },
-              {
-                "id": "4",
-                "value": "4"
-              },
-              {
-                "id": "5",
-                "value": "5+"
-              }
-            ]
+            "code": "UF_CRM_LOCATIONKEYWORDS",
+            "label": "Location Keywords",
+            "bitrixLabel": "Location Keywords",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
-            "code": "UF_CRM_1791969936048",
-            "label": "Furnishing Preference",
-            "bitrixLabel": "Furnished status",
-            "type": "enumeration",
-            "placeholder": "-- Select Furnishing --",
-            "options": [
-              {
-                "id": "2402",
-                "value": "Furnished"
-              },
-              {
-                "id": "2404",
-                "value": "Semi-Furnished"
-              },
-              {
-                "id": "2406",
-                "value": "Unfurnished"
-              },
-              {
-                "id": "2408",
-                "value": "No Preference"
-              }
-            ]
+            "code": "UF_CRM_SUBDIVISIONNAME",
+            "label": "Subdivision Name",
+            "bitrixLabel": "Subdivision Name",
+            "type": "string",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_CONSTRUCTION",
-            "label": "Property Condition",
-            "bitrixLabel": "Property condition",
-            "type": "enumeration",
-            "placeholder": "-- Select Condition --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Ready"
-              },
-              {
-                "id": "2",
-                "value": "Off-Plan"
-              },
-              {
-                "id": "3",
-                "value": "Under Construction"
-              },
-              {
-                "id": "4",
-                "value": "No Preference"
-              }
-            ]
+            "code": "UF_CRM_SUBDIVISIONS",
+            "label": "Subdivisions",
+            "bitrixLabel": "Subdivisions",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_SCHOOL_1",
+            "label": "School",
+            "bitrixLabel": "School",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_SCHOOLDISTRICTS",
+            "label": "School Districts",
+            "bitrixLabel": "School Districts",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           }
         ]
       },
       {
-        "id": "budget_financial",
-        "title": "Budget & Financial Requirements",
-        "icon": "💰",
-        "description": "Budget brackets, financing readiness, and payment structure",
-        "defaultOpen": true,
+        "id": "matched_projects_portals",
+        "title": "Matched Projects & Portal Listings",
+        "icon": "🏢",
         "fields": [
           {
-            "code": "UF_CRM_LISTINGPRICE_MIN",
-            "label": "Minimum Budget",
-            "bitrixLabel": "Minimum budget",
-            "type": "money",
-            "currency": "AED",
-            "placeholder": "e.g., 1,500,000"
+            "code": "UF_CRM_LISTING",
+            "label": "Listing",
+            "bitrixLabel": "Listing",
+            "type": "lookup",
+            "placeholder": "Search Listing...",
+            "lookupEntity": "listing"
           },
           {
-            "code": "UF_CRM_LISTINGPRICE_MAX",
-            "label": "Maximum Budget",
-            "bitrixLabel": "Maximum budget",
-            "type": "money",
-            "currency": "AED",
-            "placeholder": "e.g., 2,500,000"
+            "code": "UF_CRM_PROJECT",
+            "label": "Master Project",
+            "bitrixLabel": "Master Project",
+            "type": "lookup",
+            "placeholder": "Search Master Project...",
+            "lookupEntity": "master_project"
           },
           {
-            "code": "UF_CRM_FINANCE",
-            "label": "Payment Method",
-            "bitrixLabel": "Payment method",
+            "code": "UF_CRM_PROJECT_1",
+            "label": "Project",
+            "bitrixLabel": "Project",
+            "type": "lookup",
+            "placeholder": "Search Project...",
+            "lookupEntity": "project"
+          },
+          {
+            "code": "UF_CRM_PROPERTY_LAYOUT",
+            "label": "Property Layout",
+            "bitrixLabel": "Property Layout",
+            "type": "lookup",
+            "placeholder": "Search Layout...",
+            "lookupEntity": "layout"
+          },
+          {
+            "code": "UF_CRM_BUILDINGANDDEVELOPMENTS",
+            "label": "Buildings and Developments",
+            "bitrixLabel": "Buildings and Developments",
+            "type": "text",
+            "placeholder": "Search Buildings and Developments...",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_RECOMMENDED_LISTINGS",
+            "label": "Recommended_Listings",
+            "bitrixLabel": "Recommended_Listings",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
+          },
+          {
+            "code": "UF_CRM_BUILDING_DUBIZZLE",
+            "label": "Building - Bayut",
+            "bitrixLabel": "Building - Bayut",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_LOCATIONTEXT_DUBIZZLE",
+            "label": "Locationtext - Bayut",
+            "bitrixLabel": "LocationText - Bayut",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_CITY_BAYUT",
+            "label": "City - Bayut",
+            "bitrixLabel": "City (Bayut)",
             "type": "enumeration",
-            "placeholder": "-- Select Payment Method --",
+            "placeholder": "-- Select City - Bayut --",
             "options": [
               {
-                "id": "1",
-                "value": "Cash"
+                "id": "2546",
+                "value": "Dubai"
               },
               {
-                "id": "2",
-                "value": "Mortgage"
+                "id": "2548",
+                "value": "Abu Dhabi"
               },
               {
-                "id": "3",
-                "value": "Developer Payment Plan"
+                "id": "2550",
+                "value": "Sharjah"
+              },
+              {
+                "id": "2552",
+                "value": "Ajman"
+              },
+              {
+                "id": "2554",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2556",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2558",
+                "value": "Umm Al Quwain"
+              },
+              {
+                "id": "2560",
+                "value": "Al Ain"
               }
             ]
           },
           {
-            "code": "UF_CRM_PAYMENT_PLAN_PREF",
-            "label": "Payment Plan Preference",
-            "bitrixLabel": "Payment plan preference",
+            "code": "UF_CRM_PROPERTY_PROPERTYFINDER",
+            "label": "Property - Propertyfinder",
+            "bitrixLabel": "Property - Propertyfinder",
+            "type": "lookup",
+            "placeholder": "Search Property - Propertyfinder...",
+            "lookupEntity": "property"
+          },
+          {
+            "code": "UF_CRM_PROPERTYFINDER_REGION",
+            "label": "Propertyfinder Region",
+            "bitrixLabel": "Propertyfinder Region",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
+            "label": "Community - Propertyfinder",
+            "bitrixLabel": "Community - Propertyfinder",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
+            "label": "Sub Community - Propertyfinder",
+            "bitrixLabel": "Sub Community - Propertyfinder",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_CITY_PF",
+            "label": "City - Propertyfinder",
+            "bitrixLabel": "City (Propertyfinder)",
             "type": "enumeration",
-            "placeholder": "-- Select Payment Plan --",
+            "placeholder": "-- Select City - Propertyfinder --",
             "options": [
               {
-                "id": "1",
-                "value": "Monthly"
+                "id": "2562",
+                "value": "Dubai"
               },
               {
-                "id": "2",
-                "value": "Quarterly"
+                "id": "2564",
+                "value": "Abu Dhabi"
               },
               {
-                "id": "3",
-                "value": "Annually"
+                "id": "2566",
+                "value": "Sharjah"
               },
               {
-                "id": "4",
-                "value": "Flexible"
+                "id": "2568",
+                "value": "Ajman"
+              },
+              {
+                "id": "2570",
+                "value": "Ras Al Khaimah"
+              },
+              {
+                "id": "2572",
+                "value": "Fujairah"
+              },
+              {
+                "id": "2574",
+                "value": "Umm Al Quwain"
+              },
+              {
+                "id": "2576",
+                "value": "Al Ain"
               }
             ]
           },
           {
-            "code": "UF_CRM_MORTGAGE_PRE_APPROVAL",
-            "label": "Mortgage Pre-Approval",
-            "bitrixLabel": "Mortgage pre-approval status",
-            "type": "enumeration",
-            "placeholder": "-- Select Pre-Approval Status --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Yes"
-              },
-              {
-                "id": "2",
-                "value": "No"
-              },
-              {
-                "id": "3",
-                "value": "In Progress"
-              },
-              {
-                "id": "4",
-                "value": "Not Required"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_DOWN_PAYMENT",
-            "label": "Available Down Payment",
-            "bitrixLabel": "Available down payment",
-            "type": "money",
-            "currency": "AED",
-            "placeholder": "e.g., 300,000"
-          },
-          {
-            "code": "UF_CRM_DEAL_VALUE_1",
-            "label": "Annual Rental Budget",
-            "bitrixLabel": "Annual rental budget",
-            "type": "money",
-            "currency": "AED",
-            "placeholder": "e.g., 120,000",
-            "leadAltCodes": [
-              "UF_CRM_MONTHLYRENTMAX",
-              "UF_CRM_ANNUAL_RENTAL_BUDGET"
-            ]
+            "code": "UF_CRM_DEVELOPER_1",
+            "label": "Developer",
+            "bitrixLabel": "Developer",
+            "type": "lookup",
+            "placeholder": "Search Developer / Company...",
+            "lookupEntity": "developer"
           }
         ]
       },
       {
-        "id": "property_specs",
-        "title": "Property Specifications",
-        "icon": "📐",
-        "description": "Property dimensions, outdoor features, floor elevation, view, and lifestyle amenities",
-        "defaultOpen": true,
+        "id": "amenities_features",
+        "title": "Amenities, Features & Outdoor",
+        "icon": "🏖️",
         "fields": [
           {
-            "code": "UF_CRM_TOTALAREA_MIN",
-            "label": "Minimum Property Size",
-            "bitrixLabel": "Min size (sq ft)",
-            "type": "double",
-            "placeholder": "Min size in sq. ft. (e.g., 850)"
+            "code": "UF_CRM_COMMERCIAL_AMENITIES",
+            "label": "Commercial Amenities",
+            "bitrixLabel": "Commercial Amenities",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
-            "code": "UF_CRM_TOTALAREA_MAX",
-            "label": "Maximum Property Size",
-            "bitrixLabel": "Max size (sq ft)",
-            "type": "double",
-            "placeholder": "Max size in sq. ft. (e.g., 1,500)"
+            "code": "UF_CRM_PRIVATE_AMENITIES",
+            "label": "Private Amenities",
+            "bitrixLabel": "Private Amenities",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
-            "code": "UF_CRM_BALCONY",
-            "label": "Balcony Required",
-            "bitrixLabel": "Balcony required",
+            "code": "UF_CRM_PARKINGAVAILABLE",
+            "label": "Parking Available",
+            "bitrixLabel": "Parking Available",
             "type": "boolean",
-            "placeholder": "Balcony Required"
+            "placeholder": ""
           },
           {
             "code": "UF_CRM_NUMBEROFPARKINGSPACES",
-            "label": "Parking Spaces",
-            "bitrixLabel": "Parking spaces",
+            "label": "Number of Parking Spaces",
+            "bitrixLabel": "Number of Parking Spaces",
             "type": "integer",
-            "placeholder": "e.g., 1 or 2"
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_1791970130059",
-            "label": "View Preference",
-            "bitrixLabel": "View preference",
-            "type": "enumeration",
-            "multiple": true,
-            "placeholder": "-- Select View Preferences --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Sea View"
-              },
-              {
-                "id": "2",
-                "value": "Marina View"
-              },
-              {
-                "id": "3",
-                "value": "City View"
-              },
-              {
-                "id": "4",
-                "value": "Garden View"
-              },
-              {
-                "id": "5",
-                "value": "Community View"
-              },
-              {
-                "id": "6",
-                "value": "No Preference"
-              }
-            ]
+            "code": "UF_CRM_PARKING_SPACES_MIN",
+            "label": "Parking Spaces - min",
+            "bitrixLabel": "Parking Spaces - min",
+            "type": "integer",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_REQUIRED_AMENITIES",
-            "label": "Required Amenities",
-            "bitrixLabel": "Required amenities",
-            "type": "enumeration",
-            "multiple": true,
-            "placeholder": "-- Select Required Amenities --",
-            "leadAltCodes": [
-              "UF_CRM_COMMERCIAL_AMENITIES",
-              "UF_CRM_PRIVATE_AMENITIES"
-            ],
-            "options": [
-              {
-                "id": "1",
-                "value": "Swimming Pool"
-              },
-              {
-                "id": "2",
-                "value": "Gym"
-              },
-              {
-                "id": "3",
-                "value": "Garden"
-              },
-              {
-                "id": "4",
-                "value": "Security"
-              },
-              {
-                "id": "5",
-                "value": "Children's Play Area"
-              },
-              {
-                "id": "6",
-                "value": "Beach Access"
-              }
-            ]
+            "code": "UF_CRM_PARKING_SPACES_MAX",
+            "label": "Parking Spaces - max",
+            "bitrixLabel": "Parking Spaces - max",
+            "type": "integer",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_FLOOR_PREFERENCE",
-            "label": "Floor Preference",
-            "bitrixLabel": "Floor preference",
-            "type": "enumeration",
-            "placeholder": "-- Select Floor Preference --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Low Floor"
-              },
-              {
-                "id": "2",
-                "value": "Mid Floor"
-              },
-              {
-                "id": "3",
-                "value": "High Floor"
-              },
-              {
-                "id": "4",
-                "value": "No Preference"
-              }
-            ]
+            "code": "UF_CRM_GARAGESPACEMAX",
+            "label": "Garage Space Max",
+            "bitrixLabel": "Garage Space Max",
+            "type": "integer",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_POOL",
+            "label": "Pool",
+            "bitrixLabel": "Pool",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_WATERFRONT",
+            "label": "Waterfront",
+            "bitrixLabel": "Waterfront",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BEACHFRONT_1",
+            "label": "Beachfront",
+            "bitrixLabel": "Beachfront",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BODYOFWATER",
+            "label": "Body of Water",
+            "bitrixLabel": "Body of Water",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_WATERVIEW",
+            "label": "Water View",
+            "bitrixLabel": "Water View",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_DOCK",
+            "label": "Dock",
+            "bitrixLabel": "Dock",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_YARD",
+            "label": "Yard",
+            "bitrixLabel": "Yard",
+            "type": "boolean",
+            "placeholder": ""
           },
           {
             "code": "UF_CRM_1791970241624",
-            "label": "Pet Friendly",
-            "bitrixLabel": "Pet friendly status",
-            "type": "enumeration",
-            "placeholder": "-- Select Pet Policy --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Yes"
-              },
-              {
-                "id": "2",
-                "value": "No"
-              },
-              {
-                "id": "3",
-                "value": "Not Applicable"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "rental_specific",
-        "title": "Rental-Specific Requirements",
-        "icon": "🔑",
-        "description": "Lease tenure, cheque count, move-in timing, and occupant profile (Active when Requirement Type is Rent)",
-        "defaultOpen": true,
-        "fields": [
-          {
-            "code": "UF_CRM_LEASE_DURATION",
-            "label": "Lease Duration",
-            "bitrixLabel": "Lease duration",
-            "type": "enumeration",
-            "placeholder": "-- Select Lease Duration --",
-            "options": [
-              {
-                "id": "1",
-                "value": "6 Months"
-              },
-              {
-                "id": "2",
-                "value": "1 Year"
-              },
-              {
-                "id": "3",
-                "value": "2 Years"
-              },
-              {
-                "id": "4",
-                "value": "Flexible"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_1792139023",
-            "label": "Preferred Cheques",
-            "bitrixLabel": "Number of cheques",
-            "type": "enumeration",
-            "placeholder": "-- Select Cheque Count --",
-            "options": [
-              {
-                "id": "2440",
-                "value": "1"
-              },
-              {
-                "id": "2442",
-                "value": "2"
-              },
-              {
-                "id": "2446",
-                "value": "4"
-              },
-              {
-                "id": "2448",
-                "value": "6"
-              },
-              {
-                "id": "2450",
-                "value": "12"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_MOVE_DATE",
-            "label": "Expected Move-in Date",
-            "bitrixLabel": "Expected move-in date",
-            "type": "date"
-          },
-          {
-            "code": "UF_CRM_IMMEDIATE_AVAILABILITY",
-            "label": "Immediate Availability Required",
-            "bitrixLabel": "Immediate availability",
+            "label": "Pets Allowed",
+            "bitrixLabel": "Pets Allowed",
             "type": "boolean",
-            "placeholder": "Immediate Availability Required"
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_TENANT_TYPE",
-            "label": "Tenant Type",
-            "bitrixLabel": "Tenant type",
+            "code": "UF_CRM_FLOORINGTYPE",
+            "label": "Flooring Type",
+            "bitrixLabel": "Flooring Type",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_BASEMENTTYPE",
+            "label": "Basement Type",
+            "bitrixLabel": "Basement Type",
             "type": "enumeration",
-            "placeholder": "-- Select Tenant Type --",
+            "placeholder": "-- Select Basement Type --",
             "options": [
               {
-                "id": "1",
-                "value": "Family"
+                "id": "2254",
+                "value": "Finished"
               },
               {
-                "id": "2",
-                "value": "Individual"
+                "id": "2256",
+                "value": "Unfinished"
               },
               {
-                "id": "3",
-                "value": "Company"
+                "id": "2258",
+                "value": "Full Basement"
+              },
+              {
+                "id": "2260",
+                "value": "Walkout"
+              },
+              {
+                "id": "2262",
+                "value": "Underground Parking"
+              },
+              {
+                "id": "2264",
+                "value": "None"
               }
             ]
           },
           {
-            "code": "UF_CRM_NUMBER_OF_OCCUPANTS",
-            "label": "Number of Occupants",
-            "bitrixLabel": "Number of occupants",
-            "type": "integer",
-            "placeholder": "e.g., 3"
+            "code": "UF_CRM_COOLINGTYPE",
+            "label": "Cooling Type",
+            "bitrixLabel": "Cooling Type",
+            "type": "enumeration",
+            "placeholder": "-- Select Cooling Type --",
+            "options": [
+              {
+                "id": "2276",
+                "value": "Central A/C"
+              },
+              {
+                "id": "2278",
+                "value": "Chiller Free"
+              },
+              {
+                "id": "2280",
+                "value": "District Cooling (Empower/Tabreed)"
+              },
+              {
+                "id": "2282",
+                "value": "Split A/C System"
+              },
+              {
+                "id": "2284",
+                "value": "Window A/C"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_HEATTYPE",
+            "label": "Heat Type",
+            "bitrixLabel": "Heat Type",
+            "type": "enumeration",
+            "placeholder": "-- Select Heat Type --",
+            "options": [
+              {
+                "id": "2314",
+                "value": "Central Heating"
+              },
+              {
+                "id": "2316",
+                "value": "Split Unit Heating"
+              },
+              {
+                "id": "2318",
+                "value": "Electric Heating"
+              },
+              {
+                "id": "2320",
+                "value": "Solar Heating"
+              },
+              {
+                "id": "2322",
+                "value": "None / Not Applicable"
+              }
+            ]
+          },
+          {
+            "code": "UF_CRM_KEYWORDS",
+            "label": "Keywords",
+            "bitrixLabel": "Keywords",
+            "type": "text",
+            "placeholder": "",
+            "fullWidth": true
           }
         ]
       },
       {
-        "id": "purchase_specific",
-        "title": "Purchase-Specific Requirements",
-        "icon": "🏷️",
-        "description": "Buying intent, purchase timeline, completion preference, and handover (Active when Requirement Type is Buy)",
-        "defaultOpen": true,
+        "id": "website_searches",
+        "title": "Website Searches & Open House Notifications",
+        "icon": "🌐",
         "fields": [
           {
-            "code": "UF_CRM_BUYING_PURPOSE",
-            "label": "Buying Purpose",
-            "bitrixLabel": "Buying purpose",
-            "type": "enumeration",
-            "placeholder": "-- Select Buying Purpose --",
-            "options": [
-              {
-                "id": "1",
-                "value": "End Use"
-              },
-              {
-                "id": "2",
-                "value": "Investment"
-              }
-            ]
+            "code": "UF_CRM_ISWEBSITESAVEDSEARCH",
+            "label": "Is Website Saved Search",
+            "bitrixLabel": "Is Website Saved Search",
+            "type": "boolean",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_PURCHASE_TIMELINE",
-            "label": "Purchase Timeline",
-            "bitrixLabel": "Purchase timeline",
-            "type": "enumeration",
-            "placeholder": "-- Select Purchase Timeline --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Immediate"
-              },
-              {
-                "id": "2",
-                "value": "Within 1 Month"
-              },
-              {
-                "id": "3",
-                "value": "1–3 Months"
-              },
-              {
-                "id": "4",
-                "value": "3–6 Months"
-              },
-              {
-                "id": "5",
-                "value": "6+ Months"
-              }
-            ]
+            "code": "UF_CRM_WEBSITEID",
+            "label": "Website ID",
+            "bitrixLabel": "Website ID",
+            "type": "string",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_PROPERTY_STATUS_PREFERENCE",
-            "label": "Property Status Preference",
-            "bitrixLabel": "Property status preference",
-            "type": "enumeration",
-            "placeholder": "-- Select Property Status --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Ready"
-              },
-              {
-                "id": "2",
-                "value": "Off-Plan"
-              },
-              {
-                "id": "3",
-                "value": "Either"
-              }
-            ]
+            "code": "UF_CRM_WEBSITEMLSID",
+            "label": "Website MLS ID",
+            "bitrixLabel": "Website MLS ID",
+            "type": "string",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_EXPECTED_ROI",
-            "label": "Expected ROI (%)",
-            "bitrixLabel": "Expected ROI (%)",
-            "type": "double",
-            "placeholder": "e.g., 7.5%"
+            "code": "UF_CRM_WEBSITESEARCHID",
+            "label": "Website Search ID",
+            "bitrixLabel": "Website Search ID",
+            "type": "string",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_PREFERRED_HANDOVER",
-            "label": "Preferred Handover",
-            "bitrixLabel": "Preferred handover timing",
-            "type": "enumeration",
-            "placeholder": "-- Select Handover Timing --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Immediate"
-              },
-              {
-                "id": "2",
-                "value": "Within 6 Months"
-              },
-              {
-                "id": "3",
-                "value": "Within 1 Year"
-              },
-              {
-                "id": "4",
-                "value": "Flexible"
-              }
-            ]
+            "code": "UF_CRM_WEBSITESEARCHTYPE",
+            "label": "Website Search Type",
+            "bitrixLabel": "Website Search Type",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_WEBSITESEARCHURL",
+            "label": "Website Search URL",
+            "bitrixLabel": "Website Search URL",
+            "type": "url",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_EMAILFREQUENCY",
+            "label": "Email Frequency",
+            "bitrixLabel": "Email Frequency",
+            "type": "string",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_INCLUDESALLCHANGES",
+            "label": "Includes All Changes",
+            "bitrixLabel": "Includes All Changes",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_INCLUDESNEWLISTINGS",
+            "label": "Includes New Listings",
+            "bitrixLabel": "Includes New Listings",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_INCLUDESPRICECHANGES",
+            "label": "Includes Price Changes",
+            "bitrixLabel": "Includes Price Changes",
+            "type": "boolean",
+            "placeholder": "e.g., 2,500,000"
+          },
+          {
+            "code": "UF_CRM_INCLUDESSTATUSCHANGES",
+            "label": "Includes Status Changes",
+            "bitrixLabel": "Includes Status Changes",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_INCLUDESOPENHOUSECHANGES",
+            "label": "Includes Open House Changes",
+            "bitrixLabel": "Includes Open House Changes",
+            "type": "boolean",
+            "placeholder": ""
+          },
+          {
+            "code": "UF_CRM_SAVED_SEARCH_NAME",
+            "label": "Saved Search Name",
+            "bitrixLabel": "Saved Search Name",
+            "type": "string",
+            "placeholder": "Enter saved search name..."
           }
         ]
       },
       {
-        "id": "additional_preferences",
-        "title": "Additional Preferences",
-        "icon": "📝",
-        "description": "Viewing schedules, must-have features, deal breakers, and client remarks",
-        "defaultOpen": true,
+        "id": "disqualification_spam",
+        "title": "Disqualification & Spam Records",
+        "icon": "⚠️",
         "fields": [
           {
-            "code": "UF_CRM_FIRST_VIEWING_DATE",
-            "label": "Preferred Viewing Date",
-            "bitrixLabel": "First viewing date",
-            "type": "date"
+            "code": "UF_CRM_DISQUALIFY_DATE",
+            "label": "Disqualify Date",
+            "bitrixLabel": "Disqualify Date",
+            "type": "date",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_VIEWING_TIME",
-            "label": "Preferred Viewing Time",
-            "bitrixLabel": "Preferred viewing time",
-            "type": "enumeration",
-            "placeholder": "-- Select Viewing Window --",
-            "options": [
-              {
-                "id": "1",
-                "value": "Morning (9 AM - 12 PM)"
-              },
-              {
-                "id": "2",
-                "value": "Afternoon (12 PM - 5 PM)"
-              },
-              {
-                "id": "3",
-                "value": "Evening (5 PM - 8 PM)"
-              }
-            ]
+            "code": "UF_CRM_DISQUALIFY_REASON",
+            "label": "Disqualify Reason",
+            "bitrixLabel": "Disqualify Reason",
+            "type": "string",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_MUST_HAVE_FEATURES",
-            "label": "Must-Have Features",
-            "bitrixLabel": "Must-have features",
-            "type": "textarea",
-            "rows": 3,
-            "placeholder": "e.g., High floor, sea view, open kitchen, maid's room, built-in wardrobes..."
+            "code": "UF_CRM_DISQUALIFY_REASON_OTHER",
+            "label": "Disqualify Reason Other",
+            "bitrixLabel": "Disqualify Reason Other",
+            "type": "string",
+            "placeholder": "",
+            "fullWidth": true
           },
           {
-            "code": "UF_CRM_DEAL_BREAKERS",
-            "label": "Deal Breakers",
-            "bitrixLabel": "Deal breakers",
-            "type": "textarea",
-            "rows": 3,
-            "placeholder": "e.g., No ground floor, no construction noise, no shared pool, no chiller fees..."
+            "code": "UF_CRM_SPAM_ENQUIRY",
+            "label": "Spam Enquiry",
+            "bitrixLabel": "Spam Enquiry",
+            "type": "boolean",
+            "placeholder": ""
           },
           {
-            "code": "UF_CRM_SPECIAL_REQUIREMENTS",
-            "label": "Special Requirements",
-            "bitrixLabel": "Special requirements",
-            "type": "textarea",
-            "rows": 3,
-            "placeholder": "e.g., Vastu compliant, private elevator, EV charging parking space..."
-          },
-          {
-            "code": "UF_CRM_COMMENTS_1",
-            "label": "Additional Comments",
-            "bitrixLabel": "Comments",
-            "type": "textarea",
-            "rows": 3,
-            "placeholder": "General agent notes, client communication history, or special considerations..."
+            "code": "UF_CRM_SPAM_REASON",
+            "label": "Spam Reason",
+            "bitrixLabel": "Spam Reason",
+            "type": "string",
+            "placeholder": ""
           }
         ]
       }
@@ -5151,540 +5763,6 @@
       "bitrixLabel": "Spam Reason",
       "type": "string",
       "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_REQUIREMENT_TYPE",
-      "label": "Requirement Type",
-      "bitrixLabel": "Requirement type",
-      "type": "enumeration",
-      "required": true,
-      "placeholder": "-- Select Requirement Type --",
-      "leadAltCode": "UF_CRM_1791952650167",
-      "options": [
-        {
-          "id": "1",
-          "value": "Buy"
-        },
-        {
-          "id": "2",
-          "value": "Rent"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_PROPERTY_PURPOSE",
-      "label": "Property Purpose",
-      "bitrixLabel": "Property purpose",
-      "type": "enumeration",
-      "placeholder": "-- Select Purpose --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Residential"
-        },
-        {
-          "id": "2",
-          "value": "Commercial"
-        },
-        {
-          "id": "3",
-          "value": "Investment"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_COMMUNITY",
-      "label": "Preferred Community",
-      "bitrixLabel": "Preferred community / area",
-      "type": "multiselect",
-      "placeholder": "-- Select Communities / Areas --",
-      "leadAltCodes": [
-        "UF_CRM_AREA",
-        "UF_CRM_NEIGHBORHOODS",
-        "UF_CRM_COMMUNITY_PROPERTYFINDER"
-      ],
-      "options": [
-        {
-          "id": "1",
-          "value": "Downtown Dubai"
-        },
-        {
-          "id": "2",
-          "value": "Dubai Marina"
-        },
-        {
-          "id": "3",
-          "value": "Business Bay"
-        },
-        {
-          "id": "4",
-          "value": "Palm Jumeirah"
-        },
-        {
-          "id": "5",
-          "value": "Dubai Hills Estate"
-        },
-        {
-          "id": "6",
-          "value": "Arabian Ranches"
-        },
-        {
-          "id": "7",
-          "value": "JVC (Jumeirah Village Circle)"
-        },
-        {
-          "id": "8",
-          "value": "JLT (Jumeirah Lake Towers)"
-        },
-        {
-          "id": "9",
-          "value": "DIFC"
-        },
-        {
-          "id": "10",
-          "value": "Dubai Creek Harbour"
-        },
-        {
-          "id": "11",
-          "value": "Damac Hills"
-        },
-        {
-          "id": "12",
-          "value": "Saadiyat Island (Abu Dhabi)"
-        },
-        {
-          "id": "13",
-          "value": "Yas Island (Abu Dhabi)"
-        },
-        {
-          "id": "14",
-          "value": "Al Reem Island (Abu Dhabi)"
-        },
-        {
-          "id": "15",
-          "value": "Al Majaz (Sharjah)"
-        },
-        {
-          "id": "16",
-          "value": "Al Zahia (Sharjah)"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_PROJECT_NAME",
-      "label": "Preferred Project",
-      "bitrixLabel": "Project name",
-      "type": "string",
-      "placeholder": "e.g., Burj Crown, Address Residences, Creek Waters",
-      "leadAltCodes": [
-        "UF_CRM_PROJECT_1",
-        "UF_CRM_PROJECT"
-      ]
-    },
-    {
-      "code": "UF_CRM_BEDROOMS",
-      "label": "Preferred Bedrooms",
-      "bitrixLabel": "Bedrooms",
-      "type": "multiselect",
-      "placeholder": "-- Select Bedroom Options --",
-      "leadAltCodes": [
-        "UF_CRM_BEDS_MIN",
-        "UF_CRM_1791966366775"
-      ],
-      "options": [
-        {
-          "id": "1834",
-          "value": "Studio"
-        },
-        {
-          "id": "1836",
-          "value": "1 Bedroom"
-        },
-        {
-          "id": "1838",
-          "value": "2 Bedrooms"
-        },
-        {
-          "id": "1840",
-          "value": "3 Bedrooms"
-        },
-        {
-          "id": "1842",
-          "value": "4 Bedrooms"
-        },
-        {
-          "id": "1844",
-          "value": "5 Bedrooms"
-        },
-        {
-          "id": "1846",
-          "value": "6+ Bedrooms"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_BATHROOMS",
-      "label": "Preferred Bathrooms",
-      "bitrixLabel": "Bathrooms",
-      "type": "enumeration",
-      "placeholder": "-- Select Bathrooms --",
-      "leadAltCodes": [
-        "UF_CRM_BATHS_MIN",
-        "UF_CRM_1791966408374"
-      ],
-      "options": [
-        {
-          "id": "1",
-          "value": "1"
-        },
-        {
-          "id": "2",
-          "value": "2"
-        },
-        {
-          "id": "3",
-          "value": "3"
-        },
-        {
-          "id": "4",
-          "value": "4"
-        },
-        {
-          "id": "5",
-          "value": "5+"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_PAYMENT_PLAN_PREF",
-      "label": "Payment Plan Preference",
-      "bitrixLabel": "Payment plan preference",
-      "type": "enumeration",
-      "placeholder": "-- Select Payment Plan --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Monthly"
-        },
-        {
-          "id": "2",
-          "value": "Quarterly"
-        },
-        {
-          "id": "3",
-          "value": "Annually"
-        },
-        {
-          "id": "4",
-          "value": "Flexible"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_MORTGAGE_PRE_APPROVAL",
-      "label": "Mortgage Pre-Approval",
-      "bitrixLabel": "Mortgage pre-approval status",
-      "type": "enumeration",
-      "placeholder": "-- Select Pre-Approval Status --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Yes"
-        },
-        {
-          "id": "2",
-          "value": "No"
-        },
-        {
-          "id": "3",
-          "value": "In Progress"
-        },
-        {
-          "id": "4",
-          "value": "Not Required"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_DOWN_PAYMENT",
-      "label": "Available Down Payment",
-      "bitrixLabel": "Available down payment",
-      "type": "money",
-      "currency": "AED",
-      "placeholder": "e.g., 300,000"
-    },
-    {
-      "code": "UF_CRM_BALCONY",
-      "label": "Balcony Required",
-      "bitrixLabel": "Balcony required",
-      "type": "boolean",
-      "placeholder": "Balcony Required"
-    },
-    {
-      "code": "UF_CRM_REQUIRED_AMENITIES",
-      "label": "Required Amenities",
-      "bitrixLabel": "Required amenities",
-      "type": "multiselect",
-      "placeholder": "-- Select Required Amenities --",
-      "leadAltCodes": [
-        "UF_CRM_COMMERCIAL_AMENITIES",
-        "UF_CRM_PRIVATE_AMENITIES"
-      ],
-      "options": [
-        {
-          "id": "1",
-          "value": "Swimming Pool"
-        },
-        {
-          "id": "2",
-          "value": "Gym"
-        },
-        {
-          "id": "3",
-          "value": "Garden"
-        },
-        {
-          "id": "4",
-          "value": "Security"
-        },
-        {
-          "id": "5",
-          "value": "Children's Play Area"
-        },
-        {
-          "id": "6",
-          "value": "Beach Access"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_FLOOR_PREFERENCE",
-      "label": "Floor Preference",
-      "bitrixLabel": "Floor preference",
-      "type": "enumeration",
-      "placeholder": "-- Select Floor Preference --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Low Floor"
-        },
-        {
-          "id": "2",
-          "value": "Mid Floor"
-        },
-        {
-          "id": "3",
-          "value": "High Floor"
-        },
-        {
-          "id": "4",
-          "value": "No Preference"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_LEASE_DURATION",
-      "label": "Lease Duration",
-      "bitrixLabel": "Lease duration",
-      "type": "enumeration",
-      "placeholder": "-- Select Lease Duration --",
-      "options": [
-        {
-          "id": "1",
-          "value": "6 Months"
-        },
-        {
-          "id": "2",
-          "value": "1 Year"
-        },
-        {
-          "id": "3",
-          "value": "2 Years"
-        },
-        {
-          "id": "4",
-          "value": "Flexible"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_IMMEDIATE_AVAILABILITY",
-      "label": "Immediate Availability Required",
-      "bitrixLabel": "Immediate availability",
-      "type": "boolean",
-      "placeholder": "Immediate Availability Required"
-    },
-    {
-      "code": "UF_CRM_TENANT_TYPE",
-      "label": "Tenant Type",
-      "bitrixLabel": "Tenant type",
-      "type": "enumeration",
-      "placeholder": "-- Select Tenant Type --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Family"
-        },
-        {
-          "id": "2",
-          "value": "Individual"
-        },
-        {
-          "id": "3",
-          "value": "Company"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_NUMBER_OF_OCCUPANTS",
-      "label": "Number of Occupants",
-      "bitrixLabel": "Number of occupants",
-      "type": "integer",
-      "placeholder": "e.g., 3"
-    },
-    {
-      "code": "UF_CRM_BUYING_PURPOSE",
-      "label": "Buying Purpose",
-      "bitrixLabel": "Buying purpose",
-      "type": "enumeration",
-      "placeholder": "-- Select Buying Purpose --",
-      "options": [
-        {
-          "id": "1",
-          "value": "End Use"
-        },
-        {
-          "id": "2",
-          "value": "Investment"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_PURCHASE_TIMELINE",
-      "label": "Purchase Timeline",
-      "bitrixLabel": "Purchase timeline",
-      "type": "enumeration",
-      "placeholder": "-- Select Purchase Timeline --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Immediate"
-        },
-        {
-          "id": "2",
-          "value": "Within 1 Month"
-        },
-        {
-          "id": "3",
-          "value": "1–3 Months"
-        },
-        {
-          "id": "4",
-          "value": "3–6 Months"
-        },
-        {
-          "id": "5",
-          "value": "6+ Months"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_PROPERTY_STATUS_PREFERENCE",
-      "label": "Property Status Preference",
-      "bitrixLabel": "Property status preference",
-      "type": "enumeration",
-      "placeholder": "-- Select Property Status --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Ready"
-        },
-        {
-          "id": "2",
-          "value": "Off-Plan"
-        },
-        {
-          "id": "3",
-          "value": "Either"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_EXPECTED_ROI",
-      "label": "Expected ROI (%)",
-      "bitrixLabel": "Expected ROI (%)",
-      "type": "double",
-      "placeholder": "e.g., 7.5%"
-    },
-    {
-      "code": "UF_CRM_PREFERRED_HANDOVER",
-      "label": "Preferred Handover",
-      "bitrixLabel": "Preferred handover timing",
-      "type": "enumeration",
-      "placeholder": "-- Select Handover Timing --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Immediate"
-        },
-        {
-          "id": "2",
-          "value": "Within 6 Months"
-        },
-        {
-          "id": "3",
-          "value": "Within 1 Year"
-        },
-        {
-          "id": "4",
-          "value": "Flexible"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_VIEWING_TIME",
-      "label": "Preferred Viewing Time",
-      "bitrixLabel": "Preferred viewing time",
-      "type": "enumeration",
-      "placeholder": "-- Select Viewing Window --",
-      "options": [
-        {
-          "id": "1",
-          "value": "Morning (9 AM - 12 PM)"
-        },
-        {
-          "id": "2",
-          "value": "Afternoon (12 PM - 5 PM)"
-        },
-        {
-          "id": "3",
-          "value": "Evening (5 PM - 8 PM)"
-        }
-      ]
-    },
-    {
-      "code": "UF_CRM_MUST_HAVE_FEATURES",
-      "label": "Must-Have Features",
-      "bitrixLabel": "Must-have features",
-      "type": "textarea",
-      "rows": 3,
-      "placeholder": "e.g., High floor, sea view, open kitchen, maid's room, built-in wardrobes..."
-    },
-    {
-      "code": "UF_CRM_DEAL_BREAKERS",
-      "label": "Deal Breakers",
-      "bitrixLabel": "Deal breakers",
-      "type": "textarea",
-      "rows": 3,
-      "placeholder": "e.g., No ground floor, no construction noise, no shared pool, no chiller fees..."
-    },
-    {
-      "code": "UF_CRM_SPECIAL_REQUIREMENTS",
-      "label": "Special Requirements",
-      "bitrixLabel": "Special requirements",
-      "type": "textarea",
-      "rows": 3,
-      "placeholder": "e.g., Vastu compliant, private elevator, EV charging parking space..."
     }
   ],
   "listingDynamicLayout": {

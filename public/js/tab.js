@@ -700,265 +700,6 @@
   }
 
   /**
-   * Create Mac/iOS-compatible multi-select dropdown with tags, search filter, and individual option checkboxes
-   */
-  function createMultiSelectInput(f, currentVal, markFieldDirty) {
-    const container = document.createElement('div');
-    container.className = 'multiselect-container';
-    container.id = `multiselect_wrap_${f.code}`;
-
-    // Underlying select element for standard form & test accessibility
-    const inputElement = document.createElement('select');
-    inputElement.className = 'form-control multiselect-underlying-select';
-    inputElement.id = `field_${f.code}`;
-    inputElement.name = f.code;
-    inputElement.multiple = true;
-    inputElement.style.display = 'none';
-
-    const options = f.options || [];
-    let initialSelected = [];
-    if (Array.isArray(currentVal)) {
-      initialSelected = currentVal.map(String).map(s => s.trim().toLowerCase());
-    } else if (typeof currentVal === 'string' && currentVal.trim()) {
-      initialSelected = currentVal.split(',').map(s => s.trim().toLowerCase());
-    } else if (currentVal !== null && currentVal !== undefined && currentVal !== '') {
-      initialSelected = [String(currentVal).trim().toLowerCase()];
-    }
-
-    options.forEach(opt => {
-      const optEl = document.createElement('option');
-      const optValue = String(typeof opt === 'object' ? (opt.id || opt.value) : opt);
-      const optText = String(typeof opt === 'object' ? (opt.value || opt.id) : opt);
-      optEl.value = optValue;
-      optEl.textContent = optText;
-
-      const isSel = initialSelected.some(s =>
-        s === optValue.toLowerCase() ||
-        s === optText.toLowerCase() ||
-        s === optValue.toLowerCase().replace(/s$/, '') ||
-        s === optText.toLowerCase().replace(/s$/, '')
-      );
-      if (isSel) {
-        optEl.selected = true;
-      }
-      inputElement.appendChild(optEl);
-    });
-
-    container.appendChild(inputElement);
-
-    // Visible trigger box
-    const box = document.createElement('div');
-    box.className = 'multiselect-box';
-    box.tabIndex = 0;
-
-    const tagsContainer = document.createElement('div');
-    tagsContainer.className = 'multiselect-tags';
-
-    const placeholder = document.createElement('span');
-    placeholder.className = 'multiselect-placeholder';
-    placeholder.textContent = f.placeholder || '-- Select options --';
-
-    const chevron = document.createElement('span');
-    chevron.className = 'multiselect-chevron';
-    chevron.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-
-    box.appendChild(tagsContainer);
-    box.appendChild(placeholder);
-    box.appendChild(chevron);
-    container.appendChild(box);
-
-    // Dropdown popover
-    const dropdown = document.createElement('div');
-    dropdown.className = 'multiselect-dropdown';
-    dropdown.style.display = 'none';
-
-    // Search wrap
-    const searchWrap = document.createElement('div');
-    searchWrap.className = 'multiselect-search-wrap';
-
-    const searchInput = document.createElement('input');
-    searchInput.type = 'text';
-    searchInput.className = 'multiselect-search-input';
-    searchInput.placeholder = `Search ${(f.label || '').toLowerCase()}...`;
-
-    const actionsWrap = document.createElement('div');
-    actionsWrap.className = 'multiselect-actions';
-
-    const selectAllBtn = document.createElement('button');
-    selectAllBtn.type = 'button';
-    selectAllBtn.className = 'multiselect-action-btn';
-    selectAllBtn.textContent = 'Select All';
-
-    const clearAllBtn = document.createElement('button');
-    clearAllBtn.type = 'button';
-    clearAllBtn.className = 'multiselect-action-btn';
-    clearAllBtn.textContent = 'Clear All';
-
-    actionsWrap.appendChild(selectAllBtn);
-    actionsWrap.appendChild(clearAllBtn);
-    searchWrap.appendChild(searchInput);
-    searchWrap.appendChild(actionsWrap);
-    dropdown.appendChild(searchWrap);
-
-    const optionsList = document.createElement('div');
-    optionsList.className = 'multiselect-options-list';
-    dropdown.appendChild(optionsList);
-
-    function syncDisplayFromSelect() {
-      tagsContainer.innerHTML = '';
-      const selectedOptions = Array.from(inputElement.options).filter(o => o.selected);
-
-      if (selectedOptions.length === 0) {
-        placeholder.style.display = 'inline';
-      } else {
-        placeholder.style.display = 'none';
-        selectedOptions.forEach(opt => {
-          const tag = document.createElement('span');
-          tag.className = 'multiselect-tag';
-          tag.textContent = opt.textContent;
-
-          const removeBtn = document.createElement('button');
-          removeBtn.type = 'button';
-          removeBtn.className = 'multiselect-tag-remove';
-          removeBtn.innerHTML = '&times;';
-          removeBtn.setAttribute('aria-label', `Remove ${opt.textContent}`);
-          removeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            opt.selected = false;
-            syncDisplayFromSelect();
-            markFieldDirty();
-            inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-          });
-
-          tag.appendChild(removeBtn);
-          tagsContainer.appendChild(tag);
-        });
-      }
-
-      const optElements = optionsList.querySelectorAll('.multiselect-option');
-      optElements.forEach(el => {
-        const v = el.getAttribute('data-value');
-        const isSelected = selectedOptions.some(o => o.value === v);
-        el.classList.toggle('selected', isSelected);
-        const chk = el.querySelector('input[type="checkbox"]');
-        if (chk) chk.checked = isSelected;
-      });
-
-      initialFormValues[f.code] = selectedOptions.map(o => o.value).join(', ');
-    }
-
-    container._syncDisplay = syncDisplayFromSelect;
-
-    options.forEach(opt => {
-      const optValue = String(typeof opt === 'object' ? (opt.id || opt.value) : opt);
-      const optText = String(typeof opt === 'object' ? (opt.value || opt.id) : opt);
-
-      const optEl = document.createElement('div');
-      optEl.className = 'multiselect-option';
-      optEl.setAttribute('data-value', optValue);
-      optEl.setAttribute('data-text', optText.toLowerCase());
-
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.tabIndex = -1;
-
-      const labelSpan = document.createElement('span');
-      labelSpan.className = 'multiselect-option-label';
-      labelSpan.textContent = optText;
-
-      optEl.appendChild(chk);
-      optEl.appendChild(labelSpan);
-
-      // Tap/click handler without Cmd requirement
-      optEl.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const optTarget = Array.from(inputElement.options).find(o => o.value === optValue);
-        if (optTarget) {
-          optTarget.selected = !optTarget.selected;
-          syncDisplayFromSelect();
-          markFieldDirty();
-          inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-        }
-      });
-
-      optionsList.appendChild(optEl);
-    });
-
-    searchInput.addEventListener('input', () => {
-      const q = searchInput.value.trim().toLowerCase();
-      const optElements = optionsList.querySelectorAll('.multiselect-option');
-      optElements.forEach(el => {
-        const text = el.getAttribute('data-text') || '';
-        el.style.display = (!q || text.includes(q)) ? 'flex' : 'none';
-      });
-    });
-
-    selectAllBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      Array.from(inputElement.options).forEach(o => { o.selected = true; });
-      syncDisplayFromSelect();
-      markFieldDirty();
-      inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    clearAllBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      Array.from(inputElement.options).forEach(o => { o.selected = false; });
-      syncDisplayFromSelect();
-      markFieldDirty();
-      inputElement.dispatchEvent(new Event('change', { bubbles: true }));
-    });
-
-    function openDropdown() {
-      document.querySelectorAll('.multiselect-dropdown').forEach(d => {
-        if (d !== dropdown) d.style.display = 'none';
-      });
-      document.querySelectorAll('.multiselect-box').forEach(b => {
-        if (b !== box) b.classList.remove('is-open');
-      });
-      dropdown.style.display = 'flex';
-      box.classList.add('is-open');
-      searchInput.value = '';
-      searchInput.dispatchEvent(new Event('input'));
-      setTimeout(() => searchInput.focus(), 50);
-    }
-
-    function closeDropdown() {
-      dropdown.style.display = 'none';
-      box.classList.remove('is-open');
-    }
-
-    box.addEventListener('click', (e) => {
-      if (e.target.closest('.multiselect-tag-remove')) return;
-      if (dropdown.style.display === 'none') {
-        openDropdown();
-      } else {
-        closeDropdown();
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!container.contains(e.target)) {
-        closeDropdown();
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && dropdown.style.display !== 'none') {
-        closeDropdown();
-        box.focus();
-      }
-    });
-
-    container.appendChild(dropdown);
-    syncDisplayFromSelect();
-
-    return { container, inputElement };
-  }
-
-  /**
    * Create field input control supporting lookup, enumeration, boolean, money, date, text, number
    */
   function createFieldInput(f, currentVal, markFieldDirty) {
@@ -971,11 +712,8 @@
     let inputElement;
 
     if (f.type === 'enumeration') {
-      if (f.multiple || f.isMultiple) {
-        return createMultiSelectInput(f, currentVal, markFieldDirty);
-      }
       inputElement = document.createElement('select');
-      inputElement.className = 'form-control mac-select';
+      inputElement.className = 'form-control';
       inputElement.id = `field_${f.code}`;
       inputElement.name = f.code;
 
@@ -1160,120 +898,6 @@
     }
 
     return { container, inputElement };
-  }
-
-
-  /**
-   * Run real-time conditional visibility and validation logic for Enquiry Requirement Gathering Form
-   */
-  function runEnquiryConditionals() {
-    if (currentLayout !== 'enquiry') return;
-
-    // 1. Requirement Type (Buy vs Rent)
-    const reqInput = document.getElementById('field_UF_CRM_REQUIREMENT_TYPE') ||
-                     document.getElementById('field_UF_CRM_1791952650167');
-
-    let reqVal = '';
-    if (reqInput) {
-      reqVal = String(reqInput.value || '').trim().toLowerCase();
-    }
-
-    // 2 = Rent, 'rent', 2578 = Rent
-    const isRent = reqVal === '2' || reqVal === 'rent' || reqVal === '2578';
-    const isBuy = !isRent; // Default to buy if not rent
-
-    // Section 4: Rental-Specific Requirements
-    const rentalSection = document.getElementById('section_rental_specific') || document.getElementById('section_3');
-    const rentalPill = document.getElementById('pill_rental_specific') || document.getElementById('pill_3');
-    if (rentalSection) {
-      rentalSection.style.display = isRent ? 'block' : 'none';
-    }
-    if (rentalPill) {
-      rentalPill.style.display = isRent ? 'inline-flex' : 'none';
-    }
-
-    // Section 5: Purchase-Specific Requirements
-    const purchaseSection = document.getElementById('section_purchase_specific') || document.getElementById('section_4');
-    const purchasePill = document.getElementById('pill_purchase_specific') || document.getElementById('pill_4');
-    if (purchaseSection) {
-      purchaseSection.style.display = isBuy ? 'block' : 'none';
-    }
-    if (purchasePill) {
-      purchasePill.style.display = isBuy ? 'inline-flex' : 'none';
-    }
-
-    // Section 2 Financial Conditionals:
-    // Annual Rental Budget -> visible ONLY for Rent
-    const annualRentGroup = document.getElementById('group_UF_CRM_DEAL_VALUE_1') || document.getElementById('group_UF_CRM_ANNUAL_RENTAL_BUDGET');
-    if (annualRentGroup) {
-      annualRentGroup.style.display = isRent ? 'flex' : 'none';
-    }
-
-    // Min Budget, Max Budget, Mortgage Pre-Approval, Down Payment -> visible ONLY for Buy
-    const minBudgetGroup = document.getElementById('group_UF_CRM_LISTINGPRICE_MIN');
-    const maxBudgetGroup = document.getElementById('group_UF_CRM_LISTINGPRICE_MAX');
-    const mortgageGroup = document.getElementById('group_UF_CRM_MORTGAGE_PRE_APPROVAL');
-    const downPaymentGroup = document.getElementById('group_UF_CRM_DOWN_PAYMENT');
-    const paymentPlanGroup = document.getElementById('group_UF_CRM_PAYMENT_PLAN_PREF');
-
-    if (minBudgetGroup) minBudgetGroup.style.display = isBuy ? 'flex' : 'none';
-    if (maxBudgetGroup) maxBudgetGroup.style.display = isBuy ? 'flex' : 'none';
-    if (mortgageGroup) mortgageGroup.style.display = isBuy ? 'flex' : 'none';
-    if (downPaymentGroup) downPaymentGroup.style.display = isBuy ? 'flex' : 'none';
-    if (paymentPlanGroup) paymentPlanGroup.style.display = isBuy ? 'flex' : 'none';
-
-    // 2. Buying Purpose = Investment -> Expected ROI
-    const buyingPurposeInput = document.getElementById('field_UF_CRM_BUYING_PURPOSE');
-    let isInvestment = false;
-    if (buyingPurposeInput) {
-      const bpVal = String(buyingPurposeInput.value || '').trim().toLowerCase();
-      isInvestment = bpVal === '2' || bpVal.includes('invest');
-    }
-
-    const roiGroup = document.getElementById('group_UF_CRM_EXPECTED_ROI');
-    if (roiGroup) {
-      roiGroup.style.display = (isBuy && isInvestment) ? 'flex' : 'none';
-    }
-
-    // 3. Validation: Minimum Budget <= Maximum Budget
-    const minBudgetInp = document.getElementById('field_UF_CRM_LISTINGPRICE_MIN');
-    const maxBudgetInp = document.getElementById('field_UF_CRM_LISTINGPRICE_MAX');
-    if (minBudgetInp && maxBudgetInp && isBuy) {
-      const minB = parseFloat(minBudgetInp.value.replace(/[^\d.-]/g, '')) || 0;
-      const maxB = parseFloat(maxBudgetInp.value.replace(/[^\d.-]/g, '')) || 0;
-      const errEl = document.getElementById('err_UF_CRM_LISTINGPRICE_MIN');
-      if (minB > 0 && maxB > 0 && minB > maxB) {
-        minBudgetInp.classList.add('is-invalid');
-        if (errEl) {
-          errEl.textContent = `Minimum budget (AED ${minB.toLocaleString()}) cannot exceed maximum budget (AED ${maxB.toLocaleString()}).`;
-          errEl.style.display = 'block';
-        }
-      } else {
-        minBudgetInp.classList.remove('is-invalid');
-        if (errEl) errEl.style.display = 'none';
-      }
-    }
-
-    // 4. Validation: Minimum Property Size <= Maximum Property Size
-    const minSizeInp = document.getElementById('field_UF_CRM_TOTALAREA_MIN');
-    const maxSizeInp = document.getElementById('field_UF_CRM_TOTALAREA_MAX');
-    if (minSizeInp && maxSizeInp) {
-      const minS = parseFloat(minSizeInp.value.replace(/[^\d.-]/g, '')) || 0;
-      const maxS = parseFloat(maxSizeInp.value.replace(/[^\d.-]/g, '')) || 0;
-      const errEl = document.getElementById('err_UF_CRM_TOTALAREA_MIN');
-      if (minS > 0 && maxS > 0 && minS > maxS) {
-        minSizeInp.classList.add('is-invalid');
-        if (errEl) {
-          errEl.textContent = `Minimum property size (${minS} sq ft) cannot exceed maximum size (${maxS} sq ft).`;
-          errEl.style.display = 'block';
-        }
-      } else {
-        minSizeInp.classList.remove('is-invalid');
-        if (errEl) errEl.style.display = 'none';
-      }
-    }
-
-    resizeWindow();
   }
 
   function applyListingSubLayout(subLayout) {
@@ -1488,20 +1112,10 @@
       feedback.style.display = 'none';
       if (currentLayout === 'listing') {
         runLeadListingAutomations({ isInitialLoad: false, triggerField: f.code });
-      } else if (currentLayout === 'enquiry') {
-        runEnquiryConditionals();
       }
     };
 
     const inputObj = createFieldInput(f, currentVal, markFieldDirty);
-
-    // Bind real-time enquiry requirement gathering conditionals
-    if (currentLayout === 'enquiry') {
-      if (['UF_CRM_REQUIREMENT_TYPE', 'UF_CRM_1791952650167', 'UF_CRM_BUYING_PURPOSE', 'UF_CRM_PROPERTY_PURPOSE', 'UF_CRM_LISTINGPRICE_MIN', 'UF_CRM_LISTINGPRICE_MAX', 'UF_CRM_TOTALAREA_MIN', 'UF_CRM_TOTALAREA_MAX'].includes(f.code)) {
-        inputObj.inputElement?.addEventListener('change', runEnquiryConditionals);
-        inputObj.inputElement?.addEventListener('input', runEnquiryConditionals);
-      }
-    }
 
     // Bind real-time listing layout switching when Listing Type changes
     if (currentLayout === 'listing' && (f.code === 'UF_CRM_1791952650167' || f.code === 'UF_CRM_LISTING_TYPE')) {
@@ -1548,8 +1162,8 @@
       }
     } else {
       stageBadge.classList.add('badge-enquiry');
-      stageBadge.textContent = 'Enquiry Requirements';
-      if (stageInfoText) stageInfoText.innerHTML = '🔍 Presenting <strong>Enquiry Requirement Gathering Form</strong> — UAE Real Estate CRM';
+      stageBadge.textContent = 'Enquiry Record';
+      if (stageInfoText) stageInfoText.innerHTML = '🔍 Presenting <strong>Enquiry Layout</strong>';
       if (listingLayoutBadge) listingLayoutBadge.style.display = 'none';
     }
 
@@ -1584,7 +1198,6 @@
       const pill = document.createElement('button');
       pill.type = 'button';
       pill.className = 'nav-pill';
-      pill.id = `pill_${sec.id || sIdx}`;
       pill.innerHTML = `${sec.icon || '📁'} ${sec.title}`;
       if (layout === 'listing' && activeFields.length === 0) {
         pill.style.display = 'none';
@@ -1772,8 +1385,6 @@
 
     if (layout === 'listing') {
       runLeadListingAutomations({ isInitialLoad: true });
-    } else if (layout === 'enquiry') {
-      runEnquiryConditionals();
     }
 
     resizeWindow();
@@ -1922,20 +1533,12 @@
 
       if (input.type === 'checkbox') {
         input.checked = !!val;
-      } else if (input.tagName === 'SELECT' && input.multiple) {
-        const valArr = Array.isArray(val) ? val.map(String) : String(val).split(',').map(s => s.trim());
-        Array.from(input.options).forEach(o => {
-          o.selected = valArr.includes(o.value) || valArr.includes(o.textContent);
-        });
-        const wrap = document.getElementById(`multiselect_wrap_${code}`);
-        if (wrap && wrap._syncDisplay) wrap._syncDisplay();
       } else {
         input.value = val;
       }
     }
 
     setDirty(false);
-    if (currentLayout === 'enquiry') runEnquiryConditionals();
     showToast('Unsaved changes discarded.', 'info');
   });
 
@@ -2015,9 +1618,6 @@
         } else {
           payload[f.code] = '';
         }
-      } else if (input.tagName === 'SELECT' && input.multiple) {
-        const selectedVals = Array.from(input.options).filter(o => o.selected).map(o => o.value);
-        payload[f.code] = selectedVals;
       } else {
         payload[f.code] = input.value.trim();
       }

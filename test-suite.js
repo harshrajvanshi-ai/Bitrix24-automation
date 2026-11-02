@@ -315,8 +315,7 @@ async function runTests() {
   console.log('\n--- Case 11: Picklist / Enumeration Verification ---');
   const allEnumFields = [
     ...(fieldCfg.listingLayout?.sections || []).flatMap(s => s.fields || []),
-    ...(fieldCfg.enquiryLayout?.sections || []).flatMap(s => s.fields || []),
-    ...(fieldCfg.enquiryFields || [])
+    ...(fieldCfg.enquiryLayout?.sections || []).flatMap(s => s.fields || [])
   ].filter(f => f.type === 'enumeration');
 
   assert(allEnumFields.length >= 10, 'Enumeration fields found in layouts');
@@ -740,8 +739,7 @@ async function runTests() {
   const { CITY_BAYUT_MAP, CITY_PROPERTYFINDER_MAP } = require('./src/spaSync');
   const cityBayutField = fieldsConfig.enquiryLayout?.sections
     ?.flatMap(s => s.fields || [])
-    ?.find(f => f.code === 'UF_CRM_CITY_BAYUT') ||
-    fieldsConfig.enquiryFields?.find(f => f.code === 'UF_CRM_CITY_BAYUT');
+    ?.find(f => f.code === 'UF_CRM_CITY_BAYUT');
   assert(cityBayutField && cityBayutField.type === 'enumeration', 'UF_CRM_CITY_BAYUT is configured as type enumeration');
   assert(Array.isArray(cityBayutField.options) && cityBayutField.options.length === 8, 'UF_CRM_CITY_BAYUT has exactly 8 UAE city options');
   assert(cityBayutField.options.some(o => o.value === 'Dubai' && String(o.id) === '2546'), 'UF_CRM_CITY_BAYUT includes Dubai (2546)');
@@ -752,8 +750,7 @@ async function runTests() {
   // 7. Verify City - Propertyfinder schema and translation
   const cityPfField = fieldsConfig.enquiryLayout?.sections
     ?.flatMap(s => s.fields || [])
-    ?.find(f => f.code === 'UF_CRM_CITY_PF') ||
-    fieldsConfig.enquiryFields?.find(f => f.code === 'UF_CRM_CITY_PF');
+    ?.find(f => f.code === 'UF_CRM_CITY_PF');
   assert(cityPfField && cityPfField.type === 'enumeration', 'UF_CRM_CITY_PF is configured as type enumeration');
   assert(Array.isArray(cityPfField.options) && cityPfField.options.length === 8, 'UF_CRM_CITY_PF has exactly 8 UAE city options');
   assert(cityPfField.options.some(o => o.value === 'Dubai' && String(o.id) === '2562'), 'UF_CRM_CITY_PF includes Dubai (2562)');
@@ -1026,8 +1023,8 @@ async function runTests() {
   // Case 21: Layout Card Overflow & Autocomplete Dropdown Stacking
   // ============================================================================
   console.log('\n--- Case 21: Layout Card Overflow & Autocomplete Dropdown Stacking ---');
-  const listingCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/listing-details.css'), 'utf-8');
-  const leadCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/tab.css'), 'utf-8');
+  const listingCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/listing-details.css'), 'utf-8').replace(/\r\n/g, '\n');
+  const leadCssContent = fs.readFileSync(path.resolve(__dirname, 'public/css/tab.css'), 'utf-8').replace(/\r\n/g, '\n');
   const listingJsContent = fs.readFileSync(path.resolve(__dirname, 'public/js/listing-details.js'), 'utf-8');
   const leadJsContent = fs.readFileSync(path.resolve(__dirname, 'public/js/tab.js'), 'utf-8');
 
