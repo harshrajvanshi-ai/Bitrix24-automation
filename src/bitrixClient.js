@@ -64,13 +64,20 @@ class BitrixClient {
     let endpoint;
     let postData = { ...params };
 
-    if (config.INBOUND_WEBHOOK_URL) {
+    // Bitrix24 forbids placement.* and app.* methods over Inbound Webhooks (WRONG_AUTH_TYPE)
+    const requiresAppContext = method.startsWith('placement.') || method.startsWith('app.');
+
+    if (config.INBOUND_WEBHOOK_URL && !requiresAppContext) {
       endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
     } else if (auth && auth.accessToken) {
       endpoint = `${auth.clientEndpoint.replace(/\/+$/, '')}/${method}`;
       postData.auth = auth.accessToken;
     } else {
-      throw new Error('Bitrix24 authentication missing. Please install the local application first.');
+      if (config.INBOUND_WEBHOOK_URL) {
+        endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+      } else {
+        throw new Error('Bitrix24 authentication missing. Please install the local application first.');
+      }
     }
 
     try {
