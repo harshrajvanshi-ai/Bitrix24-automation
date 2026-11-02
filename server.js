@@ -89,10 +89,27 @@ app.use((req, res, next) => {
 // ------------------------------------------------------------------------------
 /**
  * GET/POST /
- * Primary entry point redirects to /install
+ * Primary application entry point inside Bitrix24
+ * Serves Executive Dashboard by default, or redirects to /install if query ?install=true
  */
 app.all('/', (req, res) => {
-  res.redirect('/install');
+  res.removeHeader('X-Frame-Options');
+
+  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
+    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
+    StorageManager.saveAuth({
+      access_token: req.body.AUTH_ID,
+      refresh_token: req.body.REFRESH_ID,
+      domain: req.body.DOMAIN,
+      member_id: req.body.member_id
+    });
+  }
+
+  if (req.query?.install === 'true') {
+    return res.redirect('/install');
+  }
+
+  res.sendFile(path.join(__dirname, 'views/dashboard.html'));
 });
 
 /**
@@ -346,6 +363,15 @@ app.all('/dashboard', (req, res) => {
   }
 
   res.sendFile(path.join(__dirname, 'views/dashboard.html'));
+});
+
+/**
+ * GET/POST /dashboard-install
+ * Placement manager and manual activation interface for Dashboard placements
+ */
+app.all('/dashboard-install', (req, res) => {
+  res.removeHeader('X-Frame-Options');
+  res.sendFile(path.join(__dirname, 'views/dashboard-install.html'));
 });
 
 // In-memory cache for resolved Bitrix file names (fileId -> fileName)

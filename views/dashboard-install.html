@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real Estate Dashboard — Placement Manager</title>
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Bitrix24 Official JavaScript SDK -->
+  <script src="//api.bitrix24.com/api/v1/"></script>
+  <link rel="stylesheet" href="/css/matching-listings.css">
+  <style>
+    .install-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn-action-primary {
+      background: #00a8ff;
+      color: #ffffff;
+      border: 1px solid #0090dc;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+    .btn-action-primary:hover {
+      background: #0090dc;
+    }
+    .btn-action-danger {
+      background: #ffffff;
+      color: #f46a6a;
+      border: 1px solid #f46a6a;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-action-danger:hover {
+      background: #fdeeee;
+    }
+    .btn-action-sec {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-action-sec:hover {
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body>
+  <div class="matching-container" style="max-width: 900px; margin: 20px auto;">
+
+    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <header class="matching-header">
+      <div class="header-left">
+        <div class="header-title-wrap">
+          <h1 class="header-title">
+            <span>🏢 Executive Dashboard Placement Manager</span>
+          </h1>
+          <span class="header-subtitle">Register and activate the Real Estate Executive Dashboard in Bitrix24</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span id="placement-status-pill" class="badge badge-count">Checking status...</span>
+      </div>
+    </header>
+
+    <!-- ── Placement Info Card ────────────────────────────────────── -->
+    <div class="install-card">
+      <div style="background: #e7f5ff; border: 1px solid #74c0fc; border-radius: 6px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #1864ab; line-height: 1.6;">
+        <strong>✓ One-Click Registration:</strong> Click <strong>"⚡ Register Dashboard Placements"</strong> below while opened in Bitrix24 to bind the Executive Dashboard directly to your <strong>Left Menu</strong>, <strong>CRM Analytics Menu</strong>, and <strong>CRM Lead View</strong>.
+      </div>
+
+      <table class="config-table">
+        <tr>
+          <th style="width: 28%;">Left Sidebar Menu</th>
+          <td><span class="code-pill">LEFT_MENU</span> ➔ Real Estate Dashboard in the main Bitrix24 left navigation</td>
+        </tr>
+        <tr>
+          <th>CRM Analytics Menu</th>
+          <td><span class="code-pill">CRM_ANALYTICS_MENU</span> ➔ Inside CRM Analytics section</td>
+        </tr>
+        <tr>
+          <th>CRM Lead View Menu</th>
+          <td><span class="code-pill">CRM_LEAD_LIST_MENU</span> ➔ In the top menu of Lead List & Kanban view</td>
+        </tr>
+        <tr>
+          <th>Dashboard Handler URL</th>
+          <td><span id="target-handler-url" class="code-pill">Detecting...</span></td>
+        </tr>
+      </table>
+
+      <div class="install-actions">
+        <button type="button" id="btn-bind-dashboard" class="btn-action-primary">
+          ⚡ Register Dashboard Placements
+        </button>
+        <button type="button" id="btn-refresh-placements" class="btn-action-sec">
+          ↻ Check Active Placements
+        </button>
+        <a id="btn-preview-dashboard" href="/dashboard?preview=true" target="_blank" class="btn-action-sec" style="text-decoration: none;">
+          Open Live Dashboard ↗
+        </a>
+        <button type="button" id="btn-unbind-dashboard" class="btn-action-danger">
+          Unbind Dashboard
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Active Placements Inspector ────────────────────────────── -->
+    <div class="install-card">
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Active Registered Placements in Portal</h3>
+      <div id="placements-list-container">
+        <div style="font-size: 12px; color: var(--b24-text-muted);">Querying Bitrix24...</div>
+      </div>
+    </div>
+
+    <!-- ── Execution Logs ─────────────────────────────────────────── -->
+    <div class="install-card">
+      <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">Activity Log</h3>
+      <div id="action-log" class="action-log" style="background: #1e293b; color: #f8fafc; font-family: monospace; font-size: 12px; padding: 12px; border-radius: 6px; min-height: 120px; white-space: pre-wrap;">Ready. Click 'Register Dashboard Placements' to activate.</div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      const publicUrl = window.location.origin;
+      const targetHandlerUrl = publicUrl + '/dashboard';
+
+      document.getElementById('target-handler-url').textContent = targetHandlerUrl;
+
+      const statusPill = document.getElementById('placement-status-pill');
+      const placementsListEl = document.getElementById('placements-list-container');
+      const logEl = document.getElementById('action-log');
+      const btnBind = document.getElementById('btn-bind-dashboard');
+      const btnUnbind = document.getElementById('btn-unbind-dashboard');
+      const btnRefresh = document.getElementById('btn-refresh-placements');
+
+      function log(msg) {
+        const ts = new Date().toLocaleTimeString();
+        logEl.textContent += `\n[${ts}] ${msg}`;
+        logEl.scrollTop = logEl.scrollHeight;
+      }
+
+      function bxCall(method, params = {}) {
+        return new Promise((resolve) => {
+          if (!window.BX24 || typeof window.BX24.callMethod !== 'function') {
+            return resolve({ error: 'BX24 SDK not detected. Please open this page inside Bitrix24 or as an application tab.' });
+          }
+          window.BX24.callMethod(method, params, (res) => {
+            if (res.error()) {
+              resolve({ error: res.error().toString() });
+            } else {
+              resolve({ result: res.data() });
+            }
+          });
+        });
+      }
+
+      async function checkPlacements() {
+        log('Fetching registered placements via placement.get...');
+        statusPill.textContent = 'Checking...';
+        statusPill.className = 'badge badge-count';
+
+        const res = await bxCall('placement.get', {});
+        if (res.error) {
+          log('placement.get note: ' + res.error);
+          statusPill.textContent = 'Auth required in Bitrix24';
+          statusPill.className = 'badge badge-warning';
+          placementsListEl.innerHTML = `<div style="color: #b45309; font-size: 12px;">⚠️ Note: ${res.error}. Open this page inside Bitrix24 or via Developer Applications to access placement management.</div>`;
+          return;
+        }
+
+        const list = res.result || [];
+        log(`Found ${list.length} active placement(s) in portal.`);
+
+        const hasLeftMenu = list.some(p => p.placement === 'LEFT_MENU' && p.handler && p.handler.includes('/dashboard'));
+        const hasAnalytics = list.some(p => p.placement === 'CRM_ANALYTICS_MENU' && p.handler && p.handler.includes('/dashboard'));
+        const hasLeadList = list.some(p => p.placement === 'CRM_LEAD_LIST_MENU' && p.handler && p.handler.includes('/dashboard'));
+
+        if (hasLeftMenu || hasAnalytics || hasLeadList) {
+          statusPill.textContent = 'Active in Portal ✓';
+          statusPill.className = 'badge badge-auto';
+        } else {
+          statusPill.textContent = 'Not Bound Yet';
+          statusPill.className = 'badge badge-count';
+        }
+
+        if (list.length === 0) {
+          placementsListEl.innerHTML = '<div style="color: var(--b24-text-muted); font-size: 12px;">No custom placements registered in this portal yet.</div>';
+          return;
+        }
+
+        placementsListEl.innerHTML = list.map(p => `
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 12px;">
+            <div>
+              <strong>${p.title || p.placement}</strong>
+              <span class="code-pill" style="margin-left: 6px;">${p.placement}</span>
+              <div style="color: #64748b; font-size: 11px; margin-top: 2px;">${p.handler}</div>
+            </div>
+            <span class="badge ${p.handler && p.handler.includes('/dashboard') ? 'badge-auto' : 'badge-count'}">
+              ${p.handler && p.handler.includes('/dashboard') ? 'Dashboard Tab' : 'Registered'}
+            </span>
+          </div>
+        `).join('');
+      }
+
+      async function bindDashboard() {
+        btnBind.disabled = true;
+        btnBind.textContent = 'Binding...';
+
+        log('Starting placement bindings for Executive Dashboard...');
+
+        // 1. LEFT_MENU
+        log(`1. Binding LEFT_MENU -> ${targetHandlerUrl}`);
+        const r1 = await bxCall('placement.bind', {
+          PLACEMENT: 'LEFT_MENU',
+          HANDLER: targetHandlerUrl,
+          TITLE: 'Real Estate Dashboard'
+        });
+        if (r1.error) log('   LEFT_MENU error: ' + r1.error);
+        else log('   LEFT_MENU successfully bound!');
+
+        // 2. CRM_ANALYTICS_MENU
+        log(`2. Binding CRM_ANALYTICS_MENU -> ${targetHandlerUrl}`);
+        const r2 = await bxCall('placement.bind', {
+          PLACEMENT: 'CRM_ANALYTICS_MENU',
+          HANDLER: targetHandlerUrl,
+          TITLE: 'Real Estate Dashboard'
+        });
+        if (r2.error) log('   CRM_ANALYTICS_MENU error: ' + r2.error);
+        else log('   CRM_ANALYTICS_MENU successfully bound!');
+
+        // 3. CRM_LEAD_LIST_MENU
+        log(`3. Binding CRM_LEAD_LIST_MENU -> ${targetHandlerUrl}`);
+        const r3 = await bxCall('placement.bind', {
+          PLACEMENT: 'CRM_LEAD_LIST_MENU',
+          HANDLER: targetHandlerUrl,
+          TITLE: 'Real Estate Dashboard'
+        });
+        if (r3.error) log('   CRM_LEAD_LIST_MENU error: ' + r3.error);
+        else log('   CRM_LEAD_LIST_MENU successfully bound!');
+
+        log('Placement registration sequence completed!');
+        await checkPlacements();
+
+        btnBind.disabled = false;
+        btnBind.textContent = '⚡ Register Dashboard Placements';
+      }
+
+      async function unbindDashboard() {
+        if (!confirm('Do you want to unbind the Dashboard placements from Bitrix24?')) return;
+        btnUnbind.disabled = true;
+        log('Unbinding Dashboard placements...');
+
+        await bxCall('placement.unbind', { PLACEMENT: 'LEFT_MENU', HANDLER: targetHandlerUrl });
+        await bxCall('placement.unbind', { PLACEMENT: 'CRM_ANALYTICS_MENU', HANDLER: targetHandlerUrl });
+        await bxCall('placement.unbind', { PLACEMENT: 'CRM_LEAD_LIST_MENU', HANDLER: targetHandlerUrl });
+
+        log('Unbound successfully.');
+        await checkPlacements();
+        btnUnbind.disabled = false;
+      }
+
+      btnBind.addEventListener('click', bindDashboard);
+      btnUnbind.addEventListener('click', unbindDashboard);
+      btnRefresh.addEventListener('click', checkPlacements);
+
+      if (window.BX24) {
+        window.BX24.init(function () {
+          log('BX24 SDK initialized successfully.');
+          checkPlacements();
+        });
+      } else {
+        checkPlacements();
+      }
+    })();
+  </script>
+</body>
+</html>
