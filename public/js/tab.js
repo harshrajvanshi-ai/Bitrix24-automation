@@ -1856,6 +1856,42 @@
   formEl.addEventListener('submit', handleSave);
   refreshBtn.addEventListener('click', handleRefresh);
 
+  const btnSyncDashboard = document.getElementById('btn-sync-dashboard-placement');
+  if (btnSyncDashboard) {
+    btnSyncDashboard.addEventListener('click', () => {
+      btnSyncDashboard.disabled = true;
+      btnSyncDashboard.textContent = 'Syncing...';
+      const publicUrl = window.location.origin;
+
+      if (window.BX24 && typeof window.BX24.callMethod === 'function') {
+        window.BX24.callMethod('placement.bind', {
+          PLACEMENT: 'LEFT_MENU',
+          HANDLER: publicUrl + '/dashboard',
+          TITLE: 'Real Estate Dashboard'
+        }, () => {
+          window.BX24.callMethod('placement.bind', {
+            PLACEMENT: 'CRM_ANALYTICS_MENU',
+            HANDLER: publicUrl + '/dashboard',
+            TITLE: 'Real Estate Dashboard'
+          }, () => {
+            window.BX24.callMethod('placement.bind', {
+              PLACEMENT: 'CRM_LEAD_LIST_MENU',
+              HANDLER: publicUrl + '/dashboard',
+              TITLE: 'Real Estate Dashboard'
+            }, () => {
+              btnSyncDashboard.disabled = false;
+              btnSyncDashboard.textContent = '✓ Dashboard Synced!';
+              showToast('Executive Dashboard placement successfully registered in your Left Menu!', 'success');
+            });
+          });
+        });
+      } else {
+        btnSyncDashboard.disabled = false;
+        btnSyncDashboard.textContent = '📊 Sync Dashboard';
+      }
+    });
+  }
+
   window.addEventListener('beforeunload', (e) => {
     if (isDirty) {
       e.preventDefault();
