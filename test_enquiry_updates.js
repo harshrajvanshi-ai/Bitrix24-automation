@@ -54,14 +54,18 @@ test('Disqualification & Spam Records section completely removed', () => {
   assert(!sec, 'disqualification_spam section must not exist in enquiryLayout');
 });
 
-test('Enquiry Layout now has exactly 6 sensible sections', () => {
-  assert.strictEqual(cfg.enquiryLayout.sections.length, 6);
+test('Locations, Communities & Schools section completely removed', () => {
+  const sec = cfg.enquiryLayout.sections.find(s => s.id === 'locations_districts');
+  assert(!sec, 'locations_districts section must not exist in enquiryLayout');
+});
+
+test('Enquiry Layout now has exactly 5 sensible sections', () => {
+  assert.strictEqual(cfg.enquiryLayout.sections.length, 5);
   const ids = cfg.enquiryLayout.sections.map(s => s.id);
   assert.deepStrictEqual(ids, [
     'enquiry_overview',
     'budget_financials',
     'property_specs',
-    'locations_districts',
     'matched_projects_portals',
     'amenities_features'
   ]);

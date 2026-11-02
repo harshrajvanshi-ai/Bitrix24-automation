@@ -704,9 +704,7 @@ async function runTests() {
 
   // 1. Verify UF_CRM_STATE schema in config/fields.json
   const fieldsConfig = config.loadFieldsConfig();
-  const stateField = fieldsConfig.enquiryLayout?.sections
-    ?.flatMap(s => s.fields || [])
-    ?.find(f => f.code === 'UF_CRM_STATE');
+  const stateField = (fieldsConfig.enquiryLayout?.sections?.flatMap(s => s.fields || []) || []).find(f => f.code === 'UF_CRM_STATE') || fieldsConfig.enquiryFields?.find(f => f.code === 'UF_CRM_STATE');
   assert(stateField && stateField.type === 'enumeration', 'UF_CRM_STATE is configured as type enumeration');
   assert(Array.isArray(stateField.options) && stateField.options.length === 7, 'UF_CRM_STATE has exactly 7 UAE Emirates options');
   assert(stateField.options.some(o => o.value === 'Dubai' && String(o.id) === '2532'), 'UF_CRM_STATE includes Dubai (2532)');
