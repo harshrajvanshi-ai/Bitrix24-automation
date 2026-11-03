@@ -320,9 +320,10 @@ async function runTests() {
 
   assert(allEnumFields.length >= 10, 'Enumeration fields found in layouts');
 
-  // Check that all enumeration fields in layouts use numeric item IDs
+  // Check that all native Bitrix enumeration fields in layouts use numeric item IDs
+  // (UF_CRM_FINANCE is a client-side picklist stored as string in Bitrix24)
   const fieldsWithTextIds = [];
-  for (const f of allEnumFields) {
+  for (const f of allEnumFields.filter(f => f.code !== 'UF_CRM_FINANCE')) {
     for (const opt of (f.options || [])) {
       if (!/^\d+$/.test(String(opt.id))) {
         fieldsWithTextIds.push({ code: f.code, id: opt.id, value: opt.value });
@@ -330,6 +331,13 @@ async function runTests() {
     }
   }
   assert(fieldsWithTextIds.length === 0, 'All enumeration options have numeric Bitrix item IDs');
+
+  // Verify Finance field is configured as a picklist with suitable financing options
+  const financeField = allEnumFields.find(f => f.code === 'UF_CRM_FINANCE');
+  assert(financeField, 'Finance field UF_CRM_FINANCE found as enumeration');
+  assert(financeField.options && financeField.options.length >= 4, 'Finance field has suitable picklist options');
+  assert(financeField.options.some(o => o.value === 'Cash'), 'Finance options include Cash');
+  assert(financeField.options.some(o => o.value.includes('Mortgage')), 'Finance options include Mortgage');
 
   // Specific check on enquiry status and source type
   const enquiryStatus = allEnumFields.find(f => f.code === 'UF_CRM_STATUS') || fieldCfg.enquiryFields?.find(f => f.code === 'UF_CRM_STATUS');

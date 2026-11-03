@@ -1697,8 +1697,34 @@
             "code": "UF_CRM_FINANCE",
             "label": "Finance",
             "bitrixLabel": "Finance",
-            "type": "string",
-            "placeholder": ""
+            "type": "enumeration",
+            "placeholder": "-- Select Finance Option --",
+            "options": [
+              {
+                "id": "Cash",
+                "value": "Cash"
+              },
+              {
+                "id": "Mortgage",
+                "value": "Mortgage / Bank Finance"
+              },
+              {
+                "id": "Developer Payment Plan",
+                "value": "Developer Payment Plan"
+              },
+              {
+                "id": "Pre-Approved Mortgage",
+                "value": "Pre-Approved Mortgage"
+              },
+              {
+                "id": "Assistance Required",
+                "value": "Assistance Required"
+              },
+              {
+                "id": "Other",
+                "value": "Other"
+              }
+            ]
           }
         ]
       },
@@ -3701,8 +3727,34 @@
       "code": "UF_CRM_FINANCE",
       "label": "Finance",
       "bitrixLabel": "Finance",
-      "type": "string",
-      "placeholder": ""
+      "type": "enumeration",
+      "placeholder": "-- Select Finance Option --",
+      "options": [
+        {
+          "id": "Cash",
+          "value": "Cash"
+        },
+        {
+          "id": "Mortgage",
+          "value": "Mortgage / Bank Finance"
+        },
+        {
+          "id": "Developer Payment Plan",
+          "value": "Developer Payment Plan"
+        },
+        {
+          "id": "Pre-Approved Mortgage",
+          "value": "Pre-Approved Mortgage"
+        },
+        {
+          "id": "Assistance Required",
+          "value": "Assistance Required"
+        },
+        {
+          "id": "Other",
+          "value": "Other"
+        }
+      ]
     },
     {
       "code": "UF_CRM_HOAFEESMIN",

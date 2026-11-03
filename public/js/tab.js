@@ -1093,7 +1093,8 @@
           curStr === String(optValue).trim().toLowerCase() ||
           curStr === String(optText).trim().toLowerCase() ||
           curStr.replace(/s$/, '') === String(optValue).trim().toLowerCase().replace(/s$/, '') ||
-          curStr.replace(/s$/, '') === String(optText).trim().toLowerCase().replace(/s$/, '')
+          curStr.replace(/s$/, '') === String(optText).trim().toLowerCase().replace(/s$/, '') ||
+          (optText.toLowerCase().includes(curStr) && curStr.length >= 4)
         )) {
           optEl.selected = true;
         }

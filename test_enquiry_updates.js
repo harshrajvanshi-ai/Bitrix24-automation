@@ -325,6 +325,28 @@ test('tab.js and tab.css render related badges, section dividers, and counters',
   assert(tabCss.includes('.lookup-divider-header'), 'tab.css has .lookup-divider-header style');
 });
 
+// -----------------------------------------------------------------------------
+// 10. Finance Picklist Verification
+// -----------------------------------------------------------------------------
+console.log('\n--- 10. Finance Picklist Verification ---');
+
+test('Finance field (UF_CRM_FINANCE) is configured as enumeration with suitable financing options', () => {
+  const sec = cfg.enquiryLayout.sections.find(s => s.id === 'budget_financials');
+  const finLayout = sec.fields.find(f => f.code === 'UF_CRM_FINANCE');
+  assert(finLayout, 'UF_CRM_FINANCE must exist in budget_financials');
+  assert.strictEqual(finLayout.type, 'enumeration');
+  assert(Array.isArray(finLayout.options) && finLayout.options.length >= 4, 'Finance must have suitable options');
+  
+  const finSchema = cfg.enquiryFields.find(f => f.code === 'UF_CRM_FINANCE');
+  assert(finSchema, 'UF_CRM_FINANCE must exist in enquiryFields');
+  assert.strictEqual(finSchema.type, 'enumeration');
+
+  const optionValues = finLayout.options.map(o => o.value);
+  assert(optionValues.includes('Cash'), 'Options include Cash');
+  assert(optionValues.some(v => v.includes('Mortgage')), 'Options include Mortgage / Bank Finance');
+  assert(optionValues.some(v => v.includes('Payment Plan')), 'Options include Developer Payment Plan');
+});
+
 console.log('\n========================================================================');
-console.log('TOTAL CHECKS PASSED: ' + passed + '/21 (0 Failed)');
+console.log('TOTAL CHECKS PASSED: ' + passed + '/28 (0 Failed)');
 console.log('========================================================================');
