@@ -1728,27 +1728,6 @@
             "bitrixLabel": "Finance",
             "type": "string",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_HOAFEESMIN",
-            "label": "HOA Fees Min",
-            "bitrixLabel": "HOA Fees Min",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
-            "code": "UF_CRM_HOAFEESMAX",
-            "label": "HOA Fees Max",
-            "bitrixLabel": "HOA Fees Max",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
-          },
-          {
-            "code": "UF_CRM_PURCHASEAMOUNTOFHOME",
-            "label": "Purchase Amount of Home",
-            "bitrixLabel": "Purchase Amount of Home",
-            "type": "money",
-            "placeholder": "e.g., 2,500,000"
           }
         ]
       },
@@ -1918,42 +1897,6 @@
                 "value": "Unfurnished"
               }
             ]
-          },
-          {
-            "code": "UF_CRM_CONSTRUCTION",
-            "label": "Construction",
-            "bitrixLabel": "Construction",
-            "type": "enumeration",
-            "placeholder": "-- Select Construction --",
-            "options": [
-              {
-                "id": "2266",
-                "value": "Concrete Frame"
-              },
-              {
-                "id": "2268",
-                "value": "Steel Structure"
-              },
-              {
-                "id": "2270",
-                "value": "Pre-Cast Concrete"
-              },
-              {
-                "id": "2272",
-                "value": "Brick / Masonry"
-              },
-              {
-                "id": "2274",
-                "value": "Timber / Wood Frame"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_NEWCONSTRUCTION",
-            "label": "New Construction",
-            "bitrixLabel": "New Construction",
-            "type": "boolean",
-            "placeholder": ""
           },
           {
             "code": "UF_CRM_YEARBUILT_MIN",
@@ -2132,116 +2075,11 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_DOCK",
-            "label": "Dock",
-            "bitrixLabel": "Dock",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_YARD",
-            "label": "Yard",
-            "bitrixLabel": "Yard",
-            "type": "boolean",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_1791970241624",
             "label": "Pets Allowed",
             "bitrixLabel": "Pets Allowed",
             "type": "boolean",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BASEMENTTYPE",
-            "label": "Basement Type",
-            "bitrixLabel": "Basement Type",
-            "type": "enumeration",
-            "placeholder": "-- Select Basement Type --",
-            "options": [
-              {
-                "id": "2254",
-                "value": "Finished"
-              },
-              {
-                "id": "2256",
-                "value": "Unfinished"
-              },
-              {
-                "id": "2258",
-                "value": "Full Basement"
-              },
-              {
-                "id": "2260",
-                "value": "Walkout"
-              },
-              {
-                "id": "2262",
-                "value": "Underground Parking"
-              },
-              {
-                "id": "2264",
-                "value": "None"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_COOLINGTYPE",
-            "label": "Cooling Type",
-            "bitrixLabel": "Cooling Type",
-            "type": "enumeration",
-            "placeholder": "-- Select Cooling Type --",
-            "options": [
-              {
-                "id": "2276",
-                "value": "Central A/C"
-              },
-              {
-                "id": "2278",
-                "value": "Chiller Free"
-              },
-              {
-                "id": "2280",
-                "value": "District Cooling (Empower/Tabreed)"
-              },
-              {
-                "id": "2282",
-                "value": "Split A/C System"
-              },
-              {
-                "id": "2284",
-                "value": "Window A/C"
-              }
-            ]
-          },
-          {
-            "code": "UF_CRM_HEATTYPE",
-            "label": "Heat Type",
-            "bitrixLabel": "Heat Type",
-            "type": "enumeration",
-            "placeholder": "-- Select Heat Type --",
-            "options": [
-              {
-                "id": "2314",
-                "value": "Central Heating"
-              },
-              {
-                "id": "2316",
-                "value": "Split Unit Heating"
-              },
-              {
-                "id": "2318",
-                "value": "Electric Heating"
-              },
-              {
-                "id": "2320",
-                "value": "Solar Heating"
-              },
-              {
-                "id": "2322",
-                "value": "None / Not Applicable"
-              }
-            ]
           }
         ]
       }

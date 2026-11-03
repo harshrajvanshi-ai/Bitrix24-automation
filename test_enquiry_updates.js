@@ -206,7 +206,7 @@ test('tab.js defines applyEnquirySubLayout for dynamic conditional requirement f
   assert(tabJs.includes('function applyEnquirySubLayout('), 'applyEnquirySubLayout function is defined');
   assert(tabJs.includes('UF_CRM_MONTHLYRENTMIN'), 'Hides/shows monthly rent min');
   assert(tabJs.includes('UF_CRM_LISTINGPRICE_MIN'), 'Hides/shows listing price min');
-  assert(tabJs.includes('UF_CRM_PURCHASEAMOUNTOFHOME'), 'Hides/shows purchase amount of home');
+  assert(!tabJs.includes('UF_CRM_PURCHASEAMOUNTOFHOME'), 'US field UF_CRM_PURCHASEAMOUNTOFHOME removed from tab.js');
   assert(tabJs.includes('UF_CRM_FINANCE'), 'Hides/shows finance');
 });
 
@@ -255,6 +255,31 @@ test('tab.js binds dependent lookups: selecting Listing cascades to Master Proje
 test('tab.js filters Project and Layout lookups based on Master Project and Project selection', () => {
   assert(tabJs.includes('&master_project_id='), 'tab.js passes master_project_id to lookup');
   assert(tabJs.includes('&project_id='), 'tab.js passes project_id to lookup');
+});
+
+
+// -----------------------------------------------------------------------------
+// 8. US Style Fields Removal Verification
+// -----------------------------------------------------------------------------
+console.log('\n--- 8. US Style Fields Removal Verification ---');
+
+test('All US style fields (HOA, Dock, Yard, Basement, Heating, Cooling, Construction) removed from enquiryLayout', () => {
+  const currentEnquiryCodes = cfg.enquiryLayout.sections.flatMap(s => s.fields.map(f => f.code));
+  const usCodes = [
+    'UF_CRM_HOAFEESMIN',
+    'UF_CRM_HOAFEESMAX',
+    'UF_CRM_PURCHASEAMOUNTOFHOME',
+    'UF_CRM_CONSTRUCTION',
+    'UF_CRM_NEWCONSTRUCTION',
+    'UF_CRM_DOCK',
+    'UF_CRM_YARD',
+    'UF_CRM_BASEMENTTYPE',
+    'UF_CRM_COOLINGTYPE',
+    'UF_CRM_HEATTYPE'
+  ];
+  for (const c of usCodes) {
+    assert(!currentEnquiryCodes.includes(c), 'Field ' + c + ' must not exist in enquiryLayout');
+  }
 });
 
 console.log('\n========================================================================');

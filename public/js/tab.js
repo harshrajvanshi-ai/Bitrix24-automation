@@ -1058,7 +1058,6 @@
     const buyFieldCodes = [
       'UF_CRM_LISTINGPRICE_MIN',
       'UF_CRM_LISTINGPRICE_MAX',
-      'UF_CRM_PURCHASEAMOUNTOFHOME',
       'UF_CRM_FINANCE'
     ];
 
