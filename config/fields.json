@@ -1620,13 +1620,6 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
-            "label": "Date Assigned to Broker",
-            "bitrixLabel": "Date Assigned to Broker",
-            "type": "datetime",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_DEFERRAL_DATE",
             "label": "Deferral Date",
             "bitrixLabel": "Deferral Date",
@@ -1634,20 +1627,12 @@
             "placeholder": ""
           },
           {
-            "code": "UF_CRM_ASSIGNED_TO_BROKER",
-            "label": "Assigned to Broker",
-            "bitrixLabel": "Assigned to Broker",
+            "code": "UF_CRM_DEVELOPER_1",
+            "label": "Developer",
+            "bitrixLabel": "Developer",
             "type": "lookup",
-            "placeholder": "Search Broker / Agent...",
-            "lookupEntity": "broker"
-          },
-          {
-            "code": "UF_CRM_LISTINGAGENT",
-            "label": "Listing Agent",
-            "bitrixLabel": "Listing Agent",
-            "type": "lookup",
-            "placeholder": "Search Broker / Agent...",
-            "lookupEntity": "broker"
+            "placeholder": "Search Developer / Company...",
+            "lookupEntity": "developer"
           },
           {
             "code": "UF_CRM_IS_CLAIMABLE",
@@ -1662,13 +1647,6 @@
             "bitrixLabel": "Is Contact Viewable",
             "type": "boolean",
             "placeholder": ""
-          },
-          {
-            "code": "UF_CRM_BROKER_COMPANY",
-            "label": "Broker Company",
-            "bitrixLabel": "Broker Company",
-            "type": "string",
-            "placeholder": "Enter broker company..."
           }
         ]
       },
@@ -2024,12 +2002,12 @@
             "lookupEntity": "layout"
           },
           {
-            "code": "UF_CRM_DEVELOPER_1",
-            "label": "Developer",
-            "bitrixLabel": "Developer",
+            "code": "UF_CRM_LISTINGAGENT",
+            "label": "Listing Agent",
+            "bitrixLabel": "Listing Agent",
             "type": "lookup",
-            "placeholder": "Search Developer / Company...",
-            "lookupEntity": "developer"
+            "placeholder": "Search Broker / Agent...",
+            "lookupEntity": "broker"
           }
         ]
       },
@@ -3653,26 +3631,11 @@
       "placeholder": ""
     },
     {
-      "code": "UF_CRM_DATE_ASSIGNED_TO_BROKER",
-      "label": "Date Assigned to Broker",
-      "bitrixLabel": "Date Assigned to Broker",
-      "type": "datetime",
-      "placeholder": ""
-    },
-    {
       "code": "UF_CRM_DEFERRAL_DATE",
       "label": "Deferral Date",
       "bitrixLabel": "Deferral Date",
       "type": "date",
       "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_ASSIGNED_TO_BROKER",
-      "label": "Assigned to Broker",
-      "bitrixLabel": "Assigned to Broker",
-      "type": "lookup",
-      "placeholder": "Search Broker / Agent...",
-      "lookupEntity": "broker"
     },
     {
       "code": "UF_CRM_LISTINGAGENT",
@@ -3695,13 +3658,6 @@
       "bitrixLabel": "Is Contact Viewable",
       "type": "boolean",
       "placeholder": ""
-    },
-    {
-      "code": "UF_CRM_BROKER_COMPANY",
-      "label": "Broker Company",
-      "bitrixLabel": "Broker Company",
-      "type": "string",
-      "placeholder": "Enter broker company..."
     },
     {
       "code": "UF_CRM_LISTINGPRICE_MIN",

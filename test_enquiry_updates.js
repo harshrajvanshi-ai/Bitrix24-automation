@@ -71,6 +71,20 @@ test('Enquiry Layout now has exactly 5 sensible sections', () => {
   ]);
 });
 
+test('Developer moved to overview and Listing Agent moved to matched projects', () => {
+  const overviewSec = cfg.enquiryLayout.sections.find(s => s.id === 'enquiry_overview');
+  const matchedSec = cfg.enquiryLayout.sections.find(s => s.id === 'matched_projects_portals');
+  
+  const overviewCodes = overviewSec.fields.map(f => f.code);
+  const matchedCodes = matchedSec.fields.map(f => f.code);
+
+  assert(overviewCodes.includes('UF_CRM_DEVELOPER_1'), 'UF_CRM_DEVELOPER_1 must be in enquiry_overview');
+  assert(!matchedCodes.includes('UF_CRM_DEVELOPER_1'), 'UF_CRM_DEVELOPER_1 must not be in matched_projects_portals');
+
+  assert(matchedCodes.includes('UF_CRM_LISTINGAGENT'), 'UF_CRM_LISTINGAGENT must be in matched_projects_portals');
+  assert(!overviewCodes.includes('UF_CRM_LISTINGAGENT'), 'UF_CRM_LISTINGAGENT must not be in enquiry_overview');
+});
+
 test('Client & Enquiry Overview: specified fields removed', () => {
   const removedCodes = [
     'UF_CRM_ENQUIRY_NAME',
@@ -80,7 +94,10 @@ test('Client & Enquiry Overview: specified fields removed', () => {
     'UF_CRM_CONTACTS',
     'UF_CRM_OWNER_ENQUIRY',
     'UF_CRM_NORMAL_LOW_HIGH_URGENT',
-    'UF_CRM_DAYS_SINCE_LAST_CONTACTED'
+    'UF_CRM_DAYS_SINCE_LAST_CONTACTED',
+    'UF_CRM_BROKER_COMPANY',
+    'UF_CRM_ASSIGNED_TO_BROKER',
+    'UF_CRM_DATE_ASSIGNED_TO_BROKER'
   ];
   const sec = cfg.enquiryLayout.sections.find(s => s.id === 'enquiry_overview');
   const codes = sec.fields.map(f => f.code);
@@ -309,5 +326,5 @@ test('tab.js and tab.css render related badges, section dividers, and counters',
 });
 
 console.log('\n========================================================================');
-console.log('TOTAL CHECKS PASSED: ' + passed + '/20 (0 Failed)');
+console.log('TOTAL CHECKS PASSED: ' + passed + '/21 (0 Failed)');
 console.log('========================================================================');
