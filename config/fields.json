@@ -2013,6 +2013,16 @@
             "lookupEntity": "project"
           },
           {
+            "code": "UF_CRM_PROPERTY",
+            "spaKey": "parentId1052",
+            "spaCrmCode": "PARENT_ID_1052",
+            "label": "Property",
+            "bitrixLabel": "Property",
+            "type": "lookup",
+            "placeholder": "Search Property...",
+            "lookupEntity": "property"
+          },
+          {
             "code": "UF_CRM_PROPERTY_LAYOUT",
             "label": "Property Layout",
             "bitrixLabel": "Property Layout",
@@ -4360,6 +4370,16 @@
       "type": "lookup",
       "placeholder": "Search Project...",
       "lookupEntity": "project"
+    },
+    {
+      "code": "UF_CRM_PROPERTY",
+      "spaKey": "parentId1052",
+      "spaCrmCode": "PARENT_ID_1052",
+      "label": "Property",
+      "bitrixLabel": "Property",
+      "type": "lookup",
+      "placeholder": "Search Property...",
+      "lookupEntity": "property"
     },
     {
       "code": "UF_CRM_PROPERTY_LAYOUT",
