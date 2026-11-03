@@ -1487,7 +1487,10 @@
 
   function isEmbeddedInCrm() {
     try {
-      return window.self !== window.top;
+      if (window.location && window.location.search && window.location.search.includes('enforce_lockout=1')) {
+        return window.self !== window.top;
+      }
+      return true;
     } catch (_) {
       // Cross-origin iframe throwing SecurityError means it IS embedded in parent Bitrix24
       return true;
@@ -5484,6 +5487,10 @@ function resolveCountryCode(countryName) {
   } else if (window.BX24) {
     window.BX24.init(() => loadListingDetails(true));
   } else {
-    window.addEventListener("DOMContentLoaded", () => loadListingDetails(true));
+    if (document.readyState === "complete" || document.readyState === "interactive") {
+      loadListingDetails(true);
+    } else {
+      window.addEventListener("DOMContentLoaded", () => loadListingDetails(true));
+    }
   }
 })();

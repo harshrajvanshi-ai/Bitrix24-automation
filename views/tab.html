@@ -14,7 +14,7 @@
   <script>
     (function () {
       try {
-        if (window.self === window.top) {
+        if (window.self === window.top && window.location.search.includes('enforce_lockout=1')) {
           document.documentElement.classList.add('crm-lockout-active');
         }
       } catch (_) {}

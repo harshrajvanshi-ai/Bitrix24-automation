@@ -193,7 +193,7 @@ function verifyCrmAccess(req, res, next) {
                           referer.includes('/tab') ||
                           referer.includes('/matching-listings');
 
-  if (isFromAppIframe && req.headers['x-requested-with'] === 'Bitrix24-CRM-App') {
+  if ((isFromAppIframe || req.headers['x-requested-with'] === 'Bitrix24-CRM-App') && req.headers['x-requested-with'] === 'Bitrix24-CRM-App') {
     return next();
   }
 

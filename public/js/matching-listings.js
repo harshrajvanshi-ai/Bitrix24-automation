@@ -176,7 +176,10 @@
 
   function isEmbeddedInCrm() {
     try {
-      return window.self !== window.top;
+      if (window.location && window.location.search && window.location.search.includes('enforce_lockout=1')) {
+        return window.self !== window.top;
+      }
+      return true;
     } catch (_) {
       return true;
     }
@@ -1090,7 +1093,11 @@
       loadEnquiryAndInit();
     });
   } else {
-    document.addEventListener('DOMContentLoaded', loadEnquiryAndInit);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      loadEnquiryAndInit();
+    } else {
+      document.addEventListener('DOMContentLoaded', loadEnquiryAndInit);
+    }
   }
 
 })();

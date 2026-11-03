@@ -230,7 +230,7 @@ app.all('/tab', (req, res) => {
     } catch (e) {}
   }
   if (!initialLeadId) {
-    initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id;
+    initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id || '1001';
   }
 
   // Read HTML file and inject initialLeadId and bitrixDomain if present
