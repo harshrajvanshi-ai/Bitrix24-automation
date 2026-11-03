@@ -282,6 +282,31 @@ test('All US style fields (HOA, Dock, Yard, Basement, Heating, Cooling, Construc
   }
 });
 
+// -----------------------------------------------------------------------------
+// 9. Multi-Directional Related Lookup Prioritization Verification
+// -----------------------------------------------------------------------------
+console.log('\n--- 9. Related Lookup Prioritization Verification ---');
+
+test('server.js tags and sorts related records at the top for all interconnected lookup entities', () => {
+  assert(serverJs.includes('item.isRelated = rel'), 'server.js marks item.isRelated = true');
+  assert(serverJs.includes('item.relationReason ='), 'server.js tags item.relationReason');
+  assert(serverJs.includes('results.sort((a, b) => (b.isRelated ? 1 : 0) - (a.isRelated ? 1 : 0))'), 'server.js sorts related items first');
+});
+
+test('tab.js gathers active lookup context and checks multi-directional relationships', () => {
+  assert(tabJs.includes('function getActiveLookupContext()'), 'tab.js defines getActiveLookupContext');
+  assert(tabJs.includes('function checkItemRelation(targetEntity, item, ctx)'), 'tab.js defines checkItemRelation');
+  assert(tabJs.includes('input.dataset.itemData = JSON.stringify(item)'), 'tab.js stores selected itemData on input');
+});
+
+test('tab.js and tab.css render related badges, section dividers, and counters', () => {
+  assert(tabJs.includes('lookup-related-badge'), 'tab.js renders lookup-related-badge');
+  assert(tabJs.includes('lookup-divider-header'), 'tab.js renders lookup-divider-header');
+  assert(tabCss.includes('.lookup-item.is-related'), 'tab.css has .lookup-item.is-related style');
+  assert(tabCss.includes('.lookup-related-badge'), 'tab.css has .lookup-related-badge style');
+  assert(tabCss.includes('.lookup-divider-header'), 'tab.css has .lookup-divider-header style');
+});
+
 console.log('\n========================================================================');
-console.log(`TOTAL CHECKS PASSED: ${passed}/17 (0 Failed)`);
+console.log('TOTAL CHECKS PASSED: ' + passed + '/20 (0 Failed)');
 console.log('========================================================================');

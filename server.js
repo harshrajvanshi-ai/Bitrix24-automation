@@ -729,7 +729,7 @@ async function fetchAllSpaItems(entityTypeId, mapFn) {
   while (true) {
     const res = await BitrixClient.call('crm.item.list', {
       entityTypeId,
-      select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052'],
+      select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052', 'companyId'],
       order: { id: 'DESC' },
       start
     }).catch(err => {
@@ -883,14 +883,16 @@ async function fetchLookupData(entity, forceRefresh = false) {
       items = await fetchAllSpaItems(1040, i => ({
         id: i.id,
         title: i.title || `Master Project #${i.id}`,
-        crmRef: `DYNAMIC_1040_${i.id}`
+        crmRef: `DYNAMIC_1040_${i.id}`,
+        companyId: i.companyId || i.COMPANY_ID || null
       }));
     } else if (entity === 'project') {
       items = await fetchAllSpaItems(1044, i => ({
         id: i.id,
         title: i.title || `Project #${i.id}`,
         crmRef: `DYNAMIC_1044_${i.id}`,
-        parentId1040: i.parentId1040 || i.UF_CRM_16_1791173000 || null
+        parentId1040: i.parentId1040 || i.UF_CRM_16_1791173000 || null,
+        companyId: i.companyId || i.COMPANY_ID || null
       }));
     } else if (entity === 'property') {
       items = await fetchAllSpaItems(1052, i => ({
@@ -898,7 +900,8 @@ async function fetchLookupData(entity, forceRefresh = false) {
         title: i.title || `Property #${i.id}`,
         crmRef: `DYNAMIC_1052_${i.id}`,
         parentId1040: i.parentId1040 || null,
-        parentId1044: i.parentId1044 || null
+        parentId1044: i.parentId1044 || null,
+        companyId: i.companyId || i.COMPANY_ID || null
       }));
     } else if (entity === 'layout') {
       items = await fetchAllSpaItems(1048, i => ({
@@ -906,7 +909,8 @@ async function fetchLookupData(entity, forceRefresh = false) {
         title: i.title || `Layout #${i.id}`,
         crmRef: `DYNAMIC_1048_${i.id}`,
         parentId1040: i.parentId1040 || null,
-        parentId1044: i.parentId1044 || null
+        parentId1044: i.parentId1044 || null,
+        companyId: i.companyId || i.COMPANY_ID || null
       }));
     } else if (entity === 'broker' || entity === 'agent') {
       items = await fetchAllSpaItems(1094, i => ({ id: i.id, title: i.title || `Broker #${i.id}`, crmRef: `DYNAMIC_1094_${i.id}` }));
@@ -918,7 +922,8 @@ async function fetchLookupData(entity, forceRefresh = false) {
         parentId1040: i.parentId1040 || i.UF_CRM_16_1791173000 || i.ufCrm16_1791173000 || null,
         parentId1044: i.parentId1044 || i.UF_CRM_16_1791173131 || i.ufCrm16_1791173131 || null,
         parentId1048: i.parentId1048 || null,
-        parentId1052: i.parentId1052 || null
+        parentId1052: i.parentId1052 || null,
+        companyId: i.companyId || i.COMPANY_ID || null
       }));
     } else if (entity === 'enquiry') {
       items = await fetchAllSpaItems(1062, i => ({ id: i.id, title: i.title || `Enquiry #${i.id}`, crmRef: `DYNAMIC_1062_${i.id}` }));
@@ -1106,6 +1111,31 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
   const masterProjectId = req.query.master_project_id || req.query.parentId1040;
   const projectId = req.query.project_id || req.query.parentId1044;
   const layoutId = req.query.layout_id || req.query.parentId1048;
+  const developerId = req.query.developer_id || req.query.company_id || req.query.companyId;
+
+  // Mark related records based on linked IDs
+  allItems.forEach(item => {
+    let rel = false;
+    let relReason = '';
+    if (masterProjectId && item.parentId1040 && String(item.parentId1040) === String(masterProjectId)) {
+      rel = true;
+      relReason = 'Linked to Master Project';
+    }
+    if (projectId && item.parentId1044 && String(item.parentId1044) === String(projectId)) {
+      rel = true;
+      relReason = 'Linked to Project';
+    }
+    if (layoutId && item.parentId1048 && String(item.parentId1048) === String(layoutId)) {
+      rel = true;
+      relReason = 'Linked to Layout';
+    }
+    if (developerId && item.companyId && String(item.companyId) === String(developerId)) {
+      rel = true;
+      relReason = 'Linked to Developer';
+    }
+    item.isRelated = rel;
+    if (relReason) item.relationReason = relReason;
+  });
 
   if (masterProjectId) {
     results = results.filter(item => !item.parentId1040 || String(item.parentId1040) === String(masterProjectId));
@@ -1117,9 +1147,12 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
     results = results.filter(item => !item.parentId1048 || String(item.parentId1048) === String(layoutId));
   }
 
+  // Sort related items FIRST
+  results.sort((a, b) => (b.isRelated ? 1 : 0) - (a.isRelated ? 1 : 0));
+
   if (query) {
     const isNum = /^\d+$/.test(query);
-    results = allItems.filter(item => {
+    results = results.filter(item => {
       const titleMatch = item.title && item.title.toLowerCase().includes(query);
       const idMatch = isNum ? (String(item.id) === query || item.crmRef?.endsWith(`_${query}`)) : String(item.id).includes(query);
       const refMatch = item.crmRef && item.crmRef.toLowerCase().includes(query);

@@ -978,6 +978,42 @@ select.form-control option {
   gap: 8px;
 }
 
+.lookup-item.is-related {
+  background: #f0fdf4;
+  border-left: 3px solid #16a34a;
+}
+
+.lookup-item.is-related:hover {
+  background: #dcfce7;
+}
+
+.lookup-related-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #15803d;
+  background: #dcfce7;
+  border: 1px solid #bbf7d0;
+  padding: 1px 7px;
+  border-radius: 10px;
+  margin-right: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.lookup-divider-header {
+  padding: 5px 12px;
+  background: #f8fafc;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
 .lookup-item:last-child { border-bottom: none; }
 
 .lookup-item:hover, .lookup-item.active {
