@@ -79,7 +79,8 @@ test('Client & Enquiry Overview: specified fields removed', () => {
     'UF_CRM_ENQUIRY_LOCKED_2',
     'UF_CRM_CONTACTS',
     'UF_CRM_OWNER_ENQUIRY',
-    'UF_CRM_NORMAL_LOW_HIGH_URGENT'
+    'UF_CRM_NORMAL_LOW_HIGH_URGENT',
+    'UF_CRM_DAYS_SINCE_LAST_CONTACTED'
   ];
   const sec = cfg.enquiryLayout.sections.find(s => s.id === 'enquiry_overview');
   const codes = sec.fields.map(f => f.code);

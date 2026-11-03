@@ -1581,13 +1581,6 @@
             ]
           },
           {
-            "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
-            "label": "Days since last contacted",
-            "bitrixLabel": "Days since last contacted",
-            "type": "integer",
-            "placeholder": ""
-          },
-          {
             "code": "UF_CRM_MOVE_DATE",
             "label": "Move Date",
             "bitrixLabel": "Move Date",
@@ -3615,13 +3608,6 @@
       "bitrixLabel": "Deal Value",
       "type": "money",
       "placeholder": "e.g., 2,500,000"
-    },
-    {
-      "code": "UF_CRM_DAYS_SINCE_LAST_CONTACTED",
-      "label": "Days since last contacted",
-      "bitrixLabel": "Days since last contacted",
-      "type": "integer",
-      "placeholder": ""
     },
     {
       "code": "UF_CRM_ENQUIRY_LOCKED_2",
