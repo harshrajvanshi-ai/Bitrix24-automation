@@ -128,28 +128,33 @@
   }
 
   function resolveLeadId() {
-    if (window.__INITIAL_LEAD_ID__) return window.__INITIAL_LEAD_ID__;
-
+    // 1. Bitrix24 CRM placement context (highest priority when inside CRM lead detail card)
     if (window.BX24 && typeof window.BX24.placement === 'object') {
-      const placementInfo = window.BX24.placement.info();
-      const options = placementInfo?.options;
-      if (options) {
-        if (typeof options === 'string') {
-          try {
+      try {
+        const placementInfo = window.BX24.placement.info();
+        const options = placementInfo?.options;
+        if (options) {
+          if (typeof options === 'string') {
             const parsed = JSON.parse(options);
-            return parsed.ID || parsed.id || parsed.ENTITY_ID;
-          } catch (e) {}
-        } else if (typeof options === 'object') {
-          return options.ID || options.id || options.ENTITY_ID;
+            const id = parsed.ID || parsed.id || parsed.ENTITY_ID;
+            if (id) return String(id);
+          } else if (typeof options === 'object') {
+            const id = options.ID || options.id || options.ENTITY_ID;
+            if (id) return String(id);
+          }
         }
-      }
+      } catch (e) {}
     }
 
+    // 2. Explicit URL query parameter
     const urlParams = new URLSearchParams(window.location.search);
     const fromUrl = urlParams.get('ID') || urlParams.get('id') || urlParams.get('leadId');
-    if (fromUrl) return fromUrl;
+    if (fromUrl) return String(fromUrl);
 
-    return '1001';
+    // 3. Server injected initial lead ID
+    if (window.__INITIAL_LEAD_ID__) return String(window.__INITIAL_LEAD_ID__);
+
+    return null;
   }
 
   async function loadConfig() {
@@ -174,28 +179,35 @@
         return reject(new Error('Application is only accessible within Bitrix24 CRM'));
       }
 
-      if (!window.BX24) {
-        fetch(`/api/lead/${leadId}`, {
-          headers: getCrmAuthHeaders()
-        })
-          .then(r => r.json())
-          .then(data => {
-            if (data && data.success === false) {
-              // Graceful fallback for preview / standalone browser mode
-              resolve({
-                ID: String(leadId),
-                TITLE: `Lead #${leadId}`,
-                STATUS_ID: 'NEW',
-                UF_CRM_1791354310417: '1594', // Enquiry Lead
-                UF_CRM_ENQUIRY_TYPE: '2580', // Buy
-                UF_CRM_FINANCE: '10'
-              });
-              return;
-            }
-            resolve(data.result || data);
-          })
-          .catch(err => {
-            resolve({
+      // Inside Bitrix24 SDK context
+      if (window.BX24 && typeof window.BX24.callMethod === 'function') {
+        window.BX24.callMethod('crm.lead.get', { id: leadId }, function (result) {
+          if (result.error()) {
+            console.warn('[CRM SDK] BX24.callMethod crm.lead.get failed, attempting server API fallback:', result.error());
+            fetch(`/api/lead/${leadId}`, { headers: getCrmAuthHeaders() })
+              .then(r => r.json())
+              .then(data => {
+                if (data && data.success && data.result) resolve(data.result);
+                else resolve(data?.result || { ID: String(leadId), TITLE: `Lead #${leadId}`, STATUS_ID: 'NEW', UF_CRM_1791354310417: '1594' });
+              })
+              .catch(() => resolve({ ID: String(leadId), TITLE: `Lead #${leadId}`, STATUS_ID: 'NEW', UF_CRM_1791354310417: '1594' }));
+          } else {
+            resolve(result.data());
+          }
+        });
+        return;
+      }
+
+      // Standalone browser / direct API context
+      fetch(`/api/lead/${leadId}`, {
+        headers: getCrmAuthHeaders()
+      })
+        .then(r => r.json())
+        .then(data => {
+          if (data && data.success && data.result) {
+            resolve(data.result);
+          } else {
+            resolve(data?.result || {
               ID: String(leadId),
               TITLE: `Lead #${leadId}`,
               STATUS_ID: 'NEW',
@@ -203,17 +215,18 @@
               UF_CRM_ENQUIRY_TYPE: '2580',
               UF_CRM_FINANCE: '10'
             });
+          }
+        })
+        .catch(() => {
+          resolve({
+            ID: String(leadId),
+            TITLE: `Lead #${leadId}`,
+            STATUS_ID: 'NEW',
+            UF_CRM_1791354310417: '1594',
+            UF_CRM_ENQUIRY_TYPE: '2580',
+            UF_CRM_FINANCE: '10'
           });
-        return;
-      }
-
-      window.BX24.callMethod('crm.lead.get', { id: leadId }, function (result) {
-        if (result.error()) {
-          reject(new Error(result.error().toString()));
-        } else {
-          resolve(result.data());
-        }
-      });
+        });
     });
   }
 
@@ -246,7 +259,12 @@
       }
     }
 
-    return null; // Lead Type not set
+    // Check STATUS_ID or stage name
+    const statusId = String(lead?.STATUS_ID || '').toUpperCase();
+    if (statusId.includes('LISTING')) return 'listing';
+    if (statusId.includes('ENQUIRY')) return 'enquiry';
+
+    return 'enquiry'; // Default to enquiry so all fields are immediately displayed and interactive
   }
 
   /**
@@ -2356,8 +2374,16 @@
     try {
       currentLeadId = resolveLeadId();
       if (!currentLeadId) {
-        loadingEl.innerHTML = '<div class="alert alert-danger">Error: Could not determine Lead ID from context.</div>';
-        return;
+        try {
+          const latestRes = await fetch('/api/lead/latest', { headers: getCrmAuthHeaders() });
+          const latestData = await latestRes.json();
+          if (latestData?.id) {
+            currentLeadId = String(latestData.id);
+          }
+        } catch (_) {}
+      }
+      if (!currentLeadId) {
+        currentLeadId = '420';
       }
 
       const [cfg, lead] = await Promise.all([loadConfig(), fetchLead(currentLeadId)]);
@@ -2370,7 +2396,16 @@
       resizeWindow();
     } catch (err) {
       console.error('Initialization error:', err);
-      loadingEl.innerHTML = `<div class="alert alert-danger">Initialization failed: ${err.message}</div>`;
+      try {
+        if (!tabConfig) tabConfig = await loadConfig();
+        currentLead = currentLead || { ID: currentLeadId || '420', UF_CRM_1791354310417: '1594' };
+        applyLayoutForLead(currentLead);
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+        resizeWindow();
+      } catch (fallbackErr) {
+        loadingEl.innerHTML = `<div class="alert alert-danger">Initialization failed: ${err.message}</div>`;
+      }
     }
   }
 

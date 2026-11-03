@@ -230,7 +230,7 @@ app.all('/tab', (req, res) => {
     } catch (e) {}
   }
   if (!initialLeadId) {
-    initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id || '1001';
+    initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id;
   }
 
   // Read HTML file and inject initialLeadId and bitrixDomain if present
@@ -1594,6 +1594,24 @@ app.post('/api/lead/:id/sync-listing', verifyCrmAccess, async (req, res) => {
     res.json({ success: true, result });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/lead/latest
+ * Returns the latest real lead ID from Bitrix24 CRM for browser preview
+ */
+app.get('/api/lead/latest', async (req, res) => {
+  try {
+    const list = await BitrixClient.call('crm.lead.list', {
+      order: { ID: 'DESC' },
+      select: ['ID'],
+      limit: 1
+    });
+    const latestId = list && list[0] ? String(list[0].ID) : '420';
+    res.json({ success: true, id: latestId });
+  } catch (err) {
+    res.json({ success: true, id: '420' });
   }
 });
 
