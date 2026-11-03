@@ -1375,6 +1375,18 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
     fields.UF_CRM_PROPERTY_LAYOUT = fields.UF_CRM_LAYOUT;
   }
 
+  // Sync Listing Agent companion fields (UF_CRM_LISTINGAGENT <-> UF_CRM_ASSIGNED_TO_BROKER <-> UF_CRM_PORTAL_LISTING_AGENT)
+  if (fields.UF_CRM_LISTINGAGENT) {
+    if (!fields.UF_CRM_ASSIGNED_TO_BROKER) fields.UF_CRM_ASSIGNED_TO_BROKER = fields.UF_CRM_LISTINGAGENT;
+    if (!fields.UF_CRM_PORTAL_LISTING_AGENT) fields.UF_CRM_PORTAL_LISTING_AGENT = fields.UF_CRM_LISTINGAGENT;
+  } else if (fields.UF_CRM_ASSIGNED_TO_BROKER) {
+    if (!fields.UF_CRM_LISTINGAGENT) fields.UF_CRM_LISTINGAGENT = fields.UF_CRM_ASSIGNED_TO_BROKER;
+    if (!fields.UF_CRM_PORTAL_LISTING_AGENT) fields.UF_CRM_PORTAL_LISTING_AGENT = fields.UF_CRM_ASSIGNED_TO_BROKER;
+  } else if (fields.UF_CRM_PORTAL_LISTING_AGENT) {
+    if (!fields.UF_CRM_LISTINGAGENT) fields.UF_CRM_LISTINGAGENT = fields.UF_CRM_PORTAL_LISTING_AGENT;
+    if (!fields.UF_CRM_ASSIGNED_TO_BROKER) fields.UF_CRM_ASSIGNED_TO_BROKER = fields.UF_CRM_PORTAL_LISTING_AGENT;
+  }
+
   // Sync Property companion fields (UF_CRM_PROPERTY_PROPERTYFINDER <-> UF_CRM_PROPERTY)
   if (fields.UF_CRM_PROPERTY_PROPERTYFINDER && !fields.UF_CRM_PROPERTY) {
     fields.UF_CRM_PROPERTY = fields.UF_CRM_PROPERTY_PROPERTYFINDER;
@@ -1650,6 +1662,17 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
         lead.UF_CRM_PROPERTY_PROPERTYFINDER = lead.UF_CRM_PROPERTY;
       } else if (!lead.UF_CRM_PROPERTY && lead.UF_CRM_PROPERTY_PROPERTYFINDER) {
         lead.UF_CRM_PROPERTY = lead.UF_CRM_PROPERTY_PROPERTYFINDER;
+      }
+
+      // Resolve Listing Agent fallback
+      if (!lead.UF_CRM_LISTINGAGENT) {
+        lead.UF_CRM_LISTINGAGENT = lead.UF_CRM_ASSIGNED_TO_BROKER || lead.UF_CRM_PORTAL_LISTING_AGENT || '';
+      }
+      if (!lead.UF_CRM_ASSIGNED_TO_BROKER && lead.UF_CRM_LISTINGAGENT) {
+        lead.UF_CRM_ASSIGNED_TO_BROKER = lead.UF_CRM_LISTINGAGENT;
+      }
+      if (!lead.UF_CRM_PORTAL_LISTING_AGENT && lead.UF_CRM_LISTINGAGENT) {
+        lead.UF_CRM_PORTAL_LISTING_AGENT = lead.UF_CRM_LISTINGAGENT;
       }
 
       // Resolve Number of Cheques fallback for legacy leads

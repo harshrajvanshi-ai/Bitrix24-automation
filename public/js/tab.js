@@ -527,6 +527,12 @@
       } else if (f.code === 'UF_CRM_PROPERTY' && currentLead.UF_CRM_PROPERTY_TITLE) {
         knownTitle = currentLead.UF_CRM_PROPERTY_TITLE;
         knownRef = currentVal || '';
+      } else if ((f.code === 'UF_CRM_PROPERTY_LAYOUT' || f.code === 'UF_CRM_LAYOUT') && (currentLead.UF_CRM_PROPERTY_LAYOUT_TITLE || currentLead.UF_CRM_LAYOUT_TITLE)) {
+        knownTitle = currentLead.UF_CRM_PROPERTY_LAYOUT_TITLE || currentLead.UF_CRM_LAYOUT_TITLE;
+        knownRef = currentVal || '';
+      } else if ((f.code === 'UF_CRM_LISTINGAGENT' || f.code === 'UF_CRM_ASSIGNED_TO_BROKER' || f.code === 'UF_CRM_PORTAL_LISTING_AGENT') && (currentLead.UF_CRM_LISTINGAGENT_TITLE || currentLead.UF_CRM_ASSIGNED_TO_BROKER_TITLE || currentLead.UF_CRM_PORTAL_LISTING_AGENT_TITLE)) {
+        knownTitle = currentLead.UF_CRM_LISTINGAGENT_TITLE || currentLead.UF_CRM_ASSIGNED_TO_BROKER_TITLE || currentLead.UF_CRM_PORTAL_LISTING_AGENT_TITLE;
+        knownRef = currentVal || '';
       }
     }
 
@@ -781,10 +787,12 @@
           itemEl.appendChild(titleSpan);
           itemEl.appendChild(idSpan);
 
-          itemEl.addEventListener('click', () => {
+          const selectItem = (item) => {
+            if (!item) return;
+            clearTimeout(debounceTimer);
             input.value = item.title;
-            input.dataset.selectedId = item.id;
-            input.dataset.selectedRef = item.crmRef || item.id;
+            input.dataset.selectedId = String(item.id);
+            input.dataset.selectedRef = item.crmRef || String(item.id);
             input.dataset.selectedTitle = item.title;
             input.dataset.itemData = JSON.stringify(item);
             clearBtn.style.display = 'block';
@@ -807,10 +815,13 @@
               if (!targetInput) {
                 if (targetCode === 'UF_CRM_PROJECT') targetInput = document.getElementById('field_UF_CRM_1792558317');
                 else if (targetCode === 'UF_CRM_1792558317') targetInput = document.getElementById('field_UF_CRM_PROJECT');
+                else if (targetCode === 'UF_CRM_PROPERTY_LAYOUT') targetInput = document.getElementById('field_UF_CRM_LAYOUT');
+                else if (targetCode === 'UF_CRM_LAYOUT') targetInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
+                else if (targetCode === 'UF_CRM_LISTINGAGENT') targetInput = document.getElementById('field_UF_CRM_ASSIGNED_TO_BROKER') || document.getElementById('field_UF_CRM_PORTAL_LISTING_AGENT');
               }
               if (!targetInput || !targetId) return;
               targetInput.dataset.selectedId = String(targetId);
-              targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : entityName === 'property' ? '1052' : '1058'}_${targetId}`;
+              targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : entityName === 'property' ? '1052' : entityName === 'broker' ? '1094' : '1058'}_${targetId}`;
               if (targetData) {
                 try {
                   targetInput.dataset.itemData = typeof targetData === 'string' ? targetData : JSON.stringify(targetData);
@@ -894,6 +905,18 @@
             }
 
             markFieldDirty();
+          };
+
+          itemEl.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            selectItem(item);
+          });
+
+          itemEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            selectItem(item);
           });
 
           dropdown.appendChild(itemEl);
@@ -2103,6 +2126,19 @@
 
     if (payload.UF_CRM_PROPERTY_LAYOUT && !payload.UF_CRM_LAYOUT) {
       payload.UF_CRM_LAYOUT = payload.UF_CRM_PROPERTY_LAYOUT;
+    } else if (payload.UF_CRM_LAYOUT && !payload.UF_CRM_PROPERTY_LAYOUT) {
+      payload.UF_CRM_PROPERTY_LAYOUT = payload.UF_CRM_LAYOUT;
+    }
+
+    if (payload.UF_CRM_LISTINGAGENT) {
+      if (!payload.UF_CRM_ASSIGNED_TO_BROKER) payload.UF_CRM_ASSIGNED_TO_BROKER = payload.UF_CRM_LISTINGAGENT;
+      if (!payload.UF_CRM_PORTAL_LISTING_AGENT) payload.UF_CRM_PORTAL_LISTING_AGENT = payload.UF_CRM_LISTINGAGENT;
+    } else if (payload.UF_CRM_ASSIGNED_TO_BROKER) {
+      if (!payload.UF_CRM_LISTINGAGENT) payload.UF_CRM_LISTINGAGENT = payload.UF_CRM_ASSIGNED_TO_BROKER;
+      if (!payload.UF_CRM_PORTAL_LISTING_AGENT) payload.UF_CRM_PORTAL_LISTING_AGENT = payload.UF_CRM_ASSIGNED_TO_BROKER;
+    } else if (payload.UF_CRM_PORTAL_LISTING_AGENT) {
+      if (!payload.UF_CRM_LISTINGAGENT) payload.UF_CRM_LISTINGAGENT = payload.UF_CRM_PORTAL_LISTING_AGENT;
+      if (!payload.UF_CRM_ASSIGNED_TO_BROKER) payload.UF_CRM_ASSIGNED_TO_BROKER = payload.UF_CRM_PORTAL_LISTING_AGENT;
     }
 
     // Bidirectional sync for project text name & CRM reference

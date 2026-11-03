@@ -400,7 +400,7 @@ body {
 
 .form-section:focus-within,
 .form-section.has-open-dropdown {
-  z-index: 50;
+  z-index: 900;
   position: relative;
 }
 
@@ -572,7 +572,8 @@ body {
 
 .form-group:focus-within,
 .form-group.has-open-dropdown {
-  z-index: 60;
+  z-index: 950;
+  position: relative;
 }
 
 .form-group.full-width { grid-column: 1 / -1; }
@@ -809,7 +810,8 @@ select.form-control option {
 
 .lookup-container:focus-within,
 .lookup-container.has-open-dropdown {
-  z-index: 100;
+  z-index: 1000;
+  position: relative;
 }
 
 .lookup-input-wrap {
@@ -909,6 +911,7 @@ select.form-control option {
   z-index: 99999;
   display: none;
   animation: dropIn 0.14s ease;
+  pointer-events: auto;
 }
 
 .lookup-dropdown.dropup {
@@ -916,6 +919,7 @@ select.form-control option {
   bottom: calc(100% + 6px);
   box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.16), 0 -4px 10px rgba(0, 0, 0, 0.06);
   animation: dropUp 0.14s ease;
+  pointer-events: auto;
 }
 
 @keyframes dropIn {
@@ -976,6 +980,8 @@ select.form-control option {
   border-bottom: 1px solid #f8fafc;
   transition: background var(--transition-fast);
   gap: 8px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .lookup-item.is-related {

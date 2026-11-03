@@ -4363,7 +4363,9 @@ function resolveCountryCode(countryName) {
           itemEl.appendChild(titleSpan);
           itemEl.appendChild(idSpan);
 
-          itemEl.addEventListener("click", () => {
+          const selectItem = (item) => {
+            if (!item) return;
+            clearTimeout(debounceTimer);
             input.value = item.title;
             input.dataset.id = String(item.id);
             input.dataset.selectedId = String(item.id);
@@ -4516,6 +4518,18 @@ function resolveCountryCode(countryName) {
               isInitialLoad: false,
               triggerField: f.key,
             });
+          };
+
+          itemEl.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            selectItem(item);
+          });
+
+          itemEl.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            selectItem(item);
           });
 
           dropdown.appendChild(itemEl);

@@ -2021,6 +2021,10 @@
           },
           {
             "code": "UF_CRM_PROPERTY_LAYOUT",
+            "leadAltCode": "UF_CRM_LAYOUT",
+            "leadAltCodes": [
+              "UF_CRM_LAYOUT"
+            ],
             "label": "Property Layout",
             "bitrixLabel": "Property Layout",
             "type": "lookup",
@@ -2029,6 +2033,11 @@
           },
           {
             "code": "UF_CRM_LISTINGAGENT",
+            "leadAltCode": "UF_CRM_ASSIGNED_TO_BROKER",
+            "leadAltCodes": [
+              "UF_CRM_PORTAL_LISTING_AGENT",
+              "UF_CRM_ASSIGNED_TO_BROKER"
+            ],
             "label": "Listing Agent",
             "bitrixLabel": "Listing Agent",
             "type": "lookup",
@@ -3665,6 +3674,11 @@
     },
     {
       "code": "UF_CRM_LISTINGAGENT",
+      "leadAltCode": "UF_CRM_ASSIGNED_TO_BROKER",
+      "leadAltCodes": [
+        "UF_CRM_PORTAL_LISTING_AGENT",
+        "UF_CRM_ASSIGNED_TO_BROKER"
+      ],
       "label": "Listing Agent",
       "bitrixLabel": "Listing Agent",
       "type": "lookup",
@@ -4377,6 +4391,10 @@
     },
     {
       "code": "UF_CRM_PROPERTY_LAYOUT",
+      "leadAltCode": "UF_CRM_LAYOUT",
+      "leadAltCodes": [
+        "UF_CRM_LAYOUT"
+      ],
       "label": "Property Layout",
       "bitrixLabel": "Property Layout",
       "type": "lookup",

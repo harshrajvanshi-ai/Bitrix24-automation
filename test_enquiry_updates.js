@@ -347,6 +347,39 @@ test('Finance field (UF_CRM_FINANCE) is configured as enumeration with suitable 
   assert(optionValues.some(v => v.includes('Payment Plan')), 'Options include Developer Payment Plan');
 });
 
+// -----------------------------------------------------------------------------
+console.log('\n--- 11. Property Layout & Listing Agent Lookup Selection Fixes ---');
+
+test('tab.js binds selectItem helper with mousedown and click stopPropagation/preventDefault', () => {
+  assert(tabJs.includes('const selectItem = (item) => {'), 'tab.js defines atomic selectItem handler');
+  assert(tabJs.includes("itemEl.addEventListener('mousedown'"), 'itemEl listens to mousedown');
+  assert(tabJs.includes("itemEl.addEventListener('click'"), 'itemEl listens to click');
+  assert(tabJs.includes('e.preventDefault();\n            e.stopPropagation();\n            selectItem(item);'), 'itemEl prevents default blur and stops click propagation');
+});
+
+test('config/fields.json defines leadAltCode for UF_CRM_PROPERTY_LAYOUT and UF_CRM_LISTINGAGENT', () => {
+  const sec = cfg.enquiryLayout.sections.find(s => s.id === 'matched_projects_portals');
+  const layoutField = sec.fields.find(f => f.code === 'UF_CRM_PROPERTY_LAYOUT');
+  assert(layoutField, 'UF_CRM_PROPERTY_LAYOUT in matched_projects_portals');
+  assert.strictEqual(layoutField.leadAltCode, 'UF_CRM_LAYOUT', 'UF_CRM_PROPERTY_LAYOUT has leadAltCode UF_CRM_LAYOUT');
+
+  const agentField = sec.fields.find(f => f.code === 'UF_CRM_LISTINGAGENT');
+  assert(agentField, 'UF_CRM_LISTINGAGENT in matched_projects_portals');
+  assert.strictEqual(agentField.leadAltCode, 'UF_CRM_ASSIGNED_TO_BROKER', 'UF_CRM_LISTINGAGENT has leadAltCode UF_CRM_ASSIGNED_TO_BROKER');
+});
+
+test('tab.css elevates open dropdown stacking context above action bar', () => {
+  assert(tabCss.includes('.form-section.has-open-dropdown {\n  z-index: 900;'), 'form-section has-open-dropdown z-index 900');
+  assert(tabCss.includes('.form-group.has-open-dropdown {\n  z-index: 950;'), 'form-group has-open-dropdown z-index 950');
+  assert(tabCss.includes('.lookup-container.has-open-dropdown {\n  z-index: 1000;'), 'lookup-container has-open-dropdown z-index 1000');
+  assert(tabCss.includes('.lookup-dropdown.dropup {\n  top: auto;\n  bottom: calc(100% + 6px);\n  box-shadow: 0 -12px 28px rgba(0, 0, 0, 0.16), 0 -4px 10px rgba(0, 0, 0, 0.06);\n  animation: dropUp 0.14s ease;\n  pointer-events: auto;'), 'dropup has pointer-events auto');
+});
+
+test('server.js synchronizes and resolves Listing Agent companion fields', () => {
+  assert(serverJs.includes('// Sync Listing Agent companion fields'), 'server.js syncs Listing Agent companion fields on save');
+  assert(serverJs.includes('lead.UF_CRM_ASSIGNED_TO_BROKER || lead.UF_CRM_PORTAL_LISTING_AGENT'), 'server.js resolves Listing Agent fallback on GET');
+});
+
 console.log('\n========================================================================');
-console.log('TOTAL CHECKS PASSED: ' + passed + '/28 (0 Failed)');
+console.log('TOTAL CHECKS PASSED: ' + passed + '/32 (0 Failed)');
 console.log('========================================================================');
