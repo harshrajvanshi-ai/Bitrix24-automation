@@ -231,7 +231,7 @@
     if (f.lookupEntity) return true;
     const lookupCodes = [
       'COMPANY_ID', 'CONTACT_ID', 'UF_CRM_CONTACTS', 'UF_CRM_PROPERTY',
-      'UF_CRM_DEVELOPER_1', 'UF_CRM_PROJECT', 'UF_CRM_PROJECT_1', 'UF_CRM_PROJECT_NAME',
+      'UF_CRM_DEVELOPER_1', 'UF_CRM_PROJECT', 'UF_CRM_1792558317', 'UF_CRM_PROJECT_1', 'UF_CRM_PROJECT_NAME',
       'UF_CRM_PROPERTY_LAYOUT', 'UF_CRM_PROPERTY_PROPERTYFINDER', 'UF_CRM_LISTING',
       'UF_CRM_LISTINGAGENT', 'UF_CRM_ASSIGNED_TO_BROKER', 'UF_CRM_OWNER_ENQUIRY'
     ];
@@ -500,7 +500,7 @@
         // Extract dependent linkage query parameters
         let extraParams = '';
         if (f.code === 'UF_CRM_PROJECT_1') {
-          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpInput = document.getElementById('field_UF_CRM_1792558317') || document.getElementById('field_UF_CRM_PROJECT');
           const mpId = mpInput?.dataset?.selectedId;
           if (mpId) extraParams += `&master_project_id=${encodeURIComponent(mpId)}`;
         } else if (f.code === 'UF_CRM_PROPERTY_LAYOUT') {
@@ -511,7 +511,7 @@
           const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
           const pId = pInput?.dataset?.selectedId;
           if (pId) extraParams += `&project_id=${encodeURIComponent(pId)}`;
-          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpInput = document.getElementById('field_UF_CRM_1792558317') || document.getElementById('field_UF_CRM_PROJECT');
           const mpId = mpInput?.dataset?.selectedId;
           if (mpId) extraParams += `&master_project_id=${encodeURIComponent(mpId)}`;
           const lInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
@@ -527,7 +527,7 @@
 
         // Apply local dependent filters
         if (f.code === 'UF_CRM_PROJECT_1') {
-          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpInput = document.getElementById('field_UF_CRM_1792558317') || document.getElementById('field_UF_CRM_PROJECT');
           const mpId = mpInput?.dataset?.selectedId;
           if (mpId) {
             items = items.filter(it => !it.parentId1040 || String(it.parentId1040) === String(mpId));
@@ -544,7 +544,7 @@
           if (pId) {
             items = items.filter(it => !it.parentId1044 || String(it.parentId1044) === String(pId));
           }
-          const mpInput = document.getElementById('field_UF_CRM_PROJECT');
+          const mpInput = document.getElementById('field_UF_CRM_1792558317') || document.getElementById('field_UF_CRM_PROJECT');
           const mpId = mpInput?.dataset?.selectedId;
           if (mpId) {
             items = items.filter(it => !it.parentId1040 || String(it.parentId1040) === String(mpId));
@@ -618,7 +618,11 @@
 
             // Helper to auto-populate dependent lookup input
             const setDependentLookup = (targetCode, entityName, targetId, targetTitle) => {
-              const targetInput = document.getElementById(`field_${targetCode}`);
+              let targetInput = document.getElementById(`field_${targetCode}`);
+              if (!targetInput) {
+                if (targetCode === 'UF_CRM_PROJECT') targetInput = document.getElementById('field_UF_CRM_1792558317');
+                else if (targetCode === 'UF_CRM_1792558317') targetInput = document.getElementById('field_UF_CRM_PROJECT');
+              }
               if (!targetInput || !targetId) return;
               targetInput.dataset.selectedId = String(targetId);
               targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : '1058'}_${targetId}`;
@@ -1871,6 +1875,8 @@
 
     if (payload.UF_CRM_PROJECT && !payload.UF_CRM_1792558317) {
       payload.UF_CRM_1792558317 = payload.UF_CRM_PROJECT;
+    } else if (payload.UF_CRM_1792558317 && !payload.UF_CRM_PROJECT) {
+      payload.UF_CRM_PROJECT = payload.UF_CRM_1792558317;
     }
 
     if (payload.UF_CRM_PROPERTY_LAYOUT && !payload.UF_CRM_LAYOUT) {

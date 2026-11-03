@@ -1985,7 +1985,19 @@
             "lookupEntity": "listing"
           },
           {
-            "code": "UF_CRM_PROJECT",
+            "code": "UF_CRM_1792558317",
+            "leadAltCode": "UF_CRM_PROJECT",
+            "leadAltCodes": [
+              "UF_CRM_PROJECT"
+            ],
+            "spaKey": "ufCrm16MasterProject",
+            "spaCrmCode": "UF_CRM_16_MASTER_PROJECT",
+            "spaBindingCode": "UF_CRM_16_1791173000",
+            "fallbackKeys": [
+              "ufCrm16_1791173000",
+              "ufCrm16MasterProjectInfo",
+              "ufCrm16OldMasterProject"
+            ],
             "label": "Master Project",
             "bitrixLabel": "Master Project",
             "type": "lookup",
@@ -4322,7 +4334,19 @@
       "lookupEntity": "listing"
     },
     {
-      "code": "UF_CRM_PROJECT",
+      "code": "UF_CRM_1792558317",
+      "leadAltCode": "UF_CRM_PROJECT",
+      "leadAltCodes": [
+        "UF_CRM_PROJECT"
+      ],
+      "spaKey": "ufCrm16MasterProject",
+      "spaCrmCode": "UF_CRM_16_MASTER_PROJECT",
+      "spaBindingCode": "UF_CRM_16_1791173000",
+      "fallbackKeys": [
+        "ufCrm16_1791173000",
+        "ufCrm16MasterProjectInfo",
+        "ufCrm16OldMasterProject"
+      ],
       "label": "Master Project",
       "bitrixLabel": "Master Project",
       "type": "lookup",
