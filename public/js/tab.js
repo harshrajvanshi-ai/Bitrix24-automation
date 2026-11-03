@@ -286,9 +286,10 @@
     const masterProject = getFieldInfo('UF_CRM_1792558317') || getFieldInfo('UF_CRM_PROJECT');
     const project = getFieldInfo('UF_CRM_PROJECT_1') || getFieldInfo('UF_CRM_PROJECT_NAME');
     const layout = getFieldInfo('UF_CRM_PROPERTY_LAYOUT') || getFieldInfo('UF_CRM_LAYOUT');
+    const property = getFieldInfo('UF_CRM_PROPERTY') || getFieldInfo('parentId1052') || getFieldInfo('UF_CRM_MASTERPROPERTY');
     const developer = getFieldInfo('UF_CRM_DEVELOPER_1') || getFieldInfo('COMPANY_ID');
 
-    return { listing, masterProject, project, layout, developer };
+    return { listing, masterProject, project, layout, property, developer };
   }
 
   /**
@@ -300,12 +301,16 @@
     const p1040 = item.parentId1040 ? String(item.parentId1040) : null;
     const p1044 = item.parentId1044 ? String(item.parentId1044) : null;
     const p1048 = item.parentId1048 ? String(item.parentId1048) : null;
+    const p1052 = item.parentId1052 ? String(item.parentId1052) : null;
     const devId = (item.companyId || item.COMPANY_ID) ? String(item.companyId || item.COMPANY_ID) : null;
 
     // 1. Target: Master Project (SPA 1040)
     if (targetEntity === 'master_project') {
       if (ctx.project?.itemData?.parentId1040 && String(ctx.project.itemData.parentId1040) === itemId) {
         return { isRelated: true, reason: 'Parent of selected Project' };
+      }
+      if (ctx.property?.itemData?.parentId1040 && String(ctx.property.itemData.parentId1040) === itemId) {
+        return { isRelated: true, reason: 'Parent of selected Property' };
       }
       if (ctx.layout?.itemData?.parentId1040 && String(ctx.layout.itemData.parentId1040) === itemId) {
         return { isRelated: true, reason: 'Parent of selected Layout' };
@@ -323,6 +328,9 @@
       if (ctx.masterProject?.id && p1040 === String(ctx.masterProject.id)) {
         return { isRelated: true, reason: 'In selected Master Project' };
       }
+      if (ctx.property?.itemData?.parentId1044 && String(ctx.property.itemData.parentId1044) === itemId) {
+        return { isRelated: true, reason: 'Project of selected Property' };
+      }
       if (ctx.layout?.itemData?.parentId1044 && String(ctx.layout.itemData.parentId1044) === itemId) {
         return { isRelated: true, reason: 'Parent of selected Layout' };
       }
@@ -339,6 +347,9 @@
       if (ctx.project?.id && p1044 === String(ctx.project.id)) {
         return { isRelated: true, reason: 'For selected Project' };
       }
+      if (ctx.property?.itemData?.parentId1048 && String(ctx.property.itemData.parentId1048) === itemId) {
+        return { isRelated: true, reason: 'Layout of selected Property' };
+      }
       if (ctx.masterProject?.id && p1040 === String(ctx.masterProject.id)) {
         return { isRelated: true, reason: 'In selected Master Project' };
       }
@@ -347,8 +358,30 @@
       }
     }
 
-    // 4. Target: Listing (SPA 1058)
+    // 4. Target: Property (SPA 1052)
+    if (targetEntity === 'property') {
+      if (ctx.project?.id && p1044 === String(ctx.project.id)) {
+        return { isRelated: true, reason: 'In selected Project' };
+      }
+      if (ctx.layout?.id && p1048 === String(ctx.layout.id)) {
+        return { isRelated: true, reason: 'Matches selected Layout' };
+      }
+      if (ctx.masterProject?.id && p1040 === String(ctx.masterProject.id)) {
+        return { isRelated: true, reason: 'In selected Master Project' };
+      }
+      if (ctx.listing?.itemData?.parentId1052 && String(ctx.listing.itemData.parentId1052) === itemId) {
+        return { isRelated: true, reason: 'Property of selected Listing' };
+      }
+      if (ctx.developer?.id && devId && devId === String(ctx.developer.id)) {
+        return { isRelated: true, reason: 'By selected Developer' };
+      }
+    }
+
+    // 5. Target: Listing (SPA 1058)
     if (targetEntity === 'listing') {
+      if (ctx.property?.id && p1052 === String(ctx.property.id)) {
+        return { isRelated: true, reason: 'Listing for selected Property' };
+      }
       if (ctx.layout?.id && p1048 === String(ctx.layout.id)) {
         return { isRelated: true, reason: 'Matches selected Layout' };
       }
@@ -363,8 +396,11 @@
       }
     }
 
-    // 5. Target: Developer (Company)
+    // 6. Target: Developer (Company)
     if (targetEntity === 'developer') {
+      if (ctx.property?.itemData?.companyId && String(ctx.property.itemData.companyId) === itemId) {
+        return { isRelated: true, reason: 'Developer of selected Property' };
+      }
       if (ctx.listing?.itemData?.companyId && String(ctx.listing.itemData.companyId) === itemId) {
         return { isRelated: true, reason: 'Developer of selected Listing' };
       }
@@ -636,6 +672,10 @@
           const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
           const pId = pInput?.dataset?.selectedId;
           if (pId) extraParams += `&project_id=${encodeURIComponent(pId)}`;
+        } else if (f.code === 'UF_CRM_PROPERTY' || f.code === 'UF_CRM_MASTERPROPERTY' || f.code === 'parentId1052') {
+          if (ctx.project?.id) extraParams += `&project_id=${encodeURIComponent(ctx.project.id)}`;
+          if (ctx.masterProject?.id) extraParams += `&master_project_id=${encodeURIComponent(ctx.masterProject.id)}`;
+          if (ctx.layout?.id) extraParams += `&layout_id=${encodeURIComponent(ctx.layout.id)}`;
         } else if (f.code === 'UF_CRM_LISTING') {
           const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
           const pId = pInput?.dataset?.selectedId;
@@ -646,6 +686,12 @@
           const lInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
           const lId = lInput?.dataset?.selectedId;
           if (lId) extraParams += `&layout_id=${encodeURIComponent(lId)}`;
+          const propInput = document.getElementById('field_UF_CRM_PROPERTY');
+          const propId = propInput?.dataset?.selectedId;
+          if (propId) extraParams += `&property_id=${encodeURIComponent(propId)}`;
+        }
+        if (ctx.property?.id && f.code !== 'UF_CRM_PROPERTY' && f.code !== 'UF_CRM_MASTERPROPERTY' && f.code !== 'parentId1052') {
+          extraParams += `&property_id=${encodeURIComponent(ctx.property.id)}`;
         }
         if (ctx.developer?.id && f.code !== 'UF_CRM_DEVELOPER_1' && f.code !== 'COMPANY_ID') {
           extraParams += `&developer_id=${encodeURIComponent(ctx.developer.id)}`;
@@ -659,37 +705,6 @@
         });
         const data = await res.json();
         let items = data.items || [];
-
-        // Apply local dependent filters
-        if (f.code === 'UF_CRM_PROJECT_1') {
-          const mpInput = document.getElementById('field_UF_CRM_1792558317') || document.getElementById('field_UF_CRM_PROJECT');
-          const mpId = mpInput?.dataset?.selectedId;
-          if (mpId) {
-            items = items.filter(it => !it.parentId1040 || String(it.parentId1040) === String(mpId));
-          }
-        } else if (f.code === 'UF_CRM_PROPERTY_LAYOUT') {
-          const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
-          const pId = pInput?.dataset?.selectedId;
-          if (pId) {
-            items = items.filter(it => !it.parentId1044 || String(it.parentId1044) === String(pId));
-          }
-        } else if (f.code === 'UF_CRM_LISTING') {
-          const pInput = document.getElementById('field_UF_CRM_PROJECT_1');
-          const pId = pInput?.dataset?.selectedId;
-          if (pId) {
-            items = items.filter(it => !it.parentId1044 || String(it.parentId1044) === String(pId));
-          }
-          const mpInput = document.getElementById('field_UF_CRM_1792558317') || document.getElementById('field_UF_CRM_PROJECT');
-          const mpId = mpInput?.dataset?.selectedId;
-          if (mpId) {
-            items = items.filter(it => !it.parentId1040 || String(it.parentId1040) === String(mpId));
-          }
-          const lInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
-          const lId = lInput?.dataset?.selectedId;
-          if (lId) {
-            items = items.filter(it => !it.parentId1048 || String(it.parentId1048) === String(lId));
-          }
-        }
 
         // Tag and prioritize related records based on active multi-directional context
         const currentEntity = f.lookupEntity || resolveLookupEntity(f) || 'master_project';
@@ -795,7 +810,7 @@
               }
               if (!targetInput || !targetId) return;
               targetInput.dataset.selectedId = String(targetId);
-              targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : '1058'}_${targetId}`;
+              targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : entityName === 'property' ? '1052' : '1058'}_${targetId}`;
               if (targetData) {
                 try {
                   targetInput.dataset.itemData = typeof targetData === 'string' ? targetData : JSON.stringify(targetData);
@@ -859,6 +874,20 @@
               }
             } else if (f.code === 'UF_CRM_1792558317' || f.code === 'UF_CRM_PROJECT') {
               // 4. Master Project selected: auto-fill Developer if present
+              if (item.companyId) {
+                setDependentLookup('UF_CRM_DEVELOPER_1', 'developer', item.companyId);
+              }
+            } else if (f.code === 'UF_CRM_PROPERTY' || f.code === 'UF_CRM_MASTERPROPERTY' || f.code === 'parentId1052') {
+              // 5. Property selected: auto-fill Project, Layout, Master Project, Developer
+              if (item.parentId1044) {
+                setDependentLookup('UF_CRM_PROJECT_1', 'project', item.parentId1044);
+              }
+              if (item.parentId1048) {
+                setDependentLookup('UF_CRM_PROPERTY_LAYOUT', 'layout', item.parentId1048);
+              }
+              if (item.parentId1040) {
+                setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
+              }
               if (item.companyId) {
                 setDependentLookup('UF_CRM_DEVELOPER_1', 'developer', item.companyId);
               }

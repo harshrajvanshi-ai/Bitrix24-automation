@@ -813,7 +813,7 @@ async function searchLookupLive(entity, query) {
       const byId = await BitrixClient.call('crm.item.list', {
         entityTypeId: spa.entityTypeId,
         filter: { '=id': numericId },
-        select: ['id', 'title', 'parentId1040']
+        select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052', 'companyId']
       }).catch(() => ({ items: [] }));
       if (byId.items && byId.items.length > 0) {
         items.push(...byId.items);
@@ -822,7 +822,7 @@ async function searchLookupLive(entity, query) {
     const byTitle = await BitrixClient.call('crm.item.list', {
       entityTypeId: spa.entityTypeId,
       filter: { '%title': cleanQ },
-      select: ['id', 'title', 'parentId1040'],
+      select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052', 'companyId'],
       order: { id: 'DESC' }
     }).catch(() => ({ items: [] }));
     if (byTitle.items) {
@@ -834,7 +834,11 @@ async function searchLookupLive(entity, query) {
       id: i.id,
       title: i.title || `${entity} #${i.id}`,
       crmRef: `${spa.prefix}${i.id}`,
-      parentId1040: i.parentId1040 || null
+      parentId1040: i.parentId1040 || null,
+      parentId1044: i.parentId1044 || null,
+      parentId1048: i.parentId1048 || null,
+      parentId1052: i.parentId1052 || null,
+      companyId: i.companyId || i.COMPANY_ID || null
     }));
   }
 
@@ -901,6 +905,7 @@ async function fetchLookupData(entity, forceRefresh = false) {
         crmRef: `DYNAMIC_1052_${i.id}`,
         parentId1040: i.parentId1040 || null,
         parentId1044: i.parentId1044 || null,
+        parentId1048: i.parentId1048 || null,
         companyId: i.companyId || i.COMPANY_ID || null
       }));
     } else if (entity === 'layout') {
@@ -1111,9 +1116,11 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
   const masterProjectId = req.query.master_project_id || req.query.parentId1040;
   const projectId = req.query.project_id || req.query.parentId1044;
   const layoutId = req.query.layout_id || req.query.parentId1048;
+  const propertyId = req.query.property_id || req.query.parentId1052;
   const developerId = req.query.developer_id || req.query.company_id || req.query.companyId;
+  const listingId = req.query.listing_id;
 
-  // Mark related records based on linked IDs
+  // Mark related records based on linked IDs across entities
   allItems.forEach(item => {
     let rel = false;
     let relReason = '';
@@ -1129,6 +1136,10 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
       rel = true;
       relReason = 'Linked to Layout';
     }
+    if (propertyId && ((item.parentId1052 && String(item.parentId1052) === String(propertyId)) || (entity === 'property' && String(item.id) === String(propertyId)))) {
+      rel = true;
+      relReason = 'Linked to Property';
+    }
     if (developerId && item.companyId && String(item.companyId) === String(developerId)) {
       rel = true;
       relReason = 'Linked to Developer';
@@ -1137,17 +1148,23 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
     if (relReason) item.relationReason = relReason;
   });
 
-  if (masterProjectId) {
-    results = results.filter(item => !item.parentId1040 || String(item.parentId1040) === String(masterProjectId));
-  }
-  if (projectId) {
-    results = results.filter(item => !item.parentId1044 || String(item.parentId1044) === String(projectId));
-  }
-  if (layoutId) {
-    results = results.filter(item => !item.parentId1048 || String(item.parentId1048) === String(layoutId));
+  // Optional strict filtering only if explicitly requested, otherwise prioritize related at the top
+  if (req.query.strict === '1') {
+    if (masterProjectId) {
+      results = results.filter(item => !item.parentId1040 || String(item.parentId1040) === String(masterProjectId));
+    }
+    if (projectId) {
+      results = results.filter(item => !item.parentId1044 || String(item.parentId1044) === String(projectId));
+    }
+    if (layoutId) {
+      results = results.filter(item => !item.parentId1048 || String(item.parentId1048) === String(layoutId));
+    }
+    if (propertyId) {
+      results = results.filter(item => !item.parentId1052 || String(item.parentId1052) === String(propertyId));
+    }
   }
 
-  // Sort related items FIRST
+  // Sort related items FIRST so they appear at the top
   results.sort((a, b) => (b.isRelated ? 1 : 0) - (a.isRelated ? 1 : 0));
 
   if (query) {
@@ -1159,8 +1176,8 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
       return titleMatch || idMatch || refMatch;
     });
 
-    // If query returned no matches in cache, do an immediate live Bitrix lookup
-    if (results.length === 0) {
+    // If query returned no matches in cache or exact ID is missing, do an immediate live Bitrix lookup
+    if (results.length === 0 || (isNum && !results.some(it => String(it.id) === query))) {
       try {
         const liveItems = await searchLookupLive(entity, query);
         if (liveItems && liveItems.length > 0) {
@@ -1170,9 +1187,11 @@ app.get('/api/lookup', verifyCrmAccess, async (req, res) => {
               allItems.unshift(li);
               existingIds.add(String(li.id));
             }
+            if (!results.some(r => String(r.id) === String(li.id))) {
+              results.unshift(li);
+            }
           }
           lookupCache.data[entity] = allItems;
-          results = liveItems;
         }
       } catch (err) {
         console.warn(`[LOOKUP] Live search fallback failed for ${entity} "${query}":`, err.message);

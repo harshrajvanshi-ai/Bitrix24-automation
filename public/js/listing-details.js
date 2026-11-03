@@ -4279,8 +4279,20 @@ function resolveCountryCode(countryName) {
       try {
         const cleanQuery = String(query).replace(/^#/, "").trim();
         const refreshParam = refresh ? "&refresh=1" : "";
+        let extraParams = "";
+        const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
+        if (projInput?.dataset?.selectedId) extraParams += `&project_id=${encodeURIComponent(projInput.dataset.selectedId)}`;
+        const mpInput = document.getElementById("field_ufCrm16MasterProject") || document.getElementById("field_ufCrm16_1791173000");
+        if (mpInput?.dataset?.selectedId) extraParams += `&master_project_id=${encodeURIComponent(mpInput.dataset.selectedId)}`;
+        const propInput = document.getElementById("field_parentId1052") || document.getElementById("field_UF_CRM_PROPERTY");
+        if (propInput?.dataset?.selectedId) extraParams += `&property_id=${encodeURIComponent(propInput.dataset.selectedId)}`;
+        const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
+        if (layoutInput?.dataset?.selectedId) extraParams += `&layout_id=${encodeURIComponent(layoutInput.dataset.selectedId)}`;
+        const devInput = document.getElementById("field_companyId") || document.getElementById("field_ufCrm16_1791172932");
+        if (devInput?.dataset?.selectedId) extraParams += `&developer_id=${encodeURIComponent(devInput.dataset.selectedId)}`;
+
         const res = await fetch(
-          `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanQuery)}${refreshParam}`,
+          `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanQuery)}${refreshParam}${extraParams}`,
           {
             headers: getCrmAuthHeaders(),
           },
@@ -4290,9 +4302,15 @@ function resolveCountryCode(countryName) {
 
         dropdown.innerHTML = "";
 
+        const relatedCount = items.filter((it) => it.isRelated).length;
+        const countText =
+          relatedCount > 0
+            ? `${items.length} records (${relatedCount} related)`
+            : `${items.length} records`;
+
         const header = document.createElement("div");
         header.className = "lookup-dropdown-header";
-        header.innerHTML = `<span>${items.length} records</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">🔄 Refresh</button>`;
+        header.innerHTML = `<span>${countText}</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">🔄 Refresh</button>`;
         const refreshBtnEl = header.querySelector(".lookup-refresh-btn");
         if (refreshBtnEl) {
           refreshBtnEl.addEventListener("click", (e) => {
@@ -4313,13 +4331,30 @@ function resolveCountryCode(countryName) {
           return;
         }
 
+        let seenNonRelated = false;
         items.forEach((item) => {
+          if (relatedCount > 0 && !item.isRelated && !seenNonRelated) {
+            seenNonRelated = true;
+            const divider = document.createElement("div");
+            divider.className = "lookup-divider-header";
+            divider.textContent = "Other Records";
+            dropdown.appendChild(divider);
+          }
+
           const itemEl = document.createElement("div");
           itemEl.className = "lookup-item";
+          if (item.isRelated) itemEl.classList.add("is-related");
 
           const titleSpan = document.createElement("span");
           titleSpan.className = "lookup-item-title";
-          titleSpan.textContent = item.title;
+          if (item.isRelated) {
+            const badge = document.createElement("span");
+            badge.className = "lookup-related-badge";
+            badge.textContent = `★ Related${item.relationReason ? ": " + item.relationReason : ""}`;
+            titleSpan.appendChild(badge);
+          }
+          const textNode = document.createTextNode(item.title);
+          titleSpan.appendChild(textNode);
 
           const idSpan = document.createElement("span");
           idSpan.className = "lookup-item-id";
@@ -4334,6 +4369,7 @@ function resolveCountryCode(countryName) {
             input.dataset.selectedId = String(item.id);
             input.dataset.selectedTitle = item.title;
             input.dataset.selectedRef = item.crmRef || item.id;
+            input.dataset.itemData = JSON.stringify(item);
             input.title = `${item.title} (ID: ${item.id})`;
             clearBtn.style.display = "block";
             openBtn.style.display = "inline-flex";
@@ -4401,6 +4437,76 @@ function resolveCountryCode(countryName) {
                       }
                     })
                     .catch(() => {});
+                }
+              }
+            }
+
+            // Auto-link Project, Layout, Master Project if Property selected
+            if (f.key === "parentId1052" || f.key === "UF_CRM_PROPERTY") {
+              if (item.parentId1044) {
+                const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
+                if (projInput && (!projInput.value || !projInput.dataset.selectedId)) {
+                  fetch(`/api/lookup?entity=project&q=${item.parentId1044}`, { headers: getCrmAuthHeaders() })
+                    .then(r => r.json())
+                    .then(d => {
+                      const match = (d.items || []).find(it => String(it.id) === String(item.parentId1044));
+                      if (match && projInput) {
+                        projInput.value = match.title;
+                        projInput.dataset.selectedId = String(match.id);
+                        projInput.dataset.selectedRef = match.crmRef || String(match.id);
+                        projInput.dataset.selectedTitle = match.title;
+                        projInput.dataset.id = String(match.id);
+                        projInput.title = `${match.title} (ID: ${match.id})`;
+                        const pClear = projInput.parentElement?.querySelector(".lookup-clear-btn");
+                        const pOpen = projInput.parentElement?.querySelector(".lookup-open-btn");
+                        if (pClear) pClear.style.display = "block";
+                        if (pOpen) pOpen.style.display = "inline-flex";
+                      }
+                    }).catch(() => {});
+                }
+              }
+              if (item.parentId1048) {
+                const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
+                if (layoutInput && (!layoutInput.value || !layoutInput.dataset.selectedId)) {
+                  fetch(`/api/lookup?entity=layout&q=${item.parentId1048}`, { headers: getCrmAuthHeaders() })
+                    .then(r => r.json())
+                    .then(d => {
+                      const match = (d.items || []).find(it => String(it.id) === String(item.parentId1048));
+                      if (match && layoutInput) {
+                        layoutInput.value = match.title;
+                        layoutInput.dataset.selectedId = String(match.id);
+                        layoutInput.dataset.selectedRef = match.crmRef || String(match.id);
+                        layoutInput.dataset.selectedTitle = match.title;
+                        layoutInput.dataset.id = String(match.id);
+                        layoutInput.title = `${match.title} (ID: ${match.id})`;
+                        const lClear = layoutInput.parentElement?.querySelector(".lookup-clear-btn");
+                        const lOpen = layoutInput.parentElement?.querySelector(".lookup-open-btn");
+                        if (lClear) lClear.style.display = "block";
+                        if (lOpen) lOpen.style.display = "inline-flex";
+                      }
+                    }).catch(() => {});
+                }
+              }
+              if (item.parentId1040) {
+                const mpInput = document.getElementById("field_ufCrm16MasterProject") || document.getElementById("field_ufCrm16_1791173000");
+                if (mpInput && (!mpInput.value || !mpInput.dataset.selectedId)) {
+                  fetch(`/api/lookup?entity=master_project&q=${item.parentId1040}`, { headers: getCrmAuthHeaders() })
+                    .then(r => r.json())
+                    .then(d => {
+                      const match = (d.items || []).find(it => String(it.id) === String(item.parentId1040));
+                      if (match && mpInput) {
+                        mpInput.value = match.title;
+                        mpInput.dataset.selectedId = String(match.id);
+                        mpInput.dataset.selectedRef = match.crmRef || String(match.id);
+                        mpInput.dataset.selectedTitle = match.title;
+                        mpInput.dataset.id = String(match.id);
+                        mpInput.title = `${match.title} (ID: ${match.id})`;
+                        const mpClear = mpInput.parentElement?.querySelector(".lookup-clear-btn");
+                        const mpOpen = mpInput.parentElement?.querySelector(".lookup-open-btn");
+                        if (mpClear) mpClear.style.display = "block";
+                        if (mpOpen) mpOpen.style.display = "inline-flex";
+                      }
+                    }).catch(() => {});
                 }
               }
             }
