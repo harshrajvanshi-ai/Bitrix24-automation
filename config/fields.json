@@ -108,7 +108,7 @@
             "leadAltCode": "UF_CRM_EXCLUSIVE",
             "spaKey": "ufCrm16Exclusive",
             "spaCrmCode": "UF_CRM_16_EXCLUSIVE",
-            "label": "Listing Agreement (Exclusive / Non-Exclusive)",
+            "label": "Listing Agreement (is Exclusive)",
             "bitrixLabel": "Exclusive",
             "type": "boolean",
             "rules": {

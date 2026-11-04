@@ -111,3 +111,4 @@ updatedSections.forEach(s => {
   console.log(`[${s.id}] ${s.title} (${s.fields.length} fields)`);
   s.fields.forEach(f => console.log(`   - ${f.code}: ${f.label} [${f.type}]`));
 });
+
