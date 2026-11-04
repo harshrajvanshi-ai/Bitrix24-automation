@@ -837,7 +837,10 @@
               "rent": "show"
             },
             "labelOverrides": {
-              "rent": "Listing Price (as annual rent)"
+              "external_stock": "Sale Price",
+              "off_plan": "Sale Price",
+              "overseas_sale": "Sale Price",
+              "rent": "Annual Rent"
             }
           },
           {
@@ -994,12 +997,9 @@
             ],
             "rules": {
               "external_stock": "hide",
-              "off_plan": "opt",
+              "off_plan": "hide",
               "overseas_sale": "hide",
               "rent": "show"
-            },
-            "labelOverrides": {
-              "off_plan": "Number of Cheques (payment plan)"
             }
           }
         ]
@@ -1019,14 +1019,22 @@
             "bitrixLabel": "Available From Date",
             "type": "date",
             "rules": {
-              "external_stock": "show",
-              "off_plan": "opt",
-              "overseas_sale": "opt",
-              "rent": "show"
+              "external_stock": "hide",
+              "off_plan": "hide",
+              "overseas_sale": "hide",
+              "rent": "conditional"
             },
             "labelOverrides": {
-              "external_stock": "Started on (mandate period)",
-              "rent": "Started on (tenancy / availability)"
+              "rent": "Started on"
+            },
+            "conditional": {
+              "field": "UF_CRM_1791970832589",
+              "values": [
+                "1828",
+                "1830",
+                "Rented",
+                "Under Notice"
+              ]
             }
           },
           {
@@ -1038,14 +1046,22 @@
             "bitrixLabel": "Available To Date",
             "type": "date",
             "rules": {
-              "external_stock": "show",
-              "off_plan": "opt",
-              "overseas_sale": "opt",
-              "rent": "show"
+              "external_stock": "hide",
+              "off_plan": "hide",
+              "overseas_sale": "hide",
+              "rent": "conditional"
             },
             "labelOverrides": {
-              "external_stock": "Finished on (mandate period)",
-              "rent": "Finished on (tenancy / availability)"
+              "rent": "Finished on"
+            },
+            "conditional": {
+              "field": "UF_CRM_1791970832589",
+              "values": [
+                "1828",
+                "1830",
+                "Rented",
+                "Under Notice"
+              ]
             }
           },
           {
@@ -1154,9 +1170,9 @@
               }
             ],
             "rules": {
-              "external_stock": "opt",
+              "external_stock": "hide",
               "off_plan": "hide",
-              "overseas_sale": "opt",
+              "overseas_sale": "hide",
               "rent": "show"
             }
           },
@@ -1164,14 +1180,20 @@
             "code": "UF_CRM_EXPIRATION_DATE",
             "spaKey": "ufCrm16ExpirationDate",
             "spaCrmCode": "UF_CRM_16_EXPIRATION_DATE",
-            "label": "Tenancy End / Mandate Expiry Date",
+            "label": "Mandate Expiry Date",
             "bitrixLabel": "Expiration Date",
             "type": "date",
             "rules": {
-              "external_stock": "opt",
-              "off_plan": "hide",
-              "overseas_sale": "opt",
+              "external_stock": "show",
+              "off_plan": "show",
+              "overseas_sale": "show",
               "rent": "show"
+            },
+            "labelOverrides": {
+              "external_stock": "Mandate Expiry",
+              "off_plan": "Mandate Expiry",
+              "overseas_sale": "Mandate Expiry",
+              "rent": "Mandate Expiry"
             }
           }
         ]
@@ -2815,7 +2837,10 @@
         "rent": "show"
       },
       "labelOverrides": {
-        "rent": "Listing Price (as annual rent)"
+        "external_stock": "Sale Price",
+        "off_plan": "Sale Price",
+        "overseas_sale": "Sale Price",
+        "rent": "Annual Rent"
       }
     },
     {
@@ -2972,12 +2997,9 @@
       ],
       "rules": {
         "external_stock": "hide",
-        "off_plan": "opt",
+        "off_plan": "hide",
         "overseas_sale": "hide",
         "rent": "show"
-      },
-      "labelOverrides": {
-        "off_plan": "Number of Cheques (payment plan)"
       }
     },
     {
@@ -2989,14 +3011,22 @@
       "bitrixLabel": "Available From Date",
       "type": "date",
       "rules": {
-        "external_stock": "show",
-        "off_plan": "opt",
-        "overseas_sale": "opt",
-        "rent": "show"
+        "external_stock": "hide",
+        "off_plan": "hide",
+        "overseas_sale": "hide",
+        "rent": "conditional"
       },
       "labelOverrides": {
-        "external_stock": "Started on (mandate period)",
-        "rent": "Started on (tenancy / availability)"
+        "rent": "Started on"
+      },
+      "conditional": {
+        "field": "UF_CRM_1791970832589",
+        "values": [
+          "1828",
+          "1830",
+          "Rented",
+          "Under Notice"
+        ]
       }
     },
     {
@@ -3008,14 +3038,22 @@
       "bitrixLabel": "Available To Date",
       "type": "date",
       "rules": {
-        "external_stock": "show",
-        "off_plan": "opt",
-        "overseas_sale": "opt",
-        "rent": "show"
+        "external_stock": "hide",
+        "off_plan": "hide",
+        "overseas_sale": "hide",
+        "rent": "conditional"
       },
       "labelOverrides": {
-        "external_stock": "Finished on (mandate period)",
-        "rent": "Finished on (tenancy / availability)"
+        "rent": "Finished on"
+      },
+      "conditional": {
+        "field": "UF_CRM_1791970832589",
+        "values": [
+          "1828",
+          "1830",
+          "Rented",
+          "Under Notice"
+        ]
       }
     },
     {
@@ -3124,9 +3162,9 @@
         }
       ],
       "rules": {
-        "external_stock": "opt",
+        "external_stock": "hide",
         "off_plan": "hide",
-        "overseas_sale": "opt",
+        "overseas_sale": "hide",
         "rent": "show"
       }
     },
@@ -3134,14 +3172,20 @@
       "code": "UF_CRM_EXPIRATION_DATE",
       "spaKey": "ufCrm16ExpirationDate",
       "spaCrmCode": "UF_CRM_16_EXPIRATION_DATE",
-      "label": "Tenancy End / Mandate Expiry Date",
+      "label": "Mandate Expiry Date",
       "bitrixLabel": "Expiration Date",
       "type": "date",
       "rules": {
-        "external_stock": "opt",
-        "off_plan": "hide",
-        "overseas_sale": "opt",
+        "external_stock": "show",
+        "off_plan": "show",
+        "overseas_sale": "show",
         "rent": "show"
+      },
+      "labelOverrides": {
+        "external_stock": "Mandate Expiry",
+        "off_plan": "Mandate Expiry",
+        "overseas_sale": "Mandate Expiry",
+        "rent": "Mandate Expiry"
       }
     },
     {

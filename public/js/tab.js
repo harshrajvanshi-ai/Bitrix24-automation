@@ -40,7 +40,7 @@
     const str = String(raw || '').toLowerCase().trim();
     if (str === '2584' || str === 'external stock' || str === '164') return 'external_stock';
     if (str === '2582' || str === 'off-plan listing' || str === 'off-plan' || str === '162') return 'off_plan';
-    if (str === '2580' || str === 'overseas sale' || str === '160') return 'overseas_sale';
+    if (str === '2580' || str === 'overseas sale' || str === '160' || str === 'sale') return 'overseas_sale';
     return 'rent'; // default 2578 / 'rent' / '158'
   }
 
@@ -1405,6 +1405,41 @@
     resizeWindow();
   }
 
+  function evaluateListingFieldVisibility(f, subLayout, leadData = null) {
+    if (!f || !f.rules) return true;
+    const rule = f.rules[subLayout] || 'show';
+    if (rule === 'hide') return false;
+    if (rule === 'show' || rule === 'opt') return true;
+    if (rule === 'conditional') {
+      if (f.conditional && f.conditional.field) {
+        const depCode = f.conditional.field;
+        let depVal = '';
+        const depEl = document.getElementById(`field_${depCode}`) || document.querySelector(`[name="${depCode}"]`);
+        if (depEl) {
+          depVal = depEl.value !== undefined ? String(depEl.value).trim() : '';
+        }
+        if (!depVal) {
+          const leadObj = leadData || currentLead;
+          if (leadObj) {
+            depVal = String(leadObj[depCode] || leadObj[depCode + '_TITLE'] || '').trim();
+          }
+        }
+        const targetValues = Array.isArray(f.conditional.values) ? f.conditional.values : [f.conditional.values];
+        const matches = targetValues.some(tv => String(tv).toLowerCase() === depVal.toLowerCase());
+        if (matches) return true;
+
+        // If the conditional field already has an active value on this record, keep visible
+        const leadObj = leadData || currentLead;
+        if (leadObj && leadObj[f.code] && String(leadObj[f.code]).trim() !== '') {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+    return true;
+  }
+
   function applyListingSubLayout(subLayout) {
     currentListingSubLayout = subLayout;
     const meta = LISTING_LAYOUT_META[subLayout] || LISTING_LAYOUT_META.rent;
@@ -1424,9 +1459,9 @@
 
       (sec.fields || []).forEach(f => {
         const fg = document.querySelector(`.form-group[data-field-code="${f.code}"]`);
-        const rule = f.rules ? (f.rules[subLayout] || 'show') : 'show';
+        const isVisible = evaluateListingFieldVisibility(f, subLayout);
         if (fg) {
-          fg.style.display = rule === 'hide' ? 'none' : '';
+          fg.style.display = isVisible ? '' : 'none';
           const labelEl = fg.querySelector('.form-label');
           if (labelEl) {
             const customLabel = (f.labelOverrides && f.labelOverrides[subLayout]) ? f.labelOverrides[subLayout] : f.label;
@@ -1435,7 +1470,7 @@
             if (star) labelEl.appendChild(star);
           }
         }
-        if (rule !== 'hide') secActiveCount++;
+        if (isVisible) secActiveCount++;
       });
 
       totalActive += secActiveCount;
@@ -1582,8 +1617,8 @@
 
     // Apply layout visibility rule for listing records
     if (currentLayout === 'listing' && f.rules) {
-      const rule = f.rules[currentListingSubLayout] || 'show';
-      if (rule === 'hide') {
+      const isVis = evaluateListingFieldVisibility(f, currentListingSubLayout, currentLead);
+      if (!isVis) {
         formGroup.style.display = 'none';
       }
     }
@@ -1638,6 +1673,15 @@
           applyListingSubLayout(detected);
         }
       });
+    }
+
+    // Bind real-time conditional evaluation if Tenancy Status changes
+    if (currentLayout === 'listing' && (f.code === 'UF_CRM_1791970832589' || f.code === 'UF_CRM_OCCUPANCY')) {
+      const tenancyHandler = () => {
+        applyListingSubLayout(currentListingSubLayout);
+      };
+      inputObj.inputElement?.addEventListener('change', tenancyHandler);
+      inputObj.inputElement?.addEventListener('input', tenancyHandler);
     }
 
     // Bind real-time enquiry requirement form switching when Enquiry Type changes
@@ -1698,7 +1742,7 @@
     // Calculate total fields count according to active rules
     let totalFields = 0;
     sections.forEach(s => {
-      const active = (s.fields || []).filter(f => layout !== 'listing' || !f.rules || (f.rules[currentListingSubLayout] || 'show') !== 'hide');
+      const active = (s.fields || []).filter(f => layout !== 'listing' || evaluateListingFieldVisibility(f, currentListingSubLayout, lead));
       totalFields += active.length;
     });
     fieldsCountBadge.textContent = `${totalFields} fields in ${sections.length} sections`;
@@ -1717,7 +1761,7 @@
 
     sections.forEach((sec, sIdx) => {
       const secId = `section_${sec.id || sIdx}`;
-      const activeFields = (sec.fields || []).filter(f => layout !== 'listing' || !f.rules || (f.rules[currentListingSubLayout] || 'show') !== 'hide');
+      const activeFields = (sec.fields || []).filter(f => layout !== 'listing' || evaluateListingFieldVisibility(f, currentListingSubLayout, lead));
 
       // Section Pill
       const pill = document.createElement('button');

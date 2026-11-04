@@ -406,6 +406,73 @@ allUniqueFieldsMap.forEach((f, code) => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// 7. Check Listing Layout Conditional & Contextual Visibility (Sale vs Rent)
+// ---------------------------------------------------------------------------
+console.log('\n--- 7. Listing Layout Conditional & Contextual Visibility (Sale vs Rent) ---');
+
+const listingPrice = allUniqueFieldsMap.get('UF_CRM_LISTING_PRICE');
+check(listingPrice && listingPrice.labelOverrides?.rent === 'Annual Rent', 'Listing Price label is "Annual Rent" on Rent');
+check(listingPrice && listingPrice.labelOverrides?.external_stock === 'Sale Price', 'Listing Price label is "Sale Price" on External Stock (Sale)');
+check(listingPrice && listingPrice.labelOverrides?.off_plan === 'Sale Price', 'Listing Price label is "Sale Price" on Off-plan (Sale)');
+check(listingPrice && listingPrice.labelOverrides?.overseas_sale === 'Sale Price', 'Listing Price label is "Sale Price" on Overseas Sale (Sale)');
+
+const rentalFreq = allUniqueFieldsMap.get('UF_CRM_HOAFREQUENCY');
+check(rentalFreq && rentalFreq.rules?.rent === 'show', 'Rental Frequency is shown on Rent');
+check(rentalFreq && rentalFreq.rules?.external_stock === 'hide', 'Rental Frequency is hidden on External Stock (Sale)');
+check(rentalFreq && rentalFreq.rules?.off_plan === 'hide', 'Rental Frequency is hidden on Off-plan (Sale)');
+check(rentalFreq && rentalFreq.rules?.overseas_sale === 'hide', 'Rental Frequency is hidden on Overseas Sale (Sale)');
+
+const secDeposit = allUniqueFieldsMap.get('UF_CRM_PETDEPOSIT');
+check(secDeposit && secDeposit.rules?.rent === 'show', 'Security Deposit is shown on Rent');
+check(secDeposit && secDeposit.rules?.external_stock === 'hide', 'Security Deposit is hidden on External Stock (Sale)');
+check(secDeposit && secDeposit.rules?.off_plan === 'hide', 'Security Deposit is hidden on Off-plan (Sale)');
+check(secDeposit && secDeposit.rules?.overseas_sale === 'hide', 'Security Deposit is hidden on Overseas Sale (Sale)');
+
+const cheques = allUniqueFieldsMap.get('UF_CRM_1792139023');
+check(cheques && cheques.rules?.rent === 'show', 'Number of Cheques is shown on Rent');
+check(cheques && cheques.rules?.external_stock === 'hide', 'Number of Cheques is hidden on External Stock (Sale)');
+check(cheques && cheques.rules?.off_plan === 'hide', 'Number of Cheques is hidden on Off-plan (Sale)');
+check(cheques && cheques.rules?.overseas_sale === 'hide', 'Number of Cheques is hidden on Overseas Sale (Sale)');
+
+const tenancyStatus = allUniqueFieldsMap.get('UF_CRM_1791970832589');
+check(tenancyStatus && tenancyStatus.rules?.rent === 'show', 'Tenancy Status is shown on Rent');
+check(tenancyStatus && tenancyStatus.rules?.external_stock === 'hide', 'Tenancy Status is hidden on External Stock (Sale)');
+check(tenancyStatus && tenancyStatus.rules?.off_plan === 'hide', 'Tenancy Status is hidden on Off-plan (Sale)');
+check(tenancyStatus && tenancyStatus.rules?.overseas_sale === 'hide', 'Tenancy Status is hidden on Overseas Sale (Sale)');
+
+const startedOn = allUniqueFieldsMap.get('UF_CRM_AVAIL_DATE');
+check(startedOn && startedOn.rules?.rent === 'conditional', 'Started on is conditional on Rent');
+check(startedOn && startedOn.conditional?.field === 'UF_CRM_1791970832589', 'Started on conditional depends on Tenancy Status (UF_CRM_1791970832589)');
+check(startedOn && startedOn.rules?.external_stock === 'hide', 'Started on is hidden on External Stock (Sale)');
+check(startedOn && startedOn.rules?.off_plan === 'hide', 'Started on is hidden on Off-plan (Sale)');
+check(startedOn && startedOn.rules?.overseas_sale === 'hide', 'Started on is hidden on Overseas Sale (Sale)');
+
+const finishedOn = allUniqueFieldsMap.get('UF_CRM_AVAILABLE_TO');
+check(finishedOn && finishedOn.rules?.rent === 'conditional', 'Finished on is conditional on Rent');
+check(finishedOn && finishedOn.conditional?.field === 'UF_CRM_1791970832589', 'Finished on conditional depends on Tenancy Status (UF_CRM_1791970832589)');
+check(finishedOn && finishedOn.rules?.external_stock === 'hide', 'Finished on is hidden on External Stock (Sale)');
+check(finishedOn && finishedOn.rules?.off_plan === 'hide', 'Finished on is hidden on Off-plan (Sale)');
+check(finishedOn && finishedOn.rules?.overseas_sale === 'hide', 'Finished on is hidden on Overseas Sale (Sale)');
+
+const availFrom = allUniqueFieldsMap.get('UF_CRM_DATE_AVAILABLE');
+check(availFrom && availFrom.rules?.rent === 'show', 'Available From is shown on Rent');
+check(availFrom && availFrom.rules?.external_stock === 'show', 'Available From is shown on External Stock (Sale)');
+check(availFrom && availFrom.rules?.off_plan === 'show', 'Available From is shown on Off-plan (Sale)');
+check(availFrom && availFrom.rules?.overseas_sale === 'show', 'Available From is shown on Overseas Sale (Sale)');
+
+const mandateExpiry = allUniqueFieldsMap.get('UF_CRM_EXPIRATION_DATE');
+check(mandateExpiry && mandateExpiry.rules?.rent === 'show', 'Mandate Expiry is shown on Rent');
+check(mandateExpiry && mandateExpiry.rules?.external_stock === 'show', 'Mandate Expiry is shown on External Stock (Sale)');
+check(mandateExpiry && mandateExpiry.rules?.off_plan === 'show', 'Mandate Expiry is shown on Off-plan (Sale)');
+check(mandateExpiry && mandateExpiry.rules?.overseas_sale === 'show', 'Mandate Expiry is shown on Overseas Sale (Sale)');
+check(mandateExpiry && mandateExpiry.labelOverrides?.rent === 'Mandate Expiry', 'Mandate Expiry is labeled "Mandate Expiry" on Rent');
+check(mandateExpiry && mandateExpiry.labelOverrides?.external_stock === 'Mandate Expiry', 'Mandate Expiry is labeled "Mandate Expiry" on External Stock (Sale)');
+
+// Check tab.js implementation of conditional evaluation and Tenancy Status event binding
+check(tabJsContent.includes('evaluateListingFieldVisibility'), 'tab.js defines evaluateListingFieldVisibility function');
+check(tabJsContent.includes('UF_CRM_1791970832589') && tabJsContent.includes('tenancyHandler'), 'tab.js binds real-time change listener on Tenancy Status field');
+
 console.log('\n===============================================================');
 console.log(`TAB.JS FIELD VERIFICATION: ${passedChecks} Passed, ${failedChecks} Failed`);
 console.log('===============================================================');
