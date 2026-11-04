@@ -2188,6 +2188,33 @@
 
   function evaluateListingFieldVisibility(f, subLayout, leadData = null) {
     if (!f || !f.rules) return true;
+
+    // Handle External Stock dynamic transaction type
+    if (subLayout === 'external_stock') {
+      const ttEl = document.getElementById('field_UF_CRM_TRANSACTION_TYPE') || document.querySelector('[name="UF_CRM_TRANSACTION_TYPE"]');
+      let txType = ttEl ? String(ttEl.value || '').trim().toLowerCase() : '';
+      if (!txType) {
+        const leadObj = leadData || currentLead;
+        txType = String(leadObj?.UF_CRM_TRANSACTION_TYPE || '').trim().toLowerCase();
+      }
+
+      // If External Stock is for Rent
+      const isRentTx = txType === 'rent' || txType === '2';
+      const isSaleTx = txType === 'sale' || txType === '1';
+      if (isRentTx) {
+        if (['UF_CRM_HOAFREQUENCY', 'UF_CRM_PETDEPOSIT', 'UF_CRM_1792139023'].includes(f.code)) {
+          return true;
+        }
+        if (['UF_CRM_PAYMENT_PLAN', 'UF_CRM_BOOKING_AMOUNT', 'UF_CRM_INSTALLMENT_DETAILS', 'UF_CRM_HANDOVER_PAYMENT'].includes(f.code)) {
+          return false;
+        }
+      } else if (isSaleTx) {
+        if (['UF_CRM_HOAFREQUENCY', 'UF_CRM_PETDEPOSIT', 'UF_CRM_1792139023'].includes(f.code)) {
+          return false;
+        }
+      }
+    }
+
     const rule = f.rules[subLayout] || 'show';
     if (rule === 'hide') return false;
     if (rule === 'show' || rule === 'opt') return true;
@@ -2221,7 +2248,8 @@
     return true;
   }
 
-  function applyListingSubLayout(subLayout) {
+  function applyListingSubLayout(subLayout, previousSubLayout = null) {
+    const isLayoutChanged = previousSubLayout && previousSubLayout !== subLayout;
     currentListingSubLayout = subLayout;
     const meta = LISTING_LAYOUT_META[subLayout] || LISTING_LAYOUT_META.rent;
     if (listingLayoutBadge) {
@@ -2230,8 +2258,49 @@
       listingLayoutBadge.style.display = 'inline-flex';
     }
 
-    let totalActive = 0;
+    // Determine transaction type for External Stock
+    let externalTxType = 'sale';
+    if (subLayout === 'external_stock') {
+      const ttEl = document.getElementById('field_UF_CRM_TRANSACTION_TYPE') || document.querySelector('[name="UF_CRM_TRANSACTION_TYPE"]');
+      if (ttEl && ttEl.value) {
+        externalTxType = String(ttEl.value).trim().toLowerCase();
+      } else if (currentLead?.UF_CRM_TRANSACTION_TYPE) {
+        externalTxType = String(currentLead.UF_CRM_TRANSACTION_TYPE).trim().toLowerCase();
+      }
+    }
+
     const sections = tabConfig?.listingLayout?.sections || [];
+
+    // When Listing Type changes, clear values belonging to the previously selected type
+    if (isLayoutChanged) {
+      sections.forEach(sec => {
+        (sec.fields || []).forEach(f => {
+          const wasVisible = evaluateListingFieldVisibility(f, previousSubLayout);
+          const isNowVisible = evaluateListingFieldVisibility(f, subLayout);
+          if (wasVisible && !isNowVisible) {
+            const el = document.getElementById(`field_${f.code}`) || document.querySelector(`[name="${f.code}"]`);
+            if (el) {
+              if (el.type === 'checkbox') {
+                el.checked = false;
+              } else if (el.tagName === 'SELECT') {
+                el.selectedIndex = 0;
+                el.value = el.options[0]?.value || '';
+              } else {
+                el.value = '';
+              }
+              if (el.dataset) {
+                delete el.dataset.selectedId;
+                delete el.dataset.selectedRef;
+                delete el.dataset.selectedTitle;
+              }
+              setDirty(true);
+            }
+          }
+        });
+      });
+    }
+
+    let totalActive = 0;
 
     sections.forEach((sec, sIdx) => {
       const secId = `section_${sec.id || sIdx}`;
@@ -2245,7 +2314,17 @@
           fg.style.display = isVisible ? '' : 'none';
           const labelEl = fg.querySelector('.form-label');
           if (labelEl) {
-            const customLabel = (f.labelOverrides && f.labelOverrides[subLayout]) ? f.labelOverrides[subLayout] : f.label;
+            let customLabel = f.label;
+            if (f.code === 'UF_CRM_LISTING_PRICE') {
+              const isRentTx = externalTxType === 'rent' || externalTxType === '2';
+              if (subLayout === 'rent' || (subLayout === 'external_stock' && isRentTx)) {
+                customLabel = 'Annual Rent (AED)';
+              } else {
+                customLabel = 'Sale Price (AED)';
+              }
+            } else if (f.labelOverrides && f.labelOverrides[subLayout]) {
+              customLabel = f.labelOverrides[subLayout];
+            }
             const star = labelEl.querySelector('.required-star');
             labelEl.textContent = customLabel;
             if (star) labelEl.appendChild(star);
@@ -2351,6 +2430,16 @@
       setVal(priceCodes, calcPrice, true);
     }
 
+    // Auto-calculate / suggest standard Agency Commission if empty
+    const commCodes = ['UF_CRM_BUYERAGENTCOMMISSION'];
+    const commVal = getVal(commCodes);
+    if (!commVal && price > 0) {
+      const extTx = String(getVal(['UF_CRM_TRANSACTION_TYPE'])).trim().toLowerCase();
+      const isRent = (currentListingSubLayout === 'rent') || (currentListingSubLayout === 'external_stock' && (extTx === 'rent' || extTx === '2'));
+      const defaultComm = isRent ? '5.0' : '2.0';
+      setVal(commCodes, defaultComm, !isInitialLoad);
+    }
+
     // 2. Composite Title & Portal Title from actual non-empty record fields
     let beds = getVal(['UF_CRM_BEDROOMS', 'UF_CRM_1791966366775', 'UF_CRM_1791952093551', 'UF_CRM_BEDROOM']);
     const enumToNum = { '1834': '0', '1836': '1', '1838': '2', '1840': '3', '1842': '4', '1844': '5' };
@@ -2451,9 +2540,23 @@
         const selectedVal = e.target.value;
         const detected = detectListingSubLayout({ UF_CRM_1791952650167: selectedVal });
         if (detected && detected !== currentListingSubLayout) {
-          applyListingSubLayout(detected);
+          const prev = currentListingSubLayout;
+          applyListingSubLayout(detected, prev);
+          runLeadListingAutomations({ isInitialLoad: false, triggerField: 'UF_CRM_1791952650167' });
         }
       });
+    }
+
+    // Bind real-time transaction type switching for External Stock
+    if (currentLayout === 'listing' && f.code === 'UF_CRM_TRANSACTION_TYPE') {
+      const txHandler = () => {
+        if (currentListingSubLayout === 'external_stock') {
+          applyListingSubLayout('external_stock', 'external_stock');
+          runLeadListingAutomations({ isInitialLoad: false, triggerField: 'UF_CRM_TRANSACTION_TYPE' });
+        }
+      };
+      inputObj.inputElement?.addEventListener('change', txHandler);
+      inputObj.inputElement?.addEventListener('input', txHandler);
     }
 
     // Bind real-time conditional evaluation if Tenancy Status changes

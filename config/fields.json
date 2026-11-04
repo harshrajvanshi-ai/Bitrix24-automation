@@ -495,6 +495,29 @@
         "desc": "Asking price, rent frequency, commission, and payment plans",
         "fields": [
           {
+            "code": "UF_CRM_TRANSACTION_TYPE",
+            "label": "Transaction Type",
+            "bitrixLabel": "Transaction Type",
+            "type": "enumeration",
+            "placeholder": "-- Select Transaction Type --",
+            "options": [
+              {
+                "id": "1",
+                "value": "Sale"
+              },
+              {
+                "id": "2",
+                "value": "Rent"
+              }
+            ],
+            "rules": {
+              "external_stock": "show",
+              "off_plan": "hide",
+              "overseas_sale": "hide",
+              "rent": "hide"
+            }
+          },
+          {
             "code": "UF_CRM_LISTING_PRICE",
             "leadAltCode": "UF_CRM_1791963299133",
             "spaKey": "ufCrm16_1790154936",
@@ -646,6 +669,60 @@
             "min": 1,
             "max": 12,
             "step": 1
+          },
+          {
+            "code": "UF_CRM_PAYMENT_PLAN",
+            "label": "Payment Plan",
+            "bitrixLabel": "Payment Plan",
+            "type": "string",
+            "placeholder": "e.g. 60/40 or 50/50 Post-Handover",
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "hide"
+            }
+          },
+          {
+            "code": "UF_CRM_BOOKING_AMOUNT",
+            "label": "Booking Amount (%)",
+            "bitrixLabel": "Booking Amount",
+            "type": "number",
+            "addon": "%",
+            "placeholder": "e.g. 10",
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "hide"
+            }
+          },
+          {
+            "code": "UF_CRM_INSTALLMENT_DETAILS",
+            "label": "Installment Details",
+            "bitrixLabel": "Installment Details",
+            "type": "string",
+            "placeholder": "e.g. 10% on booking, 50% during construction, 40% on handover",
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "hide"
+            }
+          },
+          {
+            "code": "UF_CRM_HANDOVER_PAYMENT",
+            "label": "Handover Payment (%)",
+            "bitrixLabel": "Handover Payment",
+            "type": "number",
+            "addon": "%",
+            "placeholder": "e.g. 40",
+            "rules": {
+              "external_stock": "hide",
+              "off_plan": "show",
+              "overseas_sale": "hide",
+              "rent": "hide"
+            }
           }
         ]
       },
@@ -3003,6 +3080,83 @@
         "off_plan": "show",
         "overseas_sale": "show",
         "rent": "show"
+      }
+    },
+    {
+      "code": "UF_CRM_TRANSACTION_TYPE",
+      "label": "Transaction Type",
+      "bitrixLabel": "Transaction Type",
+      "type": "enumeration",
+      "placeholder": "-- Select Transaction Type --",
+      "options": [
+        {
+          "id": "1",
+          "value": "Sale"
+        },
+        {
+          "id": "2",
+          "value": "Rent"
+        }
+      ],
+      "rules": {
+        "external_stock": "show",
+        "off_plan": "hide",
+        "overseas_sale": "hide",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_PAYMENT_PLAN",
+      "label": "Payment Plan",
+      "bitrixLabel": "Payment Plan",
+      "type": "string",
+      "placeholder": "e.g. 60/40 or 50/50 Post-Handover",
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_BOOKING_AMOUNT",
+      "label": "Booking Amount (%)",
+      "bitrixLabel": "Booking Amount",
+      "type": "number",
+      "addon": "%",
+      "placeholder": "e.g. 10",
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_INSTALLMENT_DETAILS",
+      "label": "Installment Details",
+      "bitrixLabel": "Installment Details",
+      "type": "string",
+      "placeholder": "e.g. 10% on booking, 50% during construction, 40% on handover",
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "hide"
+      }
+    },
+    {
+      "code": "UF_CRM_HANDOVER_PAYMENT",
+      "label": "Handover Payment (%)",
+      "bitrixLabel": "Handover Payment",
+      "type": "number",
+      "addon": "%",
+      "placeholder": "e.g. 40",
+      "rules": {
+        "external_stock": "hide",
+        "off_plan": "show",
+        "overseas_sale": "hide",
+        "rent": "hide"
       }
     }
   ],
