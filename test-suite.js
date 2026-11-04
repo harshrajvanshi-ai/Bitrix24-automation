@@ -305,7 +305,7 @@ async function runTests() {
   
   const listingSectionTitles = fieldCfg.listingLayout.sections.map(s => s.title);
   assert(listingSectionTitles.some(t => t.includes('Commercial') || t.includes('Terms')), 'Listing layout includes Commercial Terms & Listing Status section');
-  assert(listingSectionTitles.some(t => t.includes('Building') || t.includes('Location')), 'Listing layout includes Building, Tower & Regional Location section');
+  assert(listingSectionTitles.some(t => t.includes('Property') || t.includes('Specifications')), 'Listing layout includes Property Specifications section');
 
   const enquirySectionTitles = fieldCfg.enquiryLayout.sections.map(s => s.title);
   assert(enquirySectionTitles.some(t => t.includes('Client')), 'Enquiry layout includes Client & Inquiry Overview section');
@@ -346,11 +346,9 @@ async function runTests() {
   const leadSource = allEnumFields.find(f => f.code === 'UF_CRM_1792563228880' || f.code === 'UF_CRM_LEAD_SOURCE_TYPE');
   assert(leadSource && leadSource.options.some(o => (o.id === '2506' || o.id === '2508' || o.id === '2324') && o.value === 'Inbound Portal'), 'Lead Source Type mapped to numeric ID for Inbound Portal');
 
-  // Check Number of Cheques field uses new native Bitrix field UF_CRM_1792139023
-  const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_1792139023' && f.type === 'enumeration'));
-  assert(hasListingCheques, 'Listing layout uses native Bitrix field UF_CRM_1792139023 as an enumeration list');
-  const chequeField = allEnumFields.find(f => f.code === 'UF_CRM_1792139023');
-  assert(chequeField && chequeField.options.some(o => o.id === '2446' && (o.value === '4 Cheque' || o.value === '4 Cheques')), 'UF_CRM_1792139023 mapped to numeric ID 2446 for 4 Cheque');
+  // Check Number of Cheques field uses native Bitrix field UF_CRM_1792139023
+  const hasListingCheques = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_1792139023' && (f.type === 'number' || f.type === 'integer')));
+  assert(hasListingCheques, 'Listing layout uses native Bitrix field UF_CRM_1792139023 as a number input');
 
   // Check Number of Parking Spaces field uses native Bitrix field UF_CRM_NUMBEROFPARKINGSPACES
   const hasListingParking = fieldCfg.listingLayout.sections.some(s => s.fields.some(f => f.code === 'UF_CRM_NUMBEROFPARKINGSPACES' && f.type === 'integer'));
@@ -934,14 +932,13 @@ async function runTests() {
   assert(mappingData.success === true, 'getListingFieldMapping returns success: true');
   assert(mappingData.entityTypeId === 1058, 'Entity type ID is 1058 (Listing SPA)');
   assert(Array.isArray(mappingData.fieldMap) && mappingData.fieldMap.length >= 60, 'Field map contains >= 60 synchronized listing attributes');
-  assert(Array.isArray(mappingData.sections) && mappingData.sections.length === 8, 'Synchronized listing layout has exactly 8 structured sections');
+  assert(Array.isArray(mappingData.sections) && mappingData.sections.length === 7, 'Synchronized listing layout has exactly 7 structured sections');
 
   // Check 8 structured sections
   const sectionIds = mappingData.sections.map(s => s.id);
   assert(sectionIds.includes('general'), 'Includes General Overview section');
   assert(sectionIds.includes('seller'), 'Includes Seller & Source section');
   assert(sectionIds.includes('specs'), 'Includes Property Specifications section');
-  assert(sectionIds.includes('location'), 'Includes Location & Geography section');
   assert(sectionIds.includes('pricing'), 'Includes Pricing & Terms section');
   assert(sectionIds.includes('dates'), 'Includes Dates & Timeline section');
   assert(sectionIds.includes('marketing'), 'Includes Portals & Marketing section');
@@ -989,11 +986,11 @@ async function runTests() {
   // Verify listing layout uses interactive lookup fields matching lead layout pattern
   const configJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'config/fields.json'), 'utf-8'));
   const listingLookupFields = (configJson.listingLayout?.sections || []).flatMap(s => (s.fields || [])).filter(f => f.type === 'lookup');
-  assert(listingLookupFields.length >= 7, 'listingLayout defines interactive lookup fields (>= 7 lookup fields)');
+  assert(listingLookupFields.length >= 5, 'listingLayout defines interactive lookup fields (>= 5 lookup fields)');
   assert(listingLookupFields.some(f => f.code === 'COMPANY_ID' && f.lookupEntity === 'developer'), 'COMPANY_ID is configured as developer lookup');
-  assert(listingLookupFields.some(f => f.code === 'CONTACT_ID' && f.lookupEntity === 'contact'), 'CONTACT_ID is configured as contact lookup');
   assert(listingLookupFields.some(f => f.code === 'UF_CRM_PROPERTY' && f.lookupEntity === 'property'), 'UF_CRM_PROPERTY is configured as property lookup');
-  assert(listingLookupFields.some(f => f.code === 'UF_CRM_PROJECT_NAME' && f.lookupEntity === 'project'), 'UF_CRM_PROJECT_NAME is configured as project lookup');
+  assert(listingLookupFields.some(f => f.code === 'UF_CRM_PROJECT' && f.lookupEntity === 'master_project'), 'UF_CRM_PROJECT is configured as master_project lookup');
+  assert(listingLookupFields.some(f => f.code === 'UF_CRM_LISTINGAGENT' && f.lookupEntity === 'broker'), 'UF_CRM_LISTINGAGENT is configured as broker lookup');
   assert(tabJsContent.includes('isLookupField'), 'public/js/tab.js defines isLookupField helper');
   assert(tabJsContent.includes('resolveLookupEntity'), 'public/js/tab.js defines resolveLookupEntity helper');
   assert(tabJsContent.includes('openLinkedRecord'), 'public/js/tab.js defines openLinkedRecord for linked CRM navigation');

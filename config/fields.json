@@ -66,53 +66,6 @@
         "defaultOpen": true,
         "fields": [
           {
-            "code": "UF_CRM_1791952409183",
-            "leadAltCode": "UF_CRM_LISTING_NAME",
-            "spaKey": "title",
-            "spaCrmCode": "TITLE",
-            "label": "Listing Title",
-            "bitrixLabel": "Listing Name",
-            "type": "string",
-            "placeholder": "e.g. Luxury 4BR Penthouse in Downtown Dubai...",
-            "fullWidth": true,
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "STATUS_ID",
-            "spaKey": "stageId",
-            "spaCrmCode": "STAGE_ID",
-            "label": "Stage",
-            "bitrixLabel": "Status / Stage",
-            "type": "stage",
-            "placeholder": "-- Select Stage --",
-            "options": [],
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "ASSIGNED_BY_ID",
-            "spaKey": "assignedById",
-            "spaCrmCode": "ASSIGNED_BY_ID",
-            "label": "Responsible Person",
-            "bitrixLabel": "Responsible Person",
-            "type": "user",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
             "code": "UF_CRM_1791952650167",
             "leadAltCode": "UF_CRM_LISTING_TYPE",
             "spaKey": "ufCrm16_1790154808",
@@ -192,22 +145,6 @@
               "overseas_sale": "show",
               "rent": "show"
             }
-          },
-          {
-            "code": "XML_ID",
-            "leadAltCode": "UF_CRM_LISTING_ID",
-            "spaKey": "xmlId",
-            "spaCrmCode": "XML_ID",
-            "label": "External ID (xmlId)",
-            "bitrixLabel": "External ID",
-            "type": "string",
-            "placeholder": "e.g. EXT-984210",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "opt",
-              "overseas_sale": "opt",
-              "rent": "opt"
-            }
           }
         ]
       },
@@ -221,43 +158,11 @@
             "code": "COMPANY_ID",
             "spaKey": "companyId",
             "spaCrmCode": "COMPANY_ID",
-            "label": "Company (Agency or Developer)",
-            "bitrixLabel": "Company",
+            "label": "Developer",
+            "bitrixLabel": "Developer",
             "type": "lookup",
-            "placeholder": "Search Company or Developer...",
+            "placeholder": "Search Developer...",
             "lookupEntity": "developer",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "CONTACT_ID",
-            "spaKey": "contactId",
-            "spaCrmCode": "CONTACT_ID",
-            "label": "Contact",
-            "bitrixLabel": "Contact",
-            "type": "lookup",
-            "placeholder": "Search Contact...",
-            "lookupEntity": "contact",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_CONTACTS",
-            "spaKey": "contactIds",
-            "spaCrmCode": "CONTACT_IDS",
-            "label": "Contacts",
-            "bitrixLabel": "Contacts",
-            "type": "lookup",
-            "placeholder": "Search Contacts...",
-            "lookupEntity": "contact",
             "rules": {
               "external_stock": "show",
               "off_plan": "show",
@@ -280,37 +185,6 @@
               "overseas_sale": "opt",
               "rent": "opt"
             }
-          },
-          {
-            "code": "UF_CRM_DEVELOPER_NAME",
-            "spaKey": "ufCrm16DeveloperName",
-            "spaCrmCode": "UF_CRM_16_DEVELOPER_NAME",
-            "label": "Developer Name",
-            "bitrixLabel": "Developer Name",
-            "type": "string",
-            "placeholder": "e.g. Emaar, Damac, Sobha...",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "opt"
-            }
-          },
-          {
-            "code": "UF_CRM_DEVELOPER_1",
-            "spaKey": "ufCrm16_1791172932",
-            "spaCrmCode": "UF_CRM_16_1791172932",
-            "label": "Developer CRM Entity",
-            "bitrixLabel": "Developer",
-            "type": "lookup",
-            "placeholder": "Search Developer...",
-            "lookupEntity": "developer",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "opt"
-            }
           }
         ]
       },
@@ -320,6 +194,32 @@
         "icon": "📐",
         "desc": "Dimensions, rooms, spaces, floor, and furnishing",
         "fields": [
+          {
+            "code": "UF_CRM_PROJECT",
+            "leadAltCode": "UF_CRM_1792558317",
+            "leadAltCodes": [
+              "UF_CRM_1792558317"
+            ],
+            "spaKey": "ufCrm16MasterProject",
+            "spaCrmCode": "UF_CRM_16_MASTER_PROJECT",
+            "spaBindingCode": "UF_CRM_16_1791173000",
+            "fallbackKeys": [
+              "ufCrm16_1791173000",
+              "ufCrm16MasterProjectInfo",
+              "ufCrm16OldMasterProject"
+            ],
+            "label": "Master Project",
+            "bitrixLabel": "Master Project",
+            "type": "lookup",
+            "placeholder": "Search Master Project...",
+            "lookupEntity": "master_project",
+            "rules": {
+              "external_stock": "opt",
+              "off_plan": "show",
+              "overseas_sale": "opt",
+              "rent": "opt"
+            }
+          },
           {
             "code": "UF_CRM_1791952050535",
             "spaKey": "ufCrm16PropertyType",
@@ -508,21 +408,6 @@
             }
           },
           {
-            "code": "UF_CRM_UNIT_NO",
-            "spaKey": "ufCrm16UnitNumber",
-            "spaCrmCode": "UF_CRM_16_UNIT_NUMBER",
-            "label": "Unit Number",
-            "bitrixLabel": "Unit Number",
-            "type": "string",
-            "placeholder": "e.g. 1402",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "show"
-            }
-          },
-          {
             "code": "UF_CRM_FLOOR",
             "spaKey": "ufCrm16Floor",
             "spaCrmCode": "UF_CRM_16_FLOOR",
@@ -599,217 +484,6 @@
               "off_plan": "show",
               "overseas_sale": "opt",
               "rent": "opt"
-            }
-          }
-        ]
-      },
-      {
-        "id": "location",
-        "title": "Building, Location & Geography",
-        "icon": "📍",
-        "desc": "Country, city, community, tower, and coordinates",
-        "fields": [
-          {
-            "code": "UF_CRM_PROJECT_NAME",
-            "leadAltCode": "UF_CRM_PROJECT_1",
-            "leadAltCodes": [
-              "UF_CRM_PROJECT_1",
-              "UF_CRM_1791794196"
-            ],
-            "spaKey": "ufCrm16ProjectName",
-            "spaCrmCode": "UF_CRM_16_PROJECT_NAME",
-            "spaBindingCode": "UF_CRM_16_1791173131",
-            "fallbackKeys": [
-              "ufCrm16BuildingBayut",
-              "ufCrm16_1791173131",
-              "ufCrm16ProjectInfo"
-            ],
-            "label": "Project / Building Name",
-            "bitrixLabel": "Project Name",
-            "type": "lookup",
-            "placeholder": "Search Project / Building...",
-            "lookupEntity": "project",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_PROJECT",
-            "leadAltCode": "UF_CRM_1792558317",
-            "leadAltCodes": [
-              "UF_CRM_1792558317"
-            ],
-            "spaKey": "ufCrm16MasterProject",
-            "spaCrmCode": "UF_CRM_16_MASTER_PROJECT",
-            "spaBindingCode": "UF_CRM_16_1791173000",
-            "fallbackKeys": [
-              "ufCrm16_1791173000",
-              "ufCrm16MasterProjectInfo",
-              "ufCrm16OldMasterProject"
-            ],
-            "label": "Master Project",
-            "bitrixLabel": "Master Project",
-            "type": "lookup",
-            "placeholder": "Search Master Project...",
-            "lookupEntity": "master_project",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "opt"
-            }
-          },
-          {
-            "code": "UF_CRM_BUILDING_DUBIZZLE",
-            "spaKey": "ufCrm16BuildingBayut",
-            "spaCrmCode": "UF_CRM_16_BUILDING_BAYUT",
-            "label": "Building / Tower Name (Bayut)",
-            "bitrixLabel": "Building - Bayut",
-            "type": "string",
-            "placeholder": "e.g. Tower A, East Wing...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_COMMUNITY_PROPERTYFINDER",
-            "spaKey": "ufCrm16CommunityPropertyfinder",
-            "spaCrmCode": "UF_CRM_16_COMMUNITY_PROPERTYFINDER",
-            "label": "Community - Propertyfinder",
-            "bitrixLabel": "Community - Propertyfinder",
-            "type": "string",
-            "placeholder": "e.g. Downtown Dubai, Palm Jumeirah...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_SUB_COMMUNITY_PROPERTYFINDER",
-            "spaKey": "ufCrm16SubCommunityPropertyfinder",
-            "spaCrmCode": "UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER",
-            "label": "Sub-Community",
-            "bitrixLabel": "Sub Community - Propertyfinder",
-            "type": "string",
-            "placeholder": "e.g. Burj Crown, Marina Gate 2...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_NEIGHBORHOOD",
-            "spaKey": "ufCrm16_1791173032",
-            "spaCrmCode": "UF_CRM_16_1791173032",
-            "label": "Neighborhood / Community",
-            "bitrixLabel": "Neighborhood",
-            "type": "string",
-            "placeholder": "e.g. Business Bay, Dubai Marina...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_CITY",
-            "spaKey": "ufCrm16_1791172815",
-            "spaCrmCode": "UF_CRM_16_1791172815",
-            "label": "City",
-            "bitrixLabel": "City",
-            "type": "string",
-            "placeholder": "e.g. Dubai, London, Abu Dhabi...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_COUNTRY",
-            "spaKey": "ufCrm16_1791172854",
-            "spaCrmCode": "UF_CRM_16_1791172854",
-            "label": "Country",
-            "bitrixLabel": "Country",
-            "type": "string",
-            "placeholder": "e.g. United Arab Emirates, UK, France...",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "show",
-              "rent": "opt"
-            }
-          },
-          {
-            "code": "UF_CRM_STREET",
-            "spaKey": "ufCrm16Street",
-            "spaCrmCode": "UF_CRM_16_STREET",
-            "label": "Street",
-            "bitrixLabel": "Street",
-            "type": "string",
-            "placeholder": "e.g. Sheikh Mohammed bin Rashid Blvd...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_1791970638065",
-            "spaKey": "ufCrm16_1791172676",
-            "spaCrmCode": "UF_CRM_16_1791172676",
-            "label": "Address",
-            "bitrixLabel": "Property Address",
-            "type": "address",
-            "placeholder": "Street, building, unit number...",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_LATITUDE",
-            "spaKey": "ufCrm16Latitude",
-            "spaCrmCode": "UF_CRM_16_LATITUDE",
-            "label": "Latitude",
-            "bitrixLabel": "Latitude",
-            "type": "number",
-            "placeholder": "e.g. 25.1972",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_LONGITUDE",
-            "spaKey": "ufCrm16Longitude",
-            "spaCrmCode": "UF_CRM_16_LONGITUDE",
-            "label": "Longitude",
-            "bitrixLabel": "Longitude",
-            "type": "number",
-            "placeholder": "e.g. 55.2744",
-            "rules": {
-              "external_stock": "show",
-              "off_plan": "show",
-              "overseas_sale": "show",
-              "rent": "show"
             }
           }
         ]
@@ -961,46 +635,17 @@
             "spaCrmCode": "UF_CRM_16_1792127520",
             "label": "Number of Cheques",
             "bitrixLabel": "Cheques",
-            "type": "enumeration",
-            "placeholder": "-- Select Cheques --",
-            "options": [
-              {
-                "id": "2440",
-                "spaId": "2432",
-                "value": "1 Cheque"
-              },
-              {
-                "id": "2442",
-                "spaId": "2434",
-                "value": "2 Cheque"
-              },
-              {
-                "id": "2444",
-                "spaId": "2434",
-                "value": "2 Cheques"
-              },
-              {
-                "id": "2446",
-                "spaId": "2436",
-                "value": "4 Cheque"
-              },
-              {
-                "id": "2448",
-                "spaId": "2438",
-                "value": "6 Cheque"
-              },
-              {
-                "id": "2450",
-                "spaId": "2440",
-                "value": "12 Cheque"
-              }
-            ],
+            "type": "number",
+            "placeholder": "e.g. 4",
             "rules": {
               "external_stock": "hide",
               "off_plan": "hide",
               "overseas_sale": "hide",
               "rent": "show"
-            }
+            },
+            "min": 1,
+            "max": 12,
+            "step": 1
           }
         ]
       },
@@ -1082,8 +727,8 @@
             "code": "UF_CRM_COMPLETIONDATE",
             "spaKey": "ufCrm16CompletionDate",
             "spaCrmCode": "UF_CRM_16_COMPLETION_DATE",
-            "label": "Handover / Completion Date",
-            "bitrixLabel": "Completion Date",
+            "label": "Handover Date",
+            "bitrixLabel": "Handover Date",
             "type": "date",
             "rules": {
               "external_stock": "hide",
@@ -1293,99 +938,6 @@
               "external_stock": "opt",
               "off_plan": "show",
               "overseas_sale": "hide",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_PORTAL_LISTING_ID",
-            "spaKey": "ufCrm16PortalListingId",
-            "spaCrmCode": "UF_CRM_16_PORTAL_LISTING_ID",
-            "label": "Portal Listing ID",
-            "bitrixLabel": "Portal Listing Id",
-            "type": "string",
-            "placeholder": "e.g. PORT-1122",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "hide",
-              "rent": "opt"
-            }
-          },
-          {
-            "code": "UF_CRM_DUBIZZLE_REGION",
-            "spaKey": "ufCrm16DubizzleRegion",
-            "spaCrmCode": "UF_CRM_16_DUBIZZLE_REGION",
-            "label": "Dubizzle Listing ID / Region",
-            "bitrixLabel": "Dubizzle Region",
-            "type": "string",
-            "placeholder": "e.g. DBZ-558291",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "hide",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_LISTING",
-            "spaKey": "ufCrm16Listing",
-            "spaCrmCode": "UF_CRM_16_LISTING",
-            "label": "Linked Portal Listing",
-            "bitrixLabel": "Listing",
-            "type": "lookup",
-            "placeholder": "Search Listing...",
-            "lookupEntity": "listing",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "opt",
-              "overseas_sale": "opt",
-              "rent": "opt"
-            }
-          },
-          {
-            "code": "UF_CRM_SYSTEMALLOWEDFORPORTALS",
-            "leadAltCode": "UF_CRM_PORTALS_ENABLED",
-            "spaKey": "ufCrm16SystemAllowedForPortals",
-            "spaCrmCode": "UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS",
-            "label": "Bayut / Dubizzle Feed Toggle",
-            "bitrixLabel": "System Allowed for Portals",
-            "type": "boolean",
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "hide",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_UK_SUMMARY_DESCRIPTION",
-            "spaKey": "ufCrm16SummaryDescription",
-            "spaCrmCode": "UF_CRM_16_SUMMARY_DESCRIPTION",
-            "label": "Portal Title",
-            "bitrixLabel": "Summary Description",
-            "type": "string",
-            "placeholder": "SEO Headline for Portals...",
-            "fullWidth": true,
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "opt",
-              "rent": "show"
-            }
-          },
-          {
-            "code": "UF_CRM_DESCRIPTION",
-            "spaKey": "ufCrm16Description",
-            "spaCrmCode": "UF_CRM_16_DESCRIPTION",
-            "label": "Portal Description",
-            "bitrixLabel": "Property Description / Amenities",
-            "type": "textarea",
-            "placeholder": "Marketing description, key amenities...",
-            "fullWidth": true,
-            "rules": {
-              "external_stock": "opt",
-              "off_plan": "show",
-              "overseas_sale": "opt",
               "rent": "show"
             }
           }
@@ -2273,8 +1825,8 @@
       "code": "COMPANY_ID",
       "spaKey": "companyId",
       "spaCrmCode": "COMPANY_ID",
-      "label": "Company (Agency or Developer)",
-      "bitrixLabel": "Company",
+      "label": "Developer",
+      "bitrixLabel": "Developer",
       "type": "lookup",
       "placeholder": "Search Company or Developer...",
       "lookupEntity": "developer",
@@ -2651,7 +2203,8 @@
         "off_plan": "show",
         "overseas_sale": "opt",
         "rent": "show"
-      }
+      },
+      "spaBindingCode": "UF_CRM_16_1791173131"
     },
     {
       "code": "UF_CRM_PROJECT",
@@ -2961,46 +2514,17 @@
       "spaCrmCode": "UF_CRM_16_1792127520",
       "label": "Number of Cheques",
       "bitrixLabel": "Cheques",
-      "type": "enumeration",
-      "placeholder": "-- Select Cheques --",
-      "options": [
-        {
-          "id": "2440",
-          "spaId": "2432",
-          "value": "1 Cheque"
-        },
-        {
-          "id": "2442",
-          "spaId": "2434",
-          "value": "2 Cheque"
-        },
-        {
-          "id": "2444",
-          "spaId": "2434",
-          "value": "2 Cheques"
-        },
-        {
-          "id": "2446",
-          "spaId": "2436",
-          "value": "4 Cheque"
-        },
-        {
-          "id": "2448",
-          "spaId": "2438",
-          "value": "6 Cheque"
-        },
-        {
-          "id": "2450",
-          "spaId": "2440",
-          "value": "12 Cheque"
-        }
-      ],
+      "type": "number",
+      "placeholder": "e.g. 4",
       "rules": {
         "external_stock": "hide",
         "off_plan": "hide",
         "overseas_sale": "hide",
         "rent": "show"
-      }
+      },
+      "min": 1,
+      "max": 12,
+      "step": 1
     },
     {
       "code": "UF_CRM_AVAIL_DATE",
@@ -3074,8 +2598,8 @@
       "code": "UF_CRM_COMPLETIONDATE",
       "spaKey": "ufCrm16CompletionDate",
       "spaCrmCode": "UF_CRM_16_COMPLETION_DATE",
-      "label": "Handover / Completion Date",
-      "bitrixLabel": "Completion Date",
+      "label": "Handover Date",
+      "bitrixLabel": "Handover Date",
       "type": "date",
       "rules": {
         "external_stock": "hide",
