@@ -1109,6 +1109,570 @@
   /**
    * Create field input control supporting lookup, enumeration, boolean, money, date, text, number
    */
+  
+  // ============================================================================
+  // IN-WINDOW MEDIA & FILE PREVIEW COMPONENT + LIGHTBOX VIEWER
+  // ============================================================================
+  const lightboxModal = document.getElementById('lightbox-modal');
+  const lightboxTitle = document.getElementById('lightbox-title');
+  const lightboxBody = document.getElementById('lightbox-body');
+  const lightboxCloseBtn = document.getElementById('lightbox-close-btn');
+  const lbNavPrev = document.getElementById('lb-nav-prev');
+  const lbNavNext = document.getElementById('lb-nav-next');
+  const lightboxFileIcon = document.getElementById('lightbox-file-icon');
+  const lightboxCounter = document.getElementById('lightbox-counter');
+  const lbFilmstrip = document.getElementById('lb-filmstrip');
+  const lbZoomControls = document.getElementById('lb-zoom-controls');
+  const lightboxDownloadLink = document.getElementById('lightbox-download-link');
+
+  let _lbGallery = [];
+  let _lbIndex = 0;
+  let _lbScale = 1;
+  let _lbImgX = 0;
+  let _lbImgY = 0;
+  let lightboxCleanup = null;
+  let pendingFileUploads = {}; // fieldCode -> Array of { file, dataUrl, name, size, isImage, isPdf }
+  let removedFileIds = {};     // fieldCode -> Set of removed IDs
+
+  function isImageFile(fileName, mimeType) {
+    if (mimeType && mimeType.startsWith('image/')) return true;
+    return /\.(jpe?g|png|gif|webp|svg|bmp|ico)$/i.test(fileName || '');
+  }
+
+  function isPdfFile(fileName, mimeType) {
+    if (mimeType === 'application/pdf') return true;
+    return /\.pdf$/i.test(fileName || '');
+  }
+
+  function getPreviewUrl(url) {
+    if (!url || url.startsWith('data:') || url.includes('/api/file/proxy?url=')) return url;
+    return /^https?:\/\//i.test(url) ? `/api/file/proxy?url=${encodeURIComponent(url)}` : url;
+  }
+
+  function getNativeFileUrl(url) {
+    const marker = '/api/file/proxy?url=';
+    if (!url || !url.includes(marker)) return url;
+    try {
+      return decodeURIComponent(url.slice(url.indexOf(marker) + marker.length));
+    } catch (_) {
+      return url;
+    }
+  }
+
+  function openInBitrixViewer(url) {
+    const nativeUrl = getNativeFileUrl(url);
+    if (!nativeUrl) return;
+    if (window.BX24 && typeof window.BX24.openPath === 'function' && !nativeUrl.startsWith('data:')) {
+      window.BX24.openPath(nativeUrl);
+      return;
+    }
+    window.open(nativeUrl, '_blank', 'noopener');
+  }
+
+  function _lbSetCounter() {
+    if (!lightboxCounter) return;
+    if (_lbGallery.length > 1) {
+      lightboxCounter.textContent = `${_lbIndex + 1} / ${_lbGallery.length}`;
+      lightboxCounter.style.display = '';
+    } else {
+      lightboxCounter.style.display = 'none';
+    }
+  }
+
+  function _lbSetNavState() {
+    if (!lbNavPrev || !lbNavNext) return;
+    const multi = _lbGallery.length > 1;
+    lbNavPrev.style.display = multi ? 'flex' : 'none';
+    lbNavNext.style.display = multi ? 'flex' : 'none';
+    lbNavPrev.disabled = _lbIndex === 0;
+    lbNavNext.disabled = _lbIndex === _lbGallery.length - 1;
+  }
+
+  function _lbSyncFilmstrip() {
+    if (!lbFilmstrip) return;
+    lbFilmstrip.querySelectorAll('.lb-film-item').forEach((el, i) => {
+      el.classList.toggle('active', i === _lbIndex);
+    });
+    const activeEl = lbFilmstrip.querySelectorAll('.lb-film-item')[_lbIndex];
+    if (activeEl) activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  function _lbBuildFilmstrip(gallery) {
+    if (!lbFilmstrip) return;
+    lbFilmstrip.innerHTML = '';
+    if (gallery.length <= 1) {
+      lbFilmstrip.style.display = 'none';
+      return;
+    }
+    lbFilmstrip.style.display = 'flex';
+    gallery.forEach((item, i) => {
+      const el = document.createElement('div');
+      el.className = 'lb-film-item' + (i === _lbIndex ? ' active' : '');
+      if (item.isImage) {
+        const filmImg = document.createElement('img');
+        filmImg.src = item.url;
+        filmImg.alt = item.name;
+        filmImg.loading = 'lazy';
+        filmImg.onerror = function() {
+          if (!this.dataset.proxied && item.url && item.url.startsWith('http')) {
+            this.dataset.proxied = '1';
+            this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+          }
+        };
+        el.appendChild(filmImg);
+      } else {
+        const badgeClass = item.isPdf ? 'pdf' : 'doc';
+        const icon = item.isPdf ? '📄' : '📎';
+        el.innerHTML = `
+          <div class="lb-film-item-doc">
+            <span>${icon}</span>
+            <span class="lb-film-badge ${badgeClass}">${item.isPdf ? 'PDF' : 'DOC'}</span>
+          </div>
+        `;
+      }
+      el.addEventListener('click', () => _lbGoTo(i));
+      lbFilmstrip.appendChild(el);
+    });
+  }
+
+  function _lbGoTo(idx) {
+    if (idx < 0 || idx >= _lbGallery.length) return;
+    _lbIndex = idx;
+    _lbScale = 1;
+    _lbImgX = 0;
+    _lbImgY = 0;
+    _lbRenderCurrent();
+    _lbSetCounter();
+    _lbSetNavState();
+    _lbSyncFilmstrip();
+  }
+
+  function _lbRenderCurrent() {
+    if (lightboxCleanup) {
+      lightboxCleanup();
+      lightboxCleanup = null;
+    }
+    if (!lightboxBody) return;
+
+    const existingImg = lightboxBody.querySelector('.lightbox-img');
+    const existingIframe = lightboxBody.querySelector('.lightbox-iframe');
+    const existingError = lightboxBody.querySelector('.lb-error-box');
+    const existingPanel = lightboxBody.querySelector('.lb-document-panel');
+    if (existingImg) existingImg.remove();
+    if (existingIframe) existingIframe.remove();
+    if (existingError) existingError.remove();
+    if (existingPanel) existingPanel.remove();
+
+    const item = _lbGallery[_lbIndex];
+    if (!item) return;
+
+    if (lightboxTitle) lightboxTitle.textContent = item.name || 'Preview';
+    if (lightboxDownloadLink) {
+      lightboxDownloadLink.href = getPreviewUrl(item.url);
+      lightboxDownloadLink.setAttribute('download', item.name || 'download');
+    }
+
+    const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
+
+    if (item.isPdf) {
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '📄';
+      if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
+      if (lbZoomControls) lbZoomControls.style.display = 'none';
+
+      const proxyUrl = getPreviewUrl(item.url);
+      const iframe = document.createElement('iframe');
+      iframe.className = 'lightbox-iframe';
+      iframe.src = proxyUrl;
+      lightboxBody.appendChild(iframe);
+    } else if (item.isImage) {
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '🖼️';
+      if (lbZoomControls) lbZoomControls.style.display = 'flex';
+      if (zoomToggleBtn) {
+        zoomToggleBtn.style.display = 'inline-flex';
+        zoomToggleBtn.classList.remove('active');
+        zoomToggleBtn.title = 'Fit to Screen / 1:1 Size';
+      }
+
+      _lbScale = 1;
+      _lbImgX = 0;
+      _lbImgY = 0;
+      let isDragging = false;
+      let dragStartX = 0;
+      let dragStartY = 0;
+      let hasDragged = false;
+
+      const img = document.createElement('img');
+      img.className = 'lightbox-img lb-transitioning';
+      img.src = item.url;
+      img.alt = item.name;
+      img.onerror = () => {
+        if (!img.dataset.proxied) {
+          img.dataset.proxied = '1';
+          let target = item.url;
+          if (target.includes('/api/file/proxy?url=')) {
+            try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) {}
+          }
+          img.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
+          return;
+        }
+        img.style.display = 'none';
+        const err = document.createElement('div');
+        err.className = 'lb-error-box';
+        err.innerHTML = `
+          <span style="font-size:32px;">🖼️</span>
+          <span>Unable to preview image</span>
+          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab ↗</a>
+        `;
+        lightboxBody.appendChild(err);
+      };
+      lightboxBody.appendChild(img);
+
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.classList.remove('lb-transitioning');
+      }));
+
+      const applyTransform = (smooth = true) => {
+        img.style.transition = smooth ? 'transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)' : 'none';
+        img.style.transform = `translate(${_lbImgX}px, ${_lbImgY}px) scale(${_lbScale})`;
+      };
+
+      const setZoom = (scale, smooth = true) => {
+        _lbScale = Math.max(1, Math.min(8, scale));
+        if (_lbScale === 1) {
+          _lbImgX = 0;
+          _lbImgY = 0;
+        }
+        applyTransform(smooth);
+        img.classList.toggle('zoomed-in', _lbScale > 1);
+        if (zoomToggleBtn) {
+          zoomToggleBtn.classList.toggle('active', _lbScale > 1);
+          zoomToggleBtn.title = _lbScale > 1 ? 'Fit to Screen' : '1:1 Original Size';
+        }
+      };
+
+      const toggleZoom = () => setZoom(_lbScale > 1 ? 1 : 4);
+
+      const zbIn = document.getElementById('lb-zoom-in-btn');
+      const zbOut = document.getElementById('lb-zoom-out-btn');
+      const zbReset = document.getElementById('lb-zoom-reset-btn');
+      if (zbIn) zbIn.onclick = () => setZoom(_lbScale * 1.5);
+      if (zbOut) zbOut.onclick = () => setZoom(_lbScale / 1.5);
+      if (zbReset) zbReset.onclick = () => setZoom(1);
+
+      img.addEventListener('click', () => {
+        if (hasDragged) { hasDragged = false; return; }
+        toggleZoom();
+      });
+
+      if (zoomToggleBtn) zoomToggleBtn.onclick = toggleZoom;
+
+      img.addEventListener('mousedown', (e) => {
+        if (_lbScale <= 1) return;
+        isDragging = true;
+        hasDragged = false;
+        dragStartX = e.clientX - _lbImgX;
+        dragStartY = e.clientY - _lbImgY;
+        img.classList.add('grabbing');
+        e.preventDefault();
+      });
+
+      const onMove = (e) => {
+        if (!isDragging || _lbScale <= 1) return;
+        const nx = e.clientX - dragStartX;
+        const ny = e.clientY - dragStartY;
+        if (Math.abs(nx - _lbImgX) > 3 || Math.abs(ny - _lbImgY) > 3) hasDragged = true;
+        _lbImgX = nx;
+        _lbImgY = ny;
+        applyTransform(false);
+      };
+
+      const onUp = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        img.classList.remove('grabbing');
+      };
+
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+
+      const onWheel = (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.85 : 1.2;
+        setZoom(_lbScale * delta, false);
+      };
+      lightboxBody.addEventListener('wheel', onWheel, { passive: false });
+
+      lightboxCleanup = () => {
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+        lightboxBody.removeEventListener('wheel', onWheel);
+        if (zbIn) zbIn.onclick = null;
+        if (zbOut) zbOut.onclick = null;
+        if (zbReset) zbReset.onclick = null;
+        if (zoomToggleBtn) zoomToggleBtn.onclick = null;
+      };
+    } else {
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '📎';
+      if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
+      if (lbZoomControls) lbZoomControls.style.display = 'none';
+
+      const panel = document.createElement('div');
+      panel.className = 'lb-document-panel';
+      panel.innerHTML = `
+        <span class="lb-document-icon">📄</span>
+        <strong class="lb-document-name">${item.name || 'Document'}</strong>
+        <p>Open this file using the Bitrix24 viewer.</p>
+        <button type="button" class="lb-document-open">Open in Bitrix24</button>
+      `;
+      panel.querySelector('.lb-document-open').addEventListener('click', () => openInBitrixViewer(item.url));
+      lightboxBody.appendChild(panel);
+    }
+  }
+
+  function openLightbox(title, url, isPdf = false, gallery = null, startIdx = 0, sourceEl = null) {
+    if (!lightboxModal) return;
+    if (gallery && gallery.length > 1) {
+      _lbGallery = gallery;
+      _lbIndex = startIdx;
+    } else {
+      _lbGallery = [{ url, name: title, isImage: !isPdf, isPdf }];
+      _lbIndex = 0;
+    }
+
+    _lbBuildFilmstrip(_lbGallery);
+    _lbRenderCurrent();
+    _lbSetCounter();
+    _lbSetNavState();
+
+    const isEmbedded = window.self !== window.top || document.documentElement.scrollHeight > window.innerHeight + 150;
+    const contentEl = lightboxModal.querySelector('.lightbox-content');
+    if (isEmbedded) {
+      const docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
+      lightboxModal.style.position = 'absolute';
+      lightboxModal.style.top = '0px';
+      lightboxModal.style.left = '0px';
+      lightboxModal.style.width = '100%';
+      lightboxModal.style.height = docHeight + 'px';
+      lightboxModal.style.minHeight = '100%';
+      lightboxModal.style.alignItems = 'flex-start';
+
+      let targetTop = 40;
+      if (sourceEl) {
+        const elTop = sourceEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+        targetTop = Math.max(20, elTop - 340);
+      } else {
+        const scrollPos = window.pageYOffset || document.documentElement.scrollTop || 0;
+        targetTop = Math.max(20, scrollPos + 40);
+      }
+
+      if (contentEl) {
+        contentEl.style.height = '85vh';
+        contentEl.style.maxHeight = '820px';
+        contentEl.style.marginTop = targetTop + 'px';
+        try { contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
+      }
+    } else {
+      lightboxModal.style.position = 'fixed';
+      lightboxModal.style.top = '0px';
+      lightboxModal.style.left = '0px';
+      lightboxModal.style.width = '100%';
+      lightboxModal.style.height = '100vh';
+      lightboxModal.style.maxHeight = '100vh';
+      lightboxModal.style.alignItems = 'center';
+      if (contentEl) {
+        contentEl.style.height = '100%';
+        contentEl.style.maxHeight = '100%';
+        contentEl.style.marginTop = '';
+      }
+    }
+
+    lightboxModal.style.display = 'flex';
+    lightboxModal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    if (!lightboxModal) return;
+    if (lightboxCleanup) {
+      lightboxCleanup();
+      lightboxCleanup = null;
+    }
+    const contentEl = lightboxModal.querySelector('.lightbox-content');
+    if (contentEl) {
+      contentEl.style.height = '';
+      contentEl.style.maxHeight = '';
+      contentEl.style.marginTop = '';
+    }
+    lightboxModal.style.display = 'none';
+    lightboxModal.classList.remove('is-open');
+    document.body.style.overflow = '';
+
+    if (lightboxBody) {
+      const img = lightboxBody.querySelector('.lightbox-img');
+      const iframe = lightboxBody.querySelector('.lightbox-iframe');
+      const errorBox = lightboxBody.querySelector('.lb-error-box');
+      const panel = lightboxBody.querySelector('.lb-document-panel');
+      if (img) img.remove();
+      if (iframe) iframe.remove();
+      if (errorBox) errorBox.remove();
+      if (panel) panel.remove();
+    }
+    _lbGallery = [];
+    _lbIndex = 0;
+    _lbScale = 1;
+    _lbImgX = 0;
+    _lbImgY = 0;
+  }
+
+  if (lightboxCloseBtn) lightboxCloseBtn.addEventListener('click', closeLightbox);
+  if (lightboxModal) {
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal || e.target.classList.contains('b24-native-viewer')) {
+        closeLightbox();
+      }
+    });
+  }
+  if (lbNavPrev) lbNavPrev.addEventListener('click', () => _lbGoTo(_lbIndex - 1));
+  if (lbNavNext) lbNavNext.addEventListener('click', () => _lbGoTo(_lbIndex + 1));
+
+  const b24ViewerMoreBtn = document.getElementById('b24-viewer-more-btn');
+  if (b24ViewerMoreBtn) {
+    b24ViewerMoreBtn.addEventListener('click', () => {
+      const item = _lbGallery[_lbIndex];
+      if (item && item.url) openInBitrixViewer(item.url);
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightboxModal || lightboxModal.style.display !== 'flex') return;
+    if (e.key === 'Escape') { closeLightbox(); return; }
+    if (e.key === 'ArrowLeft') { _lbGoTo(_lbIndex - 1); return; }
+    if (e.key === 'ArrowRight') { _lbGoTo(_lbIndex + 1); return; }
+    if (e.key === '+' || e.key === '=') {
+      const zbIn = document.getElementById('lb-zoom-in-btn');
+      if (zbIn) zbIn.click();
+      return;
+    }
+    if (e.key === '-' || e.key === '_') {
+      const zbOut = document.getElementById('lb-zoom-out-btn');
+      if (zbOut) zbOut.click();
+      return;
+    }
+    if (e.key === '0') {
+      const zbReset = document.getElementById('lb-zoom-reset-btn');
+      if (zbReset) zbReset.click();
+      return;
+    }
+  });
+
+  // Handle local newly selected files with instant in-window FileReader preview
+  function handleLocalFiles(fieldCode, files, viewportBox, stripWrap) {
+    if (!pendingFileUploads[fieldCode]) {
+      pendingFileUploads[fieldCode] = [];
+    }
+
+    Array.from(files).forEach(file => {
+      const isImg = isImageFile(file.name, file.type);
+      const isPdf = isPdfFile(file.name, file.type);
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const pendingItem = {
+          file,
+          dataUrl,
+          name: file.name,
+          size: file.size,
+          isImage: isImg,
+          isPdf
+        };
+        pendingFileUploads[fieldCode].push(pendingItem);
+        setDirty(true);
+
+        const thumb = document.createElement('div');
+        thumb.className = `thumb-item ${isImg ? 'preview-thumb-wrap' : 'preview-doc-wrap'} b24-file-tile active`;
+        thumb.title = `${file.name} (Ready to upload)`;
+
+        if (isImg) {
+          thumb.innerHTML = `
+            <div class="b24-tile-thumb-wrap">
+              <img class="thumb-item-img b24-tile-img" src="${dataUrl}" alt="${file.name}">
+              <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+            </div>
+            <div class="b24-tile-footer">
+              <span class="b24-tile-name" title="${file.name}">${file.name}</span>
+              <div class="b24-list-actions">
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+              </div>
+            </div>
+          `;
+        } else {
+          thumb.innerHTML = `
+            <div class="b24-tile-thumb-wrap">
+              <div class="doc-tile-inner">
+                <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
+                <span class="doc-tile-icon">📄</span>
+              </div>
+              <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+            </div>
+            <div class="b24-tile-footer">
+              <span class="b24-tile-name" title="${file.name}">${file.name}</span>
+              <div class="b24-list-actions">
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+              </div>
+            </div>
+          `;
+        }
+
+        const removeLocalItem = (ev) => {
+          ev.stopPropagation();
+          const idx = pendingFileUploads[fieldCode].indexOf(pendingItem);
+          if (idx > -1) pendingFileUploads[fieldCode].splice(idx, 1);
+          thumb.remove();
+          if (viewportBox) {
+            viewportBox.style.display = 'none';
+            viewportBox.innerHTML = '';
+          }
+          setDirty(true);
+          resizeWindow();
+        };
+
+        const rBtn = thumb.querySelector('.thumb-remove-btn');
+        if (rBtn) rBtn.addEventListener('click', removeLocalItem);
+        const lrBtn = thumb.querySelector('.thumb-remove-btn-list');
+        if (lrBtn) lrBtn.addEventListener('click', removeLocalItem);
+
+        const vBtn = thumb.querySelector('.b24-list-btn.view-btn');
+        if (vBtn) {
+          vBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            openLightbox(file.name, dataUrl, isPdf, null, 0, thumb);
+            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+          });
+        }
+
+        thumb.addEventListener('click', (ev) => {
+          if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
+          openLightbox(file.name, dataUrl, isPdf, null, 0, thumb);
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+
+        stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+        stripWrap.appendChild(thumb);
+        resizeWindow();
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
+
   function createFieldInput(f, currentVal, markFieldDirty) {
     if (isLookupField(f)) {
       if (!f.lookupEntity) f.lookupEntity = resolveLookupEntity(f);
@@ -1234,44 +1798,261 @@
       const fileContainer = document.createElement('div');
       fileContainer.className = 'file-field-container';
 
-      // Support single or multiple existing files returned by Bitrix24
-      const filesList = Array.isArray(currentVal) ? currentVal : (currentVal ? [currentVal] : []);
-      filesList.forEach((fileItem, idx) => {
-        if (!fileItem) return;
-        const fileChip = document.createElement('div');
-        fileChip.className = 'file-preview-chip';
-
-        let fileUrl = '';
-        let fileName = '';
-
-        if (typeof fileItem === 'object') {
-          fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || '';
-          fileName = fileItem.name || `${f.label || 'Attached File'}${filesList.length > 1 ? ` #${idx + 1}` : ''}`;
-        } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
-          fileUrl = fileItem;
-          fileName = fileItem.split('/').pop() || 'Attached File';
-        }
-
-        const domain = window.__BITRIX_DOMAIN__ || 'csl.bitrix24.com';
-        const fullUrl = fileUrl ? (fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl}`) : '';
-
-        fileChip.innerHTML = `📎 <span class="file-name">${fileName}</span> ${fullUrl ? `<a href="${fullUrl}" target="_blank" rel="noopener noreferrer" class="file-download-link">View File</a>` : ''}`;
-        fileContainer.appendChild(fileChip);
-      });
-
       inputElement = document.createElement('input');
       inputElement.type = 'file';
       inputElement.className = 'form-control file-input';
       inputElement.id = `field_${f.code}`;
       inputElement.name = f.code;
+      inputElement.style.display = 'none';
 
       // Allow multiple file selection for multiple-file fields
       const isMultiple = f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS') || f.code.endsWith('_1');
       if (isMultiple) {
         inputElement.multiple = true;
       }
-
       fileContainer.appendChild(inputElement);
+
+      const card = document.createElement('div');
+      card.className = 'file-upload-card';
+
+      // 1. Bitrix24 View Switcher Bar
+      const switcher = document.createElement('div');
+      switcher.className = 'b24-view-switcher';
+      switcher.innerHTML = `
+        <button type="button" class="b24-view-btn active" data-view="tile" title="Tile view">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          Tile
+        </button>
+        <button type="button" class="b24-view-btn" data-view="list" title="List view">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          List
+        </button>
+        <button type="button" class="b24-view-btn" data-view="fit" title="Fit width">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+          Fit width
+        </button>
+      `;
+
+      // 2. Dropzone box
+      const dropzone = document.createElement('div');
+      dropzone.className = 'dropzone-box';
+      const isImgField = f.code.includes('IMAGE') || f.code.includes('PHOTO') || f.code.includes('QR_CODE');
+      const uploadLabel = isImgField ? (isMultiple ? 'Upload Photos' : 'Upload Image') : (isMultiple ? 'Upload Documents' : 'Upload Document');
+
+      dropzone.innerHTML = `
+        <span class="dropzone-icon">📁</span>
+        <div class="dropzone-text-group">
+          <span class="dropzone-title">${uploadLabel}</span>
+          <span class="dropzone-sub">Click to browse or drop file</span>
+        </div>
+      `;
+
+      dropzone.addEventListener('click', () => inputElement.click());
+
+      // 3. Inline preview viewport
+      const viewportBox = document.createElement('div');
+      viewportBox.className = 'inline-preview-viewport';
+      viewportBox.id = `viewport_${f.code}`;
+      viewportBox.style.display = 'none';
+
+      // 4. Files strip
+      const stripWrap = document.createElement('div');
+      stripWrap.className = 'thumbnail-strip b24-files-container';
+      stripWrap.id = `strip_${f.code}`;
+
+      switcher.querySelectorAll('.b24-view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          switcher.querySelectorAll('.b24-view-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const viewMode = btn.dataset.view;
+          stripWrap.classList.remove('view-tile', 'view-list', 'view-fit');
+          stripWrap.classList.add(`view-${viewMode}`);
+        });
+      });
+
+      // Handle drop & file selection with instant FileReader previews
+      dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files?.length) {
+          handleLocalFiles(f.code, e.dataTransfer.files, viewportBox, stripWrap);
+        }
+      });
+
+      inputElement.addEventListener('change', () => {
+        if (inputElement.files?.length) {
+          handleLocalFiles(f.code, inputElement.files, viewportBox, stripWrap);
+        }
+      });
+
+      // Populate existing files
+      const filesList = Array.isArray(currentVal) ? currentVal : (currentVal ? [currentVal] : []);
+      const fieldGallery = [];
+
+      filesList.forEach((fileItem, idx) => {
+        if (!fileItem) return;
+
+        let fileUrl = '';
+        let fileName = '';
+        let fid = null;
+
+        if (typeof fileItem === 'object') {
+          fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
+          fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
+          if (!fileUrl && fid) {
+            fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
+          }
+          fileName = fileItem.name || fileItem.NAME || fileItem.fileName || fileItem.originalName || fileItem.ORIGINAL_NAME || '';
+          if (!fileName && fileUrl) {
+            const m = fileUrl.match(/filename=([^&]+)/i);
+            if (m && m[1]) {
+              try { fileName = decodeURIComponent(m[1]); } catch (_) { fileName = m[1]; }
+            }
+          }
+          if (!fileName) {
+            fileName = fid ? `File #${fid}` : `${f.label} #${idx + 1}`;
+          }
+        } else if (typeof fileItem === 'number' || (typeof fileItem === 'string' && /^\d+$/.test(fileItem.trim()))) {
+          fid = String(fileItem).trim();
+          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
+          fileName = `${f.label} #${idx + 1}`;
+        } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
+          fileUrl = fileItem;
+          fileName = fileItem.split('/').pop().split('?')[0] || 'Attached File';
+        } else if (typeof fileItem === 'string' && fileItem.trim()) {
+          fileUrl = fileItem.trim();
+          fileName = fileItem.split('/').pop().split('?')[0] || `${f.label} #${idx + 1}`;
+        }
+
+        if (!fileUrl) return;
+
+        if (!fid && fileUrl) {
+          const idMatch = fileUrl.match(/(?:fileId|file_id|id)=(\d+)/i) || fileUrl.match(/\/file\/(\d+)/i);
+          if (idMatch) fid = idMatch[1];
+        }
+
+        const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
+        let fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+        if (fullUrl.includes('ajax.php') && !fullUrl.includes('token=')) {
+          fullUrl = `/api/file/proxy?url=${encodeURIComponent(fullUrl)}`;
+        }
+
+        const isImg = isImageFile(fileName) || (isImgField && !isPdfFile(fileName));
+        const isPdf = isPdfFile(fileName);
+
+        const item = { url: fullUrl, name: fileName, isImage: isImg, isPdf, id: fid };
+        fieldGallery.push(item);
+
+        const thumb = document.createElement('div');
+        thumb.className = `thumb-item ${isImg ? 'preview-thumb-wrap' : 'preview-doc-wrap'} b24-file-tile`;
+        thumb.title = `${fileName} - Click to preview`;
+
+        if (isImg) {
+          thumb.innerHTML = `
+            <div class="b24-tile-thumb-wrap">
+              <img class="b24-tile-img thumb-item-img" src="${fullUrl}" alt="${fileName}" loading="lazy">
+              <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+            </div>
+            <div class="b24-tile-footer">
+              <span class="b24-tile-name" title="${fileName}">${fileName}</span>
+              <div class="b24-list-actions">
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+              </div>
+            </div>
+          `;
+
+          const imgEl = thumb.querySelector('.thumb-item-img');
+          imgEl.onerror = function() {
+            if (!this.dataset.proxied && fullUrl.startsWith('http')) {
+              this.dataset.proxied = '1';
+              let target = fullUrl;
+              if (target.includes('/api/file/proxy?url=')) {
+                try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) {}
+              }
+              this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
+            } else {
+              this.onerror = null;
+              const wrap = thumb.querySelector('.b24-tile-thumb-wrap');
+              wrap.innerHTML = `
+                <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span></div>
+                <div class="thumb-zoom-overlay">🔍 View</div>
+                <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+              `;
+              const retryRemove = wrap.querySelector('.thumb-remove-btn');
+              if (retryRemove) retryRemove.addEventListener('click', handleRemoveItem);
+            }
+          };
+        } else {
+          thumb.innerHTML = `
+            <div class="b24-tile-thumb-wrap">
+              <div class="doc-tile-inner">
+                <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
+                <span class="doc-tile-icon">📄</span>
+              </div>
+              <div class="thumb-zoom-overlay">🔍 View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+            </div>
+            <div class="b24-tile-footer">
+              <span class="b24-tile-name" title="${fileName}">${fileName}</span>
+              <div class="b24-list-actions">
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+              </div>
+            </div>
+          `;
+        }
+
+        const handleRemoveItem = (ev) => {
+          ev.stopPropagation();
+          ev.preventDefault();
+          if (item.id) {
+            if (!removedFileIds[f.code]) removedFileIds[f.code] = new Set();
+            removedFileIds[f.code].add(String(item.id));
+          }
+          const gIdx = fieldGallery.indexOf(item);
+          if (gIdx !== -1) fieldGallery.splice(gIdx, 1);
+          thumb.remove();
+          setDirty(true);
+          resizeWindow();
+          showToast(`Marked "${fileName}" for removal. Click Save Changes to apply.`, 'info');
+        };
+
+        const removeBtn = thumb.querySelector('.thumb-remove-btn');
+        if (removeBtn) removeBtn.addEventListener('click', handleRemoveItem);
+        const listRemoveBtn = thumb.querySelector('.thumb-remove-btn-list');
+        if (listRemoveBtn) listRemoveBtn.addEventListener('click', handleRemoveItem);
+
+        const listViewBtn = thumb.querySelector('.b24-list-btn.view-btn');
+        if (listViewBtn) {
+          listViewBtn.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const currIdx = Math.max(0, fieldGallery.indexOf(item));
+            openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
+            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+          });
+        }
+
+        thumb.addEventListener('click', (ev) => {
+          if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
+          const currIdx = Math.max(0, fieldGallery.indexOf(item));
+          openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        });
+
+        stripWrap.appendChild(thumb);
+      });
+
+      card.appendChild(switcher);
+      card.appendChild(stripWrap);
+      card.appendChild(dropzone);
+      card.appendChild(viewportBox);
+      fileContainer.appendChild(card);
       container.appendChild(fileContainer);
       initialFormValues[f.code] = '';
     } else if (f.type === 'address') {
@@ -2145,11 +2926,22 @@
       if (f.type === 'boolean') {
         payload[f.code] = input.checked ? 'Y' : 'N';
       } else if (f.type === 'file') {
-        if (input.files && input.files.length > 0) {
-          const files = Array.from(input.files);
-          const isMultiple = input.multiple;
+        const pendingItems = pendingFileUploads[f.code] || [];
+        const inputFiles = (input.files && input.files.length > 0) ? Array.from(input.files) : [];
+        const isMultiple = input.multiple || f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS');
 
-          const fileReadPromises = files.map(file => {
+        if (pendingItems.length > 0) {
+          const tuples = pendingItems.map(item => {
+            const b64 = (item.dataUrl || '').split(',')[1] || '';
+            return { name: item.name, base64: b64 };
+          });
+          if (isMultiple) {
+            payload[f.code] = tuples.map(t => ({ fileData: [t.name, t.base64] }));
+          } else {
+            payload[f.code] = { fileData: [tuples[0].name, tuples[0].base64] };
+          }
+        } else if (inputFiles.length > 0) {
+          const fileReadPromises = inputFiles.map(file => {
             return new Promise((resolve) => {
               const reader = new FileReader();
               reader.onload = function(evt) {
