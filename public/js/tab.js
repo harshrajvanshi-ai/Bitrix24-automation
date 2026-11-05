@@ -340,6 +340,79 @@
   }
 
   /**
+   * Layout Property Type Mapping
+   * Maps Layout SPA 1048 property type enum IDs & text values to Lead Property Type (UF_CRM_1791952050535) enum IDs
+   */
+  const LAYOUT_PROP_TYPE_MAP = {
+    // Layout SPA 1048 enum IDs -> Lead Property Type (UF_CRM_1791952050535) enum IDs
+    '346': '1754', // Apartment
+    '348': '1756', // Villa
+    '350': '1758', // Townhouse
+    '352': '1760', // Penthouse
+    '354': '1762', // Duplex
+    '356': '1764', // Land
+    '358': '1766', // Commercial
+    '360': '1768', // Office
+    '362': '1770', // Retail
+    // Text value matchers
+    'apartment': '1754',
+    'villa': '1756',
+    'townhouse': '1758',
+    'penthouse': '1760',
+    'duplex': '1762',
+    'land': '1764',
+    'commercial': '1766',
+    'office': '1768',
+    'retail': '1770'
+  };
+
+  function populatePropertyTypeFromLayout(layoutItemOrData, isManualTrigger = true) {
+    if (!layoutItemOrData) return;
+    let propTypeId = null;
+
+    const rawPropType = layoutItemOrData.ufCrm12PropType || layoutItemOrData.propertyType || layoutItemOrData.UF_CRM_12_PROP_TYPE;
+    if (rawPropType && LAYOUT_PROP_TYPE_MAP[String(rawPropType)]) {
+      propTypeId = LAYOUT_PROP_TYPE_MAP[String(rawPropType)];
+    }
+
+    if (!propTypeId) {
+      const title = String(layoutItemOrData.title || layoutItemOrData.NAME || '').toLowerCase();
+      for (const [key, val] of Object.entries(LAYOUT_PROP_TYPE_MAP)) {
+        if (isNaN(key) && title.includes(key)) {
+          propTypeId = val;
+          break;
+        }
+      }
+    }
+
+    if (propTypeId) {
+      const propTypeInputs = [
+        document.getElementById('field_UF_CRM_1791952050535'),
+        document.getElementById('field_UF_CRM_PROPERTY_TYPE')
+      ].filter(Boolean);
+
+      propTypeInputs.forEach(input => {
+        if (input) {
+          input.value = propTypeId;
+          input.disabled = true;
+          input.style.pointerEvents = 'none';
+          input.style.cursor = 'not-allowed';
+          input.style.backgroundColor = 'var(--bg-secondary, #f1f5f9)';
+          input.style.opacity = '0.85';
+          input.title = 'Automatically populated from selected Layout (Read-only)';
+        }
+      });
+
+      if (isManualTrigger) {
+        setDirty(true);
+        if (typeof runLeadListingAutomations === 'function') {
+          runLeadListingAutomations({ isInitialLoad: false, triggerField: 'UF_CRM_1791952050535' });
+        }
+      }
+    }
+  }
+
+  /**
    * Determine whether a lookup item is related to currently selected records
    */
   function checkItemRelation(targetEntity, item, ctx) {
@@ -886,6 +959,9 @@
                       targetInput.value = match.title;
                       targetInput.dataset.selectedTitle = match.title;
                       targetInput.dataset.itemData = JSON.stringify(match);
+                      if (entityName === 'layout') {
+                        populatePropertyTypeFromLayout(match, true);
+                      }
                     }
                   }).catch(() => {});
               }
@@ -930,6 +1006,8 @@
               if (item.parentId1040) {
                 setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
               }
+              // Auto-populate Property Type from Layout (user cannot change manually)
+              populatePropertyTypeFromLayout(item, true);
             } else if (f.code === 'UF_CRM_1792558317' || f.code === 'UF_CRM_PROJECT') {
               // 4. Master Project selected: auto-fill Developer if present
               if (item.companyId) {
@@ -1048,6 +1126,20 @@
       if (f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1') {
         const devNameInput = document.getElementById('field_UF_CRM_DEVELOPER_NAME');
         if (devNameInput) devNameInput.value = '';
+      }
+
+      if (f.code === 'UF_CRM_PROPERTY_LAYOUT' || f.code === 'UF_CRM_LAYOUT') {
+        const propTypeInputs = [
+          document.getElementById('field_UF_CRM_1791952050535'),
+          document.getElementById('field_UF_CRM_PROPERTY_TYPE')
+        ].filter(Boolean);
+        propTypeInputs.forEach(el => {
+          el.value = '';
+          el.disabled = true;
+        });
+        if (typeof runLeadListingAutomations === 'function') {
+          runLeadListingAutomations({ isInitialLoad: false, triggerField: 'UF_CRM_1791952050535' });
+        }
       }
 
       markFieldDirty();
@@ -1565,10 +1657,97 @@
     }
   });
 
+  // Shows an image directly inside the inline viewport in the same window
+  function showInWindowImage(viewportBox, url, name, gallery = null, index = 0) {
+    if (!viewportBox) return;
+    viewportBox.style.display = 'flex';
+    viewportBox.innerHTML = `
+      <div class="inline-preview-topbar">
+        <span class="inline-preview-name">👁 Preview: ${name}</span>
+        <div class="inline-preview-topbar-actions">
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
+          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">⬇</a>
+          <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
+        </div>
+      </div>
+    `;
+
+    const img = document.createElement('img');
+    img.className = 'inline-preview-img';
+    img.src = url;
+    img.alt = name;
+    img.title = 'Click to open gallery viewer';
+    img.onerror = function() {
+      if (!this.dataset.proxied && url.startsWith('http')) {
+        this.dataset.proxied = '1';
+        this.src = `/api/file/proxy?url=${encodeURIComponent(url)}`;
+      } else {
+        this.onerror = null;
+        this.style.display = 'none';
+        const errDiv = document.createElement('div');
+        errDiv.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;';
+        errDiv.innerHTML = `<span>🖼️ Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link ↗</a>`;
+        viewportBox.appendChild(errDiv);
+      }
+    };
+    viewportBox.appendChild(img);
+
+    const openViewer = () => openLightbox(name, url, false, gallery, index, viewportBox);
+    viewportBox.querySelector('.zoom-btn')?.addEventListener('click', openViewer);
+    img.addEventListener('click', openViewer);
+    viewportBox.classList.remove('is-pdf-viewport');
+    viewportBox.querySelector('.inline-preview-close')?.addEventListener('click', () => {
+      viewportBox.classList.remove('is-pdf-viewport');
+      viewportBox.style.display = 'none';
+      viewportBox.innerHTML = '';
+      resizeWindow();
+    });
+    resizeWindow();
+  }
+
+  // Shows a PDF directly inside the inline viewport in the same window
+  function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
+    if (!viewportBox) return;
+    const proxyUrl = (url.startsWith('http') && !url.includes('/api/file/proxy'))
+      ? `/api/file/proxy?url=${encodeURIComponent(url)}`
+      : url;
+
+    viewportBox.classList.add('is-pdf-viewport');
+    viewportBox.style.display = 'flex';
+    viewportBox.innerHTML = `
+      <div class="inline-preview-topbar">
+        <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
+        <div class="inline-preview-topbar-actions">
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
+          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">↗ Open</a>
+          <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">⬇</a>
+          <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
+        </div>
+      </div>
+      <iframe class="inline-preview-iframe" src="${proxyUrl}">
+        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document ↗</a></p>
+      </iframe>
+    `;
+
+    viewportBox.querySelector('.zoom-btn')?.addEventListener('click', () => openLightbox(name, url, true, gallery, index, viewportBox));
+    viewportBox.querySelector('.inline-preview-close')?.addEventListener('click', () => {
+      viewportBox.classList.remove('is-pdf-viewport');
+      viewportBox.style.display = 'none';
+      viewportBox.innerHTML = '';
+      resizeWindow();
+    });
+    resizeWindow();
+  }
+
   // Handle local newly selected files with instant in-window FileReader preview
-  function handleLocalFiles(fieldCode, files, viewportBox, stripWrap) {
+  function handleLocalFiles(fieldCode, files, viewportBox, stripWrap, isMultiple = true) {
     if (!pendingFileUploads[fieldCode]) {
       pendingFileUploads[fieldCode] = [];
+    }
+
+    if (!isMultiple) {
+      pendingFileUploads[fieldCode] = [];
+      stripWrap.querySelectorAll('.thumb-item.active').forEach(el => el.remove());
     }
 
     Array.from(files).forEach(file => {
@@ -1589,6 +1768,12 @@
         pendingFileUploads[fieldCode].push(pendingItem);
         setDirty(true);
 
+        try {
+          if (currentLeadId) {
+            localStorage.setItem(`b24_filename_${currentLeadId}_${fieldCode}`, file.name);
+          }
+        } catch (_) {}
+
         const thumb = document.createElement('div');
         thumb.className = `thumb-item ${isImg ? 'preview-thumb-wrap' : 'preview-doc-wrap'} b24-file-tile active`;
         thumb.title = `${file.name} (Ready to upload)`;
@@ -1608,6 +1793,7 @@
               </div>
             </div>
           `;
+          showInWindowImage(viewportBox, dataUrl, file.name);
         } else {
           thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
@@ -1626,6 +1812,7 @@
               </div>
             </div>
           `;
+          if (isPdf) showInWindowPdf(viewportBox, dataUrl, file.name);
         }
 
         const removeLocalItem = (ev) => {
@@ -1646,21 +1833,36 @@
         const lrBtn = thumb.querySelector('.thumb-remove-btn-list');
         if (lrBtn) lrBtn.addEventListener('click', removeLocalItem);
 
-        const vBtn = thumb.querySelector('.b24-list-btn.view-btn');
-        if (vBtn) {
-          vBtn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            openLightbox(file.name, dataUrl, isPdf, null, 0, thumb);
-            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
+        const viewItemHandler = (ev) => {
+          ev.stopPropagation();
+          const allItems = [];
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => {
+            const imgEl = t.querySelector('.thumb-item-img');
+            const nameEl = t.querySelector('.b24-tile-name');
+            const isDoc = t.classList.contains('preview-doc-wrap');
+            const isPdfTile = t.querySelector('.doc-tile-badge.pdf') !== null;
+            const itemUrl = imgEl ? imgEl.src : dataUrl;
+            const itemName = nameEl ? nameEl.textContent : file.name;
+            allItems.push({ url: itemUrl, name: itemName, isImage: !isDoc, isPdf: isPdfTile });
           });
-        }
+          const currIdx = Math.max(0, Array.from(stripWrap.querySelectorAll('.thumb-item')).indexOf(thumb));
+
+          if (isImg) {
+            showInWindowImage(viewportBox, dataUrl, file.name, allItems.length > 1 ? allItems : null, currIdx);
+          } else if (isPdf) {
+            showInWindowPdf(viewportBox, dataUrl, file.name, allItems.length > 1 ? allItems : null, currIdx);
+          }
+          openLightbox(file.name, dataUrl, isPdf, allItems.length > 1 ? allItems : null, currIdx, thumb);
+          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+        };
+
+        const vBtn = thumb.querySelector('.b24-list-btn.view-btn');
+        if (vBtn) vBtn.addEventListener('click', viewItemHandler);
 
         thumb.addEventListener('click', (ev) => {
           if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
-          openLightbox(file.name, dataUrl, isPdf, null, 0, thumb);
-          stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-          thumb.classList.add('active');
+          viewItemHandler(ev);
         });
 
         stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
@@ -1734,6 +1936,21 @@
         }
         inputElement.appendChild(optEl);
       });
+
+      if (f.code === 'UF_CRM_1791952050535' || f.code === 'UF_CRM_PROPERTY_TYPE' || f.readOnly || f.disabled) {
+        inputElement.disabled = true;
+        inputElement.style.pointerEvents = 'none';
+        inputElement.style.cursor = 'not-allowed';
+        inputElement.style.backgroundColor = 'var(--bg-secondary, #f1f5f9)';
+        inputElement.style.opacity = '0.85';
+        inputElement.title = 'Property Type is auto-populated from Layout and cannot be changed manually.';
+
+        const lockBadge = document.createElement('div');
+        lockBadge.className = 'form-text text-muted';
+        lockBadge.style.cssText = 'font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;';
+        lockBadge.innerHTML = '🔒 Auto-populated from Layout (Read-only)';
+        container.appendChild(lockBadge);
+      }
 
       container.appendChild(inputElement);
       initialFormValues[f.code] = inputElement.value;
@@ -1877,13 +2094,13 @@
         e.preventDefault();
         dropzone.classList.remove('dragover');
         if (e.dataTransfer.files?.length) {
-          handleLocalFiles(f.code, e.dataTransfer.files, viewportBox, stripWrap);
+          handleLocalFiles(f.code, e.dataTransfer.files, viewportBox, stripWrap, isMultiple);
         }
       });
 
       inputElement.addEventListener('change', () => {
         if (inputElement.files?.length) {
-          handleLocalFiles(f.code, inputElement.files, viewportBox, stripWrap);
+          handleLocalFiles(f.code, inputElement.files, viewportBox, stripWrap, isMultiple);
         }
       });
 
@@ -1899,38 +2116,57 @@
         let fid = null;
 
         if (typeof fileItem === 'object') {
-          fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
-          fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
-          if (!fileUrl && fid) {
-            fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
-          }
-          fileName = fileItem.name || fileItem.NAME || fileItem.fileName || fileItem.originalName || fileItem.ORIGINAL_NAME || '';
-          if (!fileName && fileUrl) {
-            const m = fileUrl.match(/filename=([^&]+)/i);
-            if (m && m[1]) {
-              try { fileName = decodeURIComponent(m[1]); } catch (_) { fileName = m[1]; }
+          if (fileItem.fileData && Array.isArray(fileItem.fileData)) {
+            fileName = fileItem.fileData[0];
+            const b64 = fileItem.fileData[1];
+            fileUrl = (b64 && b64.startsWith('data:')) ? b64 : `data:image/jpeg;base64,${b64}`;
+          } else if (fileItem.dataUrl) {
+            fileUrl = fileItem.dataUrl;
+            fileName = fileItem.name || '';
+          } else {
+            fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
+            fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
+            if (!fileUrl && fid) {
+              fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
             }
-          }
-          if (!fileName) {
-            fileName = fid ? `File #${fid}` : `${f.label} #${idx + 1}`;
+            fileName = fileItem.name || fileItem.NAME || fileItem.fileName || fileItem.originalName || fileItem.ORIGINAL_NAME || '';
           }
         } else if (typeof fileItem === 'number' || (typeof fileItem === 'string' && /^\d+$/.test(fileItem.trim()))) {
           fid = String(fileItem).trim();
           fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
-          fileName = `${f.label} #${idx + 1}`;
         } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
           fileUrl = fileItem;
-          fileName = fileItem.split('/').pop().split('?')[0] || 'Attached File';
+          fileName = fileItem.split('/').pop().split('?')[0] || '';
+        } else if (typeof fileItem === 'string' && fileItem.startsWith('data:')) {
+          fileUrl = fileItem;
         } else if (typeof fileItem === 'string' && fileItem.trim()) {
           fileUrl = fileItem.trim();
-          fileName = fileItem.split('/').pop().split('?')[0] || `${f.label} #${idx + 1}`;
+          fileName = fileItem.split('/').pop().split('?')[0] || '';
         }
-
-        if (!fileUrl) return;
 
         if (!fid && fileUrl) {
           const idMatch = fileUrl.match(/(?:fileId|file_id|id)=(\d+)/i) || fileUrl.match(/\/file\/(\d+)/i);
           if (idMatch) fid = idMatch[1];
+        }
+
+        // Maintain accurate file title from storage cache
+        if (!fileName && fid) {
+          try { fileName = localStorage.getItem(`b24_file_title_${fid}`) || ''; } catch (_) {}
+        }
+        if (!fileName && currentLeadId) {
+          try { fileName = localStorage.getItem(`b24_filename_${currentLeadId}_${f.code}`) || ''; } catch (_) {}
+        }
+        if (!fileName && fileUrl) {
+          const m = fileUrl.match(/filename=([^&]+)/i);
+          if (m && m[1]) {
+            try { fileName = decodeURIComponent(m[1]); } catch (_) { fileName = m[1]; }
+          }
+        }
+        if (!fileName) {
+          fileName = fid ? `${f.label} (File #${fid})` : `${f.label} #${idx + 1}`;
+        }
+        if (fid && fileName) {
+          try { localStorage.setItem(`b24_file_title_${fid}`, fileName); } catch (_) {}
         }
 
         const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
@@ -2026,23 +2262,25 @@
         const listRemoveBtn = thumb.querySelector('.thumb-remove-btn-list');
         if (listRemoveBtn) listRemoveBtn.addEventListener('click', handleRemoveItem);
 
-        const listViewBtn = thumb.querySelector('.b24-list-btn.view-btn');
-        if (listViewBtn) {
-          listViewBtn.addEventListener('click', (ev) => {
-            ev.stopPropagation();
-            const currIdx = Math.max(0, fieldGallery.indexOf(item));
-            openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
-            stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
-            thumb.classList.add('active');
-          });
-        }
-
-        thumb.addEventListener('click', (ev) => {
-          if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
+        const existingViewHandler = (ev) => {
+          ev.stopPropagation();
           const currIdx = Math.max(0, fieldGallery.indexOf(item));
+          if (item.isImage) {
+            showInWindowImage(viewportBox, item.url, item.name, fieldGallery, currIdx);
+          } else if (item.isPdf) {
+            showInWindowPdf(viewportBox, item.url, item.name, fieldGallery, currIdx);
+          }
           openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
+        };
+
+        const listViewBtn = thumb.querySelector('.b24-list-btn.view-btn');
+        if (listViewBtn) listViewBtn.addEventListener('click', existingViewHandler);
+
+        thumb.addEventListener('click', (ev) => {
+          if (ev.target.closest('.thumb-remove-btn') || ev.target.closest('.thumb-remove-btn-list') || ev.target.closest('.b24-list-actions')) return;
+          existingViewHandler(ev);
         });
 
         stripWrap.appendChild(thumb);
@@ -2840,6 +3078,19 @@
       runLeadListingAutomations({ isInitialLoad: true });
     }
 
+    // Auto-populate Property Type from linked layout if layout exists on lead
+    const initialLayoutId = lead.UF_CRM_PROPERTY_LAYOUT || lead.UF_CRM_LAYOUT;
+    if (initialLayoutId) {
+      fetch(`/api/lookup?entity=layout&q=${encodeURIComponent(initialLayoutId)}`, { headers: getCrmAuthHeaders() })
+        .then(r => r.json())
+        .then(d => {
+          const match = (d.items || []).find(it => String(it.id) === String(initialLayoutId)) || d.items?.[0];
+          if (match) {
+            populatePropertyTypeFromLayout(match, false);
+          }
+        }).catch(() => {});
+    }
+
     resizeWindow();
   }
 
@@ -3161,6 +3412,13 @@
       payload.UF_CRM_PF_ID = payload.UF_CRM_1792151466;
     }
 
+    // Synchronize Property Type companion fields (UF_CRM_1791952050535 <-> UF_CRM_PROPERTY_TYPE)
+    if (payload.UF_CRM_1791952050535 && !payload.UF_CRM_PROPERTY_TYPE) {
+      payload.UF_CRM_PROPERTY_TYPE = payload.UF_CRM_1791952050535;
+    } else if (payload.UF_CRM_PROPERTY_TYPE && !payload.UF_CRM_1791952050535) {
+      payload.UF_CRM_1791952050535 = payload.UF_CRM_PROPERTY_TYPE;
+    }
+
     // Synchronize Bedrooms across numeric UF_CRM_1791966366775 and enumeration UF_CRM_BEDROOMS
     if (payload.UF_CRM_BEDROOMS !== undefined || payload.UF_CRM_1791966366775 !== undefined) {
       const rawBeds = payload.UF_CRM_BEDROOMS !== undefined ? String(payload.UF_CRM_BEDROOMS).trim() : String(payload.UF_CRM_1791966366775 || '').trim();
@@ -3262,6 +3520,49 @@
 
       showToast('Lead details saved to Bitrix24!', 'success');
       setDirty(false);
+
+      // Preserve preview and title for uploaded files in currentLead state
+      fieldsToCollect.forEach(f => {
+        if (f.type === 'file') {
+          const pending = pendingFileUploads[f.code] || [];
+          if (pending.length > 0) {
+            const isMultiple = f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS');
+            if (isMultiple) {
+              const prev = Array.isArray(currentLead[f.code]) ? currentLead[f.code] : (currentLead[f.code] ? [currentLead[f.code]] : []);
+              const added = pending.map(p => ({
+                name: p.name,
+                url: p.dataUrl,
+                dataUrl: p.dataUrl,
+                isImage: p.isImage,
+                isPdf: p.isPdf
+              }));
+              currentLead[f.code] = [...prev, ...added];
+            } else {
+              currentLead[f.code] = {
+                name: pending[0].name,
+                url: pending[0].dataUrl,
+                dataUrl: pending[0].dataUrl,
+                isImage: pending[0].isImage,
+                isPdf: pending[0].isPdf
+              };
+            }
+            try {
+              localStorage.setItem(`b24_filename_${currentLeadId}_${f.code}`, pending[0].name);
+            } catch (_) {}
+          }
+          // Mark uploaded thumbnails as saved (remove active / ready to upload flag)
+          const strip = document.getElementById(`strip_${f.code}`);
+          if (strip) {
+            strip.querySelectorAll('.thumb-item.active').forEach(th => {
+              th.classList.remove('active');
+              th.title = th.title.replace(' (Ready to upload)', '');
+            });
+          }
+          const inp = document.getElementById(`field_${f.code}`);
+          if (inp) inp.value = '';
+        }
+      });
+      pendingFileUploads = {};
       Object.assign(currentLead, payload);
 
       // Refresh initialFormValues

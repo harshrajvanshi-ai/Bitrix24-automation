@@ -227,6 +227,9 @@
             "label": "Property Type",
             "bitrixLabel": "Property Type",
             "type": "enumeration",
+            "readOnly": true,
+            "disabled": true,
+            "helperText": "Auto-populated from Layout (Read-only)",
             "placeholder": "-- Select Property Type --",
             "options": [
               {
@@ -2000,6 +2003,9 @@
       "label": "Property Type",
       "bitrixLabel": "Property Type",
       "type": "enumeration",
+      "readOnly": true,
+      "disabled": true,
+      "helperText": "Auto-populated from Layout (Read-only)",
       "placeholder": "-- Select Property Type --",
       "options": [
         {

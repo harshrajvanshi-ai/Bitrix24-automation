@@ -729,7 +729,7 @@ async function fetchAllSpaItems(entityTypeId, mapFn) {
   while (true) {
     const res = await BitrixClient.call('crm.item.list', {
       entityTypeId,
-      select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052', 'companyId'],
+      select: ['id', 'title', 'parentId1040', 'parentId1044', 'parentId1048', 'parentId1052', 'companyId', 'ufCrm12PropType', 'ufCrm12PropSubType'],
       order: { id: 'DESC' },
       start
     }).catch(err => {
@@ -915,7 +915,10 @@ async function fetchLookupData(entity, forceRefresh = false) {
         crmRef: `DYNAMIC_1048_${i.id}`,
         parentId1040: i.parentId1040 || null,
         parentId1044: i.parentId1044 || null,
-        companyId: i.companyId || i.COMPANY_ID || null
+        companyId: i.companyId || i.COMPANY_ID || null,
+        ufCrm12PropType: i.ufCrm12PropType || null,
+        ufCrm12PropSubType: i.ufCrm12PropSubType || null,
+        propertyType: i.ufCrm12PropType || null
       }));
     } else if (entity === 'broker' || entity === 'agent') {
       items = await fetchAllSpaItems(1094, i => ({ id: i.id, title: i.title || `Broker #${i.id}`, crmRef: `DYNAMIC_1094_${i.id}` }));
@@ -1375,6 +1378,13 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
     fields.UF_CRM_PROPERTY_LAYOUT = fields.UF_CRM_LAYOUT;
   }
 
+  // Sync Property Type companion fields (UF_CRM_1791952050535 <-> UF_CRM_PROPERTY_TYPE)
+  if (fields.UF_CRM_1791952050535 && !fields.UF_CRM_PROPERTY_TYPE) {
+    fields.UF_CRM_PROPERTY_TYPE = fields.UF_CRM_1791952050535;
+  } else if (fields.UF_CRM_PROPERTY_TYPE && !fields.UF_CRM_1791952050535) {
+    fields.UF_CRM_1791952050535 = fields.UF_CRM_PROPERTY_TYPE;
+  }
+
   // Sync Listing Agent companion fields (UF_CRM_LISTINGAGENT <-> UF_CRM_ASSIGNED_TO_BROKER <-> UF_CRM_PORTAL_LISTING_AGENT)
   if (fields.UF_CRM_LISTINGAGENT) {
     if (!fields.UF_CRM_ASSIGNED_TO_BROKER) fields.UF_CRM_ASSIGNED_TO_BROKER = fields.UF_CRM_LISTINGAGENT;
@@ -1673,6 +1683,13 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
         lead.UF_CRM_PROPERTY_LAYOUT = lead.UF_CRM_LAYOUT;
       } else if (!lead.UF_CRM_LAYOUT && lead.UF_CRM_PROPERTY_LAYOUT) {
         lead.UF_CRM_LAYOUT = lead.UF_CRM_PROPERTY_LAYOUT;
+      }
+
+      // Resolve Property Type fallback
+      if (!lead.UF_CRM_1791952050535 && lead.UF_CRM_PROPERTY_TYPE) {
+        lead.UF_CRM_1791952050535 = lead.UF_CRM_PROPERTY_TYPE;
+      } else if (!lead.UF_CRM_PROPERTY_TYPE && lead.UF_CRM_1791952050535) {
+        lead.UF_CRM_PROPERTY_TYPE = lead.UF_CRM_1791952050535;
       }
 
       // Resolve Property fallback
