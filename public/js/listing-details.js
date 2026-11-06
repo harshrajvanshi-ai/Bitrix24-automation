@@ -1436,6 +1436,7 @@
   let removedFileIds = {}; // fieldKey -> Set of removed file IDs
   let isDirty = false;
   let allSectionsCollapsed = false;
+  let cachedUndoState = null;
 
   // DOM Elements
   const loadingEl = document.getElementById("loading");
@@ -1472,6 +1473,101 @@
   // ============================================================================
   // 2. HELPER & UTILITY FUNCTIONS
   // ============================================================================
+  
+  function computeHandoverQuarter(dateStr) {
+    if (!dateStr) return '';
+    let y, m;
+    if (/^\d{4}-\d{2}/.test(dateStr)) {
+      const parts = dateStr.split('-');
+      y = parseInt(parts[0], 10);
+      m = parseInt(parts[1], 10);
+    } else if (/^\d{2}\.\d{2}\.\d{4}/.test(dateStr)) {
+      const parts = dateStr.split('.');
+      y = parseInt(parts[2], 10);
+      m = parseInt(parts[1], 10);
+    } else {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        y = d.getFullYear();
+        m = d.getMonth() + 1;
+      }
+    }
+    if (y && m) {
+      const q = Math.ceil(m / 3);
+      return `Q${q} ${y}`;
+    }
+    return '';
+  }
+
+  function promptCascadeUpdate(message, onUpdateAll, onKeepCurrent) {
+    const existing = document.querySelector('.cascade-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'cascade-modal-overlay';
+    overlay.innerHTML = `
+      <div class="cascade-modal-card">
+        <div class="cascade-modal-header">
+          <span class="cascade-modal-icon">🔄</span>
+          <span class="cascade-modal-title">Property Unit Update</span>
+        </div>
+        <div class="cascade-modal-body">${message || 'Update parent project and developer to match new unit?'}</div>
+        <div class="cascade-modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cascade-keep">Keep Current</button>
+          <button type="button" class="btn btn-primary" id="btn-cascade-update-all">Update All</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#btn-cascade-keep').addEventListener('click', () => {
+      overlay.remove();
+      if (typeof onKeepCurrent === 'function') onKeepCurrent();
+    });
+
+    overlay.querySelector('#btn-cascade-update-all').addEventListener('click', () => {
+      overlay.remove();
+      if (typeof onUpdateAll === 'function') onUpdateAll();
+    });
+  }
+
+  function undoTransactionSwitch() {
+    if (!cachedUndoState) return;
+    const { previousLayout, previousEnumId, hiddenValues } = cachedUndoState;
+    const undoBannerEl = document.getElementById('transaction-undo-banner');
+
+    currentListing[CONFIG.layoutField] = previousEnumId;
+    renderLayout(previousLayout);
+
+    const select = document.getElementById(`field_${CONFIG.layoutField}`) || document.querySelector(`[name="${CONFIG.layoutField}"]`);
+    if (select) select.value = previousEnumId;
+
+    Object.entries(hiddenValues || {}).forEach(([key, data]) => {
+      const el = document.getElementById(`field_${key}`) || document.querySelector(`[name="${key}"]`);
+      if (el) {
+        if (el.type === 'checkbox') {
+          el.checked = !!data.checked;
+        } else {
+          el.value = data.value || '';
+        }
+        if (el.dataset) {
+          if (data.selectedId) el.dataset.selectedId = data.selectedId;
+          if (data.selectedRef) el.dataset.selectedRef = data.selectedRef;
+          if (data.selectedTitle) el.dataset.selectedTitle = data.selectedTitle;
+        }
+        currentListing[key] = el.value;
+      }
+    });
+
+    if (undoBannerEl) {
+      undoBannerEl.style.display = 'none';
+    }
+    cachedUndoState = null;
+    setDirty(true);
+    runListingAutomations({ isInitialLoad: false });
+    showToast('Transaction type switch undone and fields restored', 'info');
+  }
+
   function showToast(message, type = "info") {
     const container = document.getElementById("toast-container");
     const toast = document.createElement("div");
@@ -3822,6 +3918,106 @@ function resolveCountryCode(countryName) {
   // ============================================================================
   // 6c. AUTO-CALCULATION & FIELD AUTOMATION ENGINE
   // ============================================================================
+  
+  function updateListingPublishReadinessBanner() {
+    if (!window.ReadinessEvaluator || typeof window.ReadinessEvaluator.evaluatePublishReadiness !== 'function') return;
+
+    const bannerEl = document.getElementById("readiness-banner");
+    if (!bannerEl) return;
+
+    const getVal = (id) => {
+      const el = document.getElementById(`field_${id}`) || document.querySelector(`[name="${id}"]`);
+      if (!el) return currentListing[id] || "";
+      if (el.dataset?.selectedRef) return el.dataset.selectedRef;
+      return el.value !== undefined ? String(el.value).trim() : "";
+    };
+
+    const isRent = (currentLayout === "rent");
+    const isOffPlan = (currentLayout === "off_plan");
+    const isOverseas = (currentLayout === "overseas_sale");
+
+    const item = {
+      transaction: isRent ? "RENT" : "SALE",
+      market_segment: isOffPlan ? "OFF_PLAN" : isOverseas ? "OVERSEAS" : "READY",
+      stock_source: currentLayout === "external_stock" ? "EXTERNAL" : "OWN",
+      property_type: getVal("ufCrm16PropertyType"),
+      property_sub_type: getVal("ufCrm16PropertySubType"),
+      built_up_area: getVal("ufCrm16Size") || getVal("UF_CRM_16_SIZE") || getVal("ufCrm16SqFt"),
+      bedrooms: getVal("ufCrm16_1791172802"),
+      bathrooms: getVal("ufCrm16_1791172828"),
+      price: getVal("ufCrm16_1790154936"),
+      rental_frequency: getVal("ufCrm16RentFrequency"),
+      cheques: getVal("ufCrm16Cheques"),
+      payment_plan_booking_pct: getVal("ufCrm16RePpBookingPct") || getVal("ufCrm16_1791172880"),
+      payment_plan_construction_pct: getVal("ufCrm16RePpConstructionPct"),
+      payment_plan_handover_pct: getVal("ufCrm16RePpHandoverPct") || getVal("ufCrm16_1791172893"),
+      payment_plan_post_handover_pct: getVal("ufCrm16RePpPostHandoverPct"),
+      expected_handover_date: getVal("ufCrm16CompletionDate"),
+      country: isOverseas ? (getVal("ufCrm16_1791172854") || "Spain") : "United Arab Emirates",
+      trakheesi_permit_no: getVal("ufCrm16ReraPermitNumber") || getVal("ufCrm16_1791172906"),
+      permit_expiry: getVal("ufCrm16PermitExpiryDate") || getVal("ufCrm16_1791172919"),
+      form_a_expiry: getVal("ufCrm16FormAExpiryDate") || getVal("UF_CRM_16_FORM_A_EXPIRY_DATE"),
+      photos: (currentListing?.ufCrm16Images || []).length || (document.querySelectorAll('.file-tile-wrap').length || 0),
+      title: getVal("title"),
+      description: getVal("ufCrm16SummaryDescription") || getVal("ufCrm16Description")
+    };
+
+    const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
+
+    bannerEl.className = `readiness-banner ${result.ready ? "ready" : ""}`;
+    bannerEl.style.display = "block";
+    bannerEl.innerHTML = `
+      <div class="readiness-banner-header">
+        <div class="readiness-title-group">
+          <span class="readiness-score-pill ${result.ready ? "score-ready" : "score-pending"}">${result.score}% Portal Ready</span>
+          <span class="readiness-status-text">${result.ready ? "✓ Listing complies with all DLD & portal syndication requirements" : "Portal Syndication Checklist Pending"}</span>
+        </div>
+      </div>
+      ${!result.ready && result.missing.length > 0 ? `
+        <div class="readiness-summary">
+          <strong>Missing Requirements (${result.missing.length}):</strong>
+          <ul class="readiness-missing-list">
+            ${result.missing.map(m => `<li>${m}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+      ${result.warnings.length > 0 ? `
+        <div class="readiness-summary" style="margin-top:4px;">
+          <strong>Warnings (${result.warnings.length}):</strong>
+          <ul class="readiness-warnings-list">
+            ${result.warnings.map(w => `<li>${w}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+    `;
+
+    const publishInputs = [
+      document.getElementById("field_ufCrm16PublishPortals"),
+      document.getElementById("field_UF_CRM_16_RE_PUBLISH_PORTALS"),
+      document.querySelector('[name="ufCrm16PublishPortals"]'),
+      document.querySelector('[name="UF_CRM_16_RE_PUBLISH_PORTALS"]')
+    ].filter(Boolean);
+
+    publishInputs.forEach(input => {
+      if (!result.ready) {
+        input.disabled = true;
+        input.checked = false;
+        input.title = `Publishing disabled: Complete missing portal specifications (${result.missing.join(', ')})`;
+        if (input.parentElement) {
+          input.parentElement.style.opacity = '0.6';
+          input.parentElement.style.cursor = 'not-allowed';
+        }
+      } else {
+        input.disabled = false;
+        input.title = 'Ready for portal syndication (100% score)';
+        if (input.parentElement) {
+          input.parentElement.style.opacity = '1';
+          input.parentElement.style.cursor = 'pointer';
+        }
+      }
+    });
+  }
+
   function runListingAutomations(options = {}) {
     const isInitialLoad = !!options.isInitialLoad;
     const trigger = options.triggerField || "";
@@ -4446,8 +4642,97 @@ function resolveCountryCode(countryName) {
               }
             }
 
-            // Auto-link Project, Layout, Master Project if Property selected
+            // Auto-link Project, Layout, Master Project if Property selected with cascade prompt
             if (f.key === "parentId1052" || f.key === "UF_CRM_PROPERTY") {
+              const curProj = document.getElementById("field_ufCrm16ProjectName")?.dataset?.selectedId || document.getElementById("field_ufCrm16ProjectName")?.value || "";
+              const curDev = document.getElementById("field_companyId")?.dataset?.selectedId || document.getElementById("field_companyId")?.value || "";
+
+              const shouldPrompt = (
+                (item.parentId1044 && curProj && String(curProj) !== String(item.parentId1044)) ||
+                (item.companyId && curDev && String(curDev) !== String(item.companyId))
+              );
+
+              const applyUnitParents = (includeProjectAndDev = true) => {
+                if (includeProjectAndDev) {
+                  if (item.parentId1044) {
+                    const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
+                    fetch(`/api/lookup?entity=project&q=${item.parentId1044}`, { headers: getCrmAuthHeaders() })
+                      .then(r => r.json())
+                      .then(d => {
+                        const match = (d.items || []).find(it => String(it.id) === String(item.parentId1044));
+                        if (match && projInput) {
+                          projInput.value = match.title;
+                          projInput.dataset.selectedId = String(match.id);
+                          projInput.dataset.selectedRef = match.crmRef || String(match.id);
+                          projInput.dataset.selectedTitle = match.title;
+                          projInput.dataset.id = String(match.id);
+                          projInput.title = `${match.title} (ID: ${match.id})`;
+                          const pClear = projInput.parentElement?.querySelector(".lookup-clear-btn");
+                          const pOpen = projInput.parentElement?.querySelector(".lookup-open-btn");
+                          if (pClear) pClear.style.display = "block";
+                          if (pOpen) pOpen.style.display = "inline-flex";
+                          setDirty(true);
+                        }
+                      }).catch(() => {});
+                  }
+                  if (item.companyId) {
+                    const devInput = document.getElementById("field_companyId") || document.getElementById("field_ufCrm16_1791172932");
+                    fetch(`/api/lookup?entity=developer&q=${item.companyId}`, { headers: getCrmAuthHeaders() })
+                      .then(r => r.json())
+                      .then(d => {
+                        const match = (d.items || []).find(it => String(it.id) === String(item.companyId));
+                        if (match && devInput) {
+                          devInput.value = match.title;
+                          devInput.dataset.selectedId = String(match.id);
+                          devInput.dataset.selectedRef = match.crmRef || String(match.id);
+                          devInput.dataset.selectedTitle = match.title;
+                          devInput.dataset.id = String(match.id);
+                          devInput.title = `${match.title} (ID: ${match.id})`;
+                          const dClear = devInput.parentElement?.querySelector(".lookup-clear-btn");
+                          const dOpen = devInput.parentElement?.querySelector(".lookup-open-btn");
+                          if (dClear) dClear.style.display = "block";
+                          if (dOpen) dOpen.style.display = "inline-flex";
+                          setDirty(true);
+                        }
+                      }).catch(() => {});
+                  }
+                }
+                if (item.parentId1048) {
+                  const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
+                  fetch(`/api/lookup?entity=layout&q=${item.parentId1048}`, { headers: getCrmAuthHeaders() })
+                    .then(r => r.json())
+                    .then(d => {
+                      const match = (d.items || []).find(it => String(it.id) === String(item.parentId1048));
+                      if (match && layoutInput) {
+                        layoutInput.value = match.title;
+                        layoutInput.dataset.selectedId = String(match.id);
+                        layoutInput.dataset.selectedRef = match.crmRef || String(match.id);
+                        layoutInput.dataset.selectedTitle = match.title;
+                        layoutInput.dataset.id = String(match.id);
+                        layoutInput.title = `${match.title} (ID: ${match.id})`;
+                        const lClear = layoutInput.parentElement?.querySelector(".lookup-clear-btn");
+                        const lOpen = layoutInput.parentElement?.querySelector(".lookup-open-btn");
+                        if (lClear) lClear.style.display = "block";
+                        if (lOpen) lOpen.style.display = "inline-flex";
+                        setDirty(true);
+                      }
+                    }).catch(() => {});
+                }
+              };
+
+              if (shouldPrompt) {
+                promptCascadeUpdate(
+                  "Update parent project and developer to match new unit?",
+                  () => applyUnitParents(true),
+                  () => applyUnitParents(false)
+                );
+              } else {
+                applyUnitParents(true);
+              }
+              setDirty(true);
+              runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+              return;
+            }
               if (item.parentId1044) {
                 const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
                 if (projInput && (!projInput.value || !projInput.dataset.selectedId)) {
@@ -4643,6 +4928,20 @@ function resolveCountryCode(countryName) {
           "field_ufCrm16BuildingBayut",
         );
         if (bayutInput) bayutInput.value = "";
+      }
+      if (f.key === "parentId1048" || f.key === "ufCrm16Layout" || f.key === "UF_CRM_PROPERTY_LAYOUT") {
+        const propTypeInput = document.getElementById("field_ufCrm16PropertyType") || document.getElementById("field_UF_CRM_PROPERTY_TYPE");
+        if (propTypeInput) {
+          propTypeInput.disabled = false;
+          propTypeInput.style.pointerEvents = "auto";
+          propTypeInput.style.cursor = "default";
+          propTypeInput.style.backgroundColor = "";
+          propTypeInput.style.opacity = "1";
+          propTypeInput.title = "Select Property Type";
+          const pGroup = propTypeInput.closest(".form-group");
+          const badge = pGroup?.querySelector(".lock-badge");
+          if (badge) badge.remove();
+        }
       }
 
       setDirty(true);
@@ -4842,11 +5141,95 @@ function resolveCountryCode(countryName) {
         select.appendChild(optionEl);
       });
 
-      // Special: When Listing Type is changed in General section, adapt layout dynamically!
+      // Lock Property Type only when derived from Layout
+      if (f.key === "ufCrm16PropertyType") {
+        const hasLinkedLayout = !!(
+          (currentListing && currentListing.parentId1048) ||
+          document.getElementById("field_parentId1048")?.dataset?.selectedId ||
+          document.getElementById("field_parentId1048")?.value
+        );
+        if (hasLinkedLayout) {
+          select.disabled = true;
+          select.style.pointerEvents = "none";
+          select.style.cursor = "not-allowed";
+          select.style.backgroundColor = "var(--bg-secondary, #f1f5f9)";
+          select.style.opacity = "0.85";
+          select.title = "Property Type is auto-populated from Layout and cannot be changed manually.";
+
+          const lockBadge = document.createElement("div");
+          lockBadge.className = "form-text text-muted lock-badge";
+          lockBadge.style.cssText = "font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;";
+          lockBadge.innerHTML = "🔒 Auto-populated from Layout (Read-only)";
+          group.appendChild(lockBadge);
+        }
+      }
+
+      // Special: When Listing Type is changed in General section, adapt layout dynamically with undo!
       if (f.key === CONFIG.layoutField) {
         select.addEventListener("change", () => {
           const selectedEnumId = select.value;
           const mappedLayout = CONFIG.layoutEnumMap[selectedEnumId] || "rent";
+          const prevLayout = currentLayout;
+          const prevEnumId = initialFormValues[f.key] || currentListing[f.key] || "";
+
+          // Capture non-empty values of fields that are visible in prevLayout but hidden in mappedLayout
+          const hiddenValues = {};
+          let hasHiddenData = false;
+
+          CONFIG.sections.forEach(sec => {
+            (sec.fields || []).forEach(secF => {
+              const wasVis = (secF.rules?.[prevLayout] || "show") !== "hide";
+              const isNowVis = (secF.rules?.[mappedLayout] || "show") !== "hide";
+              if (wasVis && !isNowVis) {
+                const el = document.getElementById(`field_${secF.key}`) || document.querySelector(`[name="${secF.key}"]`);
+                if (el) {
+                  const val = el.type === "checkbox" ? el.checked : el.value;
+                  const hasVal = el.type === "checkbox" ? el.checked : (val !== "" && val !== null && val !== undefined);
+                  if (hasVal) {
+                    hasHiddenData = true;
+                    hiddenValues[secF.key] = {
+                      value: el.value,
+                      checked: el.type === "checkbox" ? el.checked : false,
+                      selectedId: el.dataset?.selectedId || "",
+                      selectedRef: el.dataset?.selectedRef || "",
+                      selectedTitle: el.dataset?.selectedTitle || ""
+                    };
+                  }
+                }
+              }
+            });
+          });
+
+          const undoBannerEl = document.getElementById("transaction-undo-banner");
+          if (hasHiddenData) {
+            cachedUndoState = {
+              previousLayout: prevLayout,
+              previousEnumId: prevEnumId,
+              hiddenValues
+            };
+            if (undoBannerEl) {
+              undoBannerEl.innerHTML = `
+                <div class="undo-banner-inner">
+                  <div class="undo-banner-text">
+                    <span class="undo-banner-icon">ℹ️</span>
+                    <span>Switched transaction type. Previously entered fields have been hidden.</span>
+                  </div>
+                  <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">↺ Undo Switch</button>
+                </div>
+              `;
+              undoBannerEl.style.display = "flex";
+              const undoBtn = document.getElementById("btn-undo-transaction-switch");
+              if (undoBtn) {
+                undoBtn.onclick = (e) => {
+                  e.preventDefault();
+                  undoTransactionSwitch();
+                };
+              }
+            }
+          } else if (!cachedUndoState && undoBannerEl) {
+            undoBannerEl.style.display = "none";
+          }
+
           showToast(
             `Layout updated to ${CONFIG.layoutMeta[mappedLayout].title}`,
             "info",
@@ -5375,6 +5758,9 @@ function resolveCountryCode(countryName) {
       await updateListing(currentListingId, payload);
 
       showToast("✓ Listing updated successfully in Bitrix24!", "success");
+      const undoBannerEl = document.getElementById("transaction-undo-banner");
+      if (undoBannerEl) undoBannerEl.style.display = "none";
+      cachedUndoState = null;
       pendingFileUploads = {};
       removedFileIds = {};
       setDirty(false);

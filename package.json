@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node test-suite.js && node test_tab_fields.js && node scripts/test_tab_prop_type_and_images.js && node tests/test_schema_map.js && node tests/test_v1_snapshot.js && node tests/test_create_v2_fields_dry_run.js && node tests/test_no_hardcoded_ids.js && node tests/test_matching_interim.js",
+    "test": "node test-suite.js && node test_tab_fields.js && node scripts/test_tab_prop_type_and_images.js && node tests/test_schema_map.js && node tests/test_v1_snapshot.js && node tests/test_create_v2_fields_dry_run.js && node tests/test_no_hardcoded_ids.js && node tests/test_matching_interim.js && node tests/test_readiness_evaluator.js && node tests/test_v2_layouts_matrix.js",
     "test:e2e": "node test_e2e_pipeline.js",
     "lint:ids": "node tests/test_no_hardcoded_ids.js"
   },

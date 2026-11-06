@@ -286,8 +286,8 @@ class SchemaMap {
   /**
    * Export comprehensive client config payload (served via /api/config)
    */
-  static getClientConfig() {
-    const version = this.getLayoutVersion();
+  static getClientConfig(customVersion = null) {
+    const version = customVersion || this.getLayoutVersion();
     const resolvedConcepts = {};
 
     for (const [key, concept] of Object.entries(conceptsRegistry.concepts || {})) {

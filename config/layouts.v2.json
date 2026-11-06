@@ -1,0 +1,764 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "v2",
+  "description": "Declarative V2 layout definitions for Real Estate CRM: 36-field Listing layout and 24-field Enquiry layout with conditional visibility, inheritance, validation, and publish readiness rules.",
+  "listing": {
+    "totalFields": 36,
+    "sections": [
+      {
+        "id": "transaction_drivers",
+        "title": "Transaction Drivers & Mandate",
+        "order": 1,
+        "fields": ["transaction", "market_segment", "stock_source", "mandate_type", "listing_agent"]
+      },
+      {
+        "id": "parent_hierarchy",
+        "title": "Property Hierarchy & Project Association",
+        "order": 2,
+        "fields": ["property_unit", "project", "master_project", "developer", "layout"]
+      },
+      {
+        "id": "specifications",
+        "title": "Property Specifications",
+        "order": 3,
+        "fields": ["property_type", "property_sub_type", "bedrooms", "bathrooms", "built_up_area", "plot_area", "floor", "parking_spaces", "furnished", "occupancy", "view", "amenities"]
+      },
+      {
+        "id": "financial_terms",
+        "title": "Pricing & Commercial Terms",
+        "order": 4,
+        "fields": ["price", "price_per_sq_ft", "rental_frequency", "cheques", "security_deposit", "commission_pct", "service_charge", "currency", "payment_plan_booking_pct", "payment_plan_construction_pct", "payment_plan_handover_pct", "payment_plan_post_handover_pct", "payment_plan_notes"]
+      },
+      {
+        "id": "dates_handover",
+        "title": "Dates & Availability",
+        "order": 5,
+        "fields": ["available_from", "expected_handover_date", "form_a_expiry", "permit_expiry"]
+      },
+      {
+        "id": "overseas_location",
+        "title": "Overseas Location",
+        "order": 6,
+        "fields": ["country"]
+      },
+      {
+        "id": "external_cobroke",
+        "title": "External Co-Broke Information",
+        "order": 7,
+        "fields": ["partner_agency", "cobroke_split_pct", "external_reference"]
+      },
+      {
+        "id": "compliance_media",
+        "title": "RERA Compliance & Marketing Media",
+        "order": 8,
+        "fields": ["trakheesi_permit_no", "dld_qr", "signed_form_a", "title_deed", "photos", "floor_plans", "title", "description", "publish_portals"]
+      }
+    ],
+    "fields": {
+      "transaction": {
+        "concept": "transaction",
+        "label": "Transaction",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["SALE", "RENT"],
+        "defaultValue": "SALE",
+        "helpText": "Primary financial nature of the listing (Sale vs Rent)."
+      },
+      "market_segment": {
+        "concept": "market_segment",
+        "label": "Market Segment",
+        "type": "enumeration",
+        "required": { "transaction": "SALE" },
+        "visible": { "transaction": "SALE" },
+        "options": ["READY", "OFF_PLAN", "OVERSEAS"],
+        "defaultValue": "READY",
+        "helpText": "Asset maturity stage. Hidden for Rent transactions (Rent is always Ready)."
+      },
+      "stock_source": {
+        "concept": "stock_source",
+        "label": "Stock Source",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["OWN", "EXTERNAL"],
+        "defaultValue": "OWN",
+        "helpText": "Direct agency mandate (Own) or co-broke inventory (External)."
+      },
+      "mandate_type": {
+        "concept": "mandate_type",
+        "label": "Exclusive Mandate",
+        "type": "boolean",
+        "required": false,
+        "visible": { "stock_source": "OWN" },
+        "defaultValue": false,
+        "helpText": "Whether the agency holds exclusive marketing rights."
+      },
+      "listing_agent": {
+        "concept": "listing_agent",
+        "label": "Listing Agent / Broker",
+        "type": "lookup",
+        "lookupEntity": "broker",
+        "required": true,
+        "visible": true,
+        "helpText": "Responsible licensed agent representing this listing."
+      },
+      "property_unit": {
+        "concept": "property_unit",
+        "label": "Property Unit",
+        "type": "lookup",
+        "lookupEntity": "property",
+        "required": false,
+        "visible": true,
+        "helpText": "Linked inventory unit (SPA 1052)."
+      },
+      "project": {
+        "concept": "project",
+        "label": "Project / Building",
+        "type": "lookup",
+        "lookupEntity": "project",
+        "required": false,
+        "visible": { "market_segment": { "$in": ["READY", "OFF_PLAN", null] } },
+        "inheritFrom": { "entity": "property_unit", "field": "parentId1044" },
+        "helpText": "Linked project or building tower (SPA 1044)."
+      },
+      "master_project": {
+        "concept": "master_project",
+        "label": "Master Project / Community",
+        "type": "lookup",
+        "lookupEntity": "master_project",
+        "required": false,
+        "visible": { "market_segment": { "$in": ["READY", "OFF_PLAN", null] } },
+        "inheritFrom": { "entity": "project", "field": "parentId1040" },
+        "helpText": "Master development / community (SPA 1040)."
+      },
+      "developer": {
+        "concept": "developer",
+        "label": "Developer",
+        "type": "lookup",
+        "lookupEntity": "developer",
+        "required": false,
+        "visible": true,
+        "inheritFrom": { "entity": "project", "field": "developer" },
+        "helpText": "Developing company / master developer."
+      },
+      "layout": {
+        "concept": "layout",
+        "label": "Property Layout / Floor Plan Model",
+        "type": "lookup",
+        "lookupEntity": "layout",
+        "required": false,
+        "visible": true,
+        "inheritFrom": { "entity": "property_unit", "field": "layout" },
+        "helpText": "Architectural model layout (SPA 1048)."
+      },
+      "property_type": {
+        "concept": "property_type",
+        "label": "Property Type",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "readOnly": { "$when": "derivedFromLayout" },
+        "options": ["APARTMENT", "VILLA", "TOWNHOUSE", "PENTHOUSE", "DUPLEX", "LAND", "COMMERCIAL"],
+        "inheritFrom": { "entity": "layout", "field": "property_type" },
+        "helpText": "Core property classification. Locked only when automatically derived from Layout."
+      },
+      "property_sub_type": {
+        "concept": "property_sub_type",
+        "label": "Commercial Sub-Type",
+        "type": "enumeration",
+        "required": { "property_type": "COMMERCIAL" },
+        "visible": { "property_type": "COMMERCIAL" },
+        "options": ["OFFICE", "RETAIL", "WAREHOUSE", "SHOWROOM"],
+        "helpText": "Specific category for commercial properties."
+      },
+      "bedrooms": {
+        "concept": "bedrooms",
+        "label": "Bedrooms",
+        "type": "number",
+        "required": true,
+        "visible": { "property_type": { "$ne": "LAND" } },
+        "validation": { "min": 0, "max": 20 },
+        "inheritFrom": { "entity": "layout", "field": "bedrooms" },
+        "helpText": "Number of bedrooms. Use 0 for Studio apartments."
+      },
+      "bathrooms": {
+        "concept": "bathrooms",
+        "label": "Bathrooms",
+        "type": "number",
+        "required": false,
+        "visible": { "property_type": { "$ne": "LAND" } },
+        "validation": { "min": 0, "max": 20 },
+        "inheritFrom": { "entity": "layout", "field": "bathrooms" },
+        "helpText": "Number of bathrooms."
+      },
+      "built_up_area": {
+        "concept": "built_up_area",
+        "label": "Built-up Area (Sq Ft)",
+        "type": "number",
+        "required": true,
+        "visible": true,
+        "validation": { "min": 50 },
+        "inheritFrom": { "entity": "layout", "field": "built_up_area" },
+        "helpText": "Total built-up internal area in square feet."
+      },
+      "plot_area": {
+        "concept": "plot_area",
+        "label": "Plot Area (Sq Ft)",
+        "type": "number",
+        "required": false,
+        "visible": { "property_type": { "$in": ["VILLA", "TOWNHOUSE", "LAND"] } },
+        "validation": { "min": 50 },
+        "helpText": "Gross plot area in square feet."
+      },
+      "floor": {
+        "concept": "floor",
+        "label": "Floor Number",
+        "type": "number",
+        "required": false,
+        "visible": { "property_type": { "$in": ["APARTMENT", "PENTHOUSE", "DUPLEX"] } },
+        "helpText": "Floor level inside the building."
+      },
+      "parking_spaces": {
+        "concept": "parking_spaces",
+        "label": "Parking Spaces",
+        "type": "number",
+        "required": false,
+        "visible": true,
+        "validation": { "min": 0, "max": 20 },
+        "defaultValue": 1,
+        "helpText": "Allocated covered parking bays."
+      },
+      "furnished": {
+        "concept": "furnished",
+        "label": "Furnished Status",
+        "type": "enumeration",
+        "required": false,
+        "visible": { "property_type": { "$ne": "LAND" } },
+        "options": ["FURNISHED", "SEMI_FURNISHED", "UNFURNISHED"],
+        "defaultValue": "UNFURNISHED",
+        "helpText": "Furnishing level."
+      },
+      "occupancy": {
+        "concept": "occupancy",
+        "label": "Occupancy Status",
+        "type": "enumeration",
+        "required": { "transaction": "SALE", "market_segment": "READY" },
+        "visible": { "transaction": "SALE", "market_segment": "READY" },
+        "options": ["VACANT", "TENANTED", "OWNER_OCCUPIED"],
+        "helpText": "Current tenancy state for ready properties."
+      },
+      "view": {
+        "concept": "view",
+        "label": "View",
+        "type": "enumeration",
+        "isMultiple": true,
+        "required": false,
+        "visible": true,
+        "options": ["BURJ_KHALIFA", "SEA_VIEW", "MARINA_VIEW", "PALM_VIEW", "GOLF_COURSE", "PARK_VIEW", "CANAL_VIEW", "CITY_SKYLINE"],
+        "helpText": "Primary vistas visible from the property."
+      },
+      "amenities": {
+        "concept": "amenities",
+        "label": "Amenities",
+        "type": "enumeration",
+        "isMultiple": true,
+        "required": false,
+        "visible": true,
+        "options": ["SWIMMING_POOL", "BALCONY", "COVERED_PARKING", "GYM", "SECURITY", "MAIDS_ROOM", "BUILT_IN_WARDROBES", "CENTRAL_AC", "CHILDRENS_PLAY_AREA", "PETS_ALLOWED", "PRIVATE_GARDEN", "PRIVATE_POOL", "WALK_IN_CLOSET"],
+        "helpText": "Exclusive building & unit lifestyle amenities."
+      },
+      "price": {
+        "concept": "price",
+        "label": "Price / Annual Rent (AED)",
+        "type": "money",
+        "required": true,
+        "visible": true,
+        "validation": { "min": 1000 },
+        "helpText": "Total selling price or annual lease amount in AED."
+      },
+      "price_per_sq_ft": {
+        "concept": "price_per_sq_ft",
+        "label": "Price Per Sq Ft (AED)",
+        "type": "number",
+        "required": false,
+        "visible": true,
+        "readOnly": true,
+        "calculated": "price / built_up_area",
+        "helpText": "Real-time computed rate per square foot."
+      },
+      "rental_frequency": {
+        "concept": "rental_frequency",
+        "label": "Rental Frequency",
+        "type": "enumeration",
+        "required": { "transaction": "RENT" },
+        "visible": { "transaction": "RENT" },
+        "options": ["YEARLY", "BI_ANNUAL", "QUARTERLY", "MONTHLY"],
+        "defaultValue": "YEARLY",
+        "helpText": "Agreed rental payment cycle."
+      },
+      "cheques": {
+        "concept": "cheques",
+        "label": "Number of Cheques",
+        "type": "enumeration",
+        "required": { "transaction": "RENT" },
+        "visible": { "transaction": "RENT" },
+        "options": ["1", "2", "3", "4", "6", "12"],
+        "defaultValue": "4",
+        "helpText": "Payment installment split via post-dated cheques."
+      },
+      "security_deposit": {
+        "concept": "security_deposit",
+        "label": "Security Deposit (AED)",
+        "type": "money",
+        "required": false,
+        "visible": { "transaction": "RENT" },
+        "helpText": "Refundable tenancy security deposit amount."
+      },
+      "commission_pct": {
+        "concept": "commission_pct",
+        "label": "Agency Commission %",
+        "type": "number",
+        "required": false,
+        "visible": true,
+        "validation": { "min": 0, "max": 10 },
+        "defaultValue": 2.0,
+        "helpText": "Agreed agency brokerage commission percentage."
+      },
+      "service_charge": {
+        "concept": "service_charge",
+        "label": "Annual Service Charge (AED)",
+        "type": "money",
+        "required": false,
+        "visible": { "property_type": { "$ne": "LAND" } },
+        "helpText": "Annual maintenance & owners association fees."
+      },
+      "currency": {
+        "concept": "currency",
+        "label": "Currency",
+        "type": "enumeration",
+        "required": { "market_segment": "OVERSEAS" },
+        "visible": { "market_segment": "OVERSEAS" },
+        "options": ["AED", "USD", "EUR", "GBP"],
+        "defaultValue": "USD",
+        "helpText": "Transaction billing currency for overseas acquisitions."
+      },
+      "payment_plan_booking_pct": {
+        "concept": "payment_plan_booking_pct",
+        "label": "Downpayment / Booking %",
+        "type": "number",
+        "required": { "market_segment": "OFF_PLAN" },
+        "visible": { "market_segment": "OFF_PLAN" },
+        "validation": { "min": 0, "max": 100 },
+        "helpText": "Initial downpayment percentage upon reservation."
+      },
+      "payment_plan_construction_pct": {
+        "concept": "payment_plan_construction_pct",
+        "label": "During Construction %",
+        "type": "number",
+        "required": { "market_segment": "OFF_PLAN" },
+        "visible": { "market_segment": "OFF_PLAN" },
+        "validation": { "min": 0, "max": 100 },
+        "helpText": "Installments paid during development milestones."
+      },
+      "payment_plan_handover_pct": {
+        "concept": "payment_plan_handover_pct",
+        "label": "On Handover %",
+        "type": "number",
+        "required": { "market_segment": "OFF_PLAN" },
+        "visible": { "market_segment": "OFF_PLAN" },
+        "validation": { "min": 0, "max": 100 },
+        "helpText": "Payment due upon key handover / completion."
+      },
+      "payment_plan_post_handover_pct": {
+        "concept": "payment_plan_post_handover_pct",
+        "label": "Post Handover %",
+        "type": "number",
+        "required": false,
+        "visible": { "market_segment": "OFF_PLAN" },
+        "validation": { "min": 0, "max": 100 },
+        "defaultValue": 0,
+        "helpText": "Deferred payment installments post completion."
+      },
+      "payment_plan_notes": {
+        "concept": "payment_plan_notes",
+        "label": "Payment Plan Notes",
+        "type": "string",
+        "required": false,
+        "visible": { "market_segment": "OFF_PLAN" },
+        "helpText": "Milestone dates, installment schedules, and developer escrow details."
+      },
+      "available_from": {
+        "concept": "available_from",
+        "label": "Available From",
+        "type": "date",
+        "required": { "transaction": "RENT" },
+        "visible": { "transaction": "RENT" },
+        "helpText": "Date tenancy lease begins."
+      },
+      "expected_handover_date": {
+        "concept": "expected_handover_date",
+        "label": "Expected Handover Date",
+        "type": "date",
+        "required": { "market_segment": "OFF_PLAN" },
+        "visible": { "market_segment": "OFF_PLAN" },
+        "helpText": "Target completion and handover date."
+      },
+      "form_a_expiry": {
+        "concept": "form_a_expiry",
+        "label": "Form A / Mandate Expiry",
+        "type": "date",
+        "required": { "stock_source": "OWN" },
+        "visible": { "stock_source": "OWN" },
+        "helpText": "Official RERA Form A mandate contract expiry."
+      },
+      "permit_expiry": {
+        "concept": "permit_expiry",
+        "label": "Permit Expiry Date",
+        "type": "date",
+        "required": { "market_segment": { "$ne": "OVERSEAS" } },
+        "visible": { "market_segment": { "$ne": "OVERSEAS" } },
+        "helpText": "DLD advertising permit validity expiry date."
+      },
+      "country": {
+        "concept": "country",
+        "label": "Country",
+        "type": "string",
+        "required": { "market_segment": "OVERSEAS" },
+        "visible": { "market_segment": "OVERSEAS" },
+        "defaultValue": "United Arab Emirates",
+        "helpText": "Foreign jurisdiction of property location."
+      },
+      "partner_agency": {
+        "concept": "partner_agency",
+        "label": "Partner Agency (Co-Broke)",
+        "type": "lookup",
+        "lookupEntity": "company",
+        "required": { "stock_source": "EXTERNAL" },
+        "visible": { "stock_source": "EXTERNAL" },
+        "helpText": "Third-party brokerage holding primary mandate."
+      },
+      "cobroke_split_pct": {
+        "concept": "cobroke_split_pct",
+        "label": "Co-Broke Split %",
+        "type": "number",
+        "required": { "stock_source": "EXTERNAL" },
+        "visible": { "stock_source": "EXTERNAL" },
+        "validation": { "min": 0, "max": 100 },
+        "defaultValue": 50,
+        "helpText": "Commission share percentage agreed with partner broker."
+      },
+      "external_reference": {
+        "concept": "external_reference",
+        "label": "External Reference ID",
+        "type": "string",
+        "required": { "stock_source": "EXTERNAL" },
+        "visible": { "stock_source": "EXTERNAL" },
+        "helpText": "Partner listing identifier or external stock code."
+      },
+      "trakheesi_permit_no": {
+        "concept": "trakheesi_permit_no",
+        "label": "Trakheesi Permit No",
+        "type": "string",
+        "required": { "market_segment": { "$ne": "OVERSEAS" } },
+        "visible": { "market_segment": { "$ne": "OVERSEAS" } },
+        "validation": { "regex": "^[0-9]{10,12}$" },
+        "helpText": "10-digit mandatory Dubai Land Department advertising permit number."
+      },
+      "dld_qr": {
+        "concept": "dld_qr",
+        "label": "DLD Permit QR Code",
+        "type": "file",
+        "required": false,
+        "visible": { "market_segment": { "$ne": "OVERSEAS" } },
+        "helpText": "Official electronic QR code verification image."
+      },
+      "signed_form_a": {
+        "concept": "signed_form_a",
+        "label": "Signed Form A / Mandate",
+        "type": "file",
+        "required": { "stock_source": "OWN" },
+        "visible": { "stock_source": "OWN" },
+        "helpText": "Executed owner authorization contract (Form A PDF)."
+      },
+      "title_deed": {
+        "concept": "title_deed",
+        "label": "Title Deed / Oqood",
+        "type": "file",
+        "required": { "market_segment": "READY" },
+        "visible": { "market_segment": "READY" },
+        "helpText": "Title Deed certificate or Oqood pre-registration document."
+      },
+      "photos": {
+        "concept": "photos",
+        "label": "Listing Photos",
+        "type": "file",
+        "isMultiple": true,
+        "required": true,
+        "visible": true,
+        "validation": { "minFiles": 3 },
+        "helpText": "High-resolution property photos (minimum 3 required for portal syndication)."
+      },
+      "floor_plans": {
+        "concept": "floor_plans",
+        "label": "Floor Plans",
+        "type": "file",
+        "isMultiple": true,
+        "required": false,
+        "visible": true,
+        "helpText": "Detailed architectural layout blueprints."
+      },
+      "title": {
+        "concept": "title",
+        "label": "Listing Title (EN)",
+        "type": "string",
+        "required": true,
+        "visible": true,
+        "validation": { "minLength": 10, "maxLength": 200 },
+        "helpText": "Engaging, SEO-optimized title for portal display."
+      },
+      "description": {
+        "concept": "description",
+        "label": "Listing Description (EN)",
+        "type": "textarea",
+        "required": true,
+        "visible": true,
+        "validation": { "minLength": 50 },
+        "helpText": "Comprehensive promotional description detailing features, location, and terms."
+      },
+      "publish_portals": {
+        "concept": "publish_portals",
+        "label": "Publish to Portals",
+        "type": "boolean",
+        "required": false,
+        "visible": true,
+        "defaultValue": false,
+        "helpText": "Toggle live feed syndication to PropertyFinder, Bayut, and Dubizzle."
+      }
+    }
+  },
+  "enquiry": {
+    "totalFields": 24,
+    "sections": [
+      {
+        "id": "client_overview",
+        "title": "Client Overview & Source",
+        "order": 1,
+        "fields": ["title", "phone", "email", "nationality", "lead_source", "assigned_broker", "contact_company", "created_date"]
+      },
+      {
+        "id": "search_criteria",
+        "title": "Search Criteria & Specifications",
+        "order": 2,
+        "fields": ["transaction", "purpose", "property_type", "preferred_locations", "bedrooms_min", "bedrooms_max", "bua_min", "furnished", "target_move_date", "amenities"]
+      },
+      {
+        "id": "financial_qualification",
+        "title": "Financial Qualification",
+        "order": 3,
+        "fields": ["budget_min", "budget_max", "finance_type", "pre_approval_status"]
+      },
+      {
+        "id": "audit_system",
+        "title": "Status & Requirements Description",
+        "order": 4,
+        "fields": ["status", "description"]
+      }
+    ],
+    "fields": {
+      "title": {
+        "label": "Client Full Name",
+        "type": "string",
+        "required": true,
+        "visible": true,
+        "helpText": "Full legal name or enquiry heading."
+      },
+      "phone": {
+        "label": "Phone Number",
+        "type": "string",
+        "required": true,
+        "visible": true,
+        "validation": { "regex": "^\\+?[0-9\\s\\-]{7,20}$" },
+        "helpText": "Primary contact number with country dialling code."
+      },
+      "email": {
+        "label": "Email Address",
+        "type": "string",
+        "required": false,
+        "visible": true,
+        "validation": { "regex": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$" },
+        "helpText": "Verified email address for property brochures."
+      },
+      "nationality": {
+        "label": "Nationality",
+        "type": "string",
+        "required": false,
+        "visible": true,
+        "helpText": "Buyer / tenant nationality."
+      },
+      "lead_source": {
+        "label": "Lead Source",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["PROPERTY_FINDER", "BAYUT", "DUBIZZLE", "WEBSITE", "DIRECT_WALKIN", "REFERRAL", "CAMPAIGN"],
+        "helpText": "Inbound acquisition channel."
+      },
+      "assigned_broker": {
+        "label": "Assigned Broker",
+        "type": "lookup",
+        "lookupEntity": "broker",
+        "required": true,
+        "visible": true,
+        "helpText": "Agent handling client qualification."
+      },
+      "contact_company": {
+        "label": "Employer / Company",
+        "type": "string",
+        "required": false,
+        "visible": true,
+        "helpText": "Client employer or corporate purchasing entity."
+      },
+      "created_date": {
+        "label": "Created On",
+        "type": "datetime",
+        "required": false,
+        "visible": true,
+        "readOnly": true,
+        "helpText": "Timestamp when enquiry entered CRM."
+      },
+      "transaction": {
+        "label": "Transaction Type",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["SALE", "RENT"],
+        "defaultValue": "SALE",
+        "helpText": "Buyer acquisition (Sale) vs Tenant lease (Rent)."
+      },
+      "purpose": {
+        "label": "Purpose",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["END_USER", "INVESTMENT"],
+        "defaultValue": "END_USER",
+        "helpText": "Purchasing motivation: private home vs investment return."
+      },
+      "property_type": {
+        "label": "Property Type",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["APARTMENT", "VILLA", "TOWNHOUSE", "PENTHOUSE", "DUPLEX", "LAND", "COMMERCIAL"],
+        "helpText": "Preferred asset classification."
+      },
+      "preferred_locations": {
+        "label": "Preferred Communities",
+        "type": "string",
+        "required": true,
+        "visible": true,
+        "helpText": "Target communities (e.g. Dubai Marina, Downtown, Palm Jumeirah)."
+      },
+      "bedrooms_min": {
+        "label": "Min Bedrooms",
+        "type": "number",
+        "required": true,
+        "visible": true,
+        "validation": { "min": 0, "max": 20 },
+        "defaultValue": 1,
+        "helpText": "Minimum acceptable bedrooms (0 for Studio)."
+      },
+      "bedrooms_max": {
+        "label": "Max Bedrooms",
+        "type": "number",
+        "required": false,
+        "visible": true,
+        "validation": { "min": 0, "max": 20 },
+        "helpText": "Maximum bedroom configuration."
+      },
+      "bua_min": {
+        "label": "Min Built-up Area (Sq Ft)",
+        "type": "number",
+        "required": false,
+        "visible": true,
+        "validation": { "min": 0 },
+        "helpText": "Minimum internal square footage."
+      },
+      "furnished": {
+        "label": "Furnishing Preference",
+        "type": "enumeration",
+        "required": false,
+        "visible": true,
+        "options": ["FURNISHED", "SEMI_FURNISHED", "UNFURNISHED", "ANY"],
+        "defaultValue": "ANY",
+        "helpText": "Client preference for furnished inventory."
+      },
+      "target_move_date": {
+        "label": "Expected Move / Purchase Date",
+        "type": "date",
+        "required": false,
+        "visible": true,
+        "helpText": "Target completion or lease commencement timeframe."
+      },
+      "amenities": {
+        "label": "Must-have Amenities",
+        "type": "enumeration",
+        "isMultiple": true,
+        "required": false,
+        "visible": true,
+        "options": ["SWIMMING_POOL", "BALCONY", "COVERED_PARKING", "GYM", "SECURITY", "MAIDS_ROOM", "PRIVATE_GARDEN", "PETS_ALLOWED"],
+        "helpText": "Specific amenities required by the client."
+      },
+      "budget_min": {
+        "label": "Min Budget (AED)",
+        "type": "money",
+        "required": false,
+        "visible": true,
+        "validation": { "min": 0 },
+        "helpText": "Minimum qualified purchasing or rental power."
+      },
+      "budget_max": {
+        "label": "Max Budget (AED)",
+        "type": "money",
+        "required": true,
+        "visible": true,
+        "validation": { "min": 1000 },
+        "helpText": "Upper budget threshold."
+      },
+      "finance_type": {
+        "label": "Financing Method",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["CASH", "MORTGAGE", "DEVELOPER_PAYMENT_PLAN"],
+        "defaultValue": "CASH",
+        "helpText": "How purchase or lease will be funded."
+      },
+      "pre_approval_status": {
+        "label": "Mortgage Pre-Approved",
+        "type": "boolean",
+        "required": false,
+        "visible": { "finance_type": "MORTGAGE" },
+        "defaultValue": false,
+        "helpText": "Whether bank pre-approval letter is already issued."
+      },
+      "status": {
+        "label": "Enquiry Status / Stage",
+        "type": "enumeration",
+        "required": true,
+        "visible": true,
+        "options": ["NEW", "QUALIFIED", "VIEWING_SCHEDULED", "OFFER_MADE", "CONTRACT_SIGNING", "CLOSED_WON", "CLOSED_LOST"],
+        "defaultValue": "NEW",
+        "helpText": "Current sales pipeline stage."
+      },
+      "description": {
+        "label": "Requirements & Special Requests",
+        "type": "textarea",
+        "required": false,
+        "visible": true,
+        "helpText": "Specific client notes, preferred towers, floor height, or payment flexibility."
+      }
+    }
+  }
+}

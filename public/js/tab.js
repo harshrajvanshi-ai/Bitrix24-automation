@@ -27,6 +27,7 @@
   let initialFormValues = {};
   let isDirty = false;
   let allSectionsCollapsed = false;
+  let cachedUndoState = null;
 
   const LISTING_LAYOUT_META = {
     external_stock: { id: 'external_stock', enumId: '2584', title: 'External Stock', icon: '🏢', pillClass: 'layout-pill-external_stock' },
@@ -34,6 +35,64 @@
     overseas_sale: { id: 'overseas_sale', enumId: '2580', title: 'Overseas Sale', icon: '🌍', pillClass: 'layout-pill-overseas_sale' },
     rent: { id: 'rent', enumId: '2578', title: 'Rent', icon: '🔑', pillClass: 'layout-pill-rent' }
   };
+
+  
+  function computeHandoverQuarter(dateStr) {
+    if (!dateStr) return '';
+    let y, m;
+    if (/^\d{4}-\d{2}/.test(dateStr)) {
+      const parts = dateStr.split('-');
+      y = parseInt(parts[0], 10);
+      m = parseInt(parts[1], 10);
+    } else if (/^\d{2}\.\d{2}\.\d{4}/.test(dateStr)) {
+      const parts = dateStr.split('.');
+      y = parseInt(parts[2], 10);
+      m = parseInt(parts[1], 10);
+    } else {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        y = d.getFullYear();
+        m = d.getMonth() + 1;
+      }
+    }
+    if (y && m) {
+      const q = Math.ceil(m / 3);
+      return `Q${q} ${y}`;
+    }
+    return '';
+  }
+
+  function promptCascadeUpdate(message, onUpdateAll, onKeepCurrent) {
+    const existing = document.querySelector('.cascade-modal-overlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'cascade-modal-overlay';
+    overlay.innerHTML = `
+      <div class="cascade-modal-card">
+        <div class="cascade-modal-header">
+          <span class="cascade-modal-icon">🔄</span>
+          <span class="cascade-modal-title">Property Unit Update</span>
+        </div>
+        <div class="cascade-modal-body">${message || 'Update parent project and developer to match new unit?'}</div>
+        <div class="cascade-modal-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cascade-keep">Keep Current</button>
+          <button type="button" class="btn btn-primary" id="btn-cascade-update-all">Update All</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('#btn-cascade-keep').addEventListener('click', () => {
+      overlay.remove();
+      if (typeof onKeepCurrent === 'function') onKeepCurrent();
+    });
+
+    overlay.querySelector('#btn-cascade-update-all').addEventListener('click', () => {
+      overlay.remove();
+      if (typeof onUpdateAll === 'function') onUpdateAll();
+    });
+  }
 
   function detectListingSubLayout(lead) {
     const raw = lead?.UF_CRM_1791952650167 || lead?.UF_CRM_LISTING_TYPE;
@@ -1015,17 +1074,33 @@
               }
             } else if (f.code === 'UF_CRM_PROPERTY' || f.code === 'UF_CRM_MASTERPROPERTY' || f.code === 'parentId1052') {
               // 5. Property selected: auto-fill Project, Layout, Master Project, Developer
-              if (item.parentId1044) {
-                setDependentLookup('UF_CRM_PROJECT_1', 'project', item.parentId1044);
-              }
-              if (item.parentId1048) {
-                setDependentLookup('UF_CRM_PROPERTY_LAYOUT', 'layout', item.parentId1048);
-              }
-              if (item.parentId1040) {
-                setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
-              }
-              if (item.companyId) {
-                setDependentLookup('UF_CRM_DEVELOPER_1', 'developer', item.companyId);
+              const curProj = document.getElementById('field_UF_CRM_PROJECT_1')?.dataset?.selectedId || document.getElementById('field_UF_CRM_PROJECT_1')?.value || '';
+              const curDev = document.getElementById('field_UF_CRM_DEVELOPER_1')?.dataset?.selectedId || document.getElementById('field_UF_CRM_DEVELOPER_1')?.value || '';
+
+              const shouldPrompt = (
+                (item.parentId1044 && curProj && String(curProj) !== String(item.parentId1044)) ||
+                (item.companyId && curDev && String(curDev) !== String(item.companyId))
+              );
+
+              const applyUnitParents = (includeProjectAndDev = true) => {
+                if (includeProjectAndDev) {
+                  if (item.parentId1044) setDependentLookup('UF_CRM_PROJECT_1', 'project', item.parentId1044);
+                  if (item.companyId) setDependentLookup('UF_CRM_DEVELOPER_1', 'developer', item.companyId);
+                  if (item.parentId1040) setDependentLookup('UF_CRM_PROJECT', 'master_project', item.parentId1040);
+                }
+                if (item.parentId1048) {
+                  setDependentLookup('UF_CRM_PROPERTY_LAYOUT', 'layout', item.parentId1048);
+                }
+              };
+
+              if (shouldPrompt) {
+                promptCascadeUpdate(
+                  'Update parent project and developer to match new unit?',
+                  () => applyUnitParents(true),
+                  () => applyUnitParents(false)
+                );
+              } else {
+                applyUnitParents(true);
               }
             }
 
@@ -1134,8 +1209,15 @@
           document.getElementById('field_UF_CRM_PROPERTY_TYPE')
         ].filter(Boolean);
         propTypeInputs.forEach(el => {
-          el.value = '';
-          el.disabled = true;
+          el.disabled = false;
+          el.style.pointerEvents = 'auto';
+          el.style.cursor = 'default';
+          el.style.backgroundColor = '';
+          el.style.opacity = '1';
+          el.title = 'Select Property Type';
+          const parentGroup = el.closest('.form-group');
+          const badge = parentGroup?.querySelector('.lock-badge');
+          if (badge) badge.remove();
         });
         if (typeof runLeadListingAutomations === 'function') {
           runLeadListingAutomations({ isInitialLoad: false, triggerField: 'UF_CRM_1791952050535' });
@@ -1937,19 +2019,28 @@
         inputElement.appendChild(optEl);
       });
 
-      if (f.code === 'UF_CRM_1791952050535' || f.code === 'UF_CRM_PROPERTY_TYPE' || f.readOnly || f.disabled) {
-        inputElement.disabled = true;
-        inputElement.style.pointerEvents = 'none';
-        inputElement.style.cursor = 'not-allowed';
-        inputElement.style.backgroundColor = 'var(--bg-secondary, #f1f5f9)';
-        inputElement.style.opacity = '0.85';
-        inputElement.title = 'Property Type is auto-populated from Layout and cannot be changed manually.';
+      const isPropTypeField = (f.code === 'UF_CRM_1791952050535' || f.code === 'UF_CRM_PROPERTY_TYPE');
+      const hasLinkedLayout = !!(
+        (currentLead && (currentLead.UF_CRM_PROPERTY_LAYOUT || currentLead.UF_CRM_LAYOUT)) ||
+        document.getElementById('field_UF_CRM_PROPERTY_LAYOUT')?.dataset?.selectedId ||
+        document.getElementById('field_UF_CRM_PROPERTY_LAYOUT')?.value
+      );
 
-        const lockBadge = document.createElement('div');
-        lockBadge.className = 'form-text text-muted';
-        lockBadge.style.cssText = 'font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;';
-        lockBadge.innerHTML = '🔒 Auto-populated from Layout (Read-only)';
-        container.appendChild(lockBadge);
+      if (f.code === 'UF_CRM_1791952050535' || f.code === 'UF_CRM_PROPERTY_TYPE' || f.readOnly || f.disabled) {
+        if (!isPropTypeField || hasLinkedLayout) {
+          inputElement.disabled = true;
+          inputElement.style.pointerEvents = 'none';
+          inputElement.style.cursor = 'not-allowed';
+          inputElement.style.backgroundColor = 'var(--bg-secondary, #f1f5f9)';
+          inputElement.style.opacity = '0.85';
+          inputElement.title = 'Property Type is auto-populated from Layout and cannot be changed manually.';
+
+          const lockBadge = document.createElement('div');
+          lockBadge.className = 'form-text text-muted lock-badge';
+          lockBadge.style.cssText = 'font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;';
+          lockBadge.innerHTML = '🔒 Auto-populated from Layout (Read-only)';
+          container.appendChild(lockBadge);
+        }
       }
 
       container.appendChild(inputElement);
@@ -2509,8 +2600,11 @@
 
     const sections = tabConfig?.listingLayout?.sections || [];
 
-    // When Listing Type changes, clear values belonging to the previously selected type
+    // When Listing Type changes, capture hidden values for Undo and clear them from active UI
     if (isLayoutChanged) {
+      const hiddenValues = {};
+      let hasHiddenData = false;
+
       sections.forEach(sec => {
         (sec.fields || []).forEach(f => {
           const wasVisible = evaluateListingFieldVisibility(f, previousSubLayout);
@@ -2518,6 +2612,18 @@
           if (wasVisible && !isNowVisible) {
             const el = document.getElementById(`field_${f.code}`) || document.querySelector(`[name="${f.code}"]`);
             if (el) {
+              const val = el.type === 'checkbox' ? el.checked : el.value;
+              const hasVal = el.type === 'checkbox' ? el.checked : (val !== '' && val !== null && val !== undefined);
+              if (hasVal) {
+                hasHiddenData = true;
+                hiddenValues[f.code] = {
+                  value: el.value,
+                  checked: el.type === 'checkbox' ? el.checked : false,
+                  selectedId: el.dataset?.selectedId || '',
+                  selectedRef: el.dataset?.selectedRef || '',
+                  selectedTitle: el.dataset?.selectedTitle || ''
+                };
+              }
               if (el.type === 'checkbox') {
                 el.checked = false;
               } else if (el.tagName === 'SELECT') {
@@ -2536,6 +2642,37 @@
           }
         });
       });
+
+      const undoBannerEl = document.getElementById('transaction-undo-banner');
+      if (hasHiddenData) {
+        const driverEl = document.getElementById('field_UF_CRM_1791952650167') || document.querySelector('[name="UF_CRM_1791952650167"]');
+        cachedUndoState = {
+          previousSubLayout,
+          previousDriverVal: (LISTING_LAYOUT_META[previousSubLayout]?.enumId) || driverEl?.value || '',
+          hiddenValues
+        };
+        if (undoBannerEl) {
+          undoBannerEl.innerHTML = `
+            <div class="undo-banner-inner">
+              <div class="undo-banner-text">
+                <span class="undo-banner-icon">ℹ️</span>
+                <span>Switched transaction type. Previously entered fields have been hidden.</span>
+              </div>
+              <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">↺ Undo Switch</button>
+            </div>
+          `;
+          undoBannerEl.style.display = 'flex';
+          const undoBtn = document.getElementById('btn-undo-transaction-switch');
+          if (undoBtn) {
+            undoBtn.onclick = (e) => {
+              e.preventDefault();
+              undoTransactionSwitch();
+            };
+          }
+        }
+      } else if (!cachedUndoState && undoBannerEl) {
+        undoBannerEl.style.display = 'none';
+      }
     }
 
     let totalActive = 0;
@@ -2594,6 +2731,150 @@
   // ============================================================================
   // AUTO-CALCULATION & FIELD AUTOMATION ENGINE (LEAD LISTING LAYOUT)
   // ============================================================================
+  
+  function undoTransactionSwitch() {
+    if (!cachedUndoState) return;
+    const { previousSubLayout, previousDriverVal, hiddenValues } = cachedUndoState;
+    const undoBannerEl = document.getElementById('transaction-undo-banner');
+
+    const driverEl = document.getElementById('field_UF_CRM_1791952650167') || document.querySelector('[name="UF_CRM_1791952650167"]');
+    if (driverEl && previousDriverVal) {
+      driverEl.value = previousDriverVal;
+    }
+
+    applyListingSubLayout(previousSubLayout);
+
+    Object.entries(hiddenValues || {}).forEach(([code, data]) => {
+      const el = document.getElementById(`field_${code}`) || document.querySelector(`[name="${code}"]`);
+      if (el) {
+        if (el.type === 'checkbox') {
+          el.checked = !!data.checked;
+        } else {
+          el.value = data.value || '';
+        }
+        if (el.dataset) {
+          if (data.selectedId) el.dataset.selectedId = data.selectedId;
+          if (data.selectedRef) el.dataset.selectedRef = data.selectedRef;
+          if (data.selectedTitle) el.dataset.selectedTitle = data.selectedTitle;
+        }
+      }
+    });
+
+    if (undoBannerEl) {
+      undoBannerEl.style.display = 'none';
+    }
+    cachedUndoState = null;
+    setDirty(true);
+    runLeadListingAutomations({ isInitialLoad: false });
+    showToast('Transaction type switch undone and fields restored', 'info');
+  }
+
+  
+  function updatePublishReadinessBanner() {
+    if (!window.ReadinessEvaluator || typeof window.ReadinessEvaluator.evaluatePublishReadiness !== 'function') return;
+    if (currentLayout !== 'listing') return;
+
+    const bannerEl = document.getElementById('readiness-banner');
+    if (!bannerEl) return;
+
+    const getFormVal = (codes) => {
+      const codeList = Array.isArray(codes) ? codes : [codes];
+      for (const c of codeList) {
+        const el = document.getElementById(`field_${c}`) || document.querySelector(`[name="${c}"]`);
+        if (el) {
+          if (el.dataset?.selectedRef) return el.dataset.selectedRef;
+          return el.value !== undefined ? String(el.value).trim() : '';
+        }
+      }
+      return '';
+    };
+
+    const isRent = (currentListingSubLayout === 'rent');
+    const isOffPlan = (currentListingSubLayout === 'off_plan');
+    const isOverseas = (currentListingSubLayout === 'overseas_sale');
+
+    const item = {
+      transaction: isRent ? 'RENT' : 'SALE',
+      market_segment: isOffPlan ? 'OFF_PLAN' : isOverseas ? 'OVERSEAS' : 'READY',
+      stock_source: currentListingSubLayout === 'external_stock' ? 'EXTERNAL' : 'OWN',
+      property_type: getFormVal(['UF_CRM_1791952050535', 'UF_CRM_PROPERTY_TYPE']),
+      property_sub_type: getFormVal(['UF_CRM_PROPERTY_SUB_TYPE']),
+      built_up_area: getFormVal(['UF_CRM_1791952136007', 'UF_CRM_BUA', 'UF_CRM_TOTALAREA']),
+      bedrooms: getFormVal(['UF_CRM_BEDROOMS', 'UF_CRM_1791966366775', 'UF_CRM_1791952093551']),
+      bathrooms: getFormVal(['UF_CRM_BATHROOMS', 'UF_CRM_1791952115167']),
+      price: getFormVal(['UF_CRM_LISTING_PRICE', 'UF_CRM_1791952467551', 'UF_CRM_LISTINGPRICE']),
+      rental_frequency: getFormVal(['UF_CRM_1791970817084', 'UF_CRM_RENT_FREQUENCY']),
+      cheques: getFormVal(['UF_CRM_1791970849301', 'UF_CRM_CHEQUES']),
+      payment_plan_booking_pct: getFormVal(['UF_CRM_BOOKING_AMOUNT', 'UF_CRM_RE_PP_BOOKING_PCT']),
+      payment_plan_construction_pct: getFormVal(['UF_CRM_RE_PP_CONSTRUCTION_PCT']),
+      payment_plan_handover_pct: getFormVal(['UF_CRM_HANDOVER_PAYMENT', 'UF_CRM_RE_PP_HANDOVER_PCT']),
+      payment_plan_post_handover_pct: getFormVal(['UF_CRM_RE_PP_POST_HANDOVER_PCT']),
+      expected_handover_date: getFormVal(['UF_CRM_COMPLETIONDATE']),
+      country: isOverseas ? (getFormVal(['UF_CRM_1791952362575', 'UF_CRM_COUNTRY']) || 'Spain') : 'United Arab Emirates',
+      trakheesi_permit_no: getFormVal(['UF_CRM_1791970864836', 'UF_CRM_RERA_PERMIT_NUMBER', 'UF_CRM_TRAKHEESI_PERMIT']),
+      permit_expiry: getFormVal(['UF_CRM_PERMIT_EXPIRY_DATE', 'UF_CRM_1791970878546']),
+      form_a_expiry: getFormVal(['UF_CRM_FORM_A_EXPIRY_DATE', 'UF_CRM_16_FORM_A_EXPIRY_DATE']),
+      photos: (currentLead?.UF_CRM_IMAGES || []).length || (document.querySelectorAll('.file-tile-wrap').length || 0),
+      title: getFormVal(['UF_CRM_1791952409183', 'UF_CRM_LISTING_NAME']),
+      description: getFormVal(['UF_CRM_SUMMARY_DESCRIPTION', 'UF_CRM_1791952431711'])
+    };
+
+    const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
+
+    bannerEl.className = `readiness-banner ${result.ready ? 'ready' : ''}`;
+    bannerEl.style.display = 'block';
+    bannerEl.innerHTML = `
+      <div class="readiness-banner-header">
+        <div class="readiness-title-group">
+          <span class="readiness-score-pill ${result.ready ? 'score-ready' : 'score-pending'}">${result.score}% Portal Ready</span>
+          <span class="readiness-status-text">${result.ready ? '✓ Listing complies with all DLD & portal syndication requirements' : 'Portal Syndication Checklist Pending'}</span>
+        </div>
+      </div>
+      ${!result.ready && result.missing.length > 0 ? `
+        <div class="readiness-summary">
+          <strong>Missing Requirements (${result.missing.length}):</strong>
+          <ul class="readiness-missing-list">
+            ${result.missing.map(m => `<li>${m}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+      ${result.warnings.length > 0 ? `
+        <div class="readiness-summary" style="margin-top:4px;">
+          <strong>Warnings (${result.warnings.length}):</strong>
+          <ul class="readiness-warnings-list">
+            ${result.warnings.map(w => `<li>${w}</li>`).join('')}
+          </ul>
+        </div>
+      ` : ''}
+    `;
+
+    const publishInputs = [
+      document.getElementById('field_UF_CRM_1792151479'),
+      document.getElementById('field_UF_CRM_RE_PUBLISH_PORTALS'),
+      document.querySelector('[name="UF_CRM_1792151479"]'),
+      document.querySelector('[name="UF_CRM_RE_PUBLISH_PORTALS"]')
+    ].filter(Boolean);
+
+    publishInputs.forEach(input => {
+      if (!result.ready) {
+        input.disabled = true;
+        input.checked = false;
+        input.title = `Publishing disabled: Complete missing portal specifications (${result.missing.join(', ')})`;
+        if (input.parentElement) {
+          input.parentElement.style.opacity = '0.6';
+          input.parentElement.style.cursor = 'not-allowed';
+        }
+      } else {
+        input.disabled = false;
+        input.title = 'Ready for portal syndication (100% score)';
+        if (input.parentElement) {
+          input.parentElement.style.opacity = '1';
+          input.parentElement.style.cursor = 'pointer';
+        }
+      }
+    });
+  }
+
   function runLeadListingAutomations(options = {}) {
     const isInitialLoad = !!options.isInitialLoad;
     const trigger = options.triggerField || '';
@@ -2678,6 +2959,85 @@
       setVal(commCodes, defaultComm, !isInitialLoad);
     }
 
+    // Agency Commission AED calculation
+    const commPct = getNum(commCodes);
+    const commInput = findEl(commCodes);
+    if (commInput) {
+      const commFg = commInput.closest('.form-group');
+      if (commFg) {
+        let pill = commFg.querySelector('.commission-aed-pill');
+        if (price > 0 && commPct > 0) {
+          const commAed = Math.round(price * (commPct / 100));
+          if (!pill) {
+            pill = document.createElement('div');
+            pill.className = 'form-text-calc commission-aed-pill';
+            commFg.appendChild(pill);
+          }
+          pill.textContent = `≈ AED ${commAed.toLocaleString()} (${commPct}%)`;
+          pill.style.display = 'inline-flex';
+        } else if (pill) {
+          pill.style.display = 'none';
+        }
+      }
+    }
+
+    // Handover Quarter calculation from completion date
+    const compCodes = ['UF_CRM_COMPLETIONDATE', 'UF_CRM_1791970878546'];
+    const compDate = getVal(compCodes);
+    const compInput = findEl(compCodes);
+    if (compInput) {
+      const compFg = compInput.closest('.form-group');
+      if (compFg) {
+        let qPill = compFg.querySelector('.handover-quarter-pill');
+        const quarter = computeHandoverQuarter(compDate);
+        if (quarter) {
+          if (!qPill) {
+            qPill = document.createElement('div');
+            qPill.className = 'form-text-calc handover-quarter-pill';
+            compFg.appendChild(qPill);
+          }
+          qPill.textContent = `Handover: ${quarter}`;
+          qPill.style.display = 'inline-flex';
+        } else if (qPill) {
+          qPill.style.display = 'none';
+        }
+      }
+    }
+
+    // Payment Plan Total Badge (100% check for Off-plan)
+    if (currentListingSubLayout === 'off_plan') {
+      const booking = getNum(['UF_CRM_BOOKING_AMOUNT', 'UF_CRM_RE_PP_BOOKING_PCT']);
+      const constr = getNum(['UF_CRM_RE_PP_CONSTRUCTION_PCT']);
+      const handover = getNum(['UF_CRM_HANDOVER_PAYMENT', 'UF_CRM_RE_PP_HANDOVER_PCT']);
+      const post = getNum(['UF_CRM_RE_PP_POST_HANDOVER_PCT']);
+      const total = Math.round((booking + constr + handover + post) * 100) / 100;
+
+      const finSec = document.getElementById('section_pricing') || document.getElementById('section_financial') || document.querySelector('.form-section');
+      if (finSec) {
+        let ppBadge = finSec.querySelector('#calc_pp_badge');
+        if (total > 0) {
+          if (!ppBadge) {
+            ppBadge = document.createElement('span');
+            ppBadge.id = 'calc_pp_badge';
+            const headerRight = finSec.querySelector('.section-header-right') || finSec.querySelector('.section-header-left');
+            if (headerRight) headerRight.appendChild(ppBadge);
+          }
+          if (total === 100) {
+            ppBadge.className = 'badge pp-badge pp-badge-valid';
+            ppBadge.textContent = 'Payment Plan Total: 100% ✓';
+          } else {
+            const diff = (100 - total).toFixed(0);
+            ppBadge.className = 'badge pp-badge pp-badge-invalid';
+            ppBadge.textContent = `Payment Plan Total: ${total}% (${total < 100 ? 'Remaining: ' + diff + '%' : 'Over by: ' + Math.abs(diff) + '%'})`;
+          }
+          ppBadge.style.display = 'inline-flex';
+        } else if (ppBadge) {
+          ppBadge.style.display = 'none';
+        }
+      }
+    }
+
+
     // 2. Composite Title & Portal Title from actual non-empty record fields
     let beds = getVal(['UF_CRM_BEDROOMS', 'UF_CRM_1791966366775', 'UF_CRM_1791952093551', 'UF_CRM_BEDROOM']);
     const enumToNum = { '1834': '0', '1836': '1', '1838': '2', '1840': '3', '1842': '4', '1844': '5' };
@@ -2711,6 +3071,7 @@
         setVal(portalTitleCodes, autoTitle, !isInitialLoad);
       }
     }
+    updatePublishReadinessBanner();
   }
   
 
@@ -3519,6 +3880,9 @@
       if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update lead');
 
       showToast('Lead details saved to Bitrix24!', 'success');
+      const undoBannerEl = document.getElementById('transaction-undo-banner');
+      if (undoBannerEl) undoBannerEl.style.display = 'none';
+      cachedUndoState = null;
       setDirty(false);
 
       // Preserve preview and title for uploaded files in currentLead state

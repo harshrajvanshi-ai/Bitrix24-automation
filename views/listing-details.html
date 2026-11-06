@@ -103,6 +103,12 @@
         <!-- Rendered dynamically by listing-details.js -->
       </nav>
 
+      <!-- Transaction Undo Banner -->
+      <div id="transaction-undo-banner" class="transaction-undo-banner" style="display: none;"></div>
+
+      <!-- Publish Readiness Banner -->
+      <div id="readiness-banner" class="readiness-banner" style="display: none;"></div>
+
       <!-- Main Listing Form -->
       <form id="listing-details-form" novalidate onsubmit="return false;">
         <div id="sections-container">
@@ -226,6 +232,10 @@
   <!-- ── 4. Toast Alerts Container ──────────────────────────────── -->
   <div id="toast-container" aria-live="polite"></div>
 
+  <script>
+    window.__LAYOUT_VERSION__ = null;
+  </script>
+  <script src="/js/readinessEvaluator.js"></script>
   <script src="/js/listing-details.js"></script>
 </body>
 </html>

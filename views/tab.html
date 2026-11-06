@@ -108,6 +108,12 @@
         <!-- Populated by tab.js -->
       </nav>
 
+      <!-- Transaction Undo Banner -->
+      <div id="transaction-undo-banner" class="transaction-undo-banner" style="display: none;"></div>
+
+      <!-- Publish Readiness Banner -->
+      <div id="readiness-banner" class="readiness-banner" style="display: none;"></div>
+
       <!-- Main Form -->
       <form id="lead-tab-form" novalidate>
         <div id="fields-container" class="sections-wrapper">
@@ -235,6 +241,11 @@
   <script>
     window.__INITIAL_LEAD_ID__ = null;
     window.__BITRIX_DOMAIN__ = null;
+    window.__LAYOUT_VERSION__ = null;
+  </script>
+  <script src="/js/readinessEvaluator.js"></script>
+  <script>
+    // continue
   </script>
   <script src="/js/tab.js"></script>
 </body>

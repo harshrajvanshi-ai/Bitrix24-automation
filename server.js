@@ -257,6 +257,15 @@ app.all('/tab', (req, res) => {
     `window.__BITRIX_DOMAIN__ = "${bitrixDomain}";`
   );
 
+  const requestedVersion = req.query?.layout || req.body?.layout || SchemaMap.getLayoutVersion();
+  const effectiveLayoutVersion = (requestedVersion === 'v2') ? 'v2' : 'v1';
+  console.log(`[RENDER /tab] Rendered Lead Details tab with layout version: ${effectiveLayoutVersion}`);
+
+  html = html.replace(
+    'window.__LAYOUT_VERSION__ = null;',
+    `window.__LAYOUT_VERSION__ = "${effectiveLayoutVersion}";`
+  );
+
   res.send(html);
 });
 
@@ -312,7 +321,17 @@ app.all('/listing-details', (req, res) => {
     });
   }
 
-  res.sendFile(path.join(__dirname, 'views/listing-details.html'));
+  const requestedVersion = req.query?.layout || req.body?.layout || SchemaMap.getLayoutVersion();
+  const effectiveLayoutVersion = (requestedVersion === 'v2') ? 'v2' : 'v1';
+  console.log(`[RENDER /listing-details] Rendered Listing Details tab with layout version: ${effectiveLayoutVersion}`);
+
+  const htmlPath = path.join(__dirname, 'views/listing-details.html');
+  let html = fs.readFileSync(htmlPath, 'utf-8');
+  html = html.replace(
+    'window.__LAYOUT_VERSION__ = null;',
+    `window.__LAYOUT_VERSION__ = "${effectiveLayoutVersion}";`
+  );
+  res.send(html);
 });
 
 /**
@@ -715,13 +734,22 @@ app.post('/events', eventLimiter, verifyBitrixEventToken, async (req, res) => {
 app.get('/api/config', (req, res) => {
   const fieldsConfig = config.loadFieldsConfig();
   const discovered = StorageManager.getDiscoveredConfig();
-  const schemaMapConfig = SchemaMap.getClientConfig();
+  const requestedVersion = req.query?.layout || req.headers['x-layout-version'] || SchemaMap.getLayoutVersion();
+  const effectiveLayoutVersion = (requestedVersion === 'v2') ? 'v2' : 'v1';
+  const schemaMapConfig = SchemaMap.getClientConfig(effectiveLayoutVersion);
+  const layoutsV2Path = path.join(__dirname, 'config/layouts.v2.json');
+  const layoutsV2 = fs.existsSync(layoutsV2Path)
+    ? JSON.parse(fs.readFileSync(layoutsV2Path, 'utf8'))
+    : null;
+
+  console.log(`[API /api/config] Serving config with layoutVersion: ${effectiveLayoutVersion}`);
 
   res.json({
     ...fieldsConfig,
     discovered,
     schemaMap: schemaMapConfig,
-    layoutVersion: SchemaMap.getLayoutVersion()
+    layoutVersion: effectiveLayoutVersion,
+    layoutsV2
   });
 });
 
