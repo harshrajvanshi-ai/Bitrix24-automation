@@ -24,6 +24,7 @@ const BitrixClient = require('./src/bitrixClient');
 const DiscoveryService = require('./src/discovery');
 const EventRouter = require('./src/eventRouter');
 const SchemaMap = require('./src/schemaMap');
+const ReadinessEvaluator = require('./src/readinessEvaluator');
 const {
   syncEnquirySpaFromLead,
   syncListingSpaFromLead,
@@ -433,7 +434,39 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
     if (!listingId) {
       return res.status(400).json({ success: false, error: 'Invalid listing ID' });
     }
-    const fields = req.body?.fields || req.body;
+    const fields = req.body?.fields || req.body || {};
+
+    // Server-side publish-readiness enforcement (Section C3/C8)
+    const isPublishAttempt = (
+      fields.ufCrm16PublishPortals === 'Y' ||
+      fields.ufCrm16PublishPortals === true ||
+      fields.ufCrm16PublishPortals === '1' ||
+      fields.UF_CRM_16_PUBLISH_PORTALS === 'Y' ||
+      fields.publish_portals === true ||
+      fields.publish_portals === 'Y'
+    );
+
+    if (isPublishAttempt) {
+      let currentItem = {};
+      try {
+        const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: listingId });
+        currentItem = itemRes?.item || itemRes || {};
+      } catch (fetchErr) {
+        console.warn(`[API] Could not fetch current listing #${listingId} for readiness check:`, fetchErr.message);
+      }
+      const merged = { ...currentItem, ...fields };
+      const readiness = ReadinessEvaluator.evaluatePublishReadiness(merged);
+      if (!readiness.ready) {
+        return res.status(400).json({
+          success: false,
+          error: 'Publish readiness check failed. Cannot publish listing until all required portal requirements are satisfied.',
+          score: readiness.score,
+          missing: readiness.missing,
+          warnings: readiness.warnings
+        });
+      }
+    }
+
     const result = await BitrixClient.call('crm.item.update', {
       entityTypeId: 1058,
       id: listingId,
@@ -447,6 +480,57 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
     res.json({ success: true, item: result?.item || result });
   } catch (err) {
     console.error(`[API] Error updating listing #${req.params.id}:`, err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/listing/:id/publish
+ * Validates 100% portal readiness and syndicates listing
+ */
+app.post('/api/listing/:id/publish', verifyCrmAccess, async (req, res) => {
+  try {
+    const listingId = parseInt(req.params.id, 10);
+    if (!listingId) {
+      return res.status(400).json({ success: false, error: 'Invalid listing ID' });
+    }
+    const incomingFields = req.body?.fields || req.body || {};
+    let currentItem = {};
+    try {
+      const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: listingId });
+      currentItem = itemRes?.item || itemRes || {};
+    } catch (fetchErr) {
+      console.warn(`[API] Could not fetch current listing #${listingId} for readiness check:`, fetchErr.message);
+    }
+    const merged = { ...currentItem, ...incomingFields };
+    const readiness = ReadinessEvaluator.evaluatePublishReadiness(merged);
+
+    if (!readiness.ready) {
+      return res.status(400).json({
+        success: false,
+        error: 'Publish readiness check failed. Cannot publish listing until all required portal requirements are satisfied.',
+        score: readiness.score,
+        missing: readiness.missing,
+        warnings: readiness.warnings
+      });
+    }
+
+    const updateFields = { ...incomingFields, ufCrm16PublishPortals: 'Y' };
+    const result = await BitrixClient.call('crm.item.update', {
+      entityTypeId: 1058,
+      id: listingId,
+      fields: updateFields
+    });
+    syncLeadFromListingSpa(listingId).catch(err => console.warn('[SPA SYNC] Publish sync failed:', err.message));
+
+    res.json({
+      success: true,
+      message: 'Listing successfully verified and published to portals',
+      score: readiness.score,
+      item: result?.item || result
+    });
+  } catch (err) {
+    console.error(`[API] Error publishing listing #${req.params.id}:`, err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -1348,6 +1432,37 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
 
   console.log(`[API] Updating Lead #${leadId} fields:`, Object.keys(fields));
 
+  // Server-side publish-readiness enforcement (Section C3/C8)
+  const isPublishAttempt = (
+    fields.UF_CRM_1792151479 === 'Y' ||
+    fields.UF_CRM_1792151479 === true ||
+    fields.UF_CRM_1792151479 === '1' ||
+    fields.UF_CRM_PUBLISH_PORTALS === 'Y' ||
+    fields.UF_CRM_PUBLISH_PORTALS === true ||
+    fields.publish_portals === true ||
+    fields.publish_portals === 'Y'
+  );
+
+  if (isPublishAttempt) {
+    let currentLead = {};
+    try {
+      currentLead = await BitrixClient.call('crm.lead.get', { id: leadId });
+    } catch (fetchErr) {
+      console.warn(`[API] Could not fetch current lead #${leadId} for readiness check:`, fetchErr.message);
+    }
+    const merged = { ...(currentLead || {}), ...fields };
+    const readiness = ReadinessEvaluator.evaluatePublishReadiness(merged);
+    if (!readiness.ready) {
+      return res.status(400).json({
+        success: false,
+        error: 'Publish readiness check failed. Cannot publish listing until all required portal requirements are satisfied.',
+        score: readiness.score,
+        missing: readiness.missing,
+        warnings: readiness.warnings
+      });
+    }
+  }
+
   // Handle dedicated Listing Name & Enquiry Name fields (completely separate from native Lead Name TITLE)
   if (fields.UF_CRM_LISTING_NAME && !fields.UF_CRM_1791952409183) {
     fields.UF_CRM_1791952409183 = fields.UF_CRM_LISTING_NAME;
@@ -1615,7 +1730,50 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
 });
 
 /**
- * GET /api/mapping/listing
+ * POST /api/lead/:id/publish
+ * Validates 100% portal readiness and syndicates lead listing
+ */
+app.post('/api/lead/:id/publish', apiLimiter, verifyCrmAccess, async (req, res) => {
+  try {
+    const leadId = req.params.id;
+    if (!leadId) {
+      return res.status(400).json({ success: false, error: 'Missing lead ID' });
+    }
+    const incomingFields = req.body?.fields || req.body || {};
+    let currentLead = {};
+    try {
+      currentLead = await BitrixClient.call('crm.lead.get', { id: leadId });
+    } catch (fetchErr) {
+      console.warn(`[API] Could not fetch current lead #${leadId} for readiness check:`, fetchErr.message);
+    }
+    const merged = { ...(currentLead || {}), ...incomingFields };
+    const readiness = ReadinessEvaluator.evaluatePublishReadiness(merged);
+
+    if (!readiness.ready) {
+      return res.status(400).json({
+        success: false,
+        error: 'Publish readiness check failed. Cannot publish listing until all required portal requirements are satisfied.',
+        score: readiness.score,
+        missing: readiness.missing,
+        warnings: readiness.warnings
+      });
+    }
+
+    const updateFields = { ...incomingFields, UF_CRM_1792151479: 'Y' };
+    const result = await BitrixClient.crmLeadUpdate(leadId, updateFields);
+    syncListingSpaFromLead(leadId).catch(err => console.warn('[SPA SYNC] Publish sync failed:', err.message));
+
+    res.json({
+      success: true,
+      message: 'Lead listing successfully verified and published to portals',
+      score: readiness.score,
+      result
+    });
+  } catch (err) {
+    console.error(`[API] Error publishing lead #${req.params.id}:`, err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
  * Returns complete field mapping and enum translation dictionaries between Lead Listing and Listing SPA (1058)
  */
 app.get('/api/mapping/listing', (req, res) => {

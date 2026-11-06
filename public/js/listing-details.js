@@ -248,7 +248,7 @@
             rules: {
               external_stock: "opt",
               off_plan: "show",
-              overseas_sale: "opt",
+              overseas_sale: "hide",
               rent: "opt",
             },
           },
@@ -258,12 +258,13 @@
             fallbackKeys: ["ufCrm16Developer"],
             label: "Developer Name",
             type: "string",
+            readOnly: true,
             placeholder: "e.g. Emaar, Damac, Sobha...",
             rules: {
-              external_stock: "opt",
+              external_stock: "show",
               off_plan: "show",
-              overseas_sale: "opt",
-              rent: "opt",
+              overseas_sale: "hide",
+              rent: "show",
             },
           },
           {
@@ -454,7 +455,7 @@
             rules: {
               external_stock: "opt",
               off_plan: "show",
-              overseas_sale: "opt",
+              overseas_sale: "hide",
               rent: "opt",
             },
           },
@@ -481,7 +482,7 @@
             rules: {
               external_stock: "show",
               off_plan: "show",
-              overseas_sale: "opt",
+              overseas_sale: "hide",
               rent: "show",
             },
           },
@@ -497,11 +498,12 @@
             type: "lookup",
             lookupEntity: "master_project",
             placeholder: "Search Master Project...",
+            readOnly: true,
             rules: {
-              external_stock: "opt",
+              external_stock: "show",
               off_plan: "show",
-              overseas_sale: "opt",
-              rent: "opt",
+              overseas_sale: "hide",
+              rent: "show",
             },
           },
           {
@@ -686,13 +688,14 @@
             fallbackKeys: ["ufCrm16_1792611299625"],
             label: "Price Per Sq Ft",
             type: "money",
+            readOnly: true,
             addon: "AED/SqFt",
             placeholder: "e.g. 1,450",
             rules: {
               external_stock: "show",
               off_plan: "show",
               overseas_sale: "show",
-              rent: "opt",
+              rent: "hide",
             },
           },
           {
@@ -4097,34 +4100,16 @@ function resolveCountryCode(countryName) {
       return false;
     };
 
-    // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area
+    // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area (Read-Only Calculated, No Reverse Editing)
     const price = getNum("ufCrm16_1790154936");
     const sqft =
       getNum("ufCrm16Size") ||
       getNum("UF_CRM_16_SIZE") ||
       getNum("ufCrm16SqFt");
-    const pricePerSqFt = getNum("ufCrm16ListPricePerSqFt");
 
     if (price > 0 && sqft > 0) {
-      if (
-        !pricePerSqFt ||
-        isInitialLoad ||
-        trigger === "ufCrm16_1790154936" ||
-        trigger === "ufCrm16Size" ||
-        trigger === "UF_CRM_16_SIZE" ||
-        trigger === "ufCrm16SqFt"
-      ) {
-        const calcPricePerSqFt = (price / sqft).toFixed(2);
-        setVal("ufCrm16ListPricePerSqFt", calcPricePerSqFt, !isInitialLoad);
-      }
-    } else if (
-      trigger === "ufCrm16ListPricePerSqFt" &&
-      pricePerSqFt > 0 &&
-      sqft > 0 &&
-      (!price || price === 0)
-    ) {
-      const calcPrice = Math.round(pricePerSqFt * sqft);
-      setVal("ufCrm16_1790154936", calcPrice, true);
+      const calcPricePerSqFt = (price / sqft).toFixed(2);
+      setVal("ufCrm16ListPricePerSqFt", calcPricePerSqFt, !isInitialLoad);
     }
 
     // 2. FIELD MIRRORING: Project Name <-> Bayut Building Name

@@ -32,13 +32,15 @@ const studioListing = {
   transaction: 'RENT',
   property_type: 'APARTMENT',
   bedrooms: 0, // Studio!
+  bathrooms: 1,
   built_up_area: 450,
   price: 65000,
-  rental_frequency: 'YEARLY',
-  cheques: '4',
+  cheques: '4', // Rental frequency removed; cheques covers it
   available_from: '2026-12-01',
   trakheesi_permit_no: '7129845300',
   permit_expiry: '2027-11-01',
+  form_a_expiry: '2027-12-31',
+  signed_form_a: ['signed_form_a.pdf'],
   title: 'Charming Studio Apartment in Business Bay Canal View',
   description: 'Spacious studio apartment located in the heart of Business Bay with modern finishes and panoramic canal vistas. Close to metro and retail.',
   photos: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg']
@@ -46,6 +48,7 @@ const studioListing = {
 const studioRes = evaluatePublishReadiness(studioListing);
 assert(!studioRes.missing.some(m => m.toLowerCase().includes('bedroom')), 'Studio (bedrooms = 0) MUST NOT be flagged as missing bedrooms');
 assert.strictEqual(studioRes.ready, true, `Studio should be 100% publish-ready. Missing: ${studioRes.missing.join(', ')}`);
+assert.strictEqual(studioRes.score, 100, 'Ready studio listing must score exactly 100%');
 console.log('  ✓ PASS: Studio (bedrooms = 0) passes specification validation cleanly');
 
 // 3. Off-Plan Payment Plan Validation (Must sum to 100%)
@@ -55,6 +58,7 @@ const offPlanIncomplete = {
   market_segment: 'OFF_PLAN',
   property_type: 'APARTMENT',
   bedrooms: 2,
+  bathrooms: 2,
   built_up_area: 1200,
   price: 2500000,
   expected_handover_date: '2028-06-30',
@@ -79,6 +83,7 @@ const offPlanComplete = {
 const offPlanCompleteRes = evaluatePublishReadiness(offPlanComplete);
 assert(!offPlanCompleteRes.missing.some(m => m.includes('payment plan')), 'Valid 100% payment plan passes cleanly');
 assert.strictEqual(offPlanCompleteRes.ready, true, `Complete off-plan listing is publish-ready: ${offPlanCompleteRes.missing.join(', ')}`);
+assert.strictEqual(offPlanCompleteRes.score, 100, 'Complete off-plan listing has 100% score');
 console.log('  ✓ PASS: Payment plan 100% mathematical constraint verified');
 
 // 4. DLD / RERA Regulatory Compliance
@@ -116,8 +121,12 @@ const overseasListing = {
   transaction: 'SALE',
   market_segment: 'OVERSEAS',
   country: 'United Kingdom',
+  city: 'London',
+  address: '9 Circus Rd W, Nine Elms',
+  currency: 'GBP',
   property_type: 'APARTMENT',
   bedrooms: 1,
+  bathrooms: 1,
   built_up_area: 650,
   price: 450000,
   title: 'Prime 1-Bedroom Apartment in Central London Battersea',
@@ -128,7 +137,18 @@ const overseasRes = evaluatePublishReadiness(overseasListing);
 // Overseas should NOT require DLD Trakheesi permit
 assert(!overseasRes.missing.some(m => m.includes('Trakheesi')), 'Overseas listing does not require UAE Trakheesi permit');
 assert.strictEqual(overseasRes.ready, true, `Overseas listing is publish-ready: ${overseasRes.missing.join(', ')}`);
+assert.strictEqual(overseasRes.score, 100, 'Complete overseas listing has 100% score');
 console.log('  ✓ PASS: Overseas listings adaptively bypass local UAE regulatory permit requirements');
+
+// 7. Score Calculation Strictly Over Required Items (Optional Items Ignored)
+console.log('\n--- Test 7: Score Calculation Strictly Over Required Items ---');
+const partialStudio = { ...studioListing };
+delete partialStudio.price; // 1 required item missing
+const partialEval = evaluatePublishReadiness(partialStudio);
+assert.strictEqual(partialEval.ready, false);
+assert(partialEval.score < 100 && partialEval.score > 85, `Score should reflect ratio of satisfied required items: ${partialEval.score}%`);
+assert.strictEqual(partialEval.summary.totalRequired, partialEval.summary.satisfiedRequired + 1, 'Missing count exactly equals unsatisfied required items');
+console.log(`  ✓ PASS: Score strictly reflects required fields (${partialEval.summary.satisfiedRequired}/${partialEval.summary.totalRequired} = ${partialEval.score}%)`);
 
 console.log('\n===============================================================');
 console.log('✓ ALL PUBLISH READINESS EVALUATOR UNIT TESTS PASSED!');

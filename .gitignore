@@ -7,4 +7,5 @@ npm-debug.log*
 .DS_Store
 spa_fields_dump.json
 scratch*
-
+scripts/build_layouts_v2.js
+scripts/generate_*.js

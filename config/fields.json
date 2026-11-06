@@ -550,13 +550,14 @@
             "label": "Price Per Sq Ft",
             "bitrixLabel": "Price Per Square Foot",
             "type": "money",
+            "readOnly": true,
             "addon": "AED/SqFt",
             "placeholder": "e.g. 1,450",
             "rules": {
               "external_stock": "show",
               "off_plan": "show",
               "overseas_sale": "show",
-              "rent": "opt"
+              "rent": "hide"
             }
           },
           {

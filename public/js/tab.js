@@ -2544,6 +2544,21 @@
       }
     }
 
+    // Explicit layout hiding rules
+    if (subLayout === 'overseas_sale') {
+      if (['UF_CRM_1792151479', 'UF_CRM_RE_PUBLISH_PORTALS', 'UF_CRM_PUBLISH_PORTALS'].includes(f.code)) return false;
+      if (['UF_CRM_PROPERTY', 'UF_CRM_PROJECT_LOOKUP', 'UF_CRM_PROPERTY_LAYOUT', 'UF_CRM_MASTER_PROJECT', 'UF_CRM_DEVELOPER_1', 'UF_CRM_DEVELOPER_NAME'].includes(f.code)) return false;
+      if (['UF_CRM_FORM_A_EXPIRY_DATE', 'UF_CRM_16_FORM_A_EXPIRY_DATE', 'UF_CRM_EXPIRATION_DATE', 'UF_CRM_1791970864836', 'UF_CRM_TRAKHEESI_PERMIT', 'UF_CRM_PERMIT_EXPIRY_DATE', 'UF_CRM_TITLE_DEED', 'UF_CRM_DLD_QR'].includes(f.code)) return false;
+    }
+
+    if (subLayout === 'off_plan') {
+      if (['UF_CRM_FORM_A_EXPIRY_DATE', 'UF_CRM_16_FORM_A_EXPIRY_DATE', 'UF_CRM_EXPIRATION_DATE'].includes(f.code)) return false;
+    }
+
+    if (subLayout === 'rent') {
+      if (['UF_CRM_PRICE_PER_SQUARE_FOOT', 'UF_CRM_LISTINGPRICEPERSQFT'].includes(f.code)) return false;
+    }
+
     const rule = f.rules[subLayout] || 'show';
     if (rule === 'hide') return false;
     if (rule === 'show' || rule === 'opt') return true;
@@ -2930,23 +2945,17 @@
       return false;
     };
 
-    // 1. Price Per Sq Ft = Listing Price / Built-up Area
+    // 1. Price Per Sq Ft = Listing Price / Built-up Area (Read-Only Calculated, No Reverse Editing)
     const priceCodes = ['UF_CRM_1791952467551', 'UF_CRM_LISTINGPRICE', 'UF_CRM_LISTING_PRICE', 'OPPORTUNITY'];
     const sqftCodes = ['UF_CRM_1791952136007', 'UF_CRM_BUA', 'UF_CRM_TOTALAREA'];
     const ppsqftCodes = ['UF_CRM_PRICE_PER_SQUARE_FOOT', 'UF_CRM_LISTINGPRICEPERSQFT'];
 
     const price = getNum(priceCodes);
     const sqft = getNum(sqftCodes);
-    const ppsqft = getNum(ppsqftCodes);
 
     if (price > 0 && sqft > 0) {
-      if (!ppsqft || isInitialLoad || priceCodes.includes(trigger) || sqftCodes.includes(trigger)) {
-        const calcPpsqft = (price / sqft).toFixed(2);
-        setVal(ppsqftCodes, calcPpsqft, !isInitialLoad);
-      }
-    } else if (ppsqftCodes.includes(trigger) && ppsqft > 0 && sqft > 0 && (!price || price === 0)) {
-      const calcPrice = Math.round(ppsqft * sqft);
-      setVal(priceCodes, calcPrice, true);
+      const calcPpsqft = (price / sqft).toFixed(2);
+      setVal(ppsqftCodes, calcPpsqft, !isInitialLoad);
     }
 
     // Auto-calculate / suggest standard Agency Commission if empty
