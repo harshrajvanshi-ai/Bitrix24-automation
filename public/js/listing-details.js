@@ -75,6 +75,24 @@
       },
     },
 
+    // Legacy registry retained for backward compatibility & migration translations
+    legacyRegistry: {
+      chequesPicklist: {
+        crmCode: "UF_CRM_16_1792127520",
+        options: [
+          { id: "2432", value: "1 Cheque" },
+          { id: "2434", value: "2 Cheque" },
+          { id: "2436", value: "4 Cheque" },
+          { id: "2438", value: "6 Cheque" },
+          { id: "2440", value: "12 Cheque" },
+        ],
+      },
+      address: {
+        crmCode: "UF_CRM_16_1791172676",
+        type: "address",
+      },
+    },
+
     // 8 Structured Sections according to User Specification synchronized with Listing SPA (1058 / CRM_16)
     sections: [
       {
@@ -110,18 +128,6 @@
             },
           },
           {
-            key: "assignedById",
-            crmCode: "ASSIGNED_BY_ID",
-            label: "Responsible Person",
-            type: "user",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
             key: "ufCrm16_1790154808",
             crmCode: "UF_CRM_16_1790154808",
             label: "Listing Type",
@@ -142,26 +148,13 @@
           {
             key: "ufCrm16Exclusive",
             crmCode: "UF_CRM_16_EXCLUSIVE",
-            label: "Listing Agreement (Exclusive / Non-Exclusive)",
+            label: "Exclusive Mandate",
             type: "boolean",
             rules: {
               external_stock: "show",
               off_plan: "show",
               overseas_sale: "show",
               rent: "show",
-            },
-          },
-          {
-            key: "xmlId",
-            crmCode: "XML_ID",
-            label: "External ID ",
-            type: "string",
-            placeholder: "e.g. EXT-984210",
-            rules: {
-              external_stock: "show",
-              off_plan: "opt",
-              overseas_sale: "opt",
-              rent: "opt",
             },
           },
           {
@@ -175,7 +168,7 @@
               "UF_CRM_LISTINGAGENT",
               "UF_CRM_ASSIGNED_TO_BROKER",
             ],
-            label: "Listing Agent / Broker",
+            label: "Listing Agent",
             type: "lookup",
             lookupEntity: "broker",
             placeholder: "Search Listing Agent...",
@@ -197,10 +190,10 @@
             key: "companyId",
             crmCode: "COMPANY_ID",
             fallbackKeys: ["mycompanyId", "ufCrm16_1791172932"],
-            label: "Company (Agency or Developer)",
+            label: "Developer",
             type: "lookup",
             lookupEntity: "developer",
-            placeholder: "Search Company or Developer...",
+            placeholder: "Search Developer...",
             rules: {
               external_stock: "show",
               off_plan: "show",
@@ -223,20 +216,6 @@
             },
           },
           {
-            key: "contactIds",
-            crmCode: "CONTACT_IDS",
-            label: "Contacts",
-            type: "lookup",
-            lookupEntity: "contact",
-            placeholder: "Search Contacts...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
             key: "parentId1052",
             crmCode: "PARENT_ID_1052",
             label: "Master Property",
@@ -247,35 +226,6 @@
               external_stock: "opt",
               off_plan: "show",
               overseas_sale: "hide",
-              rent: "opt",
-            },
-          },
-          {
-            key: "ufCrm16DeveloperName",
-            crmCode: "UF_CRM_16_DEVELOPER_NAME",
-            fallbackKeys: ["ufCrm16Developer"],
-            label: "Developer Name",
-            type: "string",
-            readOnly: true,
-            placeholder: "e.g. Emaar, Damac, Sobha...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "hide",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16_1791172932",
-            crmCode: "UF_CRM_16_1791172932",
-            label: "Developer CRM Entity",
-            type: "lookup",
-            lookupEntity: "developer",
-            placeholder: "Search Developer...",
-            rules: {
-              external_stock: "opt",
-              off_plan: "show",
-              overseas_sale: "opt",
               rent: "opt",
             },
           },
@@ -461,7 +411,7 @@
       {
         id: "location",
         title: "Location & Geography",
-        desc: "Country, city, community, tower, and coordinates",
+        desc: "Project and Master Project hierarchy",
         fields: [
           {
             key: "ufCrm16ProjectName",
@@ -471,10 +421,10 @@
               "ufCrm16_1791173131",
               "ufCrm16ProjectInfo",
             ],
-            label: "Project / Building Name",
+            label: "Project",
             type: "lookup",
             lookupEntity: "project",
-            placeholder: "Search Project / Building...",
+            placeholder: "Search Project...",
             rules: {
               external_stock: "show",
               off_plan: "show",
@@ -499,156 +449,6 @@
               external_stock: "show",
               off_plan: "show",
               overseas_sale: "hide",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16BuildingBayut",
-            crmCode: "UF_CRM_16_BUILDING_BAYUT",
-            label: "Building / Tower Name (Bayut)",
-            type: "string",
-            placeholder: "e.g. Tower A, East Wing...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "opt",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16CommunityPropertyfinder",
-            crmCode: "UF_CRM_16_COMMUNITY_PROPERTYFINDER",
-            label: "Community - Propertyfinder",
-            type: "string",
-            placeholder: "e.g. Downtown Dubai, Palm Jumeirah...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "opt",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16SubCommunityPropertyfinder",
-            crmCode: "UF_CRM_16_SUB_COMMUNITY_PROPERTYFINDER",
-            label: "Sub-Community",
-            type: "string",
-            placeholder: "e.g. Burj Crown, Marina Gate 2...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "opt",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16_1791173032",
-            crmCode: "UF_CRM_16_1791173032",
-            fallbackKeys: [
-              "ufCrm16CommunityPropertyfinder",
-              "ufCrm16_1791172692",
-              "ufCrm16SubCommunityPropertyfinder",
-            ],
-            label: "Neighborhood / Community",
-            type: "string",
-            placeholder: "e.g. Business Bay, Dubai Marina...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16_1791172815",
-            crmCode: "UF_CRM_16_1791172815",
-            fallbackKeys: ["ufCrm16_1791172830", "ufCrm16_1791172841"],
-            label: "City",
-            type: "string",
-            placeholder: "e.g. Dubai, London, Abu Dhabi...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16_1791172854",
-            crmCode: "UF_CRM_16_1791172854",
-            label: "Country",
-            type: "string",
-            placeholder: "e.g. United Arab Emirates, UK, France...",
-            rules: {
-              external_stock: "opt",
-              off_plan: "opt",
-              overseas_sale: "show",
-              rent: "opt",
-            },
-          },
-          {
-            key: "ufCrm16CountryCode",
-            crmCode: "UF_CRM_16_COUNTRY_CODE",
-            label: "Country Code",
-            type: "string",
-            placeholder: "e.g. AE, GB, US...",
-            rules: {
-              external_stock: "opt",
-              off_plan: "opt",
-              overseas_sale: "show",
-              rent: "opt",
-            },
-          },
-          {
-            key: "ufCrm16Street",
-            crmCode: "UF_CRM_16_STREET",
-            fallbackKeys: ["ufCrm16DisplayAddress", "ufCrm16DisplayedAddress"],
-            label: "Street",
-            type: "string",
-            placeholder: "e.g. Sheikh Mohammed bin Rashid Blvd...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16_1791172676",
-            crmCode: "UF_CRM_16_1791172676",
-            label: "Address",
-            type: "address",
-            placeholder: "Street, building, unit number...",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16Latitude",
-            crmCode: "UF_CRM_16_LATITUDE",
-            label: "Latitude",
-            type: "number",
-            placeholder: "e.g. 25.1972",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
-              rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16Longitude",
-            crmCode: "UF_CRM_16_LONGITUDE",
-            label: "Longitude",
-            type: "number",
-            placeholder: "e.g. 55.2744",
-            rules: {
-              external_stock: "show",
-              off_plan: "show",
-              overseas_sale: "show",
               rent: "show",
             },
           },
@@ -760,14 +560,8 @@
             key: "ufCrm16_1792127520",
             crmCode: "UF_CRM_16_1792127520",
             label: "Number of Cheques",
-            type: "enumeration",
-            options: [
-              { id: "2432", value: "1 Cheque" },
-              { id: "2434", value: "2 Cheque" },
-              { id: "2436", value: "4 Cheque" },
-              { id: "2438", value: "6 Cheque" },
-              { id: "2440", value: "12 Cheque" },
-            ],
+            type: "integer",
+            placeholder: "e.g. 4",
             rules: {
               external_stock: "hide",
               off_plan: "opt",
@@ -832,7 +626,7 @@
           {
             key: "ufCrm16CompletionDate",
             crmCode: "UF_CRM_16_COMPLETION_DATE",
-            label: "Handover / Completion Date",
+            label: "Handover Date",
             type: "date",
             rules: {
               external_stock: "hide",
@@ -882,7 +676,7 @@
           {
             key: "ufCrm16ExpirationDate",
             crmCode: "UF_CRM_16_EXPIRATION_DATE",
-            label: "Tenancy End / Mandate Expiry Date",
+            label: "Mandate Expiry Date",
             type: "date",
             rules: {
               external_stock: "opt",
@@ -1000,7 +794,7 @@
               "ufCrm16LocationtextBayut",
               "ufCrm16PropertyfinderRegion",
             ],
-            label: "Dubizzle Listing ID / Region",
+            label: "Dubizzle Listing ID",
             type: "string",
             placeholder: "e.g. DBZ-558291",
             rules: {
@@ -1013,7 +807,7 @@
           {
             key: "ufCrm16SystemAllowedForPortals",
             crmCode: "UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS",
-            label: "Bayut / Dubizzle Feed Toggle",
+            label: "Publish to Portals",
             type: "boolean",
             rules: {
               external_stock: "opt",
