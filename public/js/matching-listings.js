@@ -839,11 +839,11 @@
   function renderErrorState(title, message) {
     listingsContainer.innerHTML = `
       <div class="state-box" style="border-color: var(--b24-danger-light);">
-        <div class="state-icon">⚠️</div>
+        <div class="state-icon"></div>
         <div class="state-title" style="color: var(--b24-danger);">${escapeHtml(title)}</div>
         <div class="state-desc">${escapeHtml(message)}</div>
         <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.retrySearch()">
-          🔄 Try Again
+          Try Again
         </button>
       </div>
     `;
@@ -854,7 +854,7 @@
   function renderEmptyState() {
     listingsContainer.innerHTML = `
       <div class="state-box">
-        <div class="state-icon">🔍</div>
+        <div class="state-icon"></div>
         <div class="state-title">No Exact Matching Listings Found</div>
         <div class="state-desc">
           No listings currently meet all strict criteria (Property Type, Purpose, Budget range, and Area simultaneously).<br>
@@ -862,16 +862,16 @@
         </div>
         <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
           <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.clearPriceFilter()">
-            💰 Any Price / Budget
+            Any Price / Budget
           </button>
           <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.clearAreaFilter()">
-            📍 Any Area / Location
+            Any Area / Location
           </button>
           <button type="button" class="btn btn-primary" onclick="window.__MATCHING_APP__.showAllListings()">
-            🏢 Show All Available Listings
+            Show All Available Listings
           </button>
           <button type="button" class="btn btn-secondary" onclick="window.__MATCHING_APP__.resetToEnquiry()">
-            ↺ Reset to Enquiry Data
+            Reset to Enquiry Data
           </button>
         </div>
       </div>
@@ -912,9 +912,9 @@
           <div class="card-title-group">
             <div class="card-title">
               ${escapeHtml(item.title || `Listing #${item.id}`)}
-              ${isAlreadyRecommended ? '<span class="badge badge-recommended" title="Already in Recommended Listing field">⭐ Recommended</span>' : ''}
+              ${isAlreadyRecommended ? '<span class="badge badge-recommended" title="Already in Recommended Listing field">Recommended</span>' : ''}
             </div>
-            <span class="card-id-tag">ID: #${item.id} • ${escapeHtml(propTypeLabel)} (${escapeHtml(listingTypeLabel)})</span>
+            <span class="card-id-tag">ID: #${item.id} - ${escapeHtml(propTypeLabel)} (${escapeHtml(listingTypeLabel)})</span>
           </div>
         </div>
 
@@ -927,22 +927,22 @@
 
         <div class="card-specs-grid">
           <div class="spec-item">
-            <span class="spec-icon">🛏️</span>
+            <span class="spec-icon"></span>
             <span class="spec-label">Beds:</span>
             <span class="spec-val">${beds > 0 ? beds : 'Studio / Any'}</span>
           </div>
           <div class="spec-item">
-            <span class="spec-icon">📍</span>
+            <span class="spec-icon"></span>
             <span class="spec-label">Area:</span>
             <span class="spec-val">${escapeHtml(area)}</span>
           </div>
           <div class="spec-item">
-            <span class="spec-icon">🛋️</span>
+            <span class="spec-icon"></span>
             <span class="spec-label">Furnished:</span>
             <span class="spec-val">${escapeHtml(furnishedLabel)}</span>
           </div>
           <div class="spec-item">
-            <span class="spec-icon">🏷️</span>
+            <span class="spec-icon"></span>
             <span class="spec-label">Type:</span>
             <span class="spec-val">${escapeHtml(propTypeLabel)}</span>
           </div>
@@ -950,7 +950,7 @@
 
         <div class="card-footer">
           <button type="button" class="btn btn-secondary btn-compact btn-view-listing" data-id="${item.id}">
-            🔗 Open in Bitrix24
+            Open in Bitrix24
           </button>
           <span style="font-size: 11px; color: var(--b24-text-muted);">
             ${listingTypeLabel === 'Rent' ? 'Rental Property' : 'For Sale'}
@@ -1005,12 +1005,12 @@
     
     if (btnSaveRecommendation) {
       btnSaveRecommendation.disabled = count === 0;
-      btnSaveRecommendation.textContent = count > 0 ? `⭐ Save as recommendation (${count})` : '⭐ Save as recommendation';
+      btnSaveRecommendation.textContent = count > 0 ? `Save as recommendation (${count})` : 'Save as recommendation';
     }
 
     if (btnSendTimeline) {
       btnSendTimeline.disabled = count === 0;
-      btnSendTimeline.textContent = count > 0 ? `📨 Send (${count}) to Timeline` : '📨 Send to Timeline';
+      btnSendTimeline.textContent = count > 0 ? `Send (${count}) to Timeline` : 'Send to Timeline';
     }
 
     // Update select-all checkbox state
@@ -1114,7 +1114,7 @@
       // Updates UF_CRM_18_1792649609 directly via crm.item.update (no activity)
       await addRecommendation(currentEnquiryId, selectedIds);
 
-      showToast(`⭐ Added ${selectedIds.length} recommended listing(s) to Enquiry field!`, 'success');
+      showToast(`Added ${selectedIds.length} recommended listing(s) to Enquiry field!`, 'success');
 
       selectedListingIds.clear();
       updateSelectedCount();
@@ -1133,8 +1133,8 @@
       if (btnSaveRecommendation) {
         btnSaveRecommendation.disabled = selectedListingIds.size === 0;
         btnSaveRecommendation.textContent = selectedListingIds.size > 0 
-          ? `⭐ Save as recommendation (${selectedListingIds.size})` 
-          : '⭐ Save as recommendation';
+          ? `Save as recommendation (${selectedListingIds.size})` 
+          : 'Save as recommendation';
       }
       fitWindow();
     }

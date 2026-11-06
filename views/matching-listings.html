@@ -29,7 +29,7 @@
     <div class="lockout-card">
       <div class="lockout-glow"></div>
       <div class="lockout-icon-wrap">
-        <span class="lockout-icon">🔒</span>
+        <span class="lockout-icon"></span>
       </div>
       <h1 class="lockout-title">Access Restricted</h1>
       <p class="lockout-subtitle">Bitrix24 CRM Protected Application</p>
@@ -60,7 +60,7 @@
       <div class="header-left">
         <div class="header-title-wrap">
           <h1 class="header-title">
-            <span>🏢 Matching Listings</span>
+            <span>Matching Listings</span>
             <span id="search-mode-badge" class="badge badge-auto">Auto-matched from enquiry</span>
           </h1>
           <span id="enquiry-title-display" class="header-subtitle">Loading enquiry...</span>
@@ -74,7 +74,7 @@
     <!-- ── Filter & Search Panel ──────────────────────────────────── -->
     <section class="filter-card" aria-label="Search and Filter Criteria">
       <div class="filter-header">
-        <span class="filter-title">🔍 Search & Match Criteria</span>
+        <span class="filter-title">Search & Match Criteria</span>
       </div>
 
       <form id="filter-form" onsubmit="return false;">
@@ -136,17 +136,17 @@
           </label>
           <label class="toggle-item">
             <input type="checkbox" id="toggle-exact-beds">
-            <span>Exact Bedrooms Only (default: Minimum Beds ≥)</span>
+            <span>Exact Bedrooms Only (default: Minimum Beds or more)</span>
           </label>
         </div>
 
         <!-- Action Buttons -->
         <div class="filter-actions">
           <button type="button" id="btn-reset" class="btn btn-secondary">
-            ↺ Reset to Enquiry Data
+            Reset to Enquiry Data
           </button>
           <button type="submit" id="btn-search" class="btn btn-primary">
-            🔍 Search Listings
+            Search Listings
           </button>
         </div>
       </form>
@@ -172,10 +172,10 @@
           </select>
         </div>
         <button type="button" id="btn-save-recommendation" class="btn btn-success" disabled>
-          ⭐ Save as recommendation
+          Save as recommendation
         </button>
         <button type="button" id="btn-send-timeline" class="btn btn-secondary btn-compact" style="display: none;" disabled>
-          📨 Send to Timeline
+          Send to Timeline
         </button>
       </div>
     </div>
@@ -188,11 +188,11 @@
     <!-- ── Pagination Bar ─────────────────────────────────────────── -->
     <div id="pagination-bar" class="pagination-bar" style="display: none;">
       <button type="button" id="btn-prev-page" class="btn btn-secondary btn-compact" disabled>
-        ← Previous
+        Previous
       </button>
       <span id="page-indicator" class="page-indicator">Page 1</span>
       <button type="button" id="btn-next-page" class="btn btn-secondary btn-compact">
-        Next →
+        Next
       </button>
     </div>
 

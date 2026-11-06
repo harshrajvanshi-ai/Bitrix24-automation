@@ -2882,7 +2882,7 @@
 
     // 1. Update Layout Mode Pill in Toolbar
     layoutModeBadge.className = `layout-pill ${meta.pillClass}`;
-    layoutModeBadge.innerHTML = `${meta.icon} ${meta.title}`;
+    layoutModeBadge.textContent = meta.title || "Rent";
 
     // 2. Clear container
     sectionsContainer.innerHTML = "";
@@ -3711,7 +3711,7 @@ function resolveCountryCode(countryName) {
     if (!window.ReadinessEvaluator || typeof window.ReadinessEvaluator.evaluatePublishReadiness !== 'function') return;
 
     const bannerEl = document.getElementById("readiness-banner");
-    if (!bannerEl) return;
+    if (bannerEl) bannerEl.remove();
 
     const getVal = (id) => {
       const el = document.getElementById(`field_${id}`) || document.querySelector(`[name="${id}"]`);
@@ -3751,10 +3751,6 @@ function resolveCountryCode(countryName) {
     };
 
     const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
-
-    bannerEl.className = 'readiness-banner';
-    bannerEl.style.display = 'none';
-    bannerEl.innerHTML = '';
 
     const publishInputs = [
       document.getElementById("field_ufCrm16PublishPortals"),

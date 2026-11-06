@@ -2598,7 +2598,7 @@
     const meta = LISTING_LAYOUT_META[subLayout] || LISTING_LAYOUT_META.rent;
     if (listingLayoutBadge) {
       listingLayoutBadge.className = `layout-pill ${meta.pillClass}`;
-      listingLayoutBadge.innerHTML = `${meta.icon} ${meta.title}`;
+      listingLayoutBadge.textContent = meta.title || 'Rent';
       listingLayoutBadge.style.display = 'inline-flex';
     }
 
@@ -2790,7 +2790,7 @@
     if (currentLayout !== 'listing') return;
 
     const bannerEl = document.getElementById('readiness-banner');
-    if (!bannerEl) return;
+    if (bannerEl) bannerEl.remove();
 
     const getFormVal = (codes) => {
       const codeList = Array.isArray(codes) ? codes : [codes];
@@ -2835,10 +2835,6 @@
     };
 
     const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
-
-    bannerEl.className = 'readiness-banner';
-    bannerEl.style.display = 'none';
-    bannerEl.innerHTML = '';
 
     const publishInputs = [
       document.getElementById('field_UF_CRM_1792151479'),
@@ -3191,7 +3187,7 @@
       if (listingLayoutBadge) {
         const meta = LISTING_LAYOUT_META[currentListingSubLayout] || LISTING_LAYOUT_META.rent;
         listingLayoutBadge.className = `layout-pill ${meta.pillClass}`;
-        listingLayoutBadge.innerHTML = `${meta.icon} ${meta.title}`;
+        listingLayoutBadge.textContent = meta.title || 'Rent';
         listingLayoutBadge.style.display = 'inline-flex';
       }
     } else {
