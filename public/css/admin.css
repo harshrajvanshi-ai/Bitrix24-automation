@@ -1,114 +1,167 @@
 /**
  * public/css/admin.css
- * Admin Setup Portal styling
+ * Admin Setup Portal — Bitrix24 native look
  */
 
 :root {
-  --b24-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --b24-font: "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --b24-primary: #2fc6f6;
-  --b24-success: #9dcf00;
+  --b24-primary-hover: #3bc8f5;
+  --b24-success: #bbed21;
   --b24-danger: #ff5752;
-  --b24-bg: #f5f7f8;
+  --b24-bg: #eef2f4;
   --b24-card: #ffffff;
-  --b24-border: #dbe0e4;
+  --b24-border: #d5d7db;
+  --b24-border-input: #c6cdd3;
   --b24-text: #333333;
+  --b24-text-muted: #828b95;
+  --b24-text-label: #535c69;
+  --b24-link: #2067b0;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   font-family: var(--b24-font);
+  font-size: 14px;
   background-color: var(--b24-bg);
   color: var(--b24-text);
   margin: 0;
-  padding: 24px;
+  padding: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--b24-link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 .admin-header {
   background: var(--b24-card);
-  padding: 20px 24px;
-  border-radius: 8px;
+  padding: 16px 20px;
+  border-radius: 2px;
   border: 1px solid var(--b24-border);
-  margin-bottom: 24px;
+  margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .admin-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #202428;
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--b24-text);
 }
 
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .panel {
   background: var(--b24-card);
   border: 1px solid var(--b24-border);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border-radius: 2px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 
 .panel-title {
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 16px;
+  color: var(--b24-text);
+  margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--b24-border);
+  border-bottom: 1px solid #eef2f4;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+/* Bitrix24 label style */
 .status-tag {
   display: inline-block;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  font-weight: 600;
+  font-size: 10px;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
 }
 
-.tag-success { background: #e8f5e9; color: #2e7d32; }
-.tag-warning { background: #fff3e0; color: #e65100; }
-.tag-danger { background: #ffebee; color: #c62828; }
-.tag-info { background: #e3f2fd; color: #1565c0; }
+.tag-success {
+  background: #e9f6b8;
+  color: #5d7a00;
+}
+
+.tag-warning {
+  background: #fff1b8;
+  color: #8a6d00;
+}
+
+.tag-danger {
+  background: #ffe0df;
+  color: #c0392b;
+}
+
+.tag-info {
+  background: #d5f4fd;
+  color: #1c7ea3;
+}
 
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
 }
 
-th, td {
+th,
+td {
   padding: 10px 12px;
   text-align: left;
-  border-bottom: 1px solid #edf0f2;
+  border-bottom: 1px solid #eef2f4;
 }
 
 th {
-  background: #f8f9fa;
+  background: #f9fafb;
   font-weight: 600;
-  color: #535c69;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  color: var(--b24-text-muted);
+  border-bottom: 1px solid var(--b24-border);
+}
+
+tbody tr:hover {
+  background: #f5f9fb;
 }
 
 .badge {
-  font-family: monospace;
-  background: #edf0f2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background: #eef2f4;
+  color: var(--b24-text-label);
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 11px;
 }
 
 .modal {
   display: none;
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
   align-items: center;
   justify-content: center;
   z-index: 9999;
@@ -116,9 +169,9 @@ th {
 
 .modal-content {
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 2px;
   padding: 24px;
   max-width: 500px;
   width: 100%;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
 }
