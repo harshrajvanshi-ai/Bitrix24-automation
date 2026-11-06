@@ -1,0 +1,564 @@
+{
+  "version": "1.0.0",
+  "entities": {
+    "master_project": { "entityTypeId": 1040, "prefix": "DYNAMIC_1040_" },
+    "project": { "entityTypeId": 1044, "prefix": "DYNAMIC_1044_" },
+    "layout": { "entityTypeId": 1048, "prefix": "DYNAMIC_1048_" },
+    "property": { "entityTypeId": 1052, "prefix": "DYNAMIC_1052_" },
+    "listing": { "entityTypeId": 1058, "prefix": "DYNAMIC_1058_" },
+    "enquiry": { "entityTypeId": 1062, "prefix": "DYNAMIC_1062_" },
+    "broker": { "entityTypeId": 1094, "prefix": "DYNAMIC_1094_" }
+  },
+  "concepts": {
+    "lead_type": {
+      "type": "enumeration",
+      "description": "Primary lead funnel discriminator (Enquiry vs Listing)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791354310417", "v2": "UF_CRM_1791354310417", "altCodes": ["UF_CRM_LEAD_TYPE"] }
+      },
+      "enums": [
+        { "xmlId": "ENQUIRY", "label": "Enquiry", "v1Id": "1594", "v2Id": "ENQUIRY" },
+        { "xmlId": "LISTING", "label": "Listing", "v1Id": "1596", "v2Id": "LISTING" }
+      ]
+    },
+    "transaction": {
+      "type": "enumeration",
+      "description": "Core commercial transaction direction: Sale or Rent",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791952650167", "v2": "UF_CRM_RE_TRANSACTION", "altCodes": ["UF_CRM_TRANSACTION_TYPE"] },
+        "spa_1058": { "v1": "UF_CRM_16_1790154808", "v2": "UF_CRM_16_RE_TRANSACTION", "key": "ufCrm16ReTransaction", "v1Key": "ufCrm16_1790154808" },
+        "spa_1062": { "v1": "ufCrm18ListingType", "v2": "UF_CRM_18_RE_TRANSACTION", "key": "ufCrm18ReTransaction", "v1Key": "ufCrm18ListingType" }
+      },
+      "enums": [
+        { "xmlId": "SALE", "label": "Sale", "v1Id": "2580", "spa1058V1Id": "158", "spa1062V1Id": "1246", "v2Id": "SALE" },
+        { "xmlId": "RENT", "label": "Rent", "v1Id": "2578", "spa1058V1Id": "158", "spa1062V1Id": "1248", "v2Id": "RENT" }
+      ]
+    },
+    "market_segment": {
+      "type": "enumeration",
+      "description": "Asset market maturity stage (Ready, Off-Plan, Overseas)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791952650167", "v2": "UF_CRM_RE_MARKET_SEGMENT" },
+        "spa_1058": { "v1": "UF_CRM_16_1790154808", "v2": "UF_CRM_16_RE_MARKET_SEGMENT", "key": "ufCrm16ReMarketSegment", "v1Key": "ufCrm16_1790154808" }
+      },
+      "enums": [
+        { "xmlId": "READY", "label": "Ready", "v1Id": "2578", "spa1058V1Id": "158", "v2Id": "READY" },
+        { "xmlId": "OFF_PLAN", "label": "Off-Plan", "v1Id": "2582", "spa1058V1Id": "162", "v2Id": "OFF_PLAN" },
+        { "xmlId": "OVERSEAS", "label": "Overseas", "v1Id": "2580", "spa1058V1Id": "160", "v2Id": "OVERSEAS" }
+      ]
+    },
+    "stock_source": {
+      "type": "enumeration",
+      "description": "Inventory representation source (Own Direct Mandate vs External Co-Broke)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791952650167", "v2": "UF_CRM_RE_STOCK_SOURCE" },
+        "spa_1058": { "v1": "UF_CRM_16_1790154808", "v2": "UF_CRM_16_RE_STOCK_SOURCE", "key": "ufCrm16ReStockSource", "v1Key": "ufCrm16_1790154808" }
+      },
+      "enums": [
+        { "xmlId": "OWN", "label": "Own", "v1Id": "2578", "spa1058V1Id": "158", "v2Id": "OWN" },
+        { "xmlId": "EXTERNAL", "label": "External", "v1Id": "2584", "spa1058V1Id": "164", "v2Id": "EXTERNAL" }
+      ]
+    },
+    "purpose": {
+      "type": "enumeration",
+      "description": "Buyer/Tenant motivation: End-user or Investment",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791952650167", "v2": "UF_CRM_RE_PURPOSE" },
+        "spa_1062": { "v1": "ufCrm18EnquiryType", "v2": "UF_CRM_18_RE_PURPOSE", "key": "ufCrm18RePurpose", "v1Key": "ufCrm18EnquiryType" }
+      },
+      "enums": [
+        { "xmlId": "END_USER", "label": "End-user", "v1Id": "2580", "v2Id": "END_USER" },
+        { "xmlId": "INVESTMENT", "label": "Investment", "v1Id": "2582", "v2Id": "INVESTMENT" }
+      ]
+    },
+    "mandate_type": {
+      "type": "boolean",
+      "description": "Mandate exclusivity flag (Exclusive vs Non-exclusive)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791970897872", "v2": "UF_CRM_1791970897872", "altCodes": ["UF_CRM_EXCLUSIVE"] },
+        "spa_1058": { "v1": "UF_CRM_16_EXCLUSIVE", "v2": "UF_CRM_16_EXCLUSIVE", "key": "ufCrm16Exclusive" }
+      }
+    },
+    "listing_agent": {
+      "type": "lookup",
+      "lookupEntity": "broker",
+      "description": "Listing broker / portal agent",
+      "fields": {
+        "lead": { "v1": "UF_CRM_LISTINGAGENT", "v2": "UF_CRM_LISTINGAGENT", "altCodes": ["UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_ASSIGNED_TO_BROKER"] },
+        "spa_1058": { "v1": "UF_CRM_16_PORTAL_LISTING_AGENT", "v2": "UF_CRM_16_PORTAL_LISTING_AGENT", "key": "ufCrm16ListingAgent", "altKeys": ["ufCrm16PortalListingAgent", "UF_CRM_16_LISTING_AGENT"] }
+      }
+    },
+    "property_unit": {
+      "type": "lookup",
+      "lookupEntity": "property",
+      "description": "Individual unit in SPA 1052",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PROPERTY", "v2": "UF_CRM_PROPERTY" },
+        "spa_1058": { "v1": "PARENT_ID_1052", "v2": "PARENT_ID_1052", "key": "parentId1052" }
+      }
+    },
+    "project": {
+      "type": "lookup",
+      "lookupEntity": "project",
+      "description": "Building or tower in SPA 1044",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PROJECT_1", "v2": "UF_CRM_PROJECT_1", "altCodes": ["UF_CRM_BUILDING", "UF_CRM_BUILDING_DUBIZZLE", "UF_CRM_PROJECT_NAME"] },
+        "spa_1058": { "v1": "UF_CRM_16_PROJECT_NAME", "v2": "UF_CRM_16_PROJECT_NAME", "key": "ufCrm16ProjectName" }
+      }
+    },
+    "master_project": {
+      "type": "lookup",
+      "lookupEntity": "master_project",
+      "description": "Master development in SPA 1040",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PROJECT", "v2": "UF_CRM_PROJECT", "altCodes": ["UF_CRM_1792558317", "UF_CRM_MASTER_PROJECT"] },
+        "spa_1058": { "v1": "UF_CRM_16_MASTER_PROJECT", "v2": "UF_CRM_16_MASTER_PROJECT", "key": "ufCrm16MasterProject" }
+      }
+    },
+    "layout": {
+      "type": "lookup",
+      "lookupEntity": "layout",
+      "description": "Architectural floor plan in SPA 1048",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PROPERTY_LAYOUT", "v2": "UF_CRM_PROPERTY_LAYOUT", "altCodes": ["UF_CRM_LAYOUT"] },
+        "spa_1058": { "v1": "UF_CRM_16_LAYOUT", "v2": "UF_CRM_16_LAYOUT", "key": "ufCrm16Layout" }
+      }
+    },
+    "developer": {
+      "type": "lookup",
+      "lookupEntity": "developer",
+      "description": "Developer CRM Company record",
+      "fields": {
+        "lead": { "v1": "COMPANY_ID", "v2": "COMPANY_ID", "altCodes": ["UF_CRM_DEVELOPER_1", "UF_CRM_YOUR_COMPANY_DETAILS"] },
+        "spa_1058": { "v1": "COMPANY_ID", "v2": "COMPANY_ID", "key": "companyId", "altKeys": ["ufCrm16_1791172932"] }
+      }
+    },
+    "property_type": {
+      "type": "enumeration",
+      "description": "Core property classification (Apartment, Villa, etc.)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791952050535", "v2": "UF_CRM_1791952050535", "altCodes": ["UF_CRM_PROPERTY_TYPE"] },
+        "spa_1058": { "v1": "UF_CRM_16_PROPERTY_TYPE", "v2": "UF_CRM_16_PROPERTY_TYPE", "key": "ufCrm16PropertyType" },
+        "spa_1062": { "v1": "ufCrm18_1790155720", "v2": "ufCrm18_1790155720", "key": "ufCrm18_1790155720" },
+        "spa_1048": { "v1": "ufCrm12PropType", "v2": "ufCrm12PropType", "key": "ufCrm12PropType" }
+      },
+      "enums": [
+        { "xmlId": "APARTMENT", "label": "Apartment", "leadV1Id": "1754", "spa1058V1Id": "886", "spa1062V1Id": "2530", "spa1048V1Id": "346" },
+        { "xmlId": "VILLA", "label": "Villa", "leadV1Id": "1756", "spa1058V1Id": "888", "spa1062V1Id": "2528", "spa1048V1Id": "348" },
+        { "xmlId": "TOWNHOUSE", "label": "Townhouse", "leadV1Id": "1758", "spa1058V1Id": "890", "spa1062V1Id": "2526", "spa1048V1Id": "350" },
+        { "xmlId": "PENTHOUSE", "label": "Penthouse", "leadV1Id": "1760", "spa1058V1Id": "892", "spa1062V1Id": "2524", "spa1048V1Id": "352" },
+        { "xmlId": "DUPLEX", "label": "Duplex", "leadV1Id": "1762", "spa1058V1Id": "894", "spa1062V1Id": "2522", "spa1048V1Id": "354" },
+        { "xmlId": "LAND", "label": "Land", "leadV1Id": "1764", "spa1058V1Id": "896", "spa1062V1Id": "2520", "spa1048V1Id": "356" },
+        { "xmlId": "COMMERCIAL", "label": "Commercial", "leadV1Id": "1766", "spa1058V1Id": "898", "spa1062V1Id": "200", "spa1048V1Id": "358" },
+        { "xmlId": "OFFICE", "label": "Office", "leadV1Id": "1768", "spa1058V1Id": "900", "spa1062V1Id": "198", "spa1048V1Id": "360" },
+        { "xmlId": "RETAIL", "label": "Retail", "leadV1Id": "1770", "spa1058V1Id": "902", "spa1062V1Id": "196", "spa1048V1Id": "362" }
+      ]
+    },
+    "property_sub_type": {
+      "type": "enumeration",
+      "description": "Architectural sub-configuration (Simplex, Duplex, Triplex)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PROPERTY_SUB_TYPE", "v2": "UF_CRM_PROPERTY_SUB_TYPE" },
+        "spa_1058": { "v1": "UF_CRM_16_PROPERTY_SUB_TYPE", "v2": "UF_CRM_16_PROPERTY_SUB_TYPE", "key": "ufCrm16PropertySubType" }
+      },
+      "enums": [
+        { "xmlId": "STANDARD", "label": "Standard", "leadV1Id": "2098", "spa1058V1Id": "872" },
+        { "xmlId": "LUXURY", "label": "Luxury", "leadV1Id": "2100", "spa1058V1Id": "874" },
+        { "xmlId": "ULTRA_LUXURY", "label": "Ultra Luxury", "leadV1Id": "2102", "spa1058V1Id": "876" },
+        { "xmlId": "SIMPLEX", "label": "Simplex", "leadV1Id": "2104", "spa1058V1Id": "878" },
+        { "xmlId": "DUPLEX", "label": "Duplex", "leadV1Id": "2106", "spa1058V1Id": "880" },
+        { "xmlId": "TRIPLEX", "label": "Triplex", "leadV1Id": "2108", "spa1058V1Id": "882" },
+        { "xmlId": "PENTHOUSE", "label": "Penthouse", "leadV1Id": "2110", "spa1058V1Id": "884" }
+      ]
+    },
+    "bedrooms": {
+      "type": "number",
+      "description": "Number of bedrooms (0 = Studio)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_BEDROOMS", "v2": "UF_CRM_BEDROOMS", "altCodes": ["UF_CRM_1791966366775", "UF_CRM_BEDS_MIN"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791172802", "v2": "UF_CRM_16_1791172802", "key": "ufCrm16_1791172802" }
+      }
+    },
+    "bathrooms": {
+      "type": "number",
+      "description": "Number of bathrooms",
+      "fields": {
+        "lead": { "v1": "UF_CRM_BATHROOMS", "v2": "UF_CRM_BATHROOMS", "altCodes": ["UF_CRM_1791966408374", "UF_CRM_BATHS_MIN", "UF_CRM_TOTALBATHROOMS"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791172787", "v2": "UF_CRM_16_1791172787", "key": "ufCrm16_1791172787" }
+      }
+    },
+    "built_up_area": {
+      "type": "number",
+      "description": "Built-up Area in square feet",
+      "fields": {
+        "lead": { "v1": "UF_CRM_BUA", "v2": "UF_CRM_BUA", "altCodes": ["UF_CRM_TOTALAREA", "UF_CRM_1791970770635", "UF_CRM_SIZE_MIN"] },
+        "spa_1058": { "v1": "UF_CRM_16_SIZE", "v2": "UF_CRM_16_SIZE", "key": "ufCrm16Size", "altKeys": ["ufCrm16SqFt"] }
+      }
+    },
+    "plot_area": {
+      "type": "number",
+      "description": "Plot area in square feet (villas / land)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PLOT_AREA", "v2": "UF_CRM_PLOT_AREA", "altCodes": ["UF_CRM_PLOT_SIZE", "UF_CRM_LOTSIZE"] },
+        "spa_1058": { "v1": "UF_CRM_16_PLOT_SIZE", "v2": "UF_CRM_16_PLOT_SIZE", "key": "ufCrm16PlotSize", "altKeys": ["ufCrm16LotSize"] }
+      }
+    },
+    "floor": {
+      "type": "integer",
+      "description": "Floor number (apartments / penthouses / offices)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_FLOOR", "v2": "UF_CRM_FLOOR" },
+        "spa_1058": { "v1": "UF_CRM_16_FLOOR", "v2": "UF_CRM_16_FLOOR", "key": "ufCrm16Floor" }
+      }
+    },
+    "furnished": {
+      "type": "enumeration",
+      "description": "Furnishing state (Furnished, Semi-Furnished, Unfurnished)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791969936048", "v2": "UF_CRM_1791969936048" },
+        "spa_1058": { "v1": "UF_CRM_16_FURNISHED", "v2": "UF_CRM_16_FURNISHED", "key": "ufCrm16Furnished" }
+      },
+      "enums": [
+        { "xmlId": "FURNISHED", "label": "Furnished", "leadV1Id": "1794", "spa1058V1Id": "736" },
+        { "xmlId": "SEMI_FURNISHED", "label": "Semi-Furnished", "leadV1Id": "1796", "spa1058V1Id": "738" },
+        { "xmlId": "UNFURNISHED", "label": "Unfurnished", "leadV1Id": "1798", "spa1058V1Id": "740" }
+      ]
+    },
+    "parking_spaces": {
+      "type": "integer",
+      "description": "Allocated covered parking spaces",
+      "fields": {
+        "lead": { "v1": "UF_CRM_NUMBEROFPARKINGSPACES", "v2": "UF_CRM_NUMBEROFPARKINGSPACES", "altCodes": ["UF_CRM_PARKING"] },
+        "spa_1058": { "v1": "UF_CRM_16_PARKING_SPACES", "v2": "UF_CRM_16_PARKING_SPACES", "key": "ufCrm16ParkingSpaces" }
+      }
+    },
+    "view": {
+      "type": "enumeration",
+      "isMultiple": true,
+      "description": "Multi-select orientation / outlook view",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791970130059", "v2": "UF_CRM_RE_VIEW" },
+        "spa_1058": { "v1": "ufCrm16View", "v2": "UF_CRM_16_RE_VIEW", "key": "ufCrm16ReView" }
+      },
+      "enums": [
+        { "xmlId": "BURJ_KHALIFA", "label": "Burj Khalifa View" },
+        { "xmlId": "SEA_VIEW", "label": "Sea / Open Water View" },
+        { "xmlId": "MARINA_VIEW", "label": "Dubai Marina View" },
+        { "xmlId": "PALM_VIEW", "label": "Palm Jumeirah View" },
+        { "xmlId": "GOLF_COURSE", "label": "Golf Course View" },
+        { "xmlId": "PARK_VIEW", "label": "Park / Green View" },
+        { "xmlId": "CANAL_VIEW", "label": "Dubai Canal View" },
+        { "xmlId": "CITY_SKYLINE", "label": "City Skyline View" }
+      ]
+    },
+    "amenities": {
+      "type": "enumeration",
+      "isMultiple": true,
+      "description": "Multi-select property amenities shared across Listing and Enquiry",
+      "fields": {
+        "lead": { "v1": "UF_CRM_COMMERCIAL_AMENITIES", "v2": "UF_CRM_RE_AMENITIES" },
+        "spa_1058": { "v1": "ufCrm16CommercialAmenities", "v2": "UF_CRM_16_RE_AMENITIES", "key": "ufCrm16ReAmenities" },
+        "spa_1062": { "v1": "ufCrm18CommercialAmenities", "v2": "UF_CRM_18_RE_AMENITIES", "key": "ufCrm18ReAmenities" }
+      },
+      "enums": [
+        { "xmlId": "SWIMMING_POOL", "label": "Shared Swimming Pool" },
+        { "xmlId": "BALCONY", "label": "Balcony" },
+        { "xmlId": "COVERED_PARKING", "label": "Covered Parking" },
+        { "xmlId": "GYM", "label": "Shared Gymnasium" },
+        { "xmlId": "SECURITY", "label": "24/7 Concierge & Security" },
+        { "xmlId": "MAIDS_ROOM", "label": "Maid's Room" },
+        { "xmlId": "BUILT_IN_WARDROBES", "label": "Built-in Wardrobes" },
+        { "xmlId": "CENTRAL_AC", "label": "Central A/C" },
+        { "xmlId": "CHILDRENS_PLAY_AREA", "label": "Children's Play Area" },
+        { "xmlId": "PETS_ALLOWED", "label": "Pets Allowed" },
+        { "xmlId": "PRIVATE_GARDEN", "label": "Private Garden" },
+        { "xmlId": "PRIVATE_POOL", "label": "Private Pool" },
+        { "xmlId": "WALK_IN_CLOSET", "label": "Walk-in Closet" }
+      ]
+    },
+    "occupancy": {
+      "type": "enumeration",
+      "description": "Tenancy status of property",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791970832589", "v2": "UF_CRM_1791970832589" },
+        "spa_1058": { "v1": "UF_CRM_16_OCCUPANCY", "v2": "UF_CRM_16_OCCUPANCY", "key": "ufCrm16Occupancy" }
+      },
+      "enums": [
+        { "xmlId": "VACANT", "label": "Vacant", "leadV1Id": "1832", "spa1058V1Id": "844" },
+        { "xmlId": "TENANTED", "label": "Rented", "leadV1Id": "1828", "spa1058V1Id": "840" },
+        { "xmlId": "VACANT_ON_TRANSFER", "label": "Vacant on Transfer", "leadV1Id": "1824", "spa1058V1Id": "836" },
+        { "xmlId": "OWNER_OCCUPIED", "label": "Owner Occupied", "leadV1Id": "1826", "spa1058V1Id": "838" },
+        { "xmlId": "UNDER_NOTICE", "label": "Under Notice", "leadV1Id": "1830", "spa1058V1Id": "842" }
+      ]
+    },
+    "country": {
+      "type": "string",
+      "description": "Country name for overseas listings",
+      "fields": {
+        "lead": { "v1": "UF_CRM_COUNTRY", "v2": "UF_CRM_COUNTRY" },
+        "spa_1058": { "v1": "UF_CRM_16_1791172854", "v2": "UF_CRM_16_1791172854", "key": "ufCrm16_1791172854" }
+      }
+    },
+    "currency": {
+      "type": "string",
+      "description": "Currency code for overseas pricing (e.g. GBP, EUR, USD)",
+      "fields": {
+        "lead": { "v1": "CURRENCY_ID", "v2": "UF_CRM_RE_CURRENCY" },
+        "spa_1058": { "v1": "currencyId", "v2": "UF_CRM_16_RE_CURRENCY", "key": "currencyId" }
+      }
+    },
+    "price": {
+      "type": "money",
+      "description": "Asking price or Annual rent in AED",
+      "fields": {
+        "lead": { "v1": "UF_CRM_LISTING_PRICE", "v2": "UF_CRM_LISTING_PRICE" },
+        "spa_1058": { "v1": "UF_CRM_16_1790154936", "v2": "UF_CRM_16_1790154936", "key": "ufCrm16_1790154936" }
+      }
+    },
+    "price_per_sq_ft": {
+      "type": "money",
+      "description": "Calculated Price per Sq Ft in AED (Price / BUA)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PRICE_PER_SQUARE_FOOT", "v2": "UF_CRM_PRICE_PER_SQUARE_FOOT" },
+        "spa_1058": { "v1": "UF_CRM_16_LIST_PRICE_PER_SQ_FT", "v2": "UF_CRM_16_LIST_PRICE_PER_SQ_FT", "key": "ufCrm16ListPricePerSqFt" }
+      }
+    },
+    "commission_pct": {
+      "type": "number",
+      "description": "Agency commission percentage (e.g. 2% for sale, 5% for rent)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_BUYERAGENTCOMMISSION", "v2": "UF_CRM_RE_COMMISSION_PCT" },
+        "spa_1058": { "v1": "UF_CRM_16_BUYERS_AGENT_COMMISSION", "v2": "UF_CRM_16_RE_COMMISSION_PCT", "key": "ufCrm16ReCommissionPct", "v1Key": "ufCrm16BuyersAgentCommission" }
+      }
+    },
+    "service_charge": {
+      "type": "money",
+      "description": "Annual service charge in AED per sq ft per year",
+      "fields": {
+        "lead": { "v1": "UF_CRM_SERVICE_CHARGE", "v2": "UF_CRM_SERVICE_CHARGE" },
+        "spa_1058": { "v1": "UF_CRM_16_SERVICE_CHARGE", "v2": "UF_CRM_16_SERVICE_CHARGE", "key": "ufCrm16ServiceCharge" }
+      }
+    },
+    "cheques": {
+      "type": "number",
+      "description": "Number of cheques per year (1, 2, 4, 12)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1792139023", "v2": "UF_CRM_1792139023" },
+        "spa_1058": { "v1": "UF_CRM_16_1792127520", "v2": "UF_CRM_16_1792127520", "key": "ufCrm16_1792127520" }
+      }
+    },
+    "security_deposit": {
+      "type": "money",
+      "description": "Security deposit in AED",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PETDEPOSIT", "v2": "UF_CRM_RE_SECURITY_DEPOSIT" },
+        "spa_1058": { "v1": "UF_CRM_16_PET_DEPOSIT", "v2": "UF_CRM_16_RE_SECURITY_DEPOSIT", "key": "ufCrm16ReSecurityDeposit", "v1Key": "ufCrm16PetDeposit" }
+      }
+    },
+    "payment_plan_booking_pct": {
+      "type": "number",
+      "description": "Down payment / Booking amount percentage",
+      "fields": {
+        "lead": { "v1": "UF_CRM_BOOKING_AMOUNT", "v2": "UF_CRM_RE_PP_BOOKING_PCT" },
+        "spa_1058": { "v1": "UF_CRM_BOOKING_AMOUNT", "v2": "UF_CRM_16_RE_PP_BOOKING_PCT", "key": "ufCrm16RePpBookingPct" }
+      }
+    },
+    "payment_plan_construction_pct": {
+      "type": "number",
+      "description": "Percentage due during construction installments",
+      "fields": {
+        "lead": { "v1": null, "v2": "UF_CRM_RE_PP_CONSTRUCTION_PCT" },
+        "spa_1058": { "v1": null, "v2": "UF_CRM_16_RE_PP_CONSTRUCTION_PCT", "key": "ufCrm16RePpConstructionPct" }
+      }
+    },
+    "payment_plan_handover_pct": {
+      "type": "number",
+      "description": "Percentage due on key handover",
+      "fields": {
+        "lead": { "v1": "UF_CRM_HANDOVER_PAYMENT", "v2": "UF_CRM_RE_PP_HANDOVER_PCT" },
+        "spa_1058": { "v1": "UF_CRM_HANDOVER_PAYMENT", "v2": "UF_CRM_16_RE_PP_HANDOVER_PCT", "key": "ufCrm16RePpHandoverPct" }
+      }
+    },
+    "payment_plan_post_handover_pct": {
+      "type": "number",
+      "description": "Percentage due post-handover",
+      "fields": {
+        "lead": { "v1": null, "v2": "UF_CRM_RE_PP_POST_HANDOVER_PCT" },
+        "spa_1058": { "v1": null, "v2": "UF_CRM_16_RE_PP_POST_HANDOVER_PCT", "key": "ufCrm16RePpPostHandoverPct" }
+      }
+    },
+    "payment_plan_notes": {
+      "type": "text",
+      "description": "Free-text milestone notes and installment details",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PAYMENT_PLAN", "v2": "UF_CRM_RE_PP_NOTES", "altCodes": ["UF_CRM_INSTALLMENT_DETAILS"] },
+        "spa_1058": { "v1": null, "v2": "UF_CRM_16_RE_PP_NOTES", "key": "ufCrm16RePpNotes" }
+      }
+    },
+    "available_from": {
+      "type": "date",
+      "description": "Date property becomes available (reused UF_CRM_DATE_AVAILABLE per A5)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_DATE_AVAILABLE", "v2": "UF_CRM_DATE_AVAILABLE", "altCodes": ["UF_CRM_AVAIL_DATE"] },
+        "spa_1058": { "v1": "UF_CRM_16_1790155057", "v2": "UF_CRM_16_1790155057", "key": "ufCrm16_1790155057", "altKeys": ["begindate"] }
+      }
+    },
+    "expected_handover_date": {
+      "type": "date",
+      "description": "Expected construction completion date",
+      "fields": {
+        "lead": { "v1": "UF_CRM_COMPLETIONDATE", "v2": "UF_CRM_COMPLETIONDATE" },
+        "spa_1058": { "v1": "UF_CRM_16_COMPLETION_DATE", "v2": "UF_CRM_16_COMPLETION_DATE", "key": "ufCrm16CompletionDate" }
+      }
+    },
+    "form_a_expiry": {
+      "type": "date",
+      "description": "RERA Form A broker representation mandate expiry date (reused per A6)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_FORM_A_EXPIRY_DATE", "v2": "UF_CRM_FORM_A_EXPIRY_DATE", "altCodes": ["UF_CRM_EXPIRATION_DATE"] },
+        "spa_1058": { "v1": "UF_CRM_16_FORM_A_EXPIRY_DATE", "v2": "UF_CRM_16_FORM_A_EXPIRY_DATE", "key": "ufCrm16FormAExpiryDate", "altKeys": ["ufCrm16ExpirationDate"] }
+      }
+    },
+    "trakheesi_permit_no": {
+      "type": "string",
+      "description": "DLD / RERA electronic advertising permit number",
+      "fields": {
+        "lead": { "v1": "UF_CRM_TRAKHEESI_PERMIT_NO", "v2": "UF_CRM_TRAKHEESI_PERMIT_NO", "altCodes": ["UF_CRM_1791970864836"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791787455285", "v2": "UF_CRM_16_1791787455285", "key": "ufCrm16_1791787455285", "altKeys": ["ufCrm16ReraPermitNumber"] }
+      }
+    },
+    "permit_expiry": {
+      "type": "date",
+      "description": "DLD Trakheesi permit expiry date",
+      "fields": {
+        "lead": { "v1": "UF_CRM_TRAKHEESI_EXPIRY", "v2": "UF_CRM_TRAKHEESI_EXPIRY", "altCodes": ["UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791787502111", "v2": "UF_CRM_16_1791787502111", "key": "ufCrm16_1791787502111" }
+      }
+    },
+    "dld_qr": {
+      "type": "file",
+      "isImage": true,
+      "description": "Consolidated DLD verification permit QR graphic / URL",
+      "fields": {
+        "lead": { "v1": "UF_CRM_QR_CODE", "v2": "UF_CRM_QR_CODE", "altCodes": ["UF_CRM_QR_CODE_LINK"] },
+        "spa_1058": { "v1": "UF_CRM_16_QR_CODE", "v2": "UF_CRM_16_QR_CODE", "key": "ufCrm16QrCode", "altKeys": ["ufCrm16QrCodeLink"] }
+      }
+    },
+    "photos": {
+      "type": "file",
+      "isImage": true,
+      "isMultiple": true,
+      "description": "Property marketing photos (first image is cover)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_PHOTOS", "v2": "UF_CRM_PHOTOS", "altCodes": ["UF_CRM_PRIMARY_IMAGE", "UF_CRM_PHOTOS_AND_DOCUMENTS"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791881642219", "v2": "UF_CRM_16_1791881642219", "key": "ufCrm16_1791881642219", "altKeys": ["ufCrm16_1791173118"] }
+      }
+    },
+    "floor_plans": {
+      "type": "file",
+      "isDoc": true,
+      "isMultiple": true,
+      "description": "Floor plan diagrams and marketing brochures",
+      "fields": {
+        "lead": { "v1": "UF_CRM_DOCUMENTS", "v2": "UF_CRM_DOCUMENTS", "altCodes": ["UF_CRM_DOCS", "UF_CRM_DOCS_1"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791881665252", "v2": "UF_CRM_16_1791881665252", "key": "ufCrm16_1791881665252" }
+      }
+    },
+    "title_deed": {
+      "type": "file",
+      "isDoc": true,
+      "description": "Official Title Deed or Oqood certificate copy",
+      "fields": {
+        "lead": { "v1": "UF_CRM_TITLE_DEED", "v2": "UF_CRM_TITLE_DEED" },
+        "spa_1058": { "v1": "UF_CRM_16_TITLE_DEED", "v2": "UF_CRM_16_TITLE_DEED", "key": "ufCrm16TitleDeed" }
+      }
+    },
+    "signed_form_a": {
+      "type": "file",
+      "isDoc": true,
+      "description": "Signed RERA Form A broker agreement document",
+      "fields": {
+        "lead": { "v1": "UF_CRM_FORM_A_DOC", "v2": "UF_CRM_FORM_A_DOC", "altCodes": ["UF_CRM_FORM_A_DOCUMENT"] },
+        "spa_1058": { "v1": "UF_CRM_16_1791787381785", "v2": "UF_CRM_16_1791787381785", "key": "ufCrm16_1791787381785" }
+      }
+    },
+    "publish_portals": {
+      "type": "boolean",
+      "description": "Publish listing to UAE property portals (Bayut, Property Finder, Dubizzle)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_SYSTEMALLOWEDFORPORTALS", "v2": "UF_CRM_RE_PUBLISH_PORTALS" },
+        "spa_1058": { "v1": "UF_CRM_16_SYSTEM_ALLOWED_FOR_PORTALS", "v2": "UF_CRM_16_RE_PUBLISH_PORTALS", "key": "ufCrm16RePublishPortals", "v1Key": "ufCrm16SystemAllowedForPortals" }
+      }
+    },
+    "partner_agency": {
+      "type": "lookup",
+      "lookupEntity": "developer",
+      "description": "Co-broke partner real estate agency (Company lookup)",
+      "fields": {
+        "lead": { "v1": "COMPANY_ID", "v2": "UF_CRM_RE_PARTNER_AGENCY" },
+        "spa_1058": { "v1": "COMPANY_ID", "v2": "UF_CRM_16_RE_PARTNER_AGENCY", "key": "ufCrm16RePartnerAgency" }
+      }
+    },
+    "cobroke_split_pct": {
+      "type": "number",
+      "description": "Co-broke agency commission split percentage",
+      "fields": {
+        "lead": { "v1": null, "v2": "UF_CRM_RE_COBROKE_SPLIT_PCT" },
+        "spa_1058": { "v1": null, "v2": "UF_CRM_16_RE_COBROKE_SPLIT_PCT", "key": "ufCrm16ReCobrokeSplitPct" }
+      }
+    },
+    "external_reference": {
+      "type": "string",
+      "description": "External agency inventory reference or MLS ID",
+      "fields": {
+        "lead": { "v1": "XML_ID", "v2": "UF_CRM_RE_EXTERNAL_REF", "altCodes": ["UF_CRM_LISTING_ID"] },
+        "spa_1058": { "v1": "XML_ID", "v2": "UF_CRM_16_RE_EXTERNAL_REF", "key": "ufCrm16ReExternalRef" }
+      }
+    },
+    "completion_status": {
+      "type": "enumeration",
+      "description": "Physical completion status (Ready vs Off-Plan)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_COMPLETION_STATUS", "v2": "UF_CRM_COMPLETION_STATUS" },
+        "spa_1058": { "v1": "UF_CRM_16_COMPLETION_STATUS", "v2": "UF_CRM_16_COMPLETION_STATUS", "key": "ufCrm16CompletionStatus" }
+      },
+      "enums": [
+        { "xmlId": "READY", "label": "Ready", "leadV1Id": "1820", "spa1058V1Id": "832" },
+        { "xmlId": "OFF_PLAN", "label": "Off-Plan", "leadV1Id": "1822", "spa1058V1Id": "834" }
+      ]
+    },
+    "budget_min": {
+      "type": "money",
+      "description": "Enquiry minimum budget in AED",
+      "fields": {
+        "lead": { "v1": "UF_CRM_LISTINGPRICE_MIN", "v2": "UF_CRM_LISTINGPRICE_MIN" },
+        "spa_1062": { "v1": "ufCrm18PriceMin", "v2": "ufCrm18PriceMin", "key": "ufCrm18PriceMin" }
+      }
+    },
+    "budget_max": {
+      "type": "money",
+      "description": "Enquiry maximum budget in AED",
+      "fields": {
+        "lead": { "v1": "UF_CRM_LISTINGPRICE_MAX", "v2": "UF_CRM_LISTINGPRICE_MAX" },
+        "spa_1062": { "v1": "ufCrm18PriceMax", "v2": "ufCrm18PriceMax", "key": "ufCrm18PriceMax" }
+      }
+    },
+    "title": {
+      "type": "string",
+      "description": "Listing marketing headline / Title (kept per A3)",
+      "fields": {
+        "lead": { "v1": "UF_CRM_1791952409183", "v2": "UF_CRM_1791952409183", "altCodes": ["UF_CRM_LISTING_NAME", "TITLE"] },
+        "spa_1058": { "v1": "title", "v2": "title", "key": "title" }
+      }
+    },
+    "description": {
+      "type": "textarea",
+      "description": "Marketing description for portals (kept per A3)",
+      "fields": {
+        "lead": { "v1": "COMMENTS", "v2": "COMMENTS" },
+        "spa_1058": { "v1": "UF_CRM_16_DESCRIPTION", "v2": "UF_CRM_16_DESCRIPTION", "key": "ufCrm16Description" }
+      }
+    }
+  }
+}
+

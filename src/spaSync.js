@@ -40,6 +40,7 @@ function formatSyncDate(val) {
  */
 
 const BitrixClient = require('./bitrixClient');
+const SchemaMap = require('./schemaMap');
 
 // 1. Lead Source Type Translation Map (Lead enum ID <-> SPA 1062 enum ID)
 const LEAD_SOURCE_TYPE_MAP = {
@@ -184,7 +185,7 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
       const match = String(lead.UF_CRM_ENQUIRY).match(/\d+/);
       if (match) {
         const potentialId = parseInt(match[0], 10);
-        const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1062, id: potentialId }, domain).catch(() => null);
+        const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: SchemaMap.resolveEntityTypeId('enquiry'), id: potentialId }, domain).catch(() => null);
         if (getRes?.item) {
           spaItemId = potentialId;
           spaItem = getRes.item;
@@ -203,7 +204,7 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
 
     if (!spaItemId) {
       const listByXml = await BitrixClient.call('crm.item.list', {
-        entityTypeId: 1062,
+        entityTypeId: SchemaMap.resolveEntityTypeId('enquiry'),
         filter: { '=xmlId': cleanLeadId },
         select: selectFields
       }, domain).catch(() => ({ items: [] }));
@@ -216,7 +217,7 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
 
     if (!spaItemId) {
       const listByUf = await BitrixClient.call('crm.item.list', {
-        entityTypeId: 1062,
+        entityTypeId: SchemaMap.resolveEntityTypeId('enquiry'),
         filter: { '=ufCrm18Lead': cleanLeadId },
         select: selectFields
       }, domain).catch(() => ({ items: [] }));
@@ -232,7 +233,7 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
     }
 
     if (!spaItem) {
-      const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1062, id: spaItemId }, domain).catch(() => null);
+      const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: SchemaMap.resolveEntityTypeId('enquiry'), id: spaItemId }, domain).catch(() => null);
       spaItem = getRes?.item;
     }
 
@@ -297,7 +298,7 @@ async function syncEnquirySpaFromLead(leadId, domain = 'latest') {
     if (Object.keys(updates).length > 0) {
       console.log(`[SPA SYNC] Updating Enquiry SPA Item #${spaItemId} from Lead #${cleanLeadId}:`, updates);
       await BitrixClient.call('crm.item.update', {
-        entityTypeId: 1062,
+        entityTypeId: SchemaMap.resolveEntityTypeId('enquiry'),
         id: spaItemId,
         fields: updates
       }, domain);
@@ -583,7 +584,7 @@ function getListingFieldMapping() {
   const fieldsConfig = require('./config').loadFieldsConfig();
   return {
     success: true,
-    entityTypeId: 1058,
+    entityTypeId: SchemaMap.resolveEntityTypeId('listing'),
     layoutDriverLead: 'UF_CRM_1791952650167',
     layoutDriverSpa: 'ufCrm16_1790154808',
     layouts: fieldsConfig.listingDynamicLayout?.layoutMeta || {},
@@ -616,7 +617,7 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
       const match = String(lead.UF_CRM_LISTING).match(/\d+/);
       if (match) {
         const potentialId = parseInt(match[0], 10);
-        const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: potentialId }, domain).catch(() => null);
+        const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: SchemaMap.resolveEntityTypeId('listing'), id: potentialId }, domain).catch(() => null);
         if (getRes?.item) {
           spaItemId = potentialId;
           spaItem = getRes.item;
@@ -626,7 +627,7 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
 
     if (!spaItemId) {
       const listByXml = await BitrixClient.call('crm.item.list', {
-        entityTypeId: 1058,
+        entityTypeId: SchemaMap.resolveEntityTypeId('listing'),
         filter: { '=xmlId': cleanLeadId }
       }, domain).catch(() => ({ items: [] }));
 
@@ -641,7 +642,7 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
     }
 
     if (!spaItem) {
-      const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: spaItemId }, domain).catch(() => null);
+      const getRes = await BitrixClient.call('crm.item.get', { entityTypeId: SchemaMap.resolveEntityTypeId('listing'), id: spaItemId }, domain).catch(() => null);
       spaItem = getRes?.item;
     }
 
@@ -754,7 +755,7 @@ async function syncListingSpaFromLead(leadId, domain = 'latest') {
     if (Object.keys(updates).length > 0) {
       console.log(`[SPA SYNC] Updating Listing SPA Item #${spaItemId} from Lead #${cleanLeadId}:`, Object.keys(updates));
       await BitrixClient.call('crm.item.update', {
-        entityTypeId: 1058,
+        entityTypeId: SchemaMap.resolveEntityTypeId('listing'),
         id: spaItemId,
         fields: updates
       }, domain);
@@ -786,7 +787,7 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
   if (!cleanListingId) return null;
 
   try {
-    const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: cleanListingId }, domain);
+    const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: SchemaMap.resolveEntityTypeId('listing'), id: cleanListingId }, domain);
     const item = itemRes?.item;
     if (!item) return { status: 'listing_not_found', listingId: cleanListingId };
 

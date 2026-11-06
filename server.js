@@ -23,6 +23,7 @@ const StorageManager = require('./src/storage');
 const BitrixClient = require('./src/bitrixClient');
 const DiscoveryService = require('./src/discovery');
 const EventRouter = require('./src/eventRouter');
+const SchemaMap = require('./src/schemaMap');
 const {
   syncEnquirySpaFromLead,
   syncListingSpaFromLead,
@@ -439,7 +440,8 @@ app.get('/api/stages/listing', verifyCrmAccess, async (req, res) => {
   try {
     const categoryId = req.query.categoryId !== undefined ? req.query.categoryId : (req.query.category || 22);
     let stages = [];
-    const targetEntity1 = `DYNAMIC_1058_STAGE_${categoryId}`;
+    const listingTypeId = SchemaMap.resolveEntityTypeId('listing');
+    const targetEntity1 = `DYNAMIC_${listingTypeId}_STAGE_${categoryId}`;
     const targetEntity2 = `DYNAMIC_16_STAGE_${categoryId}`;
 
     try {
@@ -713,10 +715,13 @@ app.post('/events', eventLimiter, verifyBitrixEventToken, async (req, res) => {
 app.get('/api/config', (req, res) => {
   const fieldsConfig = config.loadFieldsConfig();
   const discovered = StorageManager.getDiscoveredConfig();
+  const schemaMapConfig = SchemaMap.getClientConfig();
 
   res.json({
     ...fieldsConfig,
-    discovered
+    discovered,
+    schemaMap: schemaMapConfig,
+    layoutVersion: SchemaMap.getLayoutVersion()
   });
 });
 
@@ -796,14 +801,14 @@ async function searchLookupLive(entity, query) {
   const numericId = idMatch ? parseInt(idMatch[1], 10) : null;
 
   const spaMap = {
-    project: { entityTypeId: 1044, prefix: 'DYNAMIC_1044_' },
-    master_project: { entityTypeId: 1040, prefix: 'DYNAMIC_1040_' },
-    property: { entityTypeId: 1052, prefix: 'DYNAMIC_1052_' },
-    layout: { entityTypeId: 1048, prefix: 'DYNAMIC_1048_' },
-    broker: { entityTypeId: 1094, prefix: 'DYNAMIC_1094_' },
-    agent: { entityTypeId: 1094, prefix: 'DYNAMIC_1094_' },
-    listing: { entityTypeId: 1058, prefix: 'DYNAMIC_1058_' },
-    enquiry: { entityTypeId: 1062, prefix: 'DYNAMIC_1062_' },
+    project: { entityTypeId: SchemaMap.resolveEntityTypeId('project'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('project')}_` },
+    master_project: { entityTypeId: SchemaMap.resolveEntityTypeId('master_project'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('master_project')}_` },
+    property: { entityTypeId: SchemaMap.resolveEntityTypeId('property'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('property')}_` },
+    layout: { entityTypeId: SchemaMap.resolveEntityTypeId('layout'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('layout')}_` },
+    broker: { entityTypeId: SchemaMap.resolveEntityTypeId('broker'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('broker')}_` },
+    agent: { entityTypeId: SchemaMap.resolveEntityTypeId('broker'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('broker')}_` },
+    listing: { entityTypeId: SchemaMap.resolveEntityTypeId('listing'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('listing')}_` },
+    enquiry: { entityTypeId: SchemaMap.resolveEntityTypeId('enquiry'), prefix: `DYNAMIC_${SchemaMap.resolveEntityTypeId('enquiry')}_` },
   };
 
   const spa = spaMap[entity];
@@ -1843,7 +1848,9 @@ app.get('/api/admin/discovery', verifyAdminSecret, async (req, res) => {
       leadType,
       stages,
       fields,
-      config: fieldsConfig
+      config: fieldsConfig,
+      schemaMap: SchemaMap.getClientConfig(),
+      schemaErrors: SchemaMap.getResolutionErrors()
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
@@ -1894,12 +1901,13 @@ app.post('/api/admin/bind-placements', verifyAdminSecret, async (req, res) => {
       results.push({ placement: 'CRM_LEAD_DETAIL_TAB', status: 'error', error: e.message });
     }
 
-    // 2. Matching Listings for Enquiry SPA (entityTypeId: 1062)
+    // 2. Matching Listings for Enquiry SPA
+    const enquiryPlacement = SchemaMap.buildPlacementCode('enquiry');
     try {
-      await BitrixClient.placementBind('CRM_DYNAMIC_1062_DETAIL_TAB', `${publicUrl}/matching-listings`, 'Matching Listings', domain);
-      results.push({ placement: 'CRM_DYNAMIC_1062_DETAIL_TAB', status: 'bound', title: 'Matching Listings' });
+      await BitrixClient.placementBind(enquiryPlacement, `${publicUrl}/matching-listings`, 'Matching Listings', domain);
+      results.push({ placement: enquiryPlacement, status: 'bound', title: 'Matching Listings' });
     } catch (e) {
-      results.push({ placement: 'CRM_DYNAMIC_1062_DETAIL_TAB', status: 'error', error: e.message });
+      results.push({ placement: enquiryPlacement, status: 'error', error: e.message });
     }
 
     // 2b. Matching Listings for Enquiry SPA (type id: 18)
@@ -1910,12 +1918,13 @@ app.post('/api/admin/bind-placements', verifyAdminSecret, async (req, res) => {
       results.push({ placement: 'CRM_DYNAMIC_18_DETAIL_TAB', status: 'error', error: e.message });
     }
 
-    // 3. Listing Details for Listing SPA (entityTypeId: 1058)
+    // 3. Listing Details for Listing SPA
+    const listingPlacement = SchemaMap.buildPlacementCode('listing');
     try {
-      await BitrixClient.placementBind('CRM_DYNAMIC_1058_DETAIL_TAB', `${publicUrl}/listing-details`, 'Listing Details', domain);
-      results.push({ placement: 'CRM_DYNAMIC_1058_DETAIL_TAB', status: 'bound', title: 'Listing Details' });
+      await BitrixClient.placementBind(listingPlacement, `${publicUrl}/listing-details`, 'Listing Details', domain);
+      results.push({ placement: listingPlacement, status: 'bound', title: 'Listing Details' });
     } catch (e) {
-      results.push({ placement: 'CRM_DYNAMIC_1058_DETAIL_TAB', status: 'error', error: e.message });
+      results.push({ placement: listingPlacement, status: 'error', error: e.message });
     }
 
     // 3b. Listing Details for Listing SPA (type id: 16)

@@ -7,6 +7,7 @@
 const BitrixClient = require('./bitrixClient');
 const StorageManager = require('./storage');
 const DiscoveryService = require('./discovery');
+const SchemaMap = require('./schemaMap');
 const { syncEnquirySpaFromLead } = require('./spaSync');
 
 // In-memory debounce cache to prevent duplicate processing of the same lead (TTL: 5s)
@@ -59,10 +60,14 @@ class EventRouter {
       return { status: 'skipped', reason: 'final_stage', currentStatus };
     }
 
-    // 4. Resolve Lead Type field value
+    // 4. Resolve Lead Type field value via SchemaMap
+    const resolvedLeadTypeField = SchemaMap.resolveFieldCode('lead_type', 'lead');
+    const enquiryEnumId = String(SchemaMap.resolveEnumId('lead_type', 'ENQUIRY', 'lead'));
+    const listingEnumId = String(SchemaMap.resolveEnumId('lead_type', 'LISTING', 'lead'));
+
     const candidateFields = [
       discovered.leadTypeField,
-      'UF_CRM_1791354310417',
+      resolvedLeadTypeField,
       'UF_CRM_LEAD_TYPE'
     ].filter(Boolean);
 
@@ -77,7 +82,7 @@ class EventRouter {
     // Scan all keys if not found
     if (rawVal === null || rawVal === undefined || rawVal === '') {
       for (const [key, val] of Object.entries(lead)) {
-        if (val === '1594' || val === '1596' || val === 1594 || val === 1596) {
+        if (String(val) === enquiryEnumId || String(val) === listingEnumId) {
           rawVal = val;
           break;
         }
@@ -93,12 +98,12 @@ class EventRouter {
     let resolvedType = null;
     const strVal = String(typeof rawVal === 'object' ? (rawVal.VALUE || rawVal.value || rawVal.ID || '') : rawVal).trim().toLowerCase();
 
-    const enquiryItemId = discovered.leadTypeItems?.enquiryId ? String(discovered.leadTypeItems.enquiryId) : '1594';
-    const listingItemId = discovered.leadTypeItems?.listingId ? String(discovered.leadTypeItems.listingId) : '1596';
+    const enquiryItemId = discovered.leadTypeItems?.enquiryId ? String(discovered.leadTypeItems.enquiryId) : enquiryEnumId;
+    const listingItemId = discovered.leadTypeItems?.listingId ? String(discovered.leadTypeItems.listingId) : listingEnumId;
 
-    if (strVal === 'enquiry' || strVal === 'enqiry' || strVal === 'inquiry' || strVal === '1594' || strVal.includes('enq') || strVal === enquiryItemId.toLowerCase()) {
+    if (strVal === 'enquiry' || strVal === 'enqiry' || strVal === 'inquiry' || strVal === enquiryEnumId || strVal.includes('enq') || strVal === enquiryItemId.toLowerCase()) {
       resolvedType = 'enquiry';
-    } else if (strVal === 'listing' || strVal === '1596' || strVal.includes('list') || strVal === listingItemId.toLowerCase()) {
+    } else if (strVal === 'listing' || strVal === listingEnumId || strVal.includes('list') || strVal === listingItemId.toLowerCase()) {
       resolvedType = 'listing';
     }
 
