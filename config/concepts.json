@@ -30,7 +30,7 @@
         "spa_1062": { "v1": "ufCrm18ListingType", "v2": "UF_CRM_18_RE_TRANSACTION", "key": "ufCrm18ReTransaction", "v1Key": "ufCrm18ListingType" }
       },
       "enums": [
-        { "xmlId": "SALE", "label": "Sale", "v1Id": "2580", "spa1058V1Id": "158", "spa1062V1Id": "1246", "v2Id": "SALE" },
+        { "xmlId": "SALE", "label": "Sale", "v1Id": "2580", "spa1058V1Id": null, "spa1062V1Id": "1246", "v2Id": "SALE" },
         { "xmlId": "RENT", "label": "Rent", "v1Id": "2578", "spa1058V1Id": "158", "spa1062V1Id": "1248", "v2Id": "RENT" }
       ]
     },

@@ -78,11 +78,11 @@
         { label: 'Retail', enquiryId: 196, listingId: 902 }
       ],
       LISTING_TYPES: [
-        { label: 'Sale', enquiryId: 1246, listingId: 158 },
-        { label: 'Rent', enquiryId: 1248, listingId: 160 },
-        { label: 'Off-Plan', enquiryId: 1250, listingId: 162 },
-        { label: 'Commercial Sale', enquiryId: 1252, listingId: 164 },
-        { label: 'Commercial Rent', enquiryId: 1254, listingId: 166 }
+        { xmlId: 'RENT', label: 'Rent', enquiryIds: [1248, 1254], listingId: '158', transaction: 'RENT' },
+        { xmlId: 'SALE', label: 'Sale (Ready & Off-Plan)', enquiryIds: [1246, 1252], listingId: 'SALE_ALL', transaction: 'SALE' },
+        { xmlId: 'OFF_PLAN', label: 'Off-Plan', enquiryIds: [1250], listingId: '162', transaction: 'SALE' },
+        { xmlId: 'OVERSEAS', label: 'Overseas Sale', enquiryIds: [], listingId: '160', transaction: 'SALE' },
+        { xmlId: 'EXTERNAL', label: 'External Stock', enquiryIds: [], listingId: '164', transaction: null }
       ],
       FURNISHED: [
         { label: 'Furnished', listingId: 736 },
@@ -104,34 +104,35 @@
   let hasNextPage = false;
   let isManualSearch = false;
 
-  // DOM Elements
-  const enquiryTitleEl = document.getElementById('enquiry-title-display');
-  const searchModeBadge = document.getElementById('search-mode-badge');
-  const totalCountBadge = document.getElementById('total-count-badge');
-  const filterForm = document.getElementById('filter-form');
-  const btnSearch = document.getElementById('btn-search');
-  const btnReset = document.getElementById('btn-reset');
-  const btnSaveRecommendation = document.getElementById('btn-save-recommendation');
-  const btnSendTimeline = document.getElementById('btn-send-timeline');
-  const selectAllCheckbox = document.getElementById('select-all-checkbox');
-  const selectedCountText = document.getElementById('selected-count-text');
-  const sortSelect = document.getElementById('sort-select');
-  const listingsContainer = document.getElementById('listings-container');
-  const paginationBar = document.getElementById('pagination-bar');
-  const pageIndicator = document.getElementById('page-indicator');
-  const btnPrevPage = document.getElementById('btn-prev-page');
-  const btnNextPage = document.getElementById('btn-next-page');
+  // DOM Elements (safe for Node.js test environments)
+  const getEl = id => typeof document !== 'undefined' ? document.getElementById(id) : null;
+  const enquiryTitleEl = getEl('enquiry-title-display');
+  const searchModeBadge = getEl('search-mode-badge');
+  const totalCountBadge = getEl('total-count-badge');
+  const filterForm = getEl('filter-form');
+  const btnSearch = getEl('btn-search');
+  const btnReset = getEl('btn-reset');
+  const btnSaveRecommendation = getEl('btn-save-recommendation');
+  const btnSendTimeline = getEl('btn-send-timeline');
+  const selectAllCheckbox = getEl('select-all-checkbox');
+  const selectedCountText = getEl('selected-count-text');
+  const sortSelect = getEl('sort-select');
+  const listingsContainer = getEl('listings-container');
+  const paginationBar = getEl('pagination-bar');
+  const pageIndicator = getEl('page-indicator');
+  const btnPrevPage = getEl('btn-prev-page');
+  const btnNextPage = getEl('btn-next-page');
 
   // Filter Input Elements
-  const inputPropType = document.getElementById('filter-property-type');
-  const inputListingType = document.getElementById('filter-listing-type');
-  const inputArea = document.getElementById('filter-area');
-  const inputBedrooms = document.getElementById('filter-bedrooms');
-  const inputPriceMin = document.getElementById('filter-price-min');
-  const inputPriceMax = document.getElementById('filter-price-max');
-  const inputFurnished = document.getElementById('filter-furnished');
-  const toggleTolerance = document.getElementById('toggle-tolerance');
-  const toggleExactBeds = document.getElementById('toggle-exact-beds');
+  const inputPropType = getEl('filter-property-type');
+  const inputListingType = getEl('filter-listing-type');
+  const inputArea = getEl('filter-area');
+  const inputBedrooms = getEl('filter-bedrooms');
+  const inputPriceMin = getEl('filter-price-min');
+  const inputPriceMax = getEl('filter-price-max');
+  const inputFurnished = getEl('filter-furnished');
+  const toggleTolerance = getEl('toggle-tolerance');
+  const toggleExactBeds = getEl('toggle-exact-beds');
 
   // ============================================================================
   // 2. UTILITY & BITRIX24 WRAPPER HELPERS
@@ -313,7 +314,7 @@
   }
 
   // ============================================================================
-  // 3. ENUMERATION TRANSLATION HELPERS
+  // 3. ENUMERATION & TRANSACTION TRANSLATION HELPERS
   // ============================================================================
 
   function mapEnquiryPropTypeToListing(enquiryVal) {
@@ -330,18 +331,163 @@
     return matched ? matched.label : String(listingVal);
   }
 
-  function mapEnquiryListingTypeToListing(enquiryVal) {
-    if (!enquiryVal) return '';
-    const num = parseInt(enquiryVal, 10);
-    const matched = CONFIG.ENUMS.LISTING_TYPES.find(l => l.enquiryId === num || String(l.label).toLowerCase() === String(enquiryVal).toLowerCase());
-    return matched ? String(matched.listingId) : '';
+  /**
+   * Resolve transaction (SALE vs RENT) from an Enquiry item
+   */
+  function resolveTransactionFromEnquiry(enquiryItem) {
+    if (!enquiryItem) return null;
+
+    // 1. Check v2 Transaction field if present
+    const v2Tx = enquiryItem.ufCrm18ReTransaction || enquiryItem.UF_CRM_18_RE_TRANSACTION;
+    if (v2Tx) {
+      const s = String(v2Tx).toUpperCase();
+      if (s.includes('RENT')) return 'RENT';
+      if (s.includes('SALE')) return 'SALE';
+    }
+
+    // 2. Check listingType field (ufCrm18ListingType)
+    const lt = enquiryItem.ufCrm18ListingType || (CONFIG.ENQUIRY && CONFIG.ENQUIRY.fields && enquiryItem[CONFIG.ENQUIRY.fields.listingType]);
+    if (lt !== undefined && lt !== null && lt !== '') {
+      const num = parseInt(lt, 10);
+      const str = String(lt).toLowerCase();
+      if (num === 1248 || num === 1254 || str.includes('rent')) return 'RENT';
+      if (num === 1246 || num === 1250 || num === 1252 || str.includes('sale') || str.includes('off-plan') || str.includes('offplan')) return 'SALE';
+    }
+
+    // 3. Fallback to enquiryType (ufCrm18EnquiryType)
+    const et = enquiryItem.ufCrm18EnquiryType || (CONFIG.ENQUIRY && CONFIG.ENQUIRY.fields && enquiryItem[CONFIG.ENQUIRY.fields.enquiryType]);
+    if (et) {
+      const etStr = String(et).toLowerCase();
+      if (etStr.includes('tenant') || etStr.includes('rent')) return 'RENT';
+      if (etStr.includes('buyer') || etStr.includes('sale') || etStr.includes('buy')) return 'SALE';
+    }
+
+    return null;
   }
 
+  /**
+   * Resolve transaction (SALE vs RENT) from a Listing item
+   */
+  function resolveTransactionFromListing(listingItem) {
+    if (!listingItem) return null;
+
+    // 1. Check v2 Transaction field if present
+    const v2Tx = listingItem.ufCrm16ReTransaction || listingItem.UF_CRM_16_RE_TRANSACTION;
+    if (v2Tx) {
+      const s = String(v2Tx).toUpperCase();
+      if (s.includes('RENT')) return 'RENT';
+      if (s.includes('SALE')) return 'SALE';
+    }
+
+    // 2. Check v1 driver field (ufCrm16_1790154808)
+    const lt = listingItem.ufCrm16_1790154808 || (CONFIG.LISTING && CONFIG.LISTING.fields && listingItem[CONFIG.LISTING.fields.listingType]);
+    if (lt !== undefined && lt !== null && lt !== '') {
+      const num = parseInt(lt, 10);
+      const str = String(lt).toLowerCase();
+      if (num === 158 || str === 'rent') return 'RENT';
+      if (num === 160 || num === 162 || str.includes('sale') || str.includes('off-plan') || str.includes('overseas')) return 'SALE';
+      if (num === 164 || str.includes('external')) {
+        // External stock: check rental fields
+        if (listingItem.ufCrm16_1791881516 || listingItem.rentalFrequency || listingItem.ufCrm16SecurityDeposit) {
+          return 'RENT';
+        }
+        return 'SALE';
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Map enquiry listing type to appropriate Listing SPA filter value
+   */
+  function mapEnquiryListingTypeToFilter(enquiryVal, enquiryItem) {
+    // 1. If enquiryItem has v2 transaction field
+    if (enquiryItem) {
+      const v2Tx = enquiryItem.ufCrm18ReTransaction || enquiryItem.UF_CRM_18_RE_TRANSACTION;
+      if (v2Tx) {
+        const v2TxStr = String(v2Tx).toUpperCase();
+        if (v2TxStr.includes('RENT') || v2TxStr === '1248') return '158';
+        if (v2TxStr.includes('SALE') || v2TxStr === '1246') return 'SALE_ALL';
+      }
+    }
+
+    if (!enquiryVal) return '';
+    const num = parseInt(enquiryVal, 10);
+    const str = String(enquiryVal).trim().toLowerCase();
+
+    // Check specific enum IDs from Enquiry SPA 1062
+    if (num === 1248 || num === 1254 || str.includes('rent')) {
+      return '158'; // Rent in SPA 1058
+    }
+    if (num === 1250 || str.includes('off-plan') || str.includes('offplan')) {
+      return '162'; // Off-Plan Listing in SPA 1058
+    }
+    if (num === 1246 || num === 1252 || str.includes('sale')) {
+      return 'SALE_ALL'; // Sale (excludes Rent 158)
+    }
+
+    return '';
+  }
+
+  // Backward compatible alias
+  const mapEnquiryListingTypeToListing = mapEnquiryListingTypeToFilter;
+
+  /**
+   * Map listing type code/enum to human-readable label
+   */
   function mapListingTypeToLabel(listingVal) {
     if (!listingVal) return 'Standard';
-    const num = parseInt(listingVal, 10);
-    const matched = CONFIG.ENUMS.LISTING_TYPES.find(l => l.listingId === num || String(l.label).toLowerCase() === String(listingVal).toLowerCase());
-    return matched ? matched.label : String(listingVal);
+    const valStr = String(listingVal).trim();
+    if (valStr === '158' || valStr.toLowerCase() === 'rent') return 'Rent';
+    if (valStr === '160' || valStr.toLowerCase().includes('overseas')) return 'Overseas Sale';
+    if (valStr === '162' || valStr.toLowerCase().includes('off-plan') || valStr.toLowerCase().includes('offplan')) return 'Off-Plan';
+    if (valStr === '164' || valStr.toLowerCase().includes('external')) return 'External Stock';
+    if (valStr === 'SALE_ALL' || valStr.toLowerCase() === 'sale') return 'Sale';
+    return String(listingVal);
+  }
+
+  /**
+   * Check whether an enquiry and listing are transaction-compatible.
+   * NEVER match Sale enquiries to Rent listings or vice-versa!
+   */
+  function isMatchingCompatible(enquiryTx, listingTx, itemListingType, filterListingType) {
+    const itemLtStr = String(itemListingType || '').trim();
+
+    // 1. Explicit filter selected in UI
+    if (filterListingType) {
+      const flt = String(filterListingType).trim();
+      if (flt === '158' || flt === 'RENT') {
+        return itemLtStr === '158' || listingTx === 'RENT';
+      }
+      if (flt === '162' || flt === 'OFF_PLAN') {
+        return itemLtStr === '162';
+      }
+      if (flt === '160' || flt === 'OVERSEAS') {
+        return itemLtStr === '160';
+      }
+      if (flt === '164' || flt === 'EXTERNAL') {
+        return itemLtStr === '164';
+      }
+      if (flt === 'SALE_ALL' || flt === 'SALE') {
+        return itemLtStr !== '158' && listingTx !== 'RENT';
+      }
+    }
+
+    // 2. Default/Automatic: strictly enforce enquiry transaction
+    if (enquiryTx === 'RENT') {
+      if (listingTx === 'SALE') return false;
+      if (itemLtStr === '160' || itemLtStr === '162') return false;
+      return itemLtStr === '158' || listingTx === 'RENT';
+    }
+
+    if (enquiryTx === 'SALE') {
+      if (listingTx === 'RENT') return false;
+      if (itemLtStr === '158') return false;
+      return true;
+    }
+
+    return true;
   }
 
   function mapListingFurnishedToLabel(furnishedVal) {
@@ -367,6 +513,8 @@
   // ============================================================================
 
   function populateDropdownOptions() {
+    if (!inputPropType || !inputListingType || !inputFurnished) return;
+
     // 1. Property Type Dropdown
     inputPropType.innerHTML = '<option value="">-- All Property Types --</option>';
     CONFIG.ENUMS.PROPERTY_TYPES.forEach(item => {
@@ -458,7 +606,7 @@
 
       autoFilledFilters = {
         propertyType: mapEnquiryPropTypeToListing(rawPropType),
-        listingType: mapEnquiryListingTypeToListing(rawListingType),
+        listingType: mapEnquiryListingTypeToFilter(rawListingType, item),
         area: rawArea ? String(rawArea).split(';')[0].split(',')[0].trim() : '',
         bedrooms: rawBeds ? parseInt(rawBeds, 10) : '',
         priceMin: rawPriceMin !== null ? rawPriceMin : '',
@@ -481,28 +629,30 @@
   }
 
   function applyFiltersToForm(filters) {
+    if (!inputPropType) return;
     inputPropType.value = filters.propertyType || '';
-    inputListingType.value = filters.listingType || '';
-    inputArea.value = filters.area || '';
-    inputBedrooms.value = filters.bedrooms !== undefined && filters.bedrooms !== null ? filters.bedrooms : '';
-    inputPriceMin.value = filters.priceMin !== undefined && filters.priceMin !== null ? filters.priceMin : '';
-    inputPriceMax.value = filters.priceMax !== undefined && filters.priceMax !== null ? filters.priceMax : '';
-    inputFurnished.value = filters.furnished || '';
-    toggleTolerance.checked = !!filters.tolerance;
-    toggleExactBeds.checked = !!filters.exactBeds;
+    if (inputListingType) inputListingType.value = filters.listingType || '';
+    if (inputArea) inputArea.value = filters.area || '';
+    if (inputBedrooms) inputBedrooms.value = filters.bedrooms !== undefined && filters.bedrooms !== null ? filters.bedrooms : '';
+    if (inputPriceMin) inputPriceMin.value = filters.priceMin !== undefined && filters.priceMin !== null ? filters.priceMin : '';
+    if (inputPriceMax) inputPriceMax.value = filters.priceMax !== undefined && filters.priceMax !== null ? filters.priceMax : '';
+    if (inputFurnished) inputFurnished.value = filters.furnished || '';
+    if (toggleTolerance) toggleTolerance.checked = !!filters.tolerance;
+    if (toggleExactBeds) toggleExactBeds.checked = !!filters.exactBeds;
   }
 
   function getFiltersFromForm() {
+    if (!inputPropType) return {};
     return {
       propertyType: inputPropType.value,
-      listingType: inputListingType.value,
-      area: inputArea.value.trim(),
-      bedrooms: inputBedrooms.value !== '' ? parseInt(inputBedrooms.value, 10) : null,
-      priceMin: inputPriceMin.value !== '' ? parseFloat(inputPriceMin.value) : null,
-      priceMax: inputPriceMax.value !== '' ? parseFloat(inputPriceMax.value) : null,
-      furnished: inputFurnished.value,
-      tolerance: toggleTolerance.checked,
-      exactBeds: toggleExactBeds.checked
+      listingType: inputListingType ? inputListingType.value : '',
+      area: inputArea ? inputArea.value.trim() : '',
+      bedrooms: inputBedrooms && inputBedrooms.value !== '' ? parseInt(inputBedrooms.value, 10) : null,
+      priceMin: inputPriceMin && inputPriceMin.value !== '' ? parseFloat(inputPriceMin.value) : null,
+      priceMax: inputPriceMax && inputPriceMax.value !== '' ? parseFloat(inputPriceMax.value) : null,
+      furnished: inputFurnished ? inputFurnished.value : '',
+      tolerance: toggleTolerance ? toggleTolerance.checked : true,
+      exactBeds: toggleExactBeds ? toggleExactBeds.checked : false
     };
   }
 
@@ -536,9 +686,21 @@
       restFilter['=' + lFields.propertyType] = parseInt(filters.propertyType, 10);
     }
 
-    // 3. Exact match for Purpose / Listing Type (Sale / Rent) if provided
+    // 3. Match Purpose / Listing Type (Sale / Rent) if provided
     if (filters.listingType) {
-      restFilter['=' + lFields.listingType] = parseInt(filters.listingType, 10);
+      if (filters.listingType === 'SALE_ALL' || filters.listingType === 'SALE') {
+        restFilter['!=' + lFields.listingType] = 158; // Exclude Rent (158)
+      } else if (!isNaN(parseInt(filters.listingType, 10))) {
+        restFilter['=' + lFields.listingType] = parseInt(filters.listingType, 10);
+      }
+    } else {
+      // Automatic protection: if no explicit filter is set, restrict by enquiry transaction
+      const enquiryTx = resolveTransactionFromEnquiry(currentEnquiry);
+      if (enquiryTx === 'RENT') {
+        restFilter['=' + lFields.listingType] = 158; // Only fetch Rent
+      } else if (enquiryTx === 'SALE') {
+        restFilter['!=' + lFields.listingType] = 158; // Exclude Rent
+      }
     }
 
     // 4. Furnished match if provided
@@ -564,7 +726,8 @@
         lFields.community,
         lFields.furnished,
         lFields.status,
-        lFields.stageId
+        lFields.stageId,
+        'ufCrm16ReTransaction'
       ],
       start: pageStart
     };
@@ -586,11 +749,22 @@
       hasNextPage = Boolean(res.next);
 
       // Perform Client-side Refinements:
-      // (Budget Tolerance, Min/Exact Bedrooms, Status check, and Substring Area matching)
+      // (Transaction compatibility, Budget Tolerance, Min/Exact Bedrooms, Status check, and Substring Area matching)
       const matchedItems = rawItems.filter(item => {
         // Status check: allow Active (AVAILABLE_STATUS_ID: 924) or unassigned/null status
         const itemStatus = item[lFields.status];
         if (itemStatus && parseInt(itemStatus, 10) !== CONFIG.ENUMS.AVAILABLE_STATUS_ID && String(itemStatus) !== '924') {
+          return false;
+        }
+
+        // --- C1: TRANSACTION / LISTING TYPE COMPATIBILITY GUARD ---
+        // Never match Sale enquiries to Rent listings or Rent enquiries to Sale listings
+        const enquiryTx = resolveTransactionFromEnquiry(currentEnquiry);
+        const itemTx = resolveTransactionFromListing(item);
+        const itemListingType = item[lFields.listingType];
+        const filterListingType = filters.listingType;
+
+        if (!isMatchingCompatible(enquiryTx, itemTx, itemListingType, filterListingType)) {
           return false;
         }
 
@@ -973,131 +1147,167 @@
   // 9. EVENT LISTENERS
   // ============================================================================
 
-  // Search button
-  btnSearch.addEventListener('click', (e) => {
-    e.preventDefault();
-    isManualSearch = true;
-    updateSearchModeBadge();
-    searchListings(0);
-  });
-
-  // Reset to Enquiry Data
-  btnReset.addEventListener('click', () => {
-    applyFiltersToForm(autoFilledFilters);
-    isManualSearch = false;
-    updateSearchModeBadge();
-    searchListings(0);
-    showToast('Filters restored to Enquiry criteria', 'info');
-  });
-
-  // Select all checkbox
-  selectAllCheckbox.addEventListener('change', () => {
-    const shouldSelect = selectAllCheckbox.checked;
-    currentResults.forEach(item => {
-      toggleListingSelection(item.id, shouldSelect);
-    });
-    document.querySelectorAll('.card-select-checkbox').forEach(cb => cb.checked = shouldSelect);
-    document.querySelectorAll('.listing-card').forEach(card => card.classList.toggle('selected', shouldSelect));
-    updateSelectedCount();
-  });
-
-  // Save as recommendation button (Configurable Activity)
-  if (btnSaveRecommendation) {
-    btnSaveRecommendation.addEventListener('click', saveSelectedRecommendations);
-  }
-
-  // Timeline button (legacy / fallback)
-  if (btnSendTimeline) {
-    btnSendTimeline.addEventListener('click', sendSelectedToTimeline);
-  }
-
-  // Sorting
-  sortSelect.addEventListener('change', () => {
-    searchListings(0);
-  });
-
-  // Pagination Prev / Next
-  btnPrevPage.addEventListener('click', () => {
-    if (currentPageStart >= 50) {
-      searchListings(currentPageStart - 50);
+  if (typeof document !== 'undefined') {
+    // Search button
+    if (btnSearch) {
+      btnSearch.addEventListener('click', (e) => {
+        e.preventDefault();
+        isManualSearch = true;
+        updateSearchModeBadge();
+        searchListings(0);
+      });
     }
-  });
 
-  btnNextPage.addEventListener('click', () => {
-    if (hasNextPage) {
-      searchListings(currentPageStart + 50);
+    // Reset to Enquiry Data
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        applyFiltersToForm(autoFilledFilters);
+        isManualSearch = false;
+        updateSearchModeBadge();
+        searchListings(0);
+        showToast('Filters restored to Enquiry criteria', 'info');
+      });
     }
-  });
 
-  // Filter input listeners for real-time manual search indicator
-  [inputPropType, inputListingType, inputArea, inputBedrooms, inputPriceMin, inputPriceMax, inputFurnished, toggleTolerance, toggleExactBeds].forEach(el => {
-    el.addEventListener('change', () => {
-      isManualSearch = true;
-      updateSearchModeBadge();
+    // Select all checkbox
+    if (selectAllCheckbox) {
+      selectAllCheckbox.addEventListener('change', () => {
+        const shouldSelect = selectAllCheckbox.checked;
+        currentResults.forEach(item => {
+          toggleListingSelection(item.id, shouldSelect);
+        });
+        document.querySelectorAll('.card-select-checkbox').forEach(cb => cb.checked = shouldSelect);
+        document.querySelectorAll('.listing-card').forEach(card => card.classList.toggle('selected', shouldSelect));
+        updateSelectedCount();
+      });
+    }
+
+    // Save as recommendation button (Configurable Activity)
+    if (btnSaveRecommendation) {
+      btnSaveRecommendation.addEventListener('click', saveSelectedRecommendations);
+    }
+
+    // Timeline button (legacy / fallback)
+    if (btnSendTimeline) {
+      btnSendTimeline.addEventListener('click', sendSelectedToTimeline);
+    }
+
+    // Sorting
+    if (sortSelect) {
+      sortSelect.addEventListener('change', () => {
+        searchListings(0);
+      });
+    }
+
+    // Pagination Prev / Next
+    if (btnPrevPage) {
+      btnPrevPage.addEventListener('click', () => {
+        if (currentPageStart >= 50) {
+          searchListings(currentPageStart - 50);
+        }
+      });
+    }
+
+    if (btnNextPage) {
+      btnNextPage.addEventListener('click', () => {
+        if (hasNextPage) {
+          searchListings(currentPageStart + 50);
+        }
+      });
+    }
+
+    // Filter input listeners for real-time manual search indicator
+    [inputPropType, inputListingType, inputArea, inputBedrooms, inputPriceMin, inputPriceMax, inputFurnished, toggleTolerance, toggleExactBeds].filter(Boolean).forEach(el => {
+      el.addEventListener('change', () => {
+        isManualSearch = true;
+        updateSearchModeBadge();
+      });
     });
-  });
+  }
 
   // ============================================================================
   // 10. PUBLIC API FOR INLINE ACTIONS
   // ============================================================================
-  window.__MATCHING_APP__ = {
-    addRecommendation,
-    saveSelectedRecommendations,
-    sendSelectedToTimeline,
-    retrySearch: () => searchListings(currentPageStart),
-    resetToEnquiry: () => btnReset.click(),
-    clearPriceFilter: () => {
-      inputPriceMin.value = '';
-      inputPriceMax.value = '';
-      isManualSearch = true;
-      updateSearchModeBadge();
-      searchListings(0);
-    },
-    clearAreaFilter: () => {
-      inputArea.value = '';
-      isManualSearch = true;
-      updateSearchModeBadge();
-      searchListings(0);
-    },
-    relaxFilters: () => {
-      toggleTolerance.checked = true;
-      toggleExactBeds.checked = false;
-      inputArea.value = '';
-      inputPriceMin.value = '';
-      inputPriceMax.value = '';
-      isManualSearch = true;
-      updateSearchModeBadge();
-      searchListings(0);
-    },
-    showAllListings: () => {
-      inputPropType.value = '';
-      inputListingType.value = '';
-      inputArea.value = '';
-      inputBedrooms.value = '';
-      inputPriceMin.value = '';
-      inputPriceMax.value = '';
-      inputFurnished.value = '';
-      isManualSearch = true;
-      updateSearchModeBadge();
-      searchListings(0);
-    }
-  };
+  if (typeof window !== 'undefined') {
+    window.__MATCHING_APP__ = {
+      addRecommendation,
+      saveSelectedRecommendations,
+      sendSelectedToTimeline,
+      retrySearch: () => searchListings(currentPageStart),
+      resetToEnquiry: () => btnReset && btnReset.click(),
+      clearPriceFilter: () => {
+        if (inputPriceMin) inputPriceMin.value = '';
+        if (inputPriceMax) inputPriceMax.value = '';
+        isManualSearch = true;
+        updateSearchModeBadge();
+        searchListings(0);
+      },
+      clearAreaFilter: () => {
+        if (inputArea) inputArea.value = '';
+        isManualSearch = true;
+        updateSearchModeBadge();
+        searchListings(0);
+      },
+      relaxFilters: () => {
+        if (toggleTolerance) toggleTolerance.checked = true;
+        if (toggleExactBeds) toggleExactBeds.checked = false;
+        if (inputArea) inputArea.value = '';
+        if (inputPriceMin) inputPriceMin.value = '';
+        if (inputPriceMax) inputPriceMax.value = '';
+        isManualSearch = true;
+        updateSearchModeBadge();
+        searchListings(0);
+      },
+      showAllListings: () => {
+        if (inputPropType) inputPropType.value = '';
+        if (inputListingType) inputListingType.value = '';
+        if (inputArea) inputArea.value = '';
+        if (inputBedrooms) inputBedrooms.value = '';
+        if (inputPriceMin) inputPriceMin.value = '';
+        if (inputPriceMax) inputPriceMax.value = '';
+        if (inputFurnished) inputFurnished.value = '';
+        isManualSearch = true;
+        updateSearchModeBadge();
+        searchListings(0);
+      }
+    };
+  }
 
   // ============================================================================
   // 11. BOOTSTRAP INITIALIZATION
   // ============================================================================
-  if (!isEmbeddedInCrm()) {
-    renderCrmLockoutScreen();
-  } else if (window.BX24 && typeof window.BX24.init === 'function') {
-    window.BX24.init(function () {
-      loadEnquiryAndInit();
-    });
-  } else {
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-      loadEnquiryAndInit();
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    if (!isEmbeddedInCrm()) {
+      renderCrmLockoutScreen();
+    } else if (window.BX24 && typeof window.BX24.init === 'function') {
+      window.BX24.init(function () {
+        loadEnquiryAndInit();
+      });
     } else {
-      document.addEventListener('DOMContentLoaded', loadEnquiryAndInit);
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        loadEnquiryAndInit();
+      } else {
+        document.addEventListener('DOMContentLoaded', loadEnquiryAndInit);
+      }
     }
+  }
+
+  // ============================================================================
+  // 12. NODE.JS TEST EXPORT
+  // ============================================================================
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+      CONFIG,
+      resolveTransactionFromEnquiry,
+      resolveTransactionFromListing,
+      mapEnquiryListingTypeToFilter,
+      mapEnquiryListingTypeToListing,
+      mapListingTypeToLabel,
+      isMatchingCompatible,
+      mapEnquiryPropTypeToListing,
+      mapListingPropTypeToLabel,
+      parseMoneyValue
+    };
   }
 
 })();

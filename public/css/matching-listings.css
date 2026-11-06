@@ -651,7 +651,7 @@ body {
 /* ==========================================================================
    CRM-Only Security Lockout Shield
    ========================================================================== */
-html.crm-lockout-active body>*:not(#crm-lockout-shield) {
+html.crm-lockout-active body > *:not(#crm-lockout-shield) {
   display: none !important;
 }
 

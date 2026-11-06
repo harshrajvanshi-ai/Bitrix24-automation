@@ -788,8 +788,8 @@ async function runTests() {
   assert(matchingJs.includes("label: 'Apartment', enquiryId: 2530, listingId: 886"), 'Apartment maps Enquiry 2530 <-> Listing 886');
   assert(matchingJs.includes("label: 'Villa', enquiryId: 2528, listingId: 888"), 'Villa maps Enquiry 2528 <-> Listing 888');
   assert(matchingJs.includes("label: 'Penthouse', enquiryId: 2524, listingId: 892"), 'Penthouse maps Enquiry 2524 <-> Listing 892');
-  assert(matchingJs.includes("label: 'Sale', enquiryId: 1246, listingId: 158"), 'Sale purpose maps Enquiry 1246 <-> Listing 158');
-  assert(matchingJs.includes("label: 'Rent', enquiryId: 1248, listingId: 160"), 'Rent purpose maps Enquiry 1248 <-> Listing 160');
+  assert(matchingJs.includes("listingId: '158'") && matchingJs.includes("transaction: 'RENT'"), 'Rent purpose maps to Listing 158 per verified live portal schema');
+  assert(matchingJs.includes("isMatchingCompatible"), 'Matching engine defines isMatchingCompatible transaction guard');
 
   // 5. Test Budget Tolerance Calculation logic
   function calcBudgetBounds(min, max, tolerance) {
