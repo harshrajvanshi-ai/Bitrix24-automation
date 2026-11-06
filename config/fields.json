@@ -32,28 +32,28 @@
         "id": "external_stock",
         "enumId": "164",
         "title": "External Stock",
-        "icon": "🏢",
+        "icon": "",
         "pillClass": "layout-pill-external_stock"
       },
       "off_plan": {
         "id": "off_plan",
         "enumId": "162",
         "title": "Off-plan",
-        "icon": "🏗️",
+        "icon": "",
         "pillClass": "layout-pill-off_plan"
       },
       "overseas_sale": {
         "id": "overseas_sale",
         "enumId": "160",
         "title": "Overseas Sale",
-        "icon": "🌍",
+        "icon": "",
         "pillClass": "layout-pill-overseas_sale"
       },
       "rent": {
         "id": "rent",
         "enumId": "158",
         "title": "Rent",
-        "icon": "🔑",
+        "icon": "",
         "pillClass": "layout-pill-rent"
       }
     },
@@ -61,7 +61,7 @@
       {
         "id": "general",
         "title": "Commercial Terms & General Overview",
-        "icon": "📋",
+        "icon": "",
         "desc": "Listing title, type, agreement authority, stage and responsible broker",
         "defaultOpen": true,
         "fields": [
@@ -151,7 +151,7 @@
       {
         "id": "seller",
         "title": "Seller & Source",
-        "icon": "🤝",
+        "icon": "",
         "desc": "Agency, developer, owner contacts, and master property relation",
         "fields": [
           {
@@ -191,7 +191,7 @@
       {
         "id": "specs",
         "title": "Property Specifications",
-        "icon": "📐",
+        "icon": "",
         "desc": "Dimensions, rooms, spaces, floor, and furnishing",
         "fields": [
           {
@@ -494,7 +494,7 @@
       {
         "id": "pricing",
         "title": "Pricing & Financial Terms",
-        "icon": "💰",
+        "icon": "",
         "desc": "Asking price, rent frequency, commission, and payment plans",
         "fields": [
           {
@@ -733,7 +733,7 @@
       {
         "id": "dates",
         "title": "Dates & Timeline",
-        "icon": "📅",
+        "icon": "",
         "desc": "Mandate duration, availability, and tenancy start/finish dates",
         "fields": [
           {
@@ -927,7 +927,7 @@
       {
         "id": "marketing",
         "title": "Portals & Marketing",
-        "icon": "🚀",
+        "icon": "",
         "desc": "Bayut, Propertyfinder, Dubizzle IDs, feed toggles, RERA permit, and descriptions",
         "fields": [
           {
@@ -1027,7 +1027,7 @@
       {
         "id": "media",
         "title": "Media & Documents",
-        "icon": "📸",
+        "icon": "",
         "desc": "Primary images, title deeds, photos, documents, and Form A agreements",
         "fields": [
           {
@@ -1147,7 +1147,7 @@
       {
         "id": "enquiry_overview",
         "title": "Client & Enquiry Overview",
-        "icon": "👤",
+        "icon": "",
         "fields": [
           {
             "code": "UF_CRM_1792563228880",
@@ -1308,7 +1308,7 @@
       {
         "id": "budget_financials",
         "title": "Budget, Pricing & Rent Terms",
-        "icon": "💰",
+        "icon": "",
         "fields": [
           {
             "code": "UF_CRM_LISTINGPRICE_MIN",
@@ -1386,7 +1386,7 @@
       {
         "id": "property_specs",
         "title": "Property Specifications & Criteria",
-        "icon": "📐",
+        "icon": "",
         "fields": [
           {
             "code": "UF_CRM_1791952050535",
@@ -1626,7 +1626,7 @@
       {
         "id": "matched_projects_portals",
         "title": "Matched Projects & Portal Listings",
-        "icon": "🏢",
+        "icon": "",
         "fields": [
           {
             "code": "UF_CRM_LISTING",
@@ -1704,7 +1704,7 @@
       {
         "id": "amenities_features",
         "title": "Amenities, Features & Outdoor",
-        "icon": "🏖️",
+        "icon": "",
         "fields": [
           {
             "code": "UF_CRM_COMMERCIAL_AMENITIES",
@@ -4641,28 +4641,28 @@
         "id": "external_stock",
         "enumId": "164",
         "title": "External Stock",
-        "icon": "🏢",
+        "icon": "",
         "pillClass": "layout-pill-external_stock"
       },
       "off_plan": {
         "id": "off_plan",
         "enumId": "162",
         "title": "Off-plan",
-        "icon": "🏗️",
+        "icon": "",
         "pillClass": "layout-pill-off_plan"
       },
       "overseas_sale": {
         "id": "overseas_sale",
         "enumId": "160",
         "title": "Overseas Sale",
-        "icon": "🌍",
+        "icon": "",
         "pillClass": "layout-pill-overseas_sale"
       },
       "rent": {
         "id": "rent",
         "enumId": "158",
         "title": "Rent",
-        "icon": "🔑",
+        "icon": "",
         "pillClass": "layout-pill-rent"
       }
     },
@@ -4670,7 +4670,7 @@
       {
         "id": "general",
         "title": "General Overview",
-        "icon": "📋",
+        "icon": "",
         "desc": "Title, stage, responsible person, and listing authority",
         "fields": [
           {
@@ -4804,7 +4804,7 @@
       {
         "id": "seller",
         "title": "Seller & Source",
-        "icon": "🤝",
+        "icon": "",
         "desc": "Agency, developer, owner contacts, and master property relation",
         "fields": [
           {
@@ -4897,7 +4897,7 @@
       {
         "id": "specs",
         "title": "Property Specifications",
-        "icon": "📐",
+        "icon": "",
         "desc": "Dimensions, rooms, spaces, floor, and furnishing",
         "fields": [
           {
@@ -5158,7 +5158,7 @@
       {
         "id": "location",
         "title": "Location & Geography",
-        "icon": "📍",
+        "icon": "",
         "desc": "Country, city, community, tower, and coordinates",
         "fields": [
           {
@@ -5349,7 +5349,7 @@
       {
         "id": "pricing",
         "title": "Pricing & Terms",
-        "icon": "💰",
+        "icon": "",
         "desc": "Asking price, rent frequency, commission, and payment plans",
         "fields": [
           {
@@ -5514,7 +5514,7 @@
       {
         "id": "dates",
         "title": "Dates & Timeline",
-        "icon": "📅",
+        "icon": "",
         "desc": "Mandate duration, availability, and tenancy start/finish dates",
         "fields": [
           {
@@ -5667,7 +5667,7 @@
       {
         "id": "marketing",
         "title": "Portals & Marketing",
-        "icon": "🚀",
+        "icon": "",
         "desc": "Bayut, Propertyfinder, Dubizzle IDs, feed toggles, RERA permit, and descriptions",
         "fields": [
           {
@@ -5848,7 +5848,7 @@
       {
         "id": "media",
         "title": "Media & Documents",
-        "icon": "📸",
+        "icon": "",
         "desc": "Primary images, title deeds, brochures, floor plans, and 360 virtual tours",
         "fields": [
           {

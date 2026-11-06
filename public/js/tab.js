@@ -30,10 +30,10 @@
   let cachedUndoState = null;
 
   const LISTING_LAYOUT_META = {
-    external_stock: { id: 'external_stock', enumId: '2584', title: 'External Stock', icon: '🏢', pillClass: 'layout-pill-external_stock' },
-    off_plan: { id: 'off_plan', enumId: '2582', title: 'Off-plan', icon: '🏗️', pillClass: 'layout-pill-off_plan' },
-    overseas_sale: { id: 'overseas_sale', enumId: '2580', title: 'Overseas Sale', icon: '🌍', pillClass: 'layout-pill-overseas_sale' },
-    rent: { id: 'rent', enumId: '2578', title: 'Rent', icon: '🔑', pillClass: 'layout-pill-rent' }
+    external_stock: { id: 'external_stock', enumId: '2584', title: 'External Stock', icon: '', pillClass: 'layout-pill-external_stock' },
+    off_plan: { id: 'off_plan', enumId: '2582', title: 'Off-plan', icon: '', pillClass: 'layout-pill-off_plan' },
+    overseas_sale: { id: 'overseas_sale', enumId: '2580', title: 'Overseas Sale', icon: '', pillClass: 'layout-pill-overseas_sale' },
+    rent: { id: 'rent', enumId: '2578', title: 'Rent', icon: '', pillClass: 'layout-pill-rent' }
   };
 
   
@@ -71,7 +71,7 @@
     overlay.innerHTML = `
       <div class="cascade-modal-card">
         <div class="cascade-modal-header">
-          <span class="cascade-modal-icon">🔄</span>
+          
           <span class="cascade-modal-title">Property Unit Update</span>
         </div>
         <div class="cascade-modal-body">${message || 'Update parent project and developer to match new unit?'}</div>
@@ -669,7 +669,7 @@
 
     const icon = document.createElement('span');
     icon.className = 'lookup-icon';
-    icon.textContent = '🔍';
+    icon.textContent = '';
 
     const input = document.createElement('input');
     input.type = 'text';
@@ -914,7 +914,7 @@
         const countText = relatedCount > 0
           ? `<span>${items.length} records <strong style="color: #16a34a; font-weight:700;">(${relatedCount} related)</strong></span>`
           : `<span>${items.length} records</span>`;
-        header.innerHTML = `${countText}<button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">🔄 Refresh</button>`;
+        header.innerHTML = `${countText}<button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">Refresh</button>`;
         const refreshBtn = header.querySelector('.lookup-refresh-btn');
         if (refreshBtn) {
           refreshBtn.addEventListener('click', (e) => {
@@ -953,7 +953,7 @@
           if (item.isRelated) {
             const badge = document.createElement('span');
             badge.className = 'lookup-related-badge';
-            badge.textContent = `★ Related${item.relationReason ? ': ' + item.relationReason : ''}`;
+            badge.textContent = `Related${item.relationReason ? ': ' + item.relationReason : ''}`;
             titleSpan.appendChild(badge);
           }
           const textNode = document.createTextNode(item.title);
@@ -1396,7 +1396,7 @@
         el.appendChild(filmImg);
       } else {
         const badgeClass = item.isPdf ? 'pdf' : 'doc';
-        const icon = item.isPdf ? '📄' : '📎';
+        const icon = item.isPdf ? 'PDF' : 'DOC';
         el.innerHTML = `
           <div class="lb-film-item-doc">
             <span>${icon}</span>
@@ -1449,7 +1449,7 @@
     const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
 
     if (item.isPdf) {
-      if (lightboxFileIcon) lightboxFileIcon.textContent = '📄';
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '';
       if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
       if (lbZoomControls) lbZoomControls.style.display = 'none';
 
@@ -1459,7 +1459,7 @@
       iframe.src = proxyUrl;
       lightboxBody.appendChild(iframe);
     } else if (item.isImage) {
-      if (lightboxFileIcon) lightboxFileIcon.textContent = '🖼️';
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '';
       if (lbZoomControls) lbZoomControls.style.display = 'flex';
       if (zoomToggleBtn) {
         zoomToggleBtn.style.display = 'inline-flex';
@@ -1493,9 +1493,9 @@
         const err = document.createElement('div');
         err.className = 'lb-error-box';
         err.innerHTML = `
-          <span style="font-size:32px;">🖼️</span>
+          
           <span>Unable to preview image</span>
-          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab ↗</a>
+          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab</a>
         `;
         lightboxBody.appendChild(err);
       };
@@ -1586,14 +1586,14 @@
         if (zoomToggleBtn) zoomToggleBtn.onclick = null;
       };
     } else {
-      if (lightboxFileIcon) lightboxFileIcon.textContent = '📎';
+      if (lightboxFileIcon) lightboxFileIcon.textContent = '';
       if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
       if (lbZoomControls) lbZoomControls.style.display = 'none';
 
       const panel = document.createElement('div');
       panel.className = 'lb-document-panel';
       panel.innerHTML = `
-        <span class="lb-document-icon">📄</span>
+        
         <strong class="lb-document-name">${item.name || 'Document'}</strong>
         <p>Open this file using the Bitrix24 viewer.</p>
         <button type="button" class="lb-document-open">Open in Bitrix24</button>
@@ -1745,11 +1745,11 @@
     viewportBox.style.display = 'flex';
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
-        <span class="inline-preview-name">👁 Preview: ${name}</span>
+        <span class="inline-preview-name">Preview: ${name}</span>
         <div class="inline-preview-topbar-actions">
-          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
-          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">⬇</a>
-          <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
+          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">Download</a>
+          <button type="button" class="inline-preview-close" title="Hide Preview">Remove</button>
         </div>
       </div>
     `;
@@ -1768,7 +1768,7 @@
         this.style.display = 'none';
         const errDiv = document.createElement('div');
         errDiv.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;';
-        errDiv.innerHTML = `<span>🖼️ Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link ↗</a>`;
+        errDiv.innerHTML = `<span>Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link</a>`;
         viewportBox.appendChild(errDiv);
       }
     };
@@ -1798,16 +1798,16 @@
     viewportBox.style.display = 'flex';
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
-        <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
+        <span class="inline-preview-name">PDF Viewer: ${name}</span>
         <div class="inline-preview-topbar-actions">
-          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
-          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">↗ Open</a>
-          <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">⬇</a>
-          <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
+          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">Open</a>
+          <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">Download</a>
+          <button type="button" class="inline-preview-close" title="Hide PDF">Remove</button>
         </div>
       </div>
       <iframe class="inline-preview-iframe" src="${proxyUrl}">
-        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document ↗</a></p>
+        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document</a></p>
       </iframe>
     `;
 
@@ -1864,14 +1864,14 @@
           thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
               <img class="thumb-item-img b24-tile-img" src="${dataUrl}" alt="${file.name}">
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">Remove</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
               <div class="b24-list-actions">
-                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">Remove</button>
               </div>
             </div>
           `;
@@ -1881,16 +1881,16 @@
             <div class="b24-tile-thumb-wrap">
               <div class="doc-tile-inner">
                 <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
-                <span class="doc-tile-icon">📄</span>
+                
               </div>
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">Remove</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
               <div class="b24-list-actions">
-                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">Remove</button>
               </div>
             </div>
           `;
@@ -2038,7 +2038,7 @@
           const lockBadge = document.createElement('div');
           lockBadge.className = 'form-text text-muted lock-badge';
           lockBadge.style.cssText = 'font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;';
-          lockBadge.innerHTML = '🔒 Auto-populated from Layout (Read-only)';
+          lockBadge.innerHTML = 'Auto-populated from Layout (Read-only)';
           container.appendChild(lockBadge);
         }
       }
@@ -2148,7 +2148,7 @@
       const uploadLabel = isImgField ? (isMultiple ? 'Upload Photos' : 'Upload Image') : (isMultiple ? 'Upload Documents' : 'Upload Document');
 
       dropzone.innerHTML = `
-        <span class="dropzone-icon">📁</span>
+        
         <div class="dropzone-text-group">
           <span class="dropzone-title">${uploadLabel}</span>
           <span class="dropzone-sub">Click to browse or drop file</span>
@@ -2280,14 +2280,14 @@
           thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
               <img class="b24-tile-img thumb-item-img" src="${fullUrl}" alt="${fileName}" loading="lazy">
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${fileName}">${fileName}</span>
               <div class="b24-list-actions">
-                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">Remove</button>
               </div>
             </div>
           `;
@@ -2305,9 +2305,9 @@
               this.onerror = null;
               const wrap = thumb.querySelector('.b24-tile-thumb-wrap');
               wrap.innerHTML = `
-                <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span></div>
-                <div class="thumb-zoom-overlay">🔍 View</div>
-                <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+                <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span></div>
+                <div class="thumb-zoom-overlay">View</div>
+                <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
               `;
               const retryRemove = wrap.querySelector('.thumb-remove-btn');
               if (retryRemove) retryRemove.addEventListener('click', handleRemoveItem);
@@ -2318,16 +2318,16 @@
             <div class="b24-tile-thumb-wrap">
               <div class="doc-tile-inner">
                 <span class="doc-tile-badge ${isPdf ? 'pdf' : 'doc'}">${isPdf ? 'PDF' : 'DOC'}</span>
-                <span class="doc-tile-icon">📄</span>
+                
               </div>
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${fileName}">${fileName}</span>
               <div class="b24-list-actions">
-                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">Remove</button>
               </div>
             </div>
           `;
@@ -2670,10 +2670,10 @@
           undoBannerEl.innerHTML = `
             <div class="undo-banner-inner">
               <div class="undo-banner-text">
-                <span class="undo-banner-icon">ℹ️</span>
+                <span class="undo-banner-icon"></span>
                 <span>Switched transaction type. Previously entered fields have been hidden.</span>
               </div>
-              <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">↺ Undo Switch</button>
+              <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">Undo Switch</button>
             </div>
           `;
           undoBannerEl.style.display = 'flex';
@@ -2836,32 +2836,9 @@
 
     const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
 
-    bannerEl.className = `readiness-banner ${result.ready ? 'ready' : ''}`;
-    bannerEl.style.display = 'block';
-    bannerEl.innerHTML = `
-      <div class="readiness-banner-header">
-        <div class="readiness-title-group">
-          <span class="readiness-score-pill ${result.ready ? 'score-ready' : 'score-pending'}">${result.score}% Portal Ready</span>
-          <span class="readiness-status-text">${result.ready ? '✓ Listing complies with all DLD & portal syndication requirements' : 'Portal Syndication Checklist Pending'}</span>
-        </div>
-      </div>
-      ${!result.ready && result.missing.length > 0 ? `
-        <div class="readiness-summary">
-          <strong>Missing Requirements (${result.missing.length}):</strong>
-          <ul class="readiness-missing-list">
-            ${result.missing.map(m => `<li>${m}</li>`).join('')}
-          </ul>
-        </div>
-      ` : ''}
-      ${result.warnings.length > 0 ? `
-        <div class="readiness-summary" style="margin-top:4px;">
-          <strong>Warnings (${result.warnings.length}):</strong>
-          <ul class="readiness-warnings-list">
-            ${result.warnings.map(w => `<li>${w}</li>`).join('')}
-          </ul>
-        </div>
-      ` : ''}
-    `;
+    bannerEl.className = 'readiness-banner';
+    bannerEl.style.display = 'none';
+    bannerEl.innerHTML = '';
 
     const publishInputs = [
       document.getElementById('field_UF_CRM_1792151479'),
@@ -3033,7 +3010,7 @@
           }
           if (total === 100) {
             ppBadge.className = 'badge pp-badge pp-badge-valid';
-            ppBadge.textContent = 'Payment Plan Total: 100% ✓';
+            ppBadge.textContent = 'Payment Plan Total: 100%';
           } else {
             const diff = (100 - total).toFixed(0);
             ppBadge.className = 'badge pp-badge pp-badge-invalid';
@@ -3207,7 +3184,7 @@
     if (layout === 'listing') {
       stageBadge.classList.add('badge-listing');
       stageBadge.textContent = 'Listing Record';
-      if (stageInfoText) stageInfoText.innerHTML = '🏢 Presenting <strong>Listing Layout</strong>';
+      if (stageInfoText) stageInfoText.innerHTML = 'Presenting <strong>Listing Layout</strong>';
 
       // Detect and activate tailored listing layout
       currentListingSubLayout = detectListingSubLayout(lead);
@@ -3220,7 +3197,7 @@
     } else {
       stageBadge.classList.add('badge-enquiry');
       stageBadge.textContent = 'Enquiry Record';
-      if (stageInfoText) stageInfoText.innerHTML = '🔍 Presenting <strong>Enquiry Layout</strong>';
+      if (stageInfoText) stageInfoText.innerHTML = 'Presenting <strong>Enquiry Layout</strong>';
       if (listingLayoutBadge) listingLayoutBadge.style.display = 'none';
       setTimeout(() => {
         const enqVal = lead?.UF_CRM_1791952650167 || lead?.UF_CRM_ENQUIRY_TYPE || '';
@@ -3259,7 +3236,7 @@
       const pill = document.createElement('button');
       pill.type = 'button';
       pill.className = 'nav-pill';
-      pill.innerHTML = `${sec.icon || '📁'} ${sec.title}`;
+      pill.textContent = sec.title;
       if (layout === 'listing' && activeFields.length === 0) {
         pill.style.display = 'none';
       }
@@ -3296,7 +3273,7 @@
 
       const iconEl = document.createElement('span');
       iconEl.className = 'section-icon';
-      iconEl.textContent = sec.icon || '📌';
+      iconEl.style.display = 'none'; iconEl.textContent = '';
 
       const titleEl = document.createElement('span');
       titleEl.className = 'section-title';
@@ -3499,7 +3476,7 @@
 
     if (!layout) {
       stageBadge.className = 'type-badge badge-empty';
-      if (stageInfoText) stageInfoText.innerHTML = '⚠️ <strong>Lead Type Required:</strong> Please choose whether this record is an Enquiry or a Listing to load the appropriate layout.';
+      if (stageInfoText) stageInfoText.innerHTML = '<strong>Lead Type Required:</strong> Please choose whether this record is an Enquiry or a Listing to load the appropriate layout.';
 
       fieldsContainer.innerHTML = `
         <div class="alert alert-warning" style="display: flex; flex-direction: column; gap: 14px; padding: 28px; border-radius: 8px; text-align: center; align-items: center; background: #fffdf5; border: 1px solid #ffe066;">
@@ -3511,10 +3488,10 @@
           </p>
           <div style="display: flex; gap: 16px; margin-top: 6px;">
             <button type="button" class="btn btn-save-b24" id="btn-choose-enquiry" style="background-color: #0288d1; color: #fff; border-color: #0277bd; padding: 10px 22px; font-size: 13px;">
-              🔍 Set as Enquiry Lead
+              Set as Enquiry Lead
             </button>
             <button type="button" class="btn btn-save-b24" id="btn-choose-listing" style="padding: 10px 22px; font-size: 13px;">
-              🏢 Set as Listing Lead
+              Set as Listing Lead
             </button>
           </div>
         </div>
@@ -3591,7 +3568,7 @@
         s.classList.remove('section-collapsed');
       }
     });
-    toggleAllBtn.textContent = allSectionsCollapsed ? '↕ Expand All' : '↕ Collapse All';
+    toggleAllBtn.textContent = allSectionsCollapsed ? 'Expand All' : 'Collapse All';
     resizeWindow();
   });
 

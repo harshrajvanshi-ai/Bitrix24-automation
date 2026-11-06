@@ -329,12 +329,12 @@ console.log('  ✓ PASS: Overseas listings cleanly bypass UAE regulatory permits
 console.log('\n--- Test 8: Transaction Switch Undo Banner Integration ---');
 assert(tabJs.includes('transaction-undo-banner'), 'tab.js references transaction-undo-banner');
 assert(tabJs.includes('Switched transaction type. Previously entered fields have been hidden.'), 'tab.js renders exact undo notice');
-assert(tabJs.includes('↺ Undo Switch'), 'tab.js renders "↺ Undo Switch" button');
+assert(tabJs.includes('Undo Switch'), 'tab.js renders "Undo Switch" button');
 assert(tabJs.includes('function undoTransactionSwitch()'), 'tab.js defines undoTransactionSwitch');
 
 assert(listingDetailsJs.includes('transaction-undo-banner'), 'listing-details.js references transaction-undo-banner');
 assert(listingDetailsJs.includes('Switched transaction type. Previously entered fields have been hidden.'), 'listing-details.js renders exact undo notice');
-assert(listingDetailsJs.includes('↺ Undo Switch'), 'listing-details.js renders "↺ Undo Switch" button');
+assert(listingDetailsJs.includes('Undo Switch'), 'listing-details.js renders "Undo Switch" button');
 assert(listingDetailsJs.includes('function undoTransactionSwitch()'), 'listing-details.js defines undoTransactionSwitch');
 console.log('  ✓ PASS: Transaction switch undo banner and state recovery fully integrated in tab.js and listing-details.js');
 

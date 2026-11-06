@@ -49,28 +49,28 @@
         id: "external_stock",
         enumId: "164",
         title: "External Stock",
-        icon: "🏢",
+        
         pillClass: "layout-pill-external_stock",
       },
       off_plan: {
         id: "off_plan",
         enumId: "162",
         title: "Off-plan",
-        icon: "🏗️",
+        
         pillClass: "layout-pill-off_plan",
       },
       overseas_sale: {
         id: "overseas_sale",
         enumId: "160",
         title: "Overseas Sale",
-        icon: "🌍",
+        
         pillClass: "layout-pill-overseas_sale",
       },
       rent: {
         id: "rent",
         enumId: "158",
         title: "Rent",
-        icon: "🔑",
+        
         pillClass: "layout-pill-rent",
       },
     },
@@ -80,7 +80,6 @@
       {
         id: "general",
         title: "General Overview",
-        icon: "📋",
         desc: "Title, stage, responsible person, and listing authority",
         fields: [
           {
@@ -192,7 +191,6 @@
       {
         id: "seller",
         title: "Seller & Source",
-        icon: "🤝",
         desc: "Agency, developer, owner contacts, and master property relation",
         fields: [
           {
@@ -286,7 +284,6 @@
       {
         id: "specs",
         title: "Property Specifications",
-        icon: "📐",
         desc: "Dimensions, rooms, spaces, floor, and furnishing",
         fields: [
           {
@@ -464,7 +461,6 @@
       {
         id: "location",
         title: "Location & Geography",
-        icon: "📍",
         desc: "Country, city, community, tower, and coordinates",
         fields: [
           {
@@ -661,7 +657,6 @@
       {
         id: "pricing",
         title: "Pricing & Terms",
-        icon: "💰",
         desc: "Asking price, rent frequency, commission, and payment plans",
         fields: [
           {
@@ -788,7 +783,6 @@
       {
         id: "dates",
         title: "Dates & Timeline",
-        icon: "📅",
         desc: "Mandate duration, availability, and tenancy start/finish dates",
         fields: [
           {
@@ -902,7 +896,6 @@
       {
         id: "marketing",
         title: "Portals & Marketing",
-        icon: "🚀",
         desc: "Bayut, Propertyfinder, Dubizzle IDs, feed toggles, RERA permit, and descriptions",
         fields: [
           {
@@ -1082,7 +1075,6 @@
       {
         id: "listing_description",
         title: "Listing Description",
-        icon: "📝",
         desc: "Description intro text, property features 1 to 10, and outro text",
         fields: [
           {
@@ -1340,7 +1332,6 @@
       {
         id: "media",
         title: "Media & Documents",
-        icon: "📸",
         desc: "Primary image, photo gallery, documents, title deed, Form A, and RERA QR code",
         fields: [
           {
@@ -1511,7 +1502,7 @@
     overlay.innerHTML = `
       <div class="cascade-modal-card">
         <div class="cascade-modal-header">
-          <span class="cascade-modal-icon">🔄</span>
+          
           <span class="cascade-modal-title">Property Unit Update</span>
         </div>
         <div class="cascade-modal-body">${message || 'Update parent project and developer to match new unit?'}</div>
@@ -2032,7 +2023,7 @@
         el.appendChild(filmImg);
       } else {
         const badgeClass = item.isPdf ? "pdf" : "doc";
-        const icon = item.isPdf ? "📄" : "📎";
+        const icon = item.isPdf ? "PDF" : "DOC";
         el.innerHTML = `
           <div class="lb-film-item-doc">
             <span>${icon}</span>
@@ -2079,7 +2070,7 @@
     const zoomToggleBtn = document.getElementById("lightbox-zoom-toggle-btn");
 
     if (item.isPdf) {
-      if (lightboxFileIcon) lightboxFileIcon.textContent = "📄";
+      if (lightboxFileIcon) lightboxFileIcon.textContent = "";
       if (zoomToggleBtn) zoomToggleBtn.style.display = "none";
       if (lbZoomControls) lbZoomControls.style.display = "none";
 
@@ -2091,7 +2082,7 @@
       lightboxBody.appendChild(iframe);
     } else if (item.isImage) {
       // Image
-      if (lightboxFileIcon) lightboxFileIcon.textContent = "🖼️";
+      if (lightboxFileIcon) lightboxFileIcon.textContent = "";
       if (lbZoomControls) lbZoomControls.style.display = "flex";
 
       if (zoomToggleBtn) {
@@ -2130,9 +2121,9 @@
         const err = document.createElement("div");
         err.className = "lb-error-box";
         err.innerHTML = `
-          <span style="font-size:32px;">🖼️</span>
+          
           <span>Unable to preview image</span>
-          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab ↗</a>
+          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab</a>
         `;
         lightboxBody.appendChild(err);
       };
@@ -2240,7 +2231,7 @@
       // Bitrix previews PDFs inline. Other document types (DOCX, XLSX, ZIP,
       // etc.) must be handed back to Bitrix rather than being forced into a
       // PDF iframe, which is the source of the blank/broken preview bug.
-      if (lightboxFileIcon) lightboxFileIcon.textContent = "📎";
+      if (lightboxFileIcon) lightboxFileIcon.textContent = "";
       if (zoomToggleBtn) zoomToggleBtn.style.display = "none";
       if (lbZoomControls) lbZoomControls.style.display = "none";
 
@@ -2248,7 +2239,7 @@
       panel.className = "lb-document-panel";
       const icon = document.createElement("span");
       icon.className = "lb-document-icon";
-      icon.textContent = "📄";
+      icon.textContent = "PDF";
       const name = document.createElement("strong");
       name.className = "lb-document-name";
       name.textContent = item.name || "Document";
@@ -2505,7 +2496,7 @@
         : "Upload Document";
 
     dropzone.innerHTML = `
-      <span class="dropzone-icon">📁</span>
+      
       <div class="dropzone-text-group">
         <span class="dropzone-title">${uploadLabel}</span>
         <span class="dropzone-sub">Click to browse or drop file</span>
@@ -2673,14 +2664,14 @@
         thumb.innerHTML = `
           <div class="b24-tile-thumb-wrap">
             <img class="thumb-item-img b24-tile-img" src="${item.url}" alt="${item.name}" loading="lazy">
-            <div class="thumb-zoom-overlay">🔍 View</div>
-            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+            <div class="thumb-zoom-overlay">View</div>
+            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
           </div>
           <div class="b24-tile-footer">
             <span class="b24-tile-name" title="${item.name}">${item.name}</span>
             <div class="b24-list-actions">
-              <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-              <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+              <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+              <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">Remove</button>
             </div>
           </div>
         `;
@@ -2702,9 +2693,9 @@
             this.onerror = null;
             const wrap = thumb.querySelector(".b24-tile-thumb-wrap");
             wrap.innerHTML = `
-              <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span><span class="doc-tile-icon">🖼️</span></div>
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+              <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span></div>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
             `;
             const retryRemove = wrap.querySelector(".thumb-remove-btn");
             if (retryRemove)
@@ -2716,16 +2707,16 @@
           <div class="b24-tile-thumb-wrap">
             <div class="doc-tile-inner">
               <span class="doc-tile-badge ${item.isPdf ? "pdf" : "doc"}">${item.isPdf ? "PDF" : "DOC"}</span>
-              <span class="doc-tile-icon">📄</span>
+              
             </div>
-            <div class="thumb-zoom-overlay">🔍 View</div>
-            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">✕</button>
+            <div class="thumb-zoom-overlay">View</div>
+            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
           </div>
           <div class="b24-tile-footer">
             <span class="b24-tile-name" title="${item.name}">${item.name}</span>
             <div class="b24-list-actions">
-              <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-              <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">✕</button>
+              <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+              <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove file">Remove</button>
             </div>
           </div>
         `;
@@ -2827,11 +2818,11 @@
     viewportBox.style.display = "flex";
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
-        <span class="inline-preview-name">👁 Preview: ${name}</span>
+        <span class="inline-preview-name">Preview: ${name}</span>
         <div class="inline-preview-topbar-actions">
-          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
-          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">⬇</a>
-          <button type="button" class="inline-preview-close" title="Hide Preview">✕</button>
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
+          <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">Download</a>
+          <button type="button" class="inline-preview-close" title="Hide Preview">Remove</button>
         </div>
       </div>
     `;
@@ -2851,7 +2842,7 @@
         const errDiv = document.createElement("div");
         errDiv.style.cssText =
           "display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;";
-        errDiv.innerHTML = `<span>🖼️ Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link ↗</a>`;
+        errDiv.innerHTML = `<span>Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link</a>`;
         viewportBox.appendChild(errDiv);
       }
     };
@@ -2886,16 +2877,16 @@
     viewportBox.style.display = "flex";
     viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
-        <span class="inline-preview-name">📄 PDF Viewer: ${name}</span>
+        <span class="inline-preview-name">PDF Viewer: ${name}</span>
         <div class="inline-preview-topbar-actions">
-          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">⛶ Expand</button>
-          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">↗ Open</a>
-          <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">⬇</a>
-          <button type="button" class="inline-preview-close" title="Hide PDF">✕</button>
+          <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
+          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">Open</a>
+          <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">Download</a>
+          <button type="button" class="inline-preview-close" title="Hide PDF">Remove</button>
         </div>
       </div>
       <iframe class="inline-preview-iframe" src="${proxyUrl}">
-        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document ↗</a></p>
+        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document</a></p>
       </iframe>
     `;
 
@@ -2951,14 +2942,14 @@
           thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
               <img class="thumb-item-img b24-tile-img" src="${dataUrl}" alt="${file.name}">
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">Remove</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
               <div class="b24-list-actions">
-                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">Remove</button>
               </div>
             </div>
           `;
@@ -3020,16 +3011,16 @@
             <div class="b24-tile-thumb-wrap">
               <div class="doc-tile-inner">
                 <span class="doc-tile-badge ${isPdf ? "pdf" : "doc"}">${isPdf ? "PDF" : "DOC"}</span>
-                <span class="doc-tile-icon">📄</span>
+                
               </div>
-              <div class="thumb-zoom-overlay">🔍 View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove">✕</button>
+              <div class="thumb-zoom-overlay">View</div>
+              <button type="button" class="thumb-remove-btn" title="Remove">Remove</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
               <div class="b24-list-actions">
-                <button type="button" class="b24-list-btn view-btn" title="View / Preview">🔍 View</button>
-                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">✕</button>
+                <button type="button" class="b24-list-btn view-btn" title="View / Preview">View</button>
+                <button type="button" class="b24-list-btn remove-btn thumb-remove-btn-list" title="Remove">Remove</button>
               </div>
             </div>
           `;
@@ -3126,7 +3117,7 @@
       pill.type = "button";
       pill.className = `nav-pill ${secIdx === 0 ? "active" : ""}`;
       pill.setAttribute("data-target-sec", sec.id);
-      pill.innerHTML = `<span>${sec.icon} ${sec.title}</span><span class="nav-pill-count">${sectionActiveCount}</span>`;
+      pill.innerHTML = `<span>${sec.title}</span><span class="nav-pill-count">${sectionActiveCount}</span>`;
       pill.addEventListener("click", () => {
         document
           .querySelectorAll(".nav-pill")
@@ -3149,7 +3140,7 @@
       header.className = "section-header";
       header.innerHTML = `
         <div class="section-title-wrap">
-          <span class="section-icon">${sec.icon}</span>
+          
           <span class="section-title">${sec.title}</span>
           <span class="section-desc">${sec.desc}</span>
         </div>
@@ -3278,7 +3269,7 @@
       k.includes("developer")
     ) {
       return {
-        icon: "🏢",
+        
         label: "Company / Developer",
         defaultPrefix: "Company #",
       };
@@ -3288,14 +3279,14 @@
       key === "contactId" ||
       k.includes("contact")
     ) {
-      return { icon: "👤", label: "Contact", defaultPrefix: "Contact #" };
+      return {  label: "Contact", defaultPrefix: "Contact #" };
     }
     if (type === "crm_contact_multi" || key === "contactIds") {
-      return { icon: "👥", label: "Contact", defaultPrefix: "Contact #" };
+      return {  label: "Contact", defaultPrefix: "Contact #" };
     }
     if (type === "user" || key === "assignedById") {
       return {
-        icon: "👤",
+        
         label: "Responsible Person",
         defaultPrefix: "User #",
       };
@@ -3305,35 +3296,35 @@
       (k.includes("property") && !k.includes("masterproject"))
     ) {
       return {
-        icon: "🏗️",
+        
         label: "Master Property",
         defaultPrefix: "Master Property #",
       };
     }
     if (k.includes("masterproject") || k.includes("master_project")) {
       return {
-        icon: "🏛️",
+        
         label: "Master Project",
         defaultPrefix: "Master Project #",
       };
     }
     if (k.includes("project")) {
-      return { icon: "🏢", label: "Project", defaultPrefix: "Project #" };
+      return {  label: "Project", defaultPrefix: "Project #" };
     }
     if (k.includes("layout")) {
-      return { icon: "📐", label: "Layout", defaultPrefix: "Layout #" };
+      return {  label: "Layout", defaultPrefix: "Layout #" };
     }
     if (k.includes("listingagent") || k.includes("broker")) {
       return {
-        icon: "💼",
+        
         label: "Listing Agent / Broker",
         defaultPrefix: "Broker #",
       };
     }
     if (k.includes("listing")) {
-      return { icon: "📋", label: "Listing", defaultPrefix: "Listing #" };
+      return {  label: "Listing", defaultPrefix: "Listing #" };
     }
-    return { icon: "🔗", label: "CRM Entity", defaultPrefix: "Record #" };
+    return {  label: "CRM Entity", defaultPrefix: "Record #" };
   }
 
   function getEntityPath(type, rawId, key) {
@@ -3967,32 +3958,9 @@ function resolveCountryCode(countryName) {
 
     const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
 
-    bannerEl.className = `readiness-banner ${result.ready ? "ready" : ""}`;
-    bannerEl.style.display = "block";
-    bannerEl.innerHTML = `
-      <div class="readiness-banner-header">
-        <div class="readiness-title-group">
-          <span class="readiness-score-pill ${result.ready ? "score-ready" : "score-pending"}">${result.score}% Portal Ready</span>
-          <span class="readiness-status-text">${result.ready ? "✓ Listing complies with all DLD & portal syndication requirements" : "Portal Syndication Checklist Pending"}</span>
-        </div>
-      </div>
-      ${!result.ready && result.missing.length > 0 ? `
-        <div class="readiness-summary">
-          <strong>Missing Requirements (${result.missing.length}):</strong>
-          <ul class="readiness-missing-list">
-            ${result.missing.map(m => `<li>${m}</li>`).join('')}
-          </ul>
-        </div>
-      ` : ''}
-      ${result.warnings.length > 0 ? `
-        <div class="readiness-summary" style="margin-top:4px;">
-          <strong>Warnings (${result.warnings.length}):</strong>
-          <ul class="readiness-warnings-list">
-            ${result.warnings.map(w => `<li>${w}</li>`).join('')}
-          </ul>
-        </div>
-      ` : ''}
-    `;
+    bannerEl.className = 'readiness-banner';
+    bannerEl.style.display = 'none';
+    bannerEl.innerHTML = '';
 
     const publishInputs = [
       document.getElementById("field_ufCrm16PublishPortals"),
@@ -4237,7 +4205,7 @@ function resolveCountryCode(countryName) {
 
     const icon = document.createElement("span");
     icon.className = "lookup-icon";
-    icon.textContent = "🔍";
+    icon.textContent = "";
 
     const input = document.createElement("input");
     input.id = `field_${f.key}`;
@@ -4494,7 +4462,7 @@ function resolveCountryCode(countryName) {
 
         const header = document.createElement("div");
         header.className = "lookup-dropdown-header";
-        header.innerHTML = `<span>${countText}</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">🔄 Refresh</button>`;
+        header.innerHTML = `<span>${countText}</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">Refresh</button>`;
         const refreshBtnEl = header.querySelector(".lookup-refresh-btn");
         if (refreshBtnEl) {
           refreshBtnEl.addEventListener("click", (e) => {
@@ -4534,7 +4502,7 @@ function resolveCountryCode(countryName) {
           if (item.isRelated) {
             const badge = document.createElement("span");
             badge.className = "lookup-related-badge";
-            badge.textContent = `★ Related${item.relationReason ? ": " + item.relationReason : ""}`;
+            badge.textContent = `Related${item.relationReason ? ": " + item.relationReason : ""}`;
             titleSpan.appendChild(badge);
           }
           const textNode = document.createTextNode(item.title);
@@ -4937,7 +4905,7 @@ function resolveCountryCode(countryName) {
       const launchBtn = document.createElement("button");
       launchBtn.type = "button";
       launchBtn.className = "btn btn-secondary launch-tour-btn";
-      launchBtn.innerHTML = `<span>🌐 Launch 360</span>`;
+      launchBtn.innerHTML = `<span>Launch 360</span>`;
       launchBtn.title = "Open interactive 360 tour preview";
       launchBtn.addEventListener("click", () => {
         if (!input.value) {
@@ -4975,7 +4943,7 @@ function resolveCountryCode(countryName) {
       testBtn.href = rawVal || "#";
       testBtn.target = "_self";
       testBtn.className = "btn btn-secondary launch-tour-btn";
-      testBtn.textContent = "↗ Open";
+      testBtn.textContent = "Open";
       testBtn.addEventListener("click", (e) => {
         if (!input.value) e.preventDefault();
         else openLightbox("Preview", input.value, true);
@@ -5077,7 +5045,7 @@ function resolveCountryCode(countryName) {
           const lockBadge = document.createElement("div");
           lockBadge.className = "form-text text-muted lock-badge";
           lockBadge.style.cssText = "font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;";
-          lockBadge.innerHTML = "🔒 Auto-populated from Layout (Read-only)";
+          lockBadge.innerHTML = "Auto-populated from Layout (Read-only)";
           group.appendChild(lockBadge);
         }
       }
@@ -5129,10 +5097,10 @@ function resolveCountryCode(countryName) {
               undoBannerEl.innerHTML = `
                 <div class="undo-banner-inner">
                   <div class="undo-banner-text">
-                    <span class="undo-banner-icon">ℹ️</span>
+                    <span class="undo-banner-icon"></span>
                     <span>Switched transaction type. Previously entered fields have been hidden.</span>
                   </div>
-                  <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">↺ Undo Switch</button>
+                  <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">Undo Switch</button>
                 </div>
               `;
               undoBannerEl.style.display = "flex";
@@ -5364,7 +5332,7 @@ function resolveCountryCode(countryName) {
     if (!currentListingId) return;
 
     saveBtn.disabled = true;
-    saveBtn.innerHTML = "⏳ &nbsp;SAVING...";
+    saveBtn.innerHTML = "SAVING...";
 
     try {
       const payload = {};
@@ -5675,7 +5643,7 @@ function resolveCountryCode(countryName) {
       console.log("[LISTING] Saving payload:", payload);
       await updateListing(currentListingId, payload);
 
-      showToast("✓ Listing updated successfully in Bitrix24!", "success");
+      showToast("Listing updated successfully in Bitrix24!", "success");
       const undoBannerEl = document.getElementById("transaction-undo-banner");
       if (undoBannerEl) undoBannerEl.style.display = "none";
       cachedUndoState = null;
@@ -5689,7 +5657,7 @@ function resolveCountryCode(countryName) {
       showToast(`Save failed: ${err.message}`, "error");
     } finally {
       saveBtn.disabled = false;
-      saveBtn.innerHTML = "✓ &nbsp;SAVE CHANGES";
+      saveBtn.innerHTML = "SAVE CHANGES";
     }
   });
 
@@ -5757,7 +5725,7 @@ function resolveCountryCode(countryName) {
       console.error("[LISTING] Init error:", err);
       loadingEl.innerHTML = `
         <div style="text-align: center; color: var(--danger); max-width: 450px;">
-          <div style="font-size: 28px; margin-bottom: 6px;">⚠️</div>
+          
           <strong style="font-size: 13px; display: block; margin-bottom: 4px;">Unable to Load Listing</strong>
           <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">${err.message}</p>
           <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Retry</button>

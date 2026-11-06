@@ -44,43 +44,43 @@
       {
         "id": "classification",
         "title": "Transaction & Classification",
-        "icon": "📑",
+        "icon": "",
         "desc": "Core transaction drivers, mandate, and listing agent"
       },
       {
         "id": "hierarchy",
         "title": "Property Hierarchy & Location",
-        "icon": "📍",
+        "icon": "",
         "desc": "Linked unit, project, developer, and geographic details"
       },
       {
         "id": "specs",
         "title": "Property Specifications",
-        "icon": "📐",
+        "icon": "",
         "desc": "Typology, bedrooms, area measurements, and interior attributes"
       },
       {
         "id": "pricing",
         "title": "Pricing & Financial Terms",
-        "icon": "💰",
+        "icon": "",
         "desc": "Price, commissions, service charges, installments, and payment schedules"
       },
       {
         "id": "regulatory",
         "title": "DLD & Regulatory Compliance",
-        "icon": "🏛️",
+        "icon": "",
         "desc": "Trakheesi permit, Form A mandate, and title deed verification"
       },
       {
         "id": "media",
         "title": "Marketing Media & Feeds",
-        "icon": "📸",
+        "icon": "",
         "desc": "High-resolution photos, architectural floor plans, and bilingual copy"
       },
       {
         "id": "external",
         "title": "Partner Agency Co-Broke",
-        "icon": "🤝",
+        "icon": "",
         "desc": "External brokerage source and commission split terms"
       }
     ],
@@ -1528,25 +1528,25 @@
       {
         "id": "client",
         "title": "Client & Contact Information",
-        "icon": "👤",
+        "icon": "",
         "desc": "Contact name, phone, email, and preferred communication channel"
       },
       {
         "id": "criteria",
         "title": "Search Criteria & Specifications",
-        "icon": "🔍",
+        "icon": "",
         "desc": "Transaction, property type, bedrooms, locations, and amenities"
       },
       {
         "id": "financial",
         "title": "Budget & Financial Eligibility",
-        "icon": "💵",
+        "icon": "",
         "desc": "Budget AED, payment readiness, mortgage pre-approval status"
       },
       {
         "id": "audit",
         "title": "Lead Source & Routing",
-        "icon": "📊",
+        "icon": "",
         "desc": "Lead origin, agent assignment, and first contact timestamp"
       }
     ]
