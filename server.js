@@ -1774,6 +1774,9 @@ app.post('/api/lead/:id/publish', apiLimiter, verifyCrmAccess, async (req, res) 
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+/**
+ * GET /api/mapping/listing
  * Returns complete field mapping and enum translation dictionaries between Lead Listing and Listing SPA (1058)
  */
 app.get('/api/mapping/listing', (req, res) => {
