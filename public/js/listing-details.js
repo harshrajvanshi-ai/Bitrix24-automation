@@ -2940,7 +2940,7 @@
         </div>
         <div class="section-header-right">
           <span class="section-count-badge">${sectionActiveCount}</span>
-          <span class="section-chevron">▼</span>
+          <span class="section-chevron"></span>
         </div>
       `;
       header.addEventListener("click", () => {
@@ -4106,11 +4106,11 @@ function resolveCountryCode(countryName) {
     clearBtn.title = "Clear selection";
     clearBtn.style.display = input.value ? "block" : "none";
 
-    // Open button: arrow only!
+    // Open button
     const openBtn = document.createElement("button");
     openBtn.type = "button";
     openBtn.className = "lookup-open-btn";
-    openBtn.innerHTML = `<span>↗</span>`;
+    openBtn.innerHTML = `<span>Open</span><span class="symbol-token" style="display:none"><span>↗</span></span>`;
     openBtn.title = `Open linked ${meta.label} in Bitrix24`;
     openBtn.style.display =
       hasValidId || input.dataset.selectedId || input.dataset.selectedRef

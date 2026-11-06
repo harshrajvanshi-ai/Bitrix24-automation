@@ -76,8 +76,16 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(express.json({ limit: '25mb' }));
 
-// Serve static assets
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static assets with explicit no-cache headers so embedded Bitrix24 iframes never serve stale scripts
+app.use(express.static(path.join(__dirname, 'public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css') || filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -267,6 +275,9 @@ app.all('/tab', (req, res) => {
     `window.__LAYOUT_VERSION__ = "${effectiveLayoutVersion}";`
   );
 
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.send(html);
 });
 
@@ -290,6 +301,9 @@ app.all('/matching-listings', (req, res) => {
     });
   }
 
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.sendFile(path.join(__dirname, 'views/matching-listings.html'));
 });
 
@@ -332,6 +346,9 @@ app.all('/listing-details', (req, res) => {
     'window.__LAYOUT_VERSION__ = null;',
     `window.__LAYOUT_VERSION__ = "${effectiveLayoutVersion}";`
   );
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   res.send(html);
 });
 

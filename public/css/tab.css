@@ -1067,8 +1067,11 @@ select.form-control option {
 }
 
 .dirty-dot {
-  font-size: 9px;
-  color: #f7a700;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f7a700;
 }
 
 .action-bar-right {

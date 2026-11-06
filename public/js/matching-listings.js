@@ -379,20 +379,24 @@
       if (s.includes('SALE')) return 'SALE';
     }
 
-    // 2. Check v1 driver field (ufCrm16_1790154808)
+    // 2. Check title cues (strong indicator for Ready Sale listings in Bitrix24)
+    const title = String(listingItem.title || '').toLowerCase();
+    if (/\b(for\s+sale|sale|buy)\b/i.test(title)) return 'SALE';
+    if (/\b(for\s+rent|rent|to\s+let)\b/i.test(title)) return 'RENT';
+
+    // 3. Check rental fields (if rental terms are defined, it is Rent)
+    if (listingItem.ufCrm16RentFrequency || listingItem.ufCrm16Cheques || listingItem.ufCrm16_1791881516 || listingItem.ufCrm16YearlyRental) {
+      return 'RENT';
+    }
+
+    // 4. Check v1 driver field (ufCrm16_1790154808)
     const lt = listingItem.ufCrm16_1790154808 || (CONFIG.LISTING && CONFIG.LISTING.fields && listingItem[CONFIG.LISTING.fields.listingType]);
     if (lt !== undefined && lt !== null && lt !== '') {
       const num = parseInt(lt, 10);
       const str = String(lt).toLowerCase();
-      if (num === 158 || str === 'rent') return 'RENT';
       if (num === 160 || num === 162 || str.includes('sale') || str.includes('off-plan') || str.includes('overseas')) return 'SALE';
-      if (num === 164 || str.includes('external')) {
-        // External stock: check rental fields
-        if (listingItem.ufCrm16_1791881516 || listingItem.rentalFrequency || listingItem.ufCrm16SecurityDeposit) {
-          return 'RENT';
-        }
-        return 'SALE';
-      }
+      if (num === 164 || str.includes('external')) return 'SALE';
+      if (num === 158 || str === 'rent') return 'RENT';
     }
 
     return null;
@@ -470,7 +474,7 @@
         return itemLtStr === '164';
       }
       if (flt === 'SALE_ALL' || flt === 'SALE') {
-        return itemLtStr !== '158' && listingTx !== 'RENT';
+        return listingTx !== 'RENT' && (itemLtStr !== '158' || listingTx === 'SALE');
       }
     }
 
@@ -483,11 +487,26 @@
 
     if (enquiryTx === 'SALE') {
       if (listingTx === 'RENT') return false;
-      if (itemLtStr === '158') return false;
+      if (itemLtStr === '158' && listingTx !== 'SALE') return false;
       return true;
     }
 
     return true;
+  }
+
+  /**
+   * Strip common noise words and stop words from area/location search query
+   */
+  function cleanAreaQuery(qArea) {
+    if (!qArea) return [];
+    const noise = new Set([
+      'luxury', 'specification', 'community', 'propertyfinder', 'area',
+      'sub-community', 'neighborhood', 'subcommunity', 'bayut', '-',
+      'dubai', 'uae', 'the', 'in', 'near', 'at', 'of'
+    ]);
+    const tokens = qArea.toLowerCase().replace(/[^a-z0-9\s]/gi, ' ').split(/\s+/).filter(Boolean);
+    const clean = tokens.filter(t => !noise.has(t));
+    return clean.length > 0 ? clean : tokens;
   }
 
   function mapListingFurnishedToLabel(furnishedVal) {
@@ -688,18 +707,19 @@
 
     // 3. Match Purpose / Listing Type (Sale / Rent) if provided
     if (filters.listingType) {
-      if (filters.listingType === 'SALE_ALL' || filters.listingType === 'SALE') {
-        restFilter['!=' + lFields.listingType] = 158; // Exclude Rent (158)
+      if (filters.listingType === '158' || filters.listingType === 'RENT') {
+        restFilter['=' + lFields.listingType] = 158;
       } else if (!isNaN(parseInt(filters.listingType, 10))) {
         restFilter['=' + lFields.listingType] = parseInt(filters.listingType, 10);
       }
+      // Note: For SALE_ALL or SALE, we do NOT send != 158 over REST because ready-sale
+      // listings in Bitrix24 have enum 158. Client-side isMatchingCompatible filters them.
     } else {
-      // Automatic protection: if no explicit filter is set, restrict by enquiry transaction
+      // Automatic protection: if enquiry is strictly Rent, we can restrict by 158.
+      // For Sale enquiries, fetch items without != 158 REST constraint so ready-sales aren't dropped.
       const enquiryTx = resolveTransactionFromEnquiry(currentEnquiry);
       if (enquiryTx === 'RENT') {
         restFilter['=' + lFields.listingType] = 158; // Only fetch Rent
-      } else if (enquiryTx === 'SALE') {
-        restFilter['!=' + lFields.listingType] = 158; // Exclude Rent
       }
     }
 
@@ -774,12 +794,12 @@
         let pMax = filters.priceMax;
 
         if (filters.tolerance) {
-          if (pMin !== null) pMin = Math.max(0, pMin * 0.9); // -10% tolerance
-          if (pMax !== null) pMax = pMax * 1.1;             // +10% tolerance
+          if (pMin !== null && pMin > 0) pMin = Math.max(0, pMin * 0.9); // -10% tolerance
+          if (pMax !== null && pMax > 0) pMax = pMax * 1.1;             // +10% tolerance
         }
 
-        if (pMin !== null && itemPrice > 0 && itemPrice < pMin) return false;
-        if (pMax !== null && itemPrice > 0 && itemPrice > pMax) return false;
+        if (pMin !== null && pMin > 0 && itemPrice > 0 && itemPrice < pMin) return false;
+        if (pMax !== null && pMax > 0 && itemPrice > 0 && itemPrice > pMax) return false;
 
         // Bedrooms check
         if (filters.bedrooms !== null) {
@@ -793,16 +813,18 @@
 
         // Area / Community substring match (checking area field, community field, and listing title)
         if (filters.area) {
-          const itemArea = (item[lFields.area] || '').toLowerCase();
-          const itemCommunity = (item[lFields.community] || '').toLowerCase();
-          const itemTitle = (item.title || '').toLowerCase();
-          const qArea = filters.area.toLowerCase().trim();
-          const areaTokens = qArea.split(/[\s,;]+/).filter(Boolean);
-          const matchesToken = areaTokens.some(token => 
-            itemArea.includes(token) || itemCommunity.includes(token) || itemTitle.includes(token)
-          );
-          if (!matchesToken && itemArea && !itemArea.includes(qArea) && !itemCommunity.includes(qArea) && !itemTitle.includes(qArea)) {
-            return false;
+          const cleanTokens = cleanAreaQuery(filters.area);
+          if (cleanTokens.length > 0) {
+            const locText = [
+              item[lFields.area] || '',
+              item[lFields.community] || '',
+              item.ufCrm16BuildingBayut || '',
+              item.ufCrm16ProjectName || '',
+              item.title || ''
+            ].join(' ').toLowerCase();
+
+            const matchesTokens = cleanTokens.every(token => locText.includes(token));
+            if (!matchesTokens) return false;
           }
         }
 

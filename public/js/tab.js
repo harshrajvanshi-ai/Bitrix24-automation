@@ -785,7 +785,7 @@
     const openBtn = document.createElement('button');
     openBtn.type = 'button';
     openBtn.className = 'lookup-open-btn';
-    openBtn.innerHTML = '<span>↗</span>';
+    openBtn.textContent = 'Open';
     openBtn.title = `Open linked ${f.label || 'record'} in Bitrix24`;
     const hasInitialId = !!(input.dataset.selectedId || input.dataset.selectedRef || (currentVal && currentVal !== '0'));
     openBtn.style.display = hasInitialId ? 'inline-flex' : 'none';
@@ -2955,7 +2955,7 @@
             pill.className = 'form-text-calc commission-aed-pill';
             commFg.appendChild(pill);
           }
-          pill.textContent = `≈ AED ${commAed.toLocaleString()} (${commPct}%)`;
+          pill.textContent = `AED ${commAed.toLocaleString()} (${commPct}%)`;
           pill.style.display = 'inline-flex';
         } else if (pill) {
           pill.style.display = 'none';
@@ -3295,7 +3295,7 @@
 
       const chevron = document.createElement('span');
       chevron.className = 'section-chevron';
-      chevron.textContent = '▼';
+      chevron.textContent = '';
       rightWrap.appendChild(chevron);
 
       headerEl.appendChild(leftWrap);
