@@ -234,24 +234,37 @@ app.all('/tab', (req, res) => {
     });
   }
 
-  // Extract lead ID from PLACEMENT_OPTIONS or direct parameters if present
+  // Extract lead ID from PLACEMENT_OPTIONS, parameters, or referrer
   let initialLeadId = null;
   const placementOpts = req.body?.PLACEMENT_OPTIONS || req.query?.PLACEMENT_OPTIONS;
   if (placementOpts) {
     try {
       const parsed = typeof placementOpts === 'string' ? JSON.parse(placementOpts) : placementOpts;
-      initialLeadId = parsed.ID || parsed.id || parsed.ENTITY_ID;
+      initialLeadId = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.leadId || parsed.LEAD_ID;
     } catch (e) {}
   }
   if (!initialLeadId) {
-    initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id;
+    const rawOpts = req.body?.options || req.query?.options || req.body?.params || req.query?.params;
+    if (rawOpts) {
+      try {
+        const parsed = typeof rawOpts === 'string' ? JSON.parse(rawOpts) : rawOpts;
+        initialLeadId = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.leadId || parsed.LEAD_ID;
+      } catch (e) {}
+    }
+  }
+  if (!initialLeadId) {
+    initialLeadId = req.query?.ID || req.query?.id || req.query?.leadId || req.body?.ID || req.body?.id || req.body?.ENTITY_ID || req.query?.ENTITY_ID;
+  }
+  if (!initialLeadId && req.headers?.referer) {
+    const m = req.headers.referer.match(/\/crm\/lead\/details\/(\d+)/i) || req.headers.referer.match(/[?&](?:ID|id|leadId)=(\d+)/i);
+    if (m && m[1]) initialLeadId = m[1];
   }
 
   // Read HTML file and inject initialLeadId and bitrixDomain if present
   const htmlPath = path.join(__dirname, 'views/tab.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
-  if (initialLeadId) {
+  if (initialLeadId && String(initialLeadId) !== '420') {
     html = html.replace(
       'window.__INITIAL_LEAD_ID__ = null;',
       `window.__INITIAL_LEAD_ID__ = "${initialLeadId}";`
@@ -707,8 +720,13 @@ app.get('/api/file/proxy', async (req, res) => {
 
     if (fileId && recordId && !parsed.searchParams.has('token')) {
       try {
-        const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId });
-        const item = itemRes?.item || itemRes;
+        let item = null;
+        if (String(entityTypeId) === '1') {
+          item = await BitrixClient.crmLeadGet(recordId);
+        } else {
+          const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId });
+          item = itemRes?.item || itemRes;
+        }
         if (item) {
           let found = null;
           if (fieldName) {
@@ -1986,10 +2004,13 @@ app.get('/api/lead/latest', async (req, res) => {
       select: ['ID'],
       limit: 1
     });
-    const latestId = list && list[0] ? String(list[0].ID) : '420';
-    res.json({ success: true, id: latestId });
+    const latestId = list && list[0] ? String(list[0].ID) : null;
+    if (latestId) {
+      return res.json({ success: true, id: latestId });
+    }
+    res.status(404).json({ success: false, error: 'No active leads found in Bitrix24 CRM' });
   } catch (err) {
-    res.json({ success: true, id: '420' });
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

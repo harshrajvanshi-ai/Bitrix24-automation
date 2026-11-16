@@ -222,25 +222,48 @@
         const placementInfo = window.BX24.placement.info();
         const options = placementInfo?.options;
         if (options) {
-          if (typeof options === 'string') {
-            const parsed = JSON.parse(options);
-            const id = parsed.ID || parsed.id || parsed.ENTITY_ID;
-            if (id) return String(id);
-          } else if (typeof options === 'object') {
-            const id = options.ID || options.id || options.ENTITY_ID;
-            if (id) return String(id);
-          }
+          const parsed = typeof options === 'string' ? JSON.parse(options) : options;
+          const id = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.leadId || parsed.LEAD_ID;
+          if (id && String(id) !== '420') return String(id);
         }
       } catch (e) { }
     }
 
-    // 2. Explicit URL query parameter
+    // 2. Explicit URL query parameter or PLACEMENT_OPTIONS in URL
     const urlParams = new URLSearchParams(window.location.search);
-    const fromUrl = urlParams.get('ID') || urlParams.get('id') || urlParams.get('leadId');
-    if (fromUrl) return String(fromUrl);
+    const directId = urlParams.get('ID') || urlParams.get('id') || urlParams.get('leadId') || urlParams.get('ENTITY_ID') || urlParams.get('entityId');
+    if (directId && String(directId) !== '420') return String(directId);
 
-    // 3. Server injected initial lead ID
-    if (window.__INITIAL_LEAD_ID__) return String(window.__INITIAL_LEAD_ID__);
+    const placementParam = urlParams.get('PLACEMENT_OPTIONS') || urlParams.get('options') || urlParams.get('params');
+    if (placementParam) {
+      try {
+        const parsed = JSON.parse(placementParam);
+        const id = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.leadId || parsed.LEAD_ID;
+        if (id && String(id) !== '420') return String(id);
+      } catch (e) { }
+    }
+
+    // 3. Document Referrer (contains CRM lead detail card URL: /crm/lead/details/<id>/)
+    try {
+      if (document.referrer) {
+        const refMatch = document.referrer.match(/\/crm\/lead\/details\/(\d+)/i) ||
+          document.referrer.match(/[?&](?:ID|id|leadId)=(\d+)/i);
+        if (refMatch && refMatch[1] && String(refMatch[1]) !== '420') {
+          return String(refMatch[1]);
+        }
+      }
+    } catch (_) { }
+
+    // 4. Server injected initial lead ID
+    if (window.__INITIAL_LEAD_ID__ && String(window.__INITIAL_LEAD_ID__) !== '420') {
+      return String(window.__INITIAL_LEAD_ID__);
+    }
+
+    // 5. Session storage from recent view
+    try {
+      const stored = sessionStorage.getItem('b24_last_lead_id');
+      if (stored && String(stored) !== '420') return String(stored);
+    } catch (_) { }
 
     return null;
   }
@@ -4468,14 +4491,19 @@
         try {
           const latestRes = await fetch('/api/lead/latest', { headers: getCrmAuthHeaders() });
           const latestData = await latestRes.json();
-          if (latestData?.id) {
+          if (latestData?.id && String(latestData.id) !== '420') {
             currentLeadId = String(latestData.id);
           }
         } catch (_) { }
       }
+
       if (!currentLeadId) {
-        currentLeadId = '420';
+        throw new Error('No Lead ID detected. Open this tab from a Bitrix24 Lead card or pass ?ID=<leadId>');
       }
+
+      try {
+        sessionStorage.setItem('b24_last_lead_id', currentLeadId);
+      } catch (_) { }
 
       const [cfg, lead] = await Promise.all([loadConfig(), fetchLead(currentLeadId)]);
       currentLead = lead;
@@ -4487,16 +4515,17 @@
       resizeWindow();
     } catch (err) {
       console.error('Initialization error:', err);
-      try {
-        if (!tabConfig) tabConfig = await loadConfig();
-        currentLead = currentLead || { ID: currentLeadId || '420', UF_CRM_1791354310417: '1594' };
-        applyLayoutForLead(currentLead);
-        loadingEl.style.display = 'none';
-        contentEl.style.display = 'block';
-        resizeWindow();
-      } catch (fallbackErr) {
-        loadingEl.innerHTML = `<div class="alert alert-danger">Initialization failed: ${err.message}</div>`;
-      }
+      loadingEl.style.display = 'none';
+      contentEl.style.display = 'block';
+      contentEl.innerHTML = `
+        <div style="padding: 24px; max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center;">
+          <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
+          <h3 style="margin: 0 0 8px 0; color: #333; font-size: 18px;">Unable to Load Lead Record</h3>
+          <p style="color: #666; font-size: 14px; line-height: 1.5; margin: 0 0 16px 0;">${err.message || 'Item was not found.'}</p>
+          <p style="color: #999; font-size: 12px; margin: 0;">Please open this tab inside a valid Bitrix24 Lead details page or provide <code>?id=&lt;leadId&gt;</code>.</p>
+        </div>
+      `;
+      resizeWindow();
     }
   }
 
