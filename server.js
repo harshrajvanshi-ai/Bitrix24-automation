@@ -1528,26 +1528,60 @@ const knownMultipleFileFields = new Set([
   'UF_CRM_DOCUMENTS'
 ]);
 
+// Known Bitrix24 single-file user fields that accept { fileData: [name, base64] }
+const knownSingleFileFields = new Set([
+  'UF_CRM_PRIMARY_IMAGE', 'UF_CRM_TITLE_DEED', 'UF_CRM_FORM_A_DOC',
+  'UF_CRM_FORM_A_DOCUMENT', 'UF_CRM_QR_CODE', 'UF_CRM_DOCS',
+  'UF_CRM_LISTING_AGENT_PHOTO'
+]);
+
+function cleanBase64(str) {
+  if (typeof str !== 'string') return '';
+  return str.replace(/^data:[^;]+;base64,/, '').trim();
+}
+
+function toFileData(item) {
+  if (!item) return null;
+  if (item.fileData && Array.isArray(item.fileData) && item.fileData.length === 2) {
+    return { fileData: [String(item.fileData[0]), cleanBase64(item.fileData[1])] };
+  }
+  if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
+    return { fileData: [item[0], cleanBase64(item[1])] };
+  }
+  if (item.name && item.base64) {
+    return { fileData: [item.name, cleanBase64(item.base64)] };
+  }
+  return item;
+}
+
 function normalizeFileFields(fields) {
   const normalized = { ...fields };
   for (const [code, val] of Object.entries(normalized)) {
     if (!val) continue;
 
-    // Check if value is raw [fileName, base64String] without fileData wrapper
-    if (Array.isArray(val) && val.length === 2 && typeof val[0] === 'string' && typeof val[1] === 'string' && val[1].length > 10) {
-      if (knownMultipleFileFields.has(code)) {
-        normalized[code] = [{ fileData: [val[0], val[1]] }];
+    const isMulti = knownMultipleFileFields.has(code) ||
+      code.includes('PHOTOS') ||
+      code.includes('DOCUMENTS') ||
+      (code.endsWith('_1') && !knownSingleFileFields.has(code));
+
+    const isSingle = knownSingleFileFields.has(code) ||
+      (!isMulti && (code.includes('IMAGE') || code.includes('DOC') || code.includes('DEED') || code.includes('QR')));
+
+    if (isMulti) {
+      if (Array.isArray(val)) {
+        normalized[code] = val.map(toFileData).filter(Boolean);
       } else {
-        normalized[code] = { fileData: [val[0], val[1]] };
+        const single = toFileData(val);
+        normalized[code] = single ? [single] : [];
+      }
+    } else if (isSingle) {
+      if (Array.isArray(val)) {
+        normalized[code] = toFileData(val[0]);
+      } else {
+        normalized[code] = toFileData(val);
       }
     } else if (Array.isArray(val)) {
-      // Check if it's an array of files that need fileData wrapper
-      normalized[code] = val.map(item => {
-        if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string') {
-          return { fileData: [item[0], item[1]] };
-        }
-        return item;
-      });
+      normalized[code] = val.map(toFileData).filter(Boolean);
     }
   }
   return normalized;
@@ -1863,8 +1897,9 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
 
     res.json({ success: true, result });
   } catch (err) {
-    console.error(`[API] Failed to update Lead #${leadId}:`, err.message);
-    res.status(500).json({ success: false, error: err.message });
+    const errorMsg = err.response?.data?.error_description || err.response?.data?.error || err.message;
+    console.error(`[API] Failed to update Lead #${leadId}:`, errorMsg);
+    res.status(400).json({ success: false, error: errorMsg });
   }
 });
 

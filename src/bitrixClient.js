@@ -97,7 +97,7 @@ class BitrixClient {
           const res = await axios.post(
             endpoint,
             postData,
-            { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
+            { timeout: 15000, maxContentLength: Infinity, maxBodyLength: Infinity, headers: { 'Content-Type': 'application/json' } }
           );
 
           if (res.data?.error) {
@@ -145,6 +145,10 @@ class BitrixClient {
             }
           }
 
+          const bitrixErrorMsg = err.response?.data?.error_description || err.response?.data?.error;
+          if (bitrixErrorMsg) {
+            err.message = bitrixErrorMsg;
+          }
           console.error(`[API] Bitrix24 method ${method} failed:`, err.response?.data || err.message);
           throw err;
         }

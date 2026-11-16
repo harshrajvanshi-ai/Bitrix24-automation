@@ -2586,7 +2586,7 @@
       inputElement.style.display = 'none';
 
       // Allow multiple file selection for multiple-file fields
-      const isMultiple = f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS') || f.code.endsWith('_1');
+      const isMultiple = Boolean(f.isMultiple || f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS'));
       if (isMultiple) {
         inputElement.multiple = true;
       }
@@ -4126,11 +4126,11 @@
       } else if (f.type === 'file') {
         const pendingItems = pendingFileUploads[f.code] || [];
         const inputFiles = (input.files && input.files.length > 0) ? Array.from(input.files) : [];
-        const isMultiple = input.multiple || f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS');
+        const isMultiple = Boolean(f.isMultiple || f.multiple || input.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS'));
 
         if (pendingItems.length > 0) {
           const tuples = pendingItems.map(item => {
-            const b64 = (item.dataUrl || '').split(',')[1] || '';
+            const b64 = (item.dataUrl || '').replace(/^data:[^;]+;base64,/, '').trim();
             return { name: item.name, base64: b64 };
           });
           if (isMultiple) {
@@ -4143,7 +4143,7 @@
             return new Promise((resolve) => {
               const reader = new FileReader();
               reader.onload = function (evt) {
-                const base64Data = (evt.target.result || '').split(',')[1];
+                const base64Data = (evt.target.result || '').replace(/^data:[^;]+;base64,/, '').trim();
                 if (base64Data) {
                   resolve({ name: file.name, base64: base64Data });
                 } else {
@@ -4373,7 +4373,7 @@
         if (f.type === 'file') {
           const pending = pendingFileUploads[f.code] || [];
           if (pending.length > 0) {
-            const isMultiple = f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS');
+            const isMultiple = Boolean(f.isMultiple || f.multiple || f.code.includes('PHOTOS') || f.code.includes('DOCUMENTS'));
             if (isMultiple) {
               const prev = Array.isArray(currentLead[f.code]) ? currentLead[f.code] : (currentLead[f.code] ? [currentLead[f.code]] : []);
               const added = pending.map(p => ({
