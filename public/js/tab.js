@@ -1348,15 +1348,55 @@
   }
 
   function getPreviewUrl(url) {
-    if (!url || url.startsWith('data:') || url.includes('/api/file/proxy?url=')) return url;
-    return /^https?:\/\//i.test(url) ? `/api/file/proxy?url=${encodeURIComponent(url)}` : url;
+    if (!url || url.startsWith('data:')) return url;
+    let base = url;
+    if (url.includes('/api/file/proxy?url=')) {
+      try {
+        base = decodeURIComponent(url.split('/api/file/proxy?url=')[1].split('&')[0]);
+      } catch (_) {}
+    }
+    if (!/^https?:\/\//i.test(base)) {
+      const domain = (window.BX24 && typeof window.BX24.getAuth === 'function' ? window.BX24.getAuth()?.domain : null) || window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
+      base = `https://${domain}${base.startsWith('/') ? '' : '/'}${base}`;
+    }
+
+    if (base.includes('crm_show_file.php') && currentLeadId && !base.includes('ownerId=')) {
+      base += `${base.includes('?') ? '&' : '?'}ownerTypeId=1&ownerId=${encodeURIComponent(currentLeadId)}`;
+    }
+
+    let token = '';
+    let domain = '';
+    let memberId = '';
+    let refreshToken = '';
+    if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+      const auth = window.BX24.getAuth();
+      if (auth) {
+        token = auth.access_token || '';
+        domain = auth.domain || '';
+        memberId = auth.member_id || '';
+        refreshToken = auth.refresh_token || '';
+      }
+    }
+    if (!token && window.__BITRIX_AUTH_TOKEN__) {
+      token = window.__BITRIX_AUTH_TOKEN__;
+    }
+
+    const params = new URLSearchParams();
+    params.set('url', base);
+    if (token) params.set('auth', token);
+    if (domain) params.set('domain', domain);
+    if (memberId) params.set('member_id', memberId);
+    if (refreshToken) params.set('refresh_token', refreshToken);
+
+    return `/api/file/proxy?${params.toString()}`;
   }
 
   function getNativeFileUrl(url) {
     const marker = '/api/file/proxy?url=';
     if (!url || !url.includes(marker)) return url;
     try {
-      return decodeURIComponent(url.slice(url.indexOf(marker) + marker.length));
+      const part = url.slice(url.indexOf(marker) + marker.length);
+      return decodeURIComponent(part.split('&')[0]);
     } catch (_) {
       return url;
     }
@@ -2056,46 +2096,25 @@
     _lbSetCounter();
     _lbSetNavState();
 
-    const isEmbedded = window.self !== window.top || document.documentElement.scrollHeight > window.innerHeight + 150;
     const contentEl = lightboxModal.querySelector('.lightbox-content');
-    if (isEmbedded) {
-      const docHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight, window.innerHeight);
-      lightboxModal.style.position = 'absolute';
-      lightboxModal.style.top = '0px';
-      lightboxModal.style.left = '0px';
-      lightboxModal.style.width = '100%';
-      lightboxModal.style.height = docHeight + 'px';
-      lightboxModal.style.minHeight = '100%';
-      lightboxModal.style.alignItems = 'flex-start';
+    lightboxModal.style.position = 'fixed';
+    lightboxModal.style.inset = '0';
+    lightboxModal.style.top = '0px';
+    lightboxModal.style.left = '0px';
+    lightboxModal.style.width = '100vw';
+    lightboxModal.style.height = '100vh';
+    lightboxModal.style.zIndex = '999999';
+    lightboxModal.style.display = 'flex';
+    lightboxModal.style.alignItems = 'center';
+    lightboxModal.style.justifyContent = 'center';
 
-      let targetTop = 40;
-      if (sourceEl) {
-        const elTop = sourceEl.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
-        targetTop = Math.max(20, elTop - 340);
-      } else {
-        const scrollPos = window.pageYOffset || document.documentElement.scrollTop || 0;
-        targetTop = Math.max(20, scrollPos + 40);
-      }
-
-      if (contentEl) {
-        contentEl.style.height = '85vh';
-        contentEl.style.maxHeight = '820px';
-        contentEl.style.marginTop = targetTop + 'px';
-        try { contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) { }
-      }
-    } else {
-      lightboxModal.style.position = 'fixed';
-      lightboxModal.style.top = '0px';
-      lightboxModal.style.left = '0px';
-      lightboxModal.style.width = '100%';
-      lightboxModal.style.height = '100vh';
-      lightboxModal.style.maxHeight = '100vh';
-      lightboxModal.style.alignItems = 'center';
-      if (contentEl) {
-        contentEl.style.height = '100%';
-        contentEl.style.maxHeight = '100%';
-        contentEl.style.marginTop = '';
-      }
+    if (contentEl) {
+      contentEl.style.height = '90vh';
+      contentEl.style.maxHeight = '90vh';
+      contentEl.style.marginTop = '0px';
+      contentEl.style.width = '92vw';
+      contentEl.style.maxWidth = '1200px';
+      try { contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) { }
     }
 
     lightboxModal.style.display = 'flex';
@@ -2671,13 +2690,13 @@
             fileUrl = fileItem.urlMachine || fileItem.showUrl || fileItem.downloadUrl || fileItem.url || fileItem.src || fileItem.SRC || '';
             fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
             if (!fileUrl && fid) {
-              fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
+              fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1&ownerId=${currentLeadId || ''}&fieldName=${f.code}`;
             }
             fileName = fileItem.name || fileItem.NAME || fileItem.fileName || fileItem.originalName || fileItem.ORIGINAL_NAME || '';
           }
         } else if (typeof fileItem === 'number' || (typeof fileItem === 'string' && /^\d+$/.test(fileItem.trim()))) {
           fid = String(fileItem).trim();
-          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}`;
+          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1&ownerId=${currentLeadId || ''}&fieldName=${f.code}`;
         } else if (typeof fileItem === 'string' && fileItem.startsWith('http')) {
           fileUrl = fileItem;
           fileName = fileItem.split('/').pop().split('?')[0] || '';

@@ -681,54 +681,80 @@ app.get('/api/file/proxy', async (req, res) => {
 
     let auth = StorageManager.getAuth(domain) || StorageManager.getAuth('latest');
 
-    // If URL is an internal Bitrix ajax.php endpoint without a token, resolve the signed urlMachine via BitrixClient
-    if (parsed.pathname.includes('ajax.php') && !parsed.searchParams.has('token')) {
-      const entityTypeId = parsed.searchParams.get('entityTypeId') || 1058;
-      const id = parsed.searchParams.get('id');
-      const fieldName = parsed.searchParams.get('fieldName');
-      const fileId = parsed.searchParams.get('fileId');
+    // If client supplied active OAuth credentials via query or headers, update storage and use immediately
+    const clientToken = req.query.auth || req.query.token || req.headers['x-bitrix-auth'];
+    const clientDomain = req.query.domain || domain;
+    if (clientToken) {
+      StorageManager.saveAuth({
+        access_token: clientToken,
+        refresh_token: req.query.refresh_token,
+        domain: clientDomain,
+        member_id: req.query.member_id || 'active_client'
+      });
+      auth = {
+        domain: clientDomain,
+        accessToken: clientToken,
+        refreshToken: req.query.refresh_token || auth?.refreshToken
+      };
+    }
 
-      if (id && fileId) {
-        try {
-          const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id });
-          const item = itemRes?.item || itemRes;
-          if (item) {
-            let found = null;
-            if (fieldName) {
-              let fileList = item[fieldName];
-              if (!fileList) {
-                const cleanTarget = fieldName.replace(/_/g, '').toLowerCase();
-                for (const [k, v] of Object.entries(item)) {
-                  if (k.replace(/_/g, '').toLowerCase() === cleanTarget) {
-                    fileList = v;
-                    break;
-                  }
-                }
-              }
-              const list = Array.isArray(fileList) ? fileList : [fileList];
-              found = list.find(f => f && String(f.id) === String(fileId));
-            }
-            if (!found) {
-              // Search across all properties for fileId
-              for (const val of Object.values(item)) {
-                if (Array.isArray(val)) {
-                  const match = val.find(f => f && typeof f === 'object' && String(f.id) === String(fileId));
-                  if (match) { found = match; break; }
-                } else if (val && typeof val === 'object' && String(val.id) === String(fileId)) {
-                  found = val;
+    // If URL is an internal Bitrix endpoint (ajax.php, crm_show_file.php, show_file.php),
+    // resolve the signed urlMachine via BitrixClient.call('crm.item.get') if record ID and fileId exist
+    const fileId = parsed.searchParams.get('fileId');
+    const recordId = parsed.searchParams.get('id') || parsed.searchParams.get('ownerId');
+    const entityTypeId = parsed.searchParams.get('entityTypeId') || parsed.searchParams.get('ownerTypeId') || (parsed.searchParams.has('dynamic') ? 1058 : 1);
+    const fieldName = parsed.searchParams.get('fieldName');
+
+    if (fileId && recordId && !parsed.searchParams.has('token')) {
+      try {
+        const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId });
+        const item = itemRes?.item || itemRes;
+        if (item) {
+          let found = null;
+          if (fieldName) {
+            let fileList = item[fieldName];
+            if (!fileList) {
+              const cleanTarget = fieldName.replace(/_/g, '').toLowerCase();
+              for (const [k, v] of Object.entries(item)) {
+                if (k.replace(/_/g, '').toLowerCase() === cleanTarget) {
+                  fileList = v;
                   break;
                 }
               }
             }
-            if (found && found.urlMachine) {
-              targetUrl = found.urlMachine;
-              parsed = new URL(targetUrl);
+            const list = Array.isArray(fileList) ? fileList : [fileList];
+            found = list.find(f => f && String(f.id) === String(fileId));
+          }
+          if (!found) {
+            // Search across all properties for fileId
+            for (const val of Object.values(item)) {
+              if (Array.isArray(val)) {
+                const match = val.find(f => f && typeof f === 'object' && String(f.id) === String(fileId));
+                if (match) { found = match; break; }
+              } else if (val && typeof val === 'object' && String(val.id) === String(fileId)) {
+                found = val;
+                break;
+              }
             }
           }
-        } catch (resolveErr) {
-          console.warn('[FILE PROXY] Could not resolve urlMachine for ajax URL:', resolveErr.message);
+          if (found && found.urlMachine) {
+            targetUrl = found.urlMachine;
+            parsed = new URL(targetUrl);
+          }
         }
+      } catch (resolveErr) {
+        console.warn('[FILE PROXY] Could not resolve urlMachine:', resolveErr.message);
       }
+    }
+
+    if (parsed.pathname.includes('crm_show_file.php')) {
+      if (!parsed.searchParams.has('ownerTypeId') && entityTypeId) {
+        parsed.searchParams.set('ownerTypeId', entityTypeId);
+      }
+      if (!parsed.searchParams.has('ownerId') && recordId) {
+        parsed.searchParams.set('ownerId', recordId);
+      }
+      targetUrl = parsed.toString();
     }
 
     // Attach Bitrix authentication
