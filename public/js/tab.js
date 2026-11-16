@@ -2100,6 +2100,14 @@
     }
     lightboxModal.style.display = 'none';
     lightboxModal.classList.remove('is-open');
+    lightboxModal.style.position = '';
+    lightboxModal.style.top = '';
+    lightboxModal.style.left = '';
+    lightboxModal.style.width = '';
+    lightboxModal.style.height = '';
+    lightboxModal.style.minHeight = '';
+    lightboxModal.style.maxHeight = '';
+    lightboxModal.style.alignItems = '';
     document.body.style.overflow = '';
 
     if (lightboxBody) {
@@ -2119,6 +2127,16 @@
     _lbScale = 1;
     _lbImgX = 0;
     _lbImgY = 0;
+    const zoomToggleBtn = document.getElementById('lightbox-zoom-toggle-btn');
+    if (zoomToggleBtn) {
+      zoomToggleBtn.style.display = 'none';
+      zoomToggleBtn.onclick = null;
+    }
+    if (lbZoomControls) lbZoomControls.style.display = 'none';
+    if (lbFilmstrip) lbFilmstrip.style.display = 'none';
+    if (lightboxCounter) lightboxCounter.style.display = 'none';
+    if (lbNavPrev) lbNavPrev.style.display = 'none';
+    if (lbNavNext) lbNavNext.style.display = 'none';
   }
 
   if (lightboxCloseBtn) lightboxCloseBtn.addEventListener('click', closeLightbox);
@@ -2299,7 +2317,6 @@
               </div>
             </div>
           `;
-          showInWindowImage(viewportBox, dataUrl, file.name);
         } else {
           thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
@@ -2318,7 +2335,6 @@
               </div>
             </div>
           `;
-          if (isPdf) showInWindowPdf(viewportBox, dataUrl, file.name);
         }
 
         const removeLocalItem = (ev) => {
@@ -2353,11 +2369,6 @@
           });
           const currIdx = Math.max(0, Array.from(stripWrap.querySelectorAll('.thumb-item')).indexOf(thumb));
 
-          if (isImg) {
-            showInWindowImage(viewportBox, dataUrl, file.name, allItems.length > 1 ? allItems : null, currIdx);
-          } else if (isPdf) {
-            showInWindowPdf(viewportBox, dataUrl, file.name, allItems.length > 1 ? allItems : null, currIdx);
-          }
           openLightbox(file.name, dataUrl, isPdf, allItems.length > 1 ? allItems : null, currIdx, thumb);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
@@ -2780,11 +2791,6 @@
         const existingViewHandler = (ev) => {
           ev.stopPropagation();
           const currIdx = Math.max(0, fieldGallery.indexOf(item));
-          if (item.isImage) {
-            showInWindowImage(viewportBox, item.url, item.name, fieldGallery, currIdx);
-          } else if (item.isPdf) {
-            showInWindowPdf(viewportBox, item.url, item.name, fieldGallery, currIdx);
-          }
           openLightbox(item.name, item.url, item.isPdf, fieldGallery, currIdx, thumb);
           stripWrap.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
