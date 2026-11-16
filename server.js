@@ -53,10 +53,14 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://api.bitrix24.com"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://*.bitrix24.com", "https://*.bitrix24.ae", "https://oauth.bitrix.info"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://api.bitrix24.com", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc: ["'self'", "data:", "blob:", "https:"],
+      connectSrc: ["'self'", "blob:", "data:", "https://*.bitrix24.com", "https://*.bitrix24.ae", "https://oauth.bitrix.info", "https://*.bitrix.info", "https://cdnjs.cloudflare.com", "https:"],
+      frameSrc: ["'self'", "blob:", "data:", "https://*.bitrix24.com", "https://*.bitrix24.ae", "https://oauth.bitrix.info", "https:"],
+      objectSrc: ["'self'", "blob:", "data:"],
+      workerSrc: ["'self'", "blob:", "data:", "https://cdnjs.cloudflare.com"],
       frameAncestors: [
         "'self'",
         "*.bitrix24.com",
@@ -621,6 +625,17 @@ app.post('/api/b24/:method', apiLimiter, verifyCrmAccess, async (req, res) => {
 });
 
 /**
+ * OPTIONS /api/file/proxy
+ * Handle CORS preflight requests for PDF.js and media fetch
+ */
+app.options('/api/file/proxy', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  return res.sendStatus(204);
+});
+
+/**
  * GET /api/file/proxy
  * Secure proxy endpoint to stream Bitrix24 media and file attachments.
  * Resolves browser 403 Forbidden issues caused by iframe cross-origin cookie restrictions.
@@ -719,9 +734,13 @@ app.get('/api/file/proxy', async (req, res) => {
       validateStatus: (status) => status < 400
     });
 
-    // Remove frame restrictions so PDF and media can be rendered in iframes
+    // Remove frame restrictions so PDF and media can be rendered in iframes & canvas
     res.removeHeader('X-Frame-Options');
     res.removeHeader('Content-Security-Policy');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, Content-Type, Content-Length, X-File-Name, Accept-Ranges');
+    res.setHeader('Accept-Ranges', 'bytes');
 
     // Extract filename from Bitrix Content-Disposition if present
     const rawDisposition = response.headers['content-disposition'] || '';

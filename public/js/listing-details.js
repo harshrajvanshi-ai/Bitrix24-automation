@@ -1759,6 +1759,235 @@
     window.open(nativeUrl, "_blank", "noopener");
   }
 
+  // HTML5 Canvas PDF Viewer (Eliminates Chrome nested iframe blocking)
+  function renderPdfCanvasViewer(container, pdfUrl, title, isLightbox = false) {
+    if (!container) return;
+    container.innerHTML = "";
+
+    const viewerWrap = document.createElement("div");
+    viewerWrap.className = isLightbox
+      ? "b24-pdf-viewer lb-pdf-viewer"
+      : "b24-pdf-viewer inline-pdf-viewer";
+
+    const docName = title || "document.pdf";
+    viewerWrap.innerHTML = `
+      <div class="b24-pdf-controls">
+        <div class="b24-pdf-ctrl-group">
+          <button type="button" class="b24-pdf-btn pdf-prev-btn" title="Previous page" disabled>&lsaquo; Prev</button>
+          <span class="b24-pdf-page-indicator">
+            Page <span class="pdf-current-page">1</span> of <span class="pdf-total-pages">-</span>
+          </span>
+          <button type="button" class="b24-pdf-btn pdf-next-btn" title="Next page" disabled>Next &rsaquo;</button>
+        </div>
+        <div class="b24-pdf-ctrl-group">
+          <button type="button" class="b24-pdf-btn pdf-zoom-out" title="Zoom out">&minus;</button>
+          <span class="b24-pdf-zoom-val">Fit</span>
+          <button type="button" class="b24-pdf-btn pdf-zoom-in" title="Zoom in">&plus;</button>
+          <button type="button" class="b24-pdf-btn pdf-zoom-fit" title="Fit width">Fit</button>
+        </div>
+        <div class="b24-pdf-ctrl-group">
+          <a href="${pdfUrl}" target="_blank" rel="noopener noreferrer" class="b24-pdf-btn b24-pdf-link-btn" title="Open PDF in new tab">↗ Open Tab</a>
+          <a href="${pdfUrl}" download="${docName}" class="b24-pdf-btn b24-pdf-link-btn" title="Download PDF file">⤓ Download</a>
+        </div>
+      </div>
+      <div class="b24-pdf-canvas-stage">
+        <div class="b24-pdf-loading">
+          <div class="b24-pdf-spinner"></div>
+          <span>Rendering PDF document...</span>
+        </div>
+        <canvas class="b24-pdf-canvas" style="display:none;"></canvas>
+      </div>
+    `;
+    container.appendChild(viewerWrap);
+
+    const prevBtn = viewerWrap.querySelector(".pdf-prev-btn");
+    const nextBtn = viewerWrap.querySelector(".pdf-next-btn");
+    const curPageEl = viewerWrap.querySelector(".pdf-current-page");
+    const totalPagesEl = viewerWrap.querySelector(".pdf-total-pages");
+    const zoomInBtn = viewerWrap.querySelector(".pdf-zoom-in");
+    const zoomOutBtn = viewerWrap.querySelector(".pdf-zoom-out");
+    const zoomFitBtn = viewerWrap.querySelector(".pdf-zoom-fit");
+    const zoomValEl = viewerWrap.querySelector(".b24-pdf-zoom-val");
+    const stage = viewerWrap.querySelector(".b24-pdf-canvas-stage");
+    const loadingEl = viewerWrap.querySelector(".b24-pdf-loading");
+    const canvas = viewerWrap.querySelector(".b24-pdf-canvas");
+    const ctx = canvas.getContext("2d");
+
+    let pdfDoc = null;
+    let pageNum = 1;
+    let pageRendering = false;
+    let pageNumPending = null;
+    let scale = "fit";
+
+    function showFallback(errMsg) {
+      if (!loadingEl || !stage) return;
+      loadingEl.style.display = "none";
+      stage.innerHTML = `
+        <div class="b24-pdf-fallback-card">
+          <div class="pdf-fallback-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <h3 class="pdf-fallback-title">PDF Document Preview</h3>
+          <p class="pdf-fallback-desc">
+            ${errMsg ? "Browser security policy prevented direct in-frame rendering." : "Click below to open or download this document."}
+          </p>
+          <div class="pdf-fallback-btns">
+            <a href="${pdfUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+              <span>↗</span> Open in New Window
+            </a>
+            <a href="${pdfUrl}" download="${docName}" class="btn btn-secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+              <span>⤓</span> Download File
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPage(num) {
+      if (!pdfDoc) return;
+      pageRendering = true;
+      pdfDoc.getPage(num).then((page) => {
+        const unscaledViewport = page.getViewport({ scale: 1.0 });
+        let currentScale = 1.0;
+        if (scale === "fit") {
+          const availableWidth = Math.max(stage.clientWidth - 40, 200);
+          currentScale = Math.min(Math.max(availableWidth / unscaledViewport.width, 0.4), 2.5);
+          zoomValEl.textContent = `${Math.round(currentScale * 100)}%`;
+        } else {
+          currentScale = scale;
+          zoomValEl.textContent = `${Math.round(currentScale * 100)}%`;
+        }
+
+        const viewport = page.getViewport({ scale: currentScale });
+        const outputScale = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = Math.floor(viewport.width) + "px";
+        canvas.style.height = Math.floor(viewport.height) + "px";
+
+        const transform = outputScale !== 1
+          ? [outputScale, 0, 0, outputScale, 0, 0]
+          : null;
+
+        const renderContext = {
+          canvasContext: ctx,
+          transform: transform,
+          viewport: viewport
+        };
+
+        const renderTask = page.render(renderContext);
+        renderTask.promise.then(() => {
+          pageRendering = false;
+          loadingEl.style.display = "none";
+          canvas.style.display = "block";
+          curPageEl.textContent = num;
+          prevBtn.disabled = num <= 1;
+          nextBtn.disabled = num >= pdfDoc.numPages;
+
+          if (pageNumPending !== null) {
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        }).catch((err) => {
+          pageRendering = false;
+          console.warn("PDF page render error:", err);
+          showFallback(err.message);
+        });
+      }).catch((err) => {
+        pageRendering = false;
+        console.warn("PDF getPage error:", err);
+        showFallback(err.message);
+      });
+    }
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (pageNum <= 1) return;
+      pageNum--;
+      queueRenderPage(pageNum);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (pageNum >= (pdfDoc?.numPages || 1)) return;
+      pageNum++;
+      queueRenderPage(pageNum);
+    });
+
+    zoomInBtn.addEventListener("click", () => {
+      const current = typeof scale === "number" ? scale : 1.0;
+      scale = Math.min(3.0, Math.round((current + 0.25) * 100) / 100);
+      queueRenderPage(pageNum);
+    });
+
+    zoomOutBtn.addEventListener("click", () => {
+      const current = typeof scale === "number" ? scale : 1.0;
+      scale = Math.max(0.5, Math.round((current - 0.25) * 100) / 100);
+      queueRenderPage(pageNum);
+    });
+
+    zoomFitBtn.addEventListener("click", () => {
+      scale = "fit";
+      queueRenderPage(pageNum);
+    });
+
+    function initDoc(pdfLib) {
+      try {
+        pdfLib.GlobalWorkerOptions.workerSrc = "/js/vendor/pdf.worker.min.js";
+        let docSource;
+        if (pdfUrl.startsWith("data:application/pdf;base64,")) {
+          const base64 = pdfUrl.split("base64,")[1];
+          const binaryStr = atob(base64);
+          const bytes = new Uint8Array(binaryStr.length);
+          for (let i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+          }
+          docSource = { data: bytes };
+        } else {
+          docSource = { url: pdfUrl, withCredentials: false };
+        }
+
+        const task = pdfLib.getDocument(docSource);
+        task.promise.then((doc) => {
+          pdfDoc = doc;
+          totalPagesEl.textContent = doc.numPages;
+          renderPage(pageNum);
+        }).catch((err) => {
+          console.warn("PDF loadingTask error:", err);
+          showFallback(err.message);
+        });
+      } catch (e) {
+        console.warn("initDoc error:", e);
+        showFallback(e.message);
+      }
+    }
+
+    if (window.pdfjsLib) {
+      initDoc(window.pdfjsLib);
+    } else {
+      const script = document.createElement("script");
+      script.src = "/js/vendor/pdf.min.js";
+      script.onload = () => {
+        if (window.pdfjsLib) initDoc(window.pdfjsLib);
+        else showFallback();
+      };
+      script.onerror = () => showFallback();
+      document.head.appendChild(script);
+    }
+  }
+
   function _lbSetCounter() {
     if (_lbGallery.length > 1) {
       lightboxCounter.textContent = `${_lbIndex + 1} / ${_lbGallery.length}`;
@@ -1852,9 +2081,11 @@
     const existingImg = lightboxBody.querySelector(".lightbox-img");
     const existingIframe = lightboxBody.querySelector(".lightbox-iframe");
     const existingError = lightboxBody.querySelector(".lb-error-box");
+    const existingPdf = lightboxBody.querySelector(".b24-pdf-viewer");
     if (existingImg) existingImg.remove();
     if (existingIframe) existingIframe.remove();
     if (existingError) existingError.remove();
+    if (existingPdf) existingPdf.remove();
 
     const item = _lbGallery[_lbIndex];
     lightboxTitle.textContent = item.name || "Preview";
@@ -1869,11 +2100,7 @@
       if (lbZoomControls) lbZoomControls.style.display = "none";
 
       const proxyUrl = getPreviewUrl(item.url);
-
-      const iframe = document.createElement("iframe");
-      iframe.className = "lightbox-iframe";
-      iframe.src = proxyUrl;
-      lightboxBody.appendChild(iframe);
+      renderPdfCanvasViewer(lightboxBody, proxyUrl, item.name, true);
     } else if (item.isImage) {
       // Image
       if (lightboxFileIcon) lightboxFileIcon.textContent = "";
@@ -2163,9 +2390,11 @@
     const img = lightboxBody.querySelector(".lightbox-img");
     const iframe = lightboxBody.querySelector(".lightbox-iframe");
     const errorBox = lightboxBody.querySelector(".lb-error-box");
+    const pdfViewer = lightboxBody.querySelector(".b24-pdf-viewer");
     if (img) img.remove();
     if (iframe) iframe.remove();
     if (errorBox) errorBox.remove();
+    if (pdfViewer) pdfViewer.remove();
     document.body.style.overflow = "";
     _lbGallery = [];
     _lbIndex = 0;
@@ -2662,6 +2891,7 @@
 
   // Shows a PDF directly inside the inline viewport in the same window
   function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
+    if (!viewportBox) return;
     const proxyUrl =
       url.startsWith("http") && !url.includes("/api/file/proxy")
         ? `/api/file/proxy?url=${encodeURIComponent(url)}`
@@ -2674,15 +2904,16 @@
         <span class="inline-preview-name">PDF Viewer: ${name}</span>
         <div class="inline-preview-topbar-actions">
           <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
-          <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">Open</a>
+          <a href="${proxyUrl}" target="_blank" rel="noopener noreferrer" class="inline-preview-action-btn" title="Open PDF in new tab">Open</a>
           <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">Download</a>
           <button type="button" class="inline-preview-close" title="Hide PDF" aria-label="Close preview">&times;</button>
         </div>
       </div>
-      <iframe class="inline-preview-iframe" src="${proxyUrl}">
-        <p style="padding:20px;color:#fff;">Your browser does not support inline PDF viewing. <a href="${proxyUrl}" target="_blank" style="color:#38bdf8;">Click here to open the document</a></p>
-      </iframe>
+      <div class="inline-pdf-container" style="width:100%;height:calc(100% - 36px);margin-top:36px;"></div>
     `;
+
+    const container = viewportBox.querySelector(".inline-pdf-container");
+    renderPdfCanvasViewer(container, proxyUrl, name, false);
 
     viewportBox
       .querySelector(".zoom-btn")
