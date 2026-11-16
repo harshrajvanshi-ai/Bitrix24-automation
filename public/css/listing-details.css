@@ -146,7 +146,7 @@ body {
   margin-bottom: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
   position: sticky;
-  top: 0;
+  top: -20px;
   z-index: 100;
 }
 
@@ -2205,7 +2205,7 @@ textarea.form-control {
    ========================================================================= */
 .form-actions-bar {
   position: sticky;
-  bottom: 0;
+  bottom: -30px;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -3016,7 +3016,7 @@ html.crm-lockout-active #crm-lockout-shield {
 /* ==========================================================================
    CRM-Only Security Lockout Shield
    ========================================================================== */
-html.crm-lockout-active body > *:not(#crm-lockout-shield) {
+html.crm-lockout-active body>*:not(#crm-lockout-shield) {
   display: none !important;
 }
 
@@ -3156,7 +3156,7 @@ html.crm-lockout-active #crm-lockout-shield {
 /* ==========================================================================
    CRM-Only Security Lockout Shield
    ========================================================================== */
-html.crm-lockout-active body > *:not(#crm-lockout-shield) {
+html.crm-lockout-active body>*:not(#crm-lockout-shield) {
   display: none !important;
 }
 
