@@ -140,6 +140,17 @@
     if (window.BX24 && typeof window.BX24.fitWindow === 'function') {
       window.BX24.fitWindow();
     }
+    try {
+      const h = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+        document.documentElement.offsetHeight,
+      );
+      if (window.BX24 && typeof window.BX24.resizeWindow === 'function') {
+        window.BX24.resizeWindow(null, h + 30);
+      }
+    } catch (_) {}
   }
 
   function setDirty(state) {

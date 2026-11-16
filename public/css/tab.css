@@ -117,15 +117,37 @@ body.rtl {
   max-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 12px 14px 28px;
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
+  padding: 16px 20px 32px;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
   position: relative;
   box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100% - 16px);
+}
+
+#lead-tab-form {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+#fields-container {
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 /* =========================================================================
@@ -1110,7 +1132,7 @@ select.form-control option {
    ========================================================================= */
 .form-actions-bar {
   position: sticky;
-  bottom: -28px;
+  bottom: -32px;
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -1127,7 +1149,7 @@ select.form-control option {
   justify-content: space-between;
   z-index: 100;
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
-  margin-top: 10px;
+  margin-top: auto;
 }
 
 .form-actions-bar .btn-save-b24 {
