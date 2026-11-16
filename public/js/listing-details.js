@@ -5820,11 +5820,17 @@ function resolveCountryCode(countryName) {
         const removedSet = removedFileIds[fieldKey] || new Set();
         if (fileList.length === 0 && removedSet.size === 0) continue;
 
+        const fConfig = findFieldConfig(fieldKey);
         const isMulti =
-          fConfig?.isMultiple ||
-          fieldKey.includes("1791881642219") ||
-          fieldKey.includes("1791881665252") ||
-          fieldKey.includes("1791544736052");
+          Boolean(
+            fConfig?.isMultiple ||
+            fConfig?.multiple ||
+            fieldKey.includes("1791881642219") ||
+            fieldKey.includes("1791881665252") ||
+            fieldKey.includes("1791544736052") ||
+            fieldKey.includes("PHOTOS") ||
+            fieldKey.includes("DOCUMENTS")
+          );
 
         if (isMulti) {
           // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
@@ -5846,7 +5852,7 @@ function resolveCountryCode(countryName) {
 
           const newTuples = fileList.map((item) => [
             item.name,
-            item.dataUrl.split(",")[1] || "",
+            (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
           ]);
           const combined = [...keptIds, ...newTuples];
           payload[fieldKey] = combined.length ? combined : [""];
@@ -5854,7 +5860,7 @@ function resolveCountryCode(countryName) {
           // Single file field
           if (fileList.length > 0) {
             const item = fileList[0];
-            const base64 = item.dataUrl.split(",")[1] || "";
+            const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
             payload[fieldKey] = { fileData: [item.name, base64] };
           } else if (removedSet.size > 0) {
             // Delete existing single file in Bitrix CRM
