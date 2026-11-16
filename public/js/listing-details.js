@@ -1239,6 +1239,7 @@
   const refreshBtn = document.getElementById("btn-refresh");
   const sectionNavPills = document.getElementById("section-nav-pills");
   const saveBtn = document.getElementById("btn-save");
+  const saveBtnTop = document.getElementById("btn-save-top");
   const cancelBtn = document.getElementById("btn-cancel");
   const dirtyIndicator = document.getElementById("dirty-indicator");
   const dirtyText = document.getElementById("dirty-text");
@@ -5349,12 +5350,26 @@ function resolveCountryCode(countryName) {
   });
 
   // Save changes
+  if (saveBtnTop) {
+    saveBtnTop.addEventListener("click", () => {
+      if (typeof formEl.requestSubmit === "function") {
+        formEl.requestSubmit();
+      } else {
+        formEl.dispatchEvent(new Event("submit", { cancelable: true }));
+      }
+    });
+  }
+
   formEl.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!currentListingId) return;
 
     saveBtn.disabled = true;
     saveBtn.innerHTML = "SAVING...";
+    if (saveBtnTop) {
+      saveBtnTop.disabled = true;
+      saveBtnTop.innerHTML = "SAVING...";
+    }
 
     try {
       const payload = {};
@@ -5680,6 +5695,10 @@ function resolveCountryCode(countryName) {
     } finally {
       saveBtn.disabled = false;
       saveBtn.innerHTML = "SAVE CHANGES";
+      if (saveBtnTop) {
+        saveBtnTop.disabled = false;
+        saveBtnTop.innerHTML = "SAVE CHANGES";
+      }
     }
   });
 

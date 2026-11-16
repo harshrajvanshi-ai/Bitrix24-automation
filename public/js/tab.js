@@ -113,6 +113,7 @@
   const fieldsCountBadge = document.getElementById('fields-count-badge');
   const stageInfoText = document.getElementById('stage-info-text');
   const saveBtn = document.getElementById('btn-save');
+  const saveBtnTop = document.getElementById('btn-save-top');
   const cancelBtn = document.getElementById('btn-cancel');
   const refreshBtn = document.getElementById('btn-refresh');
   const toggleAllBtn = document.getElementById('btn-toggle-all');
@@ -3858,6 +3859,10 @@
 
     saveBtn.disabled = true;
     saveBtn.textContent = 'SAVING RECORD...';
+    if (saveBtnTop) {
+      saveBtnTop.disabled = true;
+      saveBtnTop.textContent = 'SAVING RECORD...';
+    }
 
     const payload = {};
     const filePromises = [];
@@ -4183,6 +4188,10 @@
     } finally {
       saveBtn.disabled = false;
       saveBtn.textContent = 'SAVE CHANGES';
+      if (saveBtnTop) {
+        saveBtnTop.disabled = false;
+        saveBtnTop.textContent = 'SAVE CHANGES';
+      }
       resizeWindow();
     }
   }
@@ -4257,6 +4266,7 @@
 
   // Event Listeners
   formEl.addEventListener('submit', handleSave);
+  if (saveBtnTop) saveBtnTop.addEventListener('click', handleSave);
   refreshBtn.addEventListener('click', handleRefresh);
 
   window.addEventListener('beforeunload', (e) => {
