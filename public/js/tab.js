@@ -145,17 +145,23 @@
   }
 
   function resizeWindow() {
-    if (window.BX24 && typeof window.BX24.fitWindow === 'function') {
-      window.BX24.fitWindow();
-    }
+    if (!window.BX24) return;
     try {
+      if (typeof window.BX24.fitWindow === 'function') {
+        window.BX24.fitWindow();
+      }
+      const container = document.querySelector('.tab-container') || document.getElementById('content') || document.body;
+      const contentEl = document.getElementById('content');
       const h = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.offsetHeight,
+        container ? container.scrollHeight : 0,
+        container ? container.offsetHeight : 0,
+        contentEl ? contentEl.scrollHeight : 0,
+        contentEl ? contentEl.offsetHeight : 0,
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0,
+        750
       );
-      if (window.BX24 && typeof window.BX24.resizeWindow === 'function') {
+      if (typeof window.BX24.fitWindow !== 'function' && typeof window.BX24.resizeWindow === 'function') {
         window.BX24.resizeWindow(null, h + 30);
       }
     } catch (_) {}

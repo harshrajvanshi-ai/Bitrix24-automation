@@ -353,12 +353,60 @@ app.all('/listing-details', (req, res) => {
     });
   }
 
+  // Extract listing ID from PLACEMENT_OPTIONS, parameters, or referrer
+  let initialListingId = null;
+  const placementOpts = req.body?.PLACEMENT_OPTIONS || req.query?.PLACEMENT_OPTIONS;
+  if (placementOpts) {
+    try {
+      const parsed = typeof placementOpts === 'string' ? JSON.parse(placementOpts) : placementOpts;
+      initialListingId = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.listingId || parsed.LISTING_ID;
+    } catch (e) {}
+  }
+  if (!initialListingId) {
+    const rawOpts = req.body?.options || req.query?.options || req.body?.params || req.query?.params;
+    if (rawOpts) {
+      try {
+        const parsed = typeof rawOpts === 'string' ? JSON.parse(rawOpts) : rawOpts;
+        initialListingId = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.listingId || parsed.LISTING_ID;
+      } catch (e) {}
+    }
+  }
+  if (!initialListingId) {
+    initialListingId = req.query?.ID || req.query?.id || req.query?.listingId || req.body?.ID || req.body?.id || req.body?.ENTITY_ID || req.query?.ENTITY_ID;
+  }
+  if (!initialListingId && req.headers?.referer) {
+    const m = req.headers.referer.match(/\/crm\/type\/(?:1058|16)\/details\/(\d+)/i) ||
+      req.headers.referer.match(/\/crm\/type\/\d+\/details\/(\d+)/i) ||
+      req.headers.referer.match(/[?&](?:ID|id|listingId)=(\d+)/i);
+    if (m && m[1]) initialListingId = m[1];
+  }
+
   const requestedVersion = req.query?.layout || req.body?.layout || SchemaMap.getLayoutVersion();
   const effectiveLayoutVersion = (requestedVersion === 'v2') ? 'v2' : 'v1';
   console.log(`[RENDER /listing-details] Rendered Listing Details tab with layout version: ${effectiveLayoutVersion}`);
 
   const htmlPath = path.join(__dirname, 'views/listing-details.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
+
+  if (initialListingId && String(initialListingId) !== '108') {
+    html = html.replace(
+      'window.__INITIAL_LISTING_ID__ = null;',
+      `window.__INITIAL_LISTING_ID__ = "${initialListingId}";`
+    );
+  }
+
+  const auth = StorageManager.getAuth('latest');
+  let bitrixDomain = req.body?.DOMAIN || req.query?.DOMAIN || auth?.domain;
+  if (!bitrixDomain && config.INBOUND_WEBHOOK_URL) {
+    try { bitrixDomain = new URL(config.INBOUND_WEBHOOK_URL).hostname; } catch (e) {}
+  }
+  if (!bitrixDomain) bitrixDomain = 'csl.bitrix24.com';
+
+  html = html.replace(
+    'window.__BITRIX_DOMAIN__ = null;',
+    `window.__BITRIX_DOMAIN__ = "${bitrixDomain}";`
+  );
+
   html = html.replace(
     'window.__LAYOUT_VERSION__ = null;',
     `window.__LAYOUT_VERSION__ = "${effectiveLayoutVersion}";`

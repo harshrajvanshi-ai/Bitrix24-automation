@@ -1413,17 +1413,29 @@
   }
 
   function resizeWindow() {
-    if (window.BX24 && typeof window.BX24.fitWindow === "function") {
-      window.BX24.fitWindow();
-    }
+    if (!window.BX24) return;
     try {
+      if (typeof window.BX24.fitWindow === "function") {
+        window.BX24.fitWindow();
+      }
+      const container =
+        document.querySelector(".listing-tab-container") ||
+        document.getElementById("content") ||
+        document.body;
+      const contentEl = document.getElementById("content");
       const h = Math.max(
-        document.body.scrollHeight,
-        document.documentElement.scrollHeight,
-        document.body.offsetHeight,
-        document.documentElement.offsetHeight,
+        container ? container.scrollHeight : 0,
+        container ? container.offsetHeight : 0,
+        contentEl ? contentEl.scrollHeight : 0,
+        contentEl ? contentEl.offsetHeight : 0,
+        document.body ? document.body.scrollHeight : 0,
+        document.documentElement ? document.documentElement.scrollHeight : 0,
+        750,
       );
-      if (window.BX24 && typeof window.BX24.resizeWindow === "function") {
+      if (
+        typeof window.BX24.fitWindow !== "function" &&
+        typeof window.BX24.resizeWindow === "function"
+      ) {
         window.BX24.resizeWindow(null, h + 30);
       }
     } catch (_) {}
@@ -1459,28 +1471,98 @@
   }
 
   function resolveListingId() {
-    if (window.BX24 && typeof window.BX24.placement === "object") {
-      const placementInfo = window.BX24.placement.info();
-      const options = placementInfo?.options;
-      if (options) {
-        if (typeof options === "string") {
-          try {
-            const parsed = JSON.parse(options);
-            return parsed.ID || parsed.id || parsed.ENTITY_ID;
-          } catch (e) {}
-        } else if (typeof options === "object") {
-          return options.ID || options.id || options.ENTITY_ID;
+    // 1. BX24 placement info
+    if (
+      window.BX24 &&
+      typeof window.BX24.placement === "object" &&
+      typeof window.BX24.placement.info === "function"
+    ) {
+      try {
+        const placementInfo = window.BX24.placement.info();
+        const options = placementInfo?.options;
+        if (options) {
+          if (typeof options === "string") {
+            try {
+              const parsed = JSON.parse(options);
+              const id =
+                parsed.ID ||
+                parsed.id ||
+                parsed.ENTITY_ID ||
+                parsed.entityId ||
+                parsed.listingId ||
+                parsed.LISTING_ID;
+              if (id && String(id) !== "108") return String(id);
+            } catch (e) {}
+          } else if (typeof options === "object") {
+            const id =
+              options.ID ||
+              options.id ||
+              options.ENTITY_ID ||
+              options.entityId ||
+              options.listingId ||
+              options.LISTING_ID;
+            if (id && String(id) !== "108") return String(id);
+          }
         }
-      }
+      } catch (e) {}
     }
 
+    // 2. Explicit URL query parameter or PLACEMENT_OPTIONS in URL
     const urlParams = new URLSearchParams(window.location.search);
-    return (
+    const directId =
       urlParams.get("ID") ||
       urlParams.get("id") ||
       urlParams.get("listingId") ||
-      "108"
-    );
+      urlParams.get("ENTITY_ID") ||
+      urlParams.get("entityId");
+    if (directId && String(directId) !== "108") return String(directId);
+
+    const placementParam =
+      urlParams.get("PLACEMENT_OPTIONS") ||
+      urlParams.get("options") ||
+      urlParams.get("params");
+    if (placementParam) {
+      try {
+        const parsed = JSON.parse(placementParam);
+        const id =
+          parsed.ID ||
+          parsed.id ||
+          parsed.ENTITY_ID ||
+          parsed.entityId ||
+          parsed.listingId ||
+          parsed.LISTING_ID;
+        if (id && String(id) !== "108") return String(id);
+      } catch (e) {}
+    }
+
+    // 3. Document Referrer (contains CRM dynamic 1058 / 16 detail card URL: /crm/type/1058/details/<id>/)
+    try {
+      if (document.referrer) {
+        const refMatch =
+          document.referrer.match(/\/crm\/type\/(?:1058|16)\/details\/(\d+)/i) ||
+          document.referrer.match(/\/crm\/type\/\d+\/details\/(\d+)/i) ||
+          document.referrer.match(/[?&](?:ID|id|listingId)=(\d+)/i);
+        if (refMatch && refMatch[1] && String(refMatch[1]) !== "108") {
+          return String(refMatch[1]);
+        }
+      }
+    } catch (_) {}
+
+    // 4. Server injected initial listing ID
+    if (
+      window.__INITIAL_LISTING_ID__ &&
+      String(window.__INITIAL_LISTING_ID__) !== "108"
+    ) {
+      return String(window.__INITIAL_LISTING_ID__);
+    }
+
+    // 5. Session storage from recent view
+    try {
+      const stored = sessionStorage.getItem("b24_last_listing_id");
+      if (stored && String(stored) !== "108") return String(stored);
+    } catch (_) {}
+
+    return null;
   }
 
   // Detects the layout strictly from the listing entity field
