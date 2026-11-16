@@ -136,6 +136,14 @@
     }, 4000);
   }
 
+  let resizeTimer = null;
+  function scheduleResize(delay = 60) {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      resizeWindow();
+    }, delay);
+  }
+
   function resizeWindow() {
     if (window.BX24 && typeof window.BX24.fitWindow === 'function') {
       window.BX24.fitWindow();
@@ -150,6 +158,15 @@
       if (window.BX24 && typeof window.BX24.resizeWindow === 'function') {
         window.BX24.resizeWindow(null, h + 30);
       }
+    } catch (_) {}
+  }
+
+  if (typeof ResizeObserver !== 'undefined') {
+    try {
+      const ro = new ResizeObserver(() => {
+        scheduleResize(50);
+      });
+      if (document.body) ro.observe(document.body);
     } catch (_) {}
   }
 

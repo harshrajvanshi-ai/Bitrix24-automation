@@ -121,7 +121,6 @@ body.rtl {
   max-width: 100% !important;
   width: 100% !important;
   margin: 0 !important;
-  position: relative;
   box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
