@@ -744,10 +744,18 @@
         lFields.bedrooms,
         lFields.area,
         lFields.community,
+        lFields.subCommunity,
         lFields.furnished,
         lFields.status,
         lFields.stageId,
-        'ufCrm16ReTransaction'
+        'ufCrm16ReTransaction',
+        'ufCrm16ProjectName',
+        'ufCrm16MasterProject',
+        'ufCrm16BuildingBayut',
+        'ufCrm16Building',
+        'ufCrm16_1791173032',
+        'ufCrm16City',
+        'ufCrm16Location'
       ],
       start: pageStart
     };
@@ -769,12 +777,16 @@
       hasNextPage = Boolean(res.next);
 
       // Perform Client-side Refinements:
-      // (Transaction compatibility, Budget Tolerance, Min/Exact Bedrooms, Status check, and Substring Area matching)
+      // (Transaction compatibility, Budget Tolerance with FX conversion, Min/Exact Bedrooms, Status check, and Full Substring Location matching)
       const matchedItems = rawItems.filter(item => {
-        // Status check: allow Active (AVAILABLE_STATUS_ID: 924) or unassigned/null status
+        // Status check: allow Active, Available, Draft, or unassigned. Only exclude explicitly inactive/closed listings.
         const itemStatus = item[lFields.status];
-        if (itemStatus && parseInt(itemStatus, 10) !== CONFIG.ENUMS.AVAILABLE_STATUS_ID && String(itemStatus) !== '924') {
-          return false;
+        if (itemStatus !== undefined && itemStatus !== null && itemStatus !== '') {
+          const s = String(itemStatus).trim().toLowerCase();
+          const inactive = ['930', '932', '934', '936', '938', '912', 'sold', 'rented', 'off-market', 'withdrawn', 'expired', 'archived'];
+          if (inactive.includes(s)) {
+            return false;
+          }
         }
 
         // --- C1: TRANSACTION / LISTING TYPE COMPATIBILITY GUARD ---
@@ -788,8 +800,14 @@
           return false;
         }
 
-        // Price / Budget check
-        const itemPrice = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
+        // Price / Budget check with foreign currency conversion to AED
+        const rawPrice = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
+        const cur = String(item[lFields.currencyId] || 'AED').toUpperCase();
+        let itemPriceAed = rawPrice;
+        if (cur === 'USD') itemPriceAed = rawPrice * 3.6725;
+        else if (cur === 'EUR') itemPriceAed = rawPrice * 4.0;
+        else if (cur === 'GBP') itemPriceAed = rawPrice * 4.7;
+
         let pMin = filters.priceMin;
         let pMax = filters.priceMax;
 
@@ -798,8 +816,8 @@
           if (pMax !== null && pMax > 0) pMax = pMax * 1.1;             // +10% tolerance
         }
 
-        if (pMin !== null && pMin > 0 && itemPrice > 0 && itemPrice < pMin) return false;
-        if (pMax !== null && pMax > 0 && itemPrice > 0 && itemPrice > pMax) return false;
+        if (pMin !== null && pMin > 0 && itemPriceAed > 0 && itemPriceAed < pMin) return false;
+        if (pMax !== null && pMax > 0 && itemPriceAed > 0 && itemPriceAed > pMax) return false;
 
         // Bedrooms check
         if (filters.bedrooms !== null) {
@@ -811,15 +829,21 @@
           }
         }
 
-        // Area / Community substring match (checking area field, community field, and listing title)
+        // Area / Community / Project substring match (checking area field, community, project, and title)
         if (filters.area) {
           const cleanTokens = cleanAreaQuery(filters.area);
           if (cleanTokens.length > 0) {
             const locText = [
               item[lFields.area] || '',
               item[lFields.community] || '',
-              item.ufCrm16BuildingBayut || '',
+              item[lFields.subCommunity] || '',
               item.ufCrm16ProjectName || '',
+              item.ufCrm16MasterProject || '',
+              item.ufCrm16BuildingBayut || '',
+              item.ufCrm16Building || '',
+              item.ufCrm16_1791173032 || '',
+              item.ufCrm16City || '',
+              item.ufCrm16Location || '',
               item.title || ''
             ].join(' ').toLowerCase();
 
@@ -949,22 +973,18 @@
 
         <div class="card-specs-grid">
           <div class="spec-item">
-            <span class="spec-icon"></span>
             <span class="spec-label">Beds:</span>
             <span class="spec-val">${beds > 0 ? beds : 'Studio / Any'}</span>
           </div>
           <div class="spec-item">
-            <span class="spec-icon"></span>
             <span class="spec-label">Area:</span>
             <span class="spec-val">${escapeHtml(area)}</span>
           </div>
           <div class="spec-item">
-            <span class="spec-icon"></span>
             <span class="spec-label">Furnished:</span>
             <span class="spec-val">${escapeHtml(furnishedLabel)}</span>
           </div>
           <div class="spec-item">
-            <span class="spec-icon"></span>
             <span class="spec-label">Type:</span>
             <span class="spec-val">${escapeHtml(propTypeLabel)}</span>
           </div>

@@ -230,17 +230,22 @@
     if (transaction === 'RENT') {
       // Rental listings: Cheques and Available From date (Rental Frequency removed)
       const cheques = getValue(item, 'cheques', [
+        'ufCrm16_1792127520',
+        'UF_CRM_16_1792127520',
         'ufCrm16_1791881538',
         'UF_CRM_16_1791881538',
         'UF_CRM_CHEQUES',
-        'UF_CRM_1791970849301'
+        'UF_CRM_1791970849301',
+        'ufCrm16Cheques'
       ]);
       checkRequired('Number of Cheques', !!cheques, 'Number of Cheques is required for rental listings');
 
       const availFrom = getValue(item, 'available_from', [
         'ufCrm16_1790155057',
         'UF_CRM_16_1790155057',
-        'UF_CRM_DATE_AVAILABLE'
+        'UF_CRM_DATE_AVAILABLE',
+        'ufCrm16AvailableFrom',
+        'available_date'
       ]);
       checkRequired('Available From Date', !!availFrom, 'Available From date is required for rental listings');
     } else if (marketSegment === 'READY') {
@@ -342,7 +347,9 @@
         const formAExpiry = getValue(item, 'form_a_expiry', [
           'ufCrm16FormAExpiryDate',
           'UF_CRM_16_FORM_A_EXPIRY_DATE',
-          'UF_CRM_FORM_A_EXPIRY_DATE'
+          'UF_CRM_FORM_A_EXPIRY_DATE',
+          'ufCrm16ExpirationDate',
+          'UF_CRM_16_EXPIRATION_DATE'
         ]);
         let formANotExpired = false;
         if (formAExpiry) {

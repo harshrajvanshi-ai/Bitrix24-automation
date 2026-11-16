@@ -7,6 +7,24 @@ const axios = require('axios');
 const StorageManager = require('./storage');
 const config = require('./config');
 
+// Rate limiter queue variables to guarantee $\le 2$ req/sec (min 500ms between calls)
+let lastRequestTime = 0;
+let requestQueue = Promise.resolve();
+
+function scheduleRateLimitedCall(fn) {
+  requestQueue = requestQueue.then(async () => {
+    const now = Date.now();
+    const elapsed = now - lastRequestTime;
+    const minDelay = 500; // 2 requests per second maximum
+    if (elapsed < minDelay) {
+      await new Promise(r => setTimeout(r, minDelay - elapsed));
+    }
+    lastRequestTime = Date.now();
+    return fn();
+  });
+  return requestQueue;
+}
+
 class BitrixClient {
   /**
    * Refresh OAuth access token using refresh_token
@@ -57,68 +75,83 @@ class BitrixClient {
   }
 
   /**
-   * Generic REST call with automatic expired_token detection and single retry
+   * Generic REST call with 2 req/s rate-limiting, expired_token refresh, and QUERY_LIMIT_EXCEEDED retry
    */
   static async call(method, params = {}, identifier = 'latest') {
-    let auth = StorageManager.getAuth(identifier);
-    let endpoint;
-    let postData = { ...params };
+    return scheduleRateLimitedCall(async () => {
+      let auth = StorageManager.getAuth(identifier);
+      let endpoint;
+      let postData = { ...params };
 
-    if (config.INBOUND_WEBHOOK_URL) {
-      endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
-    } else if (auth && auth.accessToken) {
-      endpoint = `${auth.clientEndpoint.replace(/\/+$/, '')}/${method}`;
-      postData.auth = auth.accessToken;
-    } else {
-      throw new Error('Bitrix24 authentication missing. Please install the local application first.');
-    }
-
-    try {
-      const res = await axios.post(
-        endpoint,
-        postData,
-        { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
-      );
-
-      if (res.data?.error) {
-        throw new Error(res.data.error_description || res.data.error);
+      if (config.INBOUND_WEBHOOK_URL) {
+        endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+      } else if (auth && auth.accessToken) {
+        endpoint = `${auth.clientEndpoint.replace(/\/+$/, '')}/${method}`;
+        postData.auth = auth.accessToken;
+      } else {
+        throw new Error('Bitrix24 authentication missing. Please install the local application first.');
       }
 
-      return res.data?.result;
-    } catch (err) {
-      const errCode = (err.response?.data?.error || err.message || '').toLowerCase();
-
-      // Check if token has expired and retry once
-      if (errCode.includes('expired_token') || errCode.includes('invalid_token') || err.response?.status === 401) {
-        console.warn(`[API] Token expired for method ${method}. Attempting refresh and retry...`);
+      const executeWithRetry = async (retryCount = 0) => {
         try {
-          auth = await this.refreshAccessToken(auth);
-          // Retry original request with new token
-          const retryRes = await axios.post(
+          const res = await axios.post(
             endpoint,
-            { ...params, auth: auth.accessToken },
+            postData,
             { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
           );
-          return retryRes.data?.result;
-        } catch (refreshErr) {
-          console.error('[API] Retry after refresh failed:', refreshErr.message);
-          if (config.INBOUND_WEBHOOK_URL) {
-            console.log(`[API] Falling back to INBOUND_WEBHOOK_URL for method ${method}...`);
-            const fallbackEndpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
-            const fallbackRes = await axios.post(
-              fallbackEndpoint,
-              params,
-              { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
-            );
-            return fallbackRes.data?.result;
-          }
-          throw refreshErr;
-        }
-      }
 
-      console.error(`[API] Bitrix24 method ${method} failed:`, err.response?.data || err.message);
-      throw err;
-    }
+          if (res.data?.error) {
+            throw new Error(res.data.error_description || res.data.error);
+          }
+
+          return res.data?.result;
+        } catch (err) {
+          const errCode = (err.response?.data?.error || err.message || '').toLowerCase();
+          const isRateLimit = errCode.includes('query_limit_exceeded') || err.response?.status === 503;
+
+          // Rate limit throttle backoff (up to 3 retries)
+          if (isRateLimit && retryCount < 3) {
+            const delay = (retryCount + 1) * 1000;
+            console.warn(`[API] Rate limit hit on ${method}. Backing off for ${delay}ms before retry ${retryCount + 1}/3...`);
+            await new Promise(r => setTimeout(r, delay));
+            return executeWithRetry(retryCount + 1);
+          }
+
+          // Check if token has expired and retry once
+          if ((errCode.includes('expired_token') || errCode.includes('invalid_token') || err.response?.status === 401) && retryCount === 0) {
+            console.warn(`[API] Token expired for method ${method}. Attempting refresh and retry...`);
+            try {
+              auth = await this.refreshAccessToken(auth);
+              postData.auth = auth.accessToken;
+              const retryRes = await axios.post(
+                endpoint,
+                postData,
+                { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
+              );
+              return retryRes.data?.result;
+            } catch (refreshErr) {
+              console.error('[API] Retry after refresh failed:', refreshErr.message);
+              if (config.INBOUND_WEBHOOK_URL) {
+                console.log(`[API] Falling back to INBOUND_WEBHOOK_URL for method ${method}...`);
+                const fallbackEndpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+                const fallbackRes = await axios.post(
+                  fallbackEndpoint,
+                  params,
+                  { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
+                );
+                return fallbackRes.data?.result;
+              }
+              throw refreshErr;
+            }
+          }
+
+          console.error(`[API] Bitrix24 method ${method} failed:`, err.response?.data || err.message);
+          throw err;
+        }
+      };
+
+      return executeWithRetry();
+    });
   }
 
   // --- Convenience REST Wrappers ---
@@ -168,6 +201,36 @@ class BitrixClient {
 
   static async appInfo(identifier = 'latest') {
     return this.call('app.info', {}, identifier);
+  }
+
+  // --- Smart Process Automation (SPA) & Conversion Wrappers ---
+
+  static async crmItemGet(entityTypeId, id, identifier = 'latest') {
+    return this.call('crm.item.get', { entityTypeId, id }, identifier);
+  }
+
+  static async crmItemUpdate(entityTypeId, id, fields, identifier = 'latest') {
+    return this.call('crm.item.update', { entityTypeId, id, fields }, identifier);
+  }
+
+  static async crmItemAdd(entityTypeId, fields, identifier = 'latest') {
+    return this.call('crm.item.add', { entityTypeId, fields }, identifier);
+  }
+
+  static async crmItemList(entityTypeId, params = {}, identifier = 'latest') {
+    return this.call('crm.item.list', { entityTypeId, ...params }, identifier);
+  }
+
+  static async crmDuplicateFindByComm(type = 'PHONE', values = [], identifier = 'latest') {
+    return this.call('crm.duplicate.findbycomm', {
+      type,
+      values: Array.isArray(values) ? values : [values],
+      entity_type: 'LEAD'
+    }, identifier);
+  }
+
+  static async crmLeadConvert(id, fields = {}, identifier = 'latest') {
+    return this.call('crm.lead.convert', { id, fields }, identifier);
   }
 }
 

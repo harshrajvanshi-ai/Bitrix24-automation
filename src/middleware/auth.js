@@ -44,14 +44,24 @@ function verifyBitrixEventToken(req, res, next) {
     process.env.outbound_webhook_accesstokken
   );
 
-  // If token matches expected token, or matches verified portal domain with valid member_id
-  if (token && expectedToken && token === expectedToken) {
+  // Strict Authentication Check:
+  // 1. If token is completely missing, reject immediately
+  if (!token) {
+    console.warn(`[SECURITY] Rejected event: Missing application_token from IP ${req.ip}`);
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized: Missing Bitrix24 application_token'
+    });
+  }
+
+  // 2. If token matches expected token, allow
+  if (expectedToken && token === expectedToken) {
     return next();
   }
 
-  // If incoming event is from verified portal domain, adopt the new application_token dynamically
-  if (isKnownDomain && token) {
-    console.log(`[SECURITY] Adopting new application_token for domain ${domain}: ${token.substring(0, 6)}...`);
+  // 3. If incoming event is from verified portal domain, adopt the new application_token dynamically
+  if (isKnownDomain) {
+    console.log(`[SECURITY] Adopting verified application_token for domain ${domain}: ${token.substring(0, 6)}...`);
     StorageManager.saveAuth({
       ...(storedAuth || {}),
       domain,
@@ -61,16 +71,12 @@ function verifyBitrixEventToken(req, res, next) {
     return next();
   }
 
-  // Reject unauthorized calls
-  if (expectedToken && token && token !== expectedToken) {
-    console.warn(`[SECURITY] Rejected event: Invalid application_token from IP ${req.ip}`);
-    return res.status(401).json({
-      success: false,
-      error: 'Unauthorized: Invalid Bitrix24 application_token'
-    });
-  }
-
-  next();
+  // 4. Otherwise reject unauthorized calls
+  console.warn(`[SECURITY] Rejected event: Invalid or untrusted application_token from IP ${req.ip}`);
+  return res.status(401).json({
+    success: false,
+    error: 'Unauthorized: Invalid Bitrix24 application_token'
+  });
 }
 
 /**

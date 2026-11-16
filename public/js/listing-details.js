@@ -3732,20 +3732,22 @@ function resolveCountryCode(countryName) {
       property_sub_type: getVal("ufCrm16PropertySubType"),
       built_up_area: getVal("ufCrm16Size") || getVal("UF_CRM_16_SIZE") || getVal("ufCrm16SqFt"),
       bedrooms: getVal("ufCrm16_1791172802"),
-      bathrooms: getVal("ufCrm16_1791172828"),
+      bathrooms: getVal("ufCrm16_1791172828") || getVal("ufCrm16_1791172787"),
       price: getVal("ufCrm16_1790154936"),
-      rental_frequency: getVal("ufCrm16RentFrequency"),
-      cheques: getVal("ufCrm16Cheques"),
+      rental_frequency: getVal("ufCrm16RentFrequency") || getVal("ufCrm16HoaFrequency"),
+      cheques: getVal("ufCrm16_1792127520") || getVal("UF_CRM_16_1792127520") || getVal("ufCrm16Cheques"),
+      available_from: getVal("ufCrm16_1790155057") || getVal("UF_CRM_16_1790155057") || getVal("ufCrm16AvailableFrom"),
       payment_plan_booking_pct: getVal("ufCrm16RePpBookingPct") || getVal("ufCrm16_1791172880"),
       payment_plan_construction_pct: getVal("ufCrm16RePpConstructionPct"),
       payment_plan_handover_pct: getVal("ufCrm16RePpHandoverPct") || getVal("ufCrm16_1791172893"),
       payment_plan_post_handover_pct: getVal("ufCrm16RePpPostHandoverPct"),
       expected_handover_date: getVal("ufCrm16CompletionDate"),
       country: isOverseas ? (getVal("ufCrm16_1791172854") || "Spain") : "United Arab Emirates",
-      trakheesi_permit_no: getVal("ufCrm16ReraPermitNumber") || getVal("ufCrm16_1791172906"),
-      permit_expiry: getVal("ufCrm16PermitExpiryDate") || getVal("ufCrm16_1791172919"),
-      form_a_expiry: getVal("ufCrm16FormAExpiryDate") || getVal("UF_CRM_16_FORM_A_EXPIRY_DATE"),
-      photos: (currentListing?.ufCrm16Images || []).length || (document.querySelectorAll('.file-tile-wrap').length || 0),
+      trakheesi_permit_no: getVal("ufCrm16_1791787455285") || getVal("UF_CRM_16_1791787455285") || getVal("ufCrm16ReraPermitNumber") || getVal("ufCrm16_1791172906"),
+      permit_expiry: getVal("ufCrm16_1791787502111") || getVal("UF_CRM_16_1791787502111") || getVal("ufCrm16PermitExpiryDate") || getVal("ufCrm16_1791172919"),
+      form_a_expiry: getVal("ufCrm16ExpirationDate") || getVal("UF_CRM_16_EXPIRATION_DATE") || getVal("ufCrm16FormAExpiryDate") || getVal("UF_CRM_16_FORM_A_EXPIRY_DATE"),
+      signed_form_a: getVal("ufCrm16_1791787381785") || getVal("UF_CRM_16_1791787381785") || getVal("ufCrm16FormA"),
+      photos: (currentListing?.ufCrm16Images || currentListing?.ufCrm16_1791881642219 || []).length || (document.querySelectorAll('.file-tile-wrap').length || 0),
       title: getVal("title"),
       description: getVal("ufCrm16SummaryDescription") || getVal("ufCrm16Description")
     };
@@ -3960,7 +3962,7 @@ function resolveCountryCode(countryName) {
     for (let i = 1; i <= 10; i++) {
       const featVal =
         getVal(`ufCrm_16_FEATURE_${i}`) || getVal(`ufCrm16Feature${i}`);
-      if (featVal) featuresList.push(`• ${featVal}`);
+      if (featVal) featuresList.push(`- ${featVal}`);
     }
     if (introText || featuresList.length > 0 || outroText) {
       const compositeParts = [];

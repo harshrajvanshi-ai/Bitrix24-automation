@@ -2207,6 +2207,184 @@ app.post('/api/admin/create-field', verifyAdminSecret, async (req, res) => {
 });
 
 // ------------------------------------------------------------------------------
+// 5c. Offer (SPA 1070) & Closing (SPA 1074) Conveyancing Workflow Endpoints
+// ------------------------------------------------------------------------------
+
+/**
+ * POST /api/lead/:id/convert
+ * Converts a lead with pre-conversion duplicate check
+ */
+app.post('/api/lead/:id/convert', verifyCrmAccess, async (req, res) => {
+  try {
+    const leadId = req.params.id;
+    const lead = await BitrixClient.crmLeadGet(leadId);
+    if (!lead) return res.status(404).json({ success: false, error: `Lead #${leadId} not found` });
+
+    const phones = (lead.PHONE || []).map(p => p.VALUE).filter(Boolean);
+    const emails = (lead.EMAIL || []).map(e => e.VALUE).filter(Boolean);
+    const duplicates = [];
+
+    // Pre-conversion duplicate check
+    if (phones.length > 0) {
+      try {
+        const phoneDupes = await BitrixClient.crmDuplicateFindByComm('PHONE', phones);
+        if (phoneDupes?.CONTACT) duplicates.push(...phoneDupes.CONTACT.map(id => ({ type: 'CONTACT', id })));
+        if (phoneDupes?.COMPANY) duplicates.push(...phoneDupes.COMPANY.map(id => ({ type: 'COMPANY', id })));
+      } catch (e) {
+        console.warn('[CONVERT] Phone duplicate check notice:', e.message);
+      }
+    }
+
+    if (emails.length > 0) {
+      try {
+        const emailDupes = await BitrixClient.crmDuplicateFindByComm('EMAIL', emails);
+        if (emailDupes?.CONTACT) duplicates.push(...emailDupes.CONTACT.map(id => ({ type: 'CONTACT', id })));
+        if (emailDupes?.COMPANY) duplicates.push(...emailDupes.COMPANY.map(id => ({ type: 'COMPANY', id })));
+      } catch (e) {
+        console.warn('[CONVERT] Email duplicate check notice:', e.message);
+      }
+    }
+
+    // If duplicate check mode requested
+    if (req.query.check_only === 'true') {
+      return res.json({ success: true, hasDuplicates: duplicates.length > 0, duplicates });
+    }
+
+    // Execute conversion
+    const conversionResult = await BitrixClient.crmLeadConvert(leadId, req.body || {});
+    res.json({
+      success: true,
+      result: conversionResult,
+      duplicatesFound: duplicates
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/offer/:id
+ * Retrieve Offer SPA (1070) item details
+ */
+app.get('/api/offer/:id', verifyCrmAccess, async (req, res) => {
+  try {
+    const offer = await BitrixClient.crmItemGet(1070, req.params.id);
+    res.json({ success: true, offer });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/offer
+ * Create a new Offer linking Enquiry and Listing
+ */
+app.post('/api/offer', verifyCrmAccess, async (req, res) => {
+  try {
+    const { enquiryId, listingId, offerAmount, currency, buyerContactId, notes } = req.body;
+    const fields = {
+      title: `Offer for Listing #${listingId || 'N/A'} - ${offerAmount || 0} ${currency || 'AED'}`,
+      opportunity: offerAmount || 0,
+      currencyId: currency || 'AED',
+      parentId1062: enquiryId || null,
+      parentId1058: listingId || null,
+      contactId: buyerContactId || null,
+      comments: notes || ''
+    };
+    const result = await BitrixClient.crmItemAdd(1070, fields);
+    res.json({ success: true, offerId: result?.item?.id || result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/closing/:id
+ * Retrieve Closing SPA (1074) item details & commission breakdown
+ */
+app.get('/api/closing/:id', verifyCrmAccess, async (req, res) => {
+  try {
+    const closing = await BitrixClient.crmItemGet(1074, req.params.id);
+    res.json({ success: true, closing });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/closing
+ * Create Closing record from accepted Offer or Deal
+ */
+app.post('/api/closing', verifyCrmAccess, async (req, res) => {
+  try {
+    const { offerId, dealId, finalPrice, commissionPct, buyerAgentId, listingAgentId } = req.body;
+    const price = parseFloat(finalPrice) || 0;
+    const commPct = parseFloat(commissionPct) || 2.0;
+    const totalCommission = price * (commPct / 100);
+
+    const fields = {
+      title: `Closing: Offer #${offerId || dealId || 'N/A'} - Net Commission AED ${totalCommission.toLocaleString()}`,
+      opportunity: totalCommission,
+      currencyId: 'AED',
+      parentId1070: offerId || null,
+      assignedById: buyerAgentId || listingAgentId || null
+    };
+
+    const result = await BitrixClient.crmItemAdd(1074, fields);
+    res.json({
+      success: true,
+      closingId: result?.item?.id || result,
+      totalCommission,
+      commissionPct: commPct
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/webhook/chatbot
+ * Ingestion webhook for website chatbots (Flask/Python) or conversational lead bots
+ */
+app.post('/api/webhook/chatbot', async (req, res) => {
+  try {
+    const { name, phone, email, purpose, budget, propertyType, message, source } = req.body || {};
+    
+    // Auto-map purpose to Enquiry Lead Type
+    const leadFields = {
+      TITLE: name ? `Chatbot Enquiry - ${name}` : 'Website Chatbot Enquiry',
+      NAME: name || 'Website Visitor',
+      SOURCE_ID: 'WEB',
+      SOURCE_DESCRIPTION: source || 'Website Conversational Chatbot',
+      COMMENTS: message || 'Lead created via Website Chatbot'
+    };
+
+    if (phone) leadFields.PHONE = [{ VALUE: String(phone).trim(), VALUE_TYPE: 'WORK' }];
+    if (email) leadFields.EMAIL = [{ VALUE: String(email).trim(), VALUE_TYPE: 'WORK' }];
+    if (budget) leadFields.OPPORTUNITY = parseFloat(budget) || 0;
+
+    // Discovered Lead Type for Enquiry (enum 1594)
+    const discovered = StorageManager.getDiscoveredConfig();
+    const leadTypeField = discovered.leadTypeField || 'UF_CRM_1791354310417';
+    leadFields[leadTypeField] = 1594; // Enquiry
+
+    if (discovered.stages?.enquiryStageId) {
+      leadFields.STATUS_ID = discovered.stages.enquiryStageId;
+    }
+
+    const createdLeadId = await BitrixClient.call('crm.lead.add', { fields: leadFields });
+    res.json({
+      success: true,
+      leadId: createdLeadId,
+      message: 'Chatbot lead ingested successfully and routed to Enquiry Leads'
+    });
+  } catch (err) {
+    console.error('[CHATBOT WEBHOOK ERROR]', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ------------------------------------------------------------------------------
 // 6. Diagnostics & Root Endpoints
 // ------------------------------------------------------------------------------
 /**

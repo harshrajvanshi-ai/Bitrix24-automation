@@ -3596,6 +3596,35 @@
     e.preventDefault();
     if (!currentLayout) return;
 
+    // --- Validation Rules ---
+    if (currentLayout === 'enquiry') {
+      // 1. Budget Min <= Budget Max
+      const bMinEl = document.getElementById('field_UF_CRM_1791966341') || document.getElementById('field_UF_CRM_BUDGET_MIN');
+      const bMaxEl = document.getElementById('field_UF_CRM_1791966353') || document.getElementById('field_UF_CRM_BUDGET_MAX');
+      if (bMinEl && bMaxEl && bMinEl.value && bMaxEl.value) {
+        const bMin = parseFloat(String(bMinEl.value).replace(/[^\d.-]/g, ''));
+        const bMax = parseFloat(String(bMaxEl.value).replace(/[^\d.-]/g, ''));
+        if (!isNaN(bMin) && !isNaN(bMax) && bMin > bMax) {
+          showToast('Validation Error: Minimum Budget cannot be greater than Maximum Budget.', 'error');
+          bMinEl.focus();
+          return;
+        }
+      }
+
+      // 2. Bedrooms Min <= Bedrooms Max
+      const bedsMinEl = document.getElementById('field_UF_CRM_1791966366775') || document.getElementById('field_UF_CRM_BEDS_MIN');
+      const bedsMaxEl = document.getElementById('field_UF_CRM_1791966378') || document.getElementById('field_UF_CRM_BEDS_MAX');
+      if (bedsMinEl && bedsMaxEl && bedsMinEl.value && bedsMaxEl.value) {
+        const bedsMin = parseFloat(bedsMinEl.value);
+        const bedsMax = parseFloat(bedsMaxEl.value);
+        if (!isNaN(bedsMin) && !isNaN(bedsMax) && bedsMin > bedsMax) {
+          showToast('Validation Error: Minimum Bedrooms cannot exceed Maximum Bedrooms.', 'error');
+          bedsMinEl.focus();
+          return;
+        }
+      }
+    }
+
     saveBtn.disabled = true;
     saveBtn.textContent = 'SAVING RECORD...';
 
