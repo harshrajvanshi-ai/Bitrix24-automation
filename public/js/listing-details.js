@@ -2459,7 +2459,7 @@
           <div class="b24-tile-thumb-wrap">
             <img class="thumb-item-img b24-tile-img" src="${item.url}" alt="${item.name}" loading="lazy">
             <div class="thumb-zoom-overlay">View</div>
-            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
+            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
           </div>
           <div class="b24-tile-footer">
             <span class="b24-tile-name" title="${item.name}">${item.name}</span>
@@ -2489,7 +2489,7 @@
             wrap.innerHTML = `
               <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span></div>
               <div class="thumb-zoom-overlay">View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
             `;
             const retryRemove = wrap.querySelector(".thumb-remove-btn");
             if (retryRemove)
@@ -2504,7 +2504,7 @@
               
             </div>
             <div class="thumb-zoom-overlay">View</div>
-            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">Remove</button>
+            <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
           </div>
           <div class="b24-tile-footer">
             <span class="b24-tile-name" title="${item.name}">${item.name}</span>
@@ -2616,7 +2616,7 @@
         <div class="inline-preview-topbar-actions">
           <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
           <a href="${url}" download="${name}" target="_blank" class="inline-preview-action-btn" title="Download">Download</a>
-          <button type="button" class="inline-preview-close" title="Hide Preview">Remove</button>
+          <button type="button" class="inline-preview-close" title="Hide Preview" aria-label="Close preview">&times;</button>
         </div>
       </div>
     `;
@@ -2676,7 +2676,7 @@
           <button type="button" class="inline-preview-action-btn zoom-btn" title="Expand into Gallery Lightbox">Expand</button>
           <a href="${proxyUrl}" target="_blank" class="inline-preview-action-btn" title="Open PDF in new tab">Open</a>
           <a href="${proxyUrl}" download="${name}" class="inline-preview-action-btn" title="Download">Download</a>
-          <button type="button" class="inline-preview-close" title="Hide PDF">Remove</button>
+          <button type="button" class="inline-preview-close" title="Hide PDF" aria-label="Close preview">&times;</button>
         </div>
       </div>
       <iframe class="inline-preview-iframe" src="${proxyUrl}">
@@ -2737,7 +2737,7 @@
             <div class="b24-tile-thumb-wrap">
               <img class="thumb-item-img b24-tile-img" src="${dataUrl}" alt="${file.name}">
               <div class="thumb-zoom-overlay">View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove">Remove</button>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
@@ -2808,7 +2808,7 @@
                 
               </div>
               <div class="thumb-zoom-overlay">View</div>
-              <button type="button" class="thumb-remove-btn" title="Remove">Remove</button>
+              <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
             </div>
             <div class="b24-tile-footer">
               <span class="b24-tile-name" title="${file.name}">${file.name}</span>
@@ -4112,7 +4112,7 @@ function resolveCountryCode(countryName) {
     const openBtn = document.createElement("button");
     openBtn.type = "button";
     openBtn.className = "lookup-open-btn";
-    openBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="lookup-open-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span class="lookup-open-text">Open</span><span class="symbol-token" style="display:none"><span>↗</span></span>`;
+    openBtn.innerHTML = `<span>↗</span>`;
     openBtn.title = `Open linked ${meta.label} in Bitrix24`;
     const hasInitialOpen = !!(hasValidId || input.dataset.selectedId || input.dataset.selectedRef);
     openBtn.style.display = hasInitialOpen ? "inline-flex" : "none";
