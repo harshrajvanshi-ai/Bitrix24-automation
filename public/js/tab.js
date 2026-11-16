@@ -785,7 +785,7 @@
     const openBtn = document.createElement('button');
     openBtn.type = 'button';
     openBtn.className = 'lookup-open-btn';
-    openBtn.textContent = 'Open';
+    openBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="lookup-open-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span class="lookup-open-text">Open</span>`;
     openBtn.title = `Open linked ${f.label || 'record'} in Bitrix24`;
     const hasInitialId = !!(input.dataset.selectedId || input.dataset.selectedRef || (currentVal && currentVal !== '0'));
     openBtn.style.display = hasInitialId ? 'inline-flex' : 'none';

@@ -4112,12 +4112,11 @@ function resolveCountryCode(countryName) {
     const openBtn = document.createElement("button");
     openBtn.type = "button";
     openBtn.className = "lookup-open-btn";
-    openBtn.innerHTML = `<span>Open</span><span class="symbol-token" style="display:none"><span>↗</span></span>`;
+    openBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="lookup-open-icon"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg><span class="lookup-open-text">Open</span><span class="symbol-token" style="display:none"><span>↗</span></span>`;
     openBtn.title = `Open linked ${meta.label} in Bitrix24`;
-    openBtn.style.display =
-      hasValidId || input.dataset.selectedId || input.dataset.selectedRef
-        ? "inline-flex"
-        : "none";
+    const hasInitialOpen = !!(hasValidId || input.dataset.selectedId || input.dataset.selectedRef);
+    openBtn.style.display = hasInitialOpen ? "inline-flex" : "none";
+    if (hasInitialOpen) wrap.classList.add("has-open-btn");
 
     // Fetch title in background via /api/lookup or Bitrix fallback
     if (hasValidId && !knownTitle) {

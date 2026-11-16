@@ -2004,45 +2004,87 @@ textarea.form-control {
 
 .lookup-clear-btn {
   position: absolute;
-  right: 48px;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: var(--text-faint);
+  color: #94a3b8;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1;
   padding: 2px 4px;
   display: none;
   z-index: 2;
+  transition: color 0.15s ease;
 }
 
 .lookup-clear-btn:hover {
-  color: var(--danger);
+  color: var(--danger, #ef4444);
+}
+
+.lookup-input-wrap:has(.lookup-open-btn:not([style*="none"])) .lookup-clear-btn,
+.lookup-input-wrap.has-open-btn .lookup-clear-btn {
+  right: 86px;
 }
 
 .lookup-open-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  min-width: 36px;
+  gap: 6px;
   height: 36px;
-  padding: 0;
-  font-size: 15px;
-  border-radius: 2px;
-  background: #ffffff;
-  border: 1px solid var(--border-input);
-  color: var(--text-faint);
-  cursor: pointer;
+  min-height: 36px;
+  padding: 0 13px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
   line-height: 1;
+  border-radius: 4px;
+  background: #f0f7ff;
+  border: 1px solid #c7e2fe;
+  color: #0b66c3;
+  cursor: pointer;
   flex-shrink: 0;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(11, 102, 195, 0.05);
+  transition: all 0.16s ease-in-out;
+  text-decoration: none;
+  user-select: none;
+}
+
+.lookup-open-btn .lookup-open-icon {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  flex-shrink: 0;
+  transition: transform 0.16s ease;
 }
 
 .lookup-open-btn:hover {
-  background: #f5f9fb;
-  border-color: #a9b2ba;
-  color: var(--link);
+  background: #0b66c3;
+  border-color: #0b66c3;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(11, 102, 195, 0.25);
+  transform: translateY(-1px);
+}
+
+.lookup-open-btn:hover .lookup-open-icon {
+  transform: translate(1px, -1px);
+}
+
+.lookup-open-btn:active {
+  background: #08529e;
+  border-color: #08529e;
+  color: #ffffff;
+  transform: translateY(0);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.lookup-open-btn:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 1px;
 }
 
 .lookup-dropdown {
