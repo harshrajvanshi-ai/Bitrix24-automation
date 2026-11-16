@@ -2450,7 +2450,8 @@ select.form-control option {
 
 .b24-pdf-viewer.lb-pdf-viewer {
   width: 100%;
-  min-height: 100%;
+  height: auto !important;
+  min-height: min-content;
   flex-shrink: 0;
   border-radius: 0;
   box-shadow: none;
@@ -2458,6 +2459,7 @@ select.form-control option {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: visible !important;
 }
 
 .b24-pdf-viewer.lb-pdf-viewer .b24-pdf-controls {
@@ -2467,23 +2469,43 @@ select.form-control option {
 .b24-pdf-viewer.lb-pdf-viewer .b24-pdf-canvas-stage {
   flex-shrink: 0;
   width: 100%;
-  overflow: visible;
-  padding: 12px 16px 48px;
+  height: auto !important;
+  overflow: visible !important;
+  padding: 16px 16px 80px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   background: transparent;
   position: relative;
+  gap: 24px;
+}
+
+.b24-pdf-page-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin: 0 auto;
 }
 
 .b24-pdf-viewer.lb-pdf-viewer .b24-pdf-canvas {
   display: block;
-  margin: 12px auto 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.75);
   border-radius: 4px;
   background: #ffffff;
   max-width: 95vw;
+}
+
+.b24-pdf-page-num-badge {
+  margin-top: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 3px 10px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
 }
 
 .b24-pdf-floating-pager {
@@ -2993,7 +3015,7 @@ select.form-control option {
 /* ==========================================================================
    CRM-Only Security Lockout Shield
    ========================================================================== */
-html.crm-lockout-active body>*:not(#crm-lockout-shield) {
+html.crm-lockout-active body > *:not(#crm-lockout-shield) {
   display: none !important;
 }
 
@@ -3380,7 +3402,7 @@ html.crm-lockout-active #crm-lockout-shield {
 /* ==========================================================================
    CRM-Only Security Lockout Shield
    ========================================================================== */
-html.crm-lockout-active body>*:not(#crm-lockout-shield) {
+html.crm-lockout-active body > *:not(#crm-lockout-shield) {
   display: none !important;
 }
 
@@ -3520,7 +3542,7 @@ html.crm-lockout-active #crm-lockout-shield {
 /* ==========================================================================
    CRM-Only Security Lockout Shield
    ========================================================================== */
-html.crm-lockout-active body>*:not(#crm-lockout-shield) {
+html.crm-lockout-active body > *:not(#crm-lockout-shield) {
   display: none !important;
 }
 

@@ -1344,10 +1344,15 @@
     window.open(nativeUrl, '_blank', 'noopener');
   }
 
-  // HTML5 Canvas PDF Viewer (Eliminates Chrome nested iframe blocking)
+  // HTML5 Canvas PDF Viewer (Eliminates Chrome nested iframe blocking & enables continuous multi-page scrolling)
   function renderPdfCanvasViewer(container, pdfUrl, title, isLightbox = false) {
     if (!container) return;
-    container.innerHTML = "";
+    if (!isLightbox) {
+      container.innerHTML = "";
+    } else {
+      const oldViewer = container.querySelector(".b24-pdf-viewer");
+      if (oldViewer) oldViewer.remove();
+    }
 
     const viewerWrap = document.createElement("div");
     viewerWrap.className = isLightbox
@@ -1356,7 +1361,7 @@
 
     const docName = title || "document.pdf";
     viewerWrap.innerHTML = `
-      <div class="b24-pdf-controls">
+      <div class="b24-pdf-controls" style="${isLightbox ? "display:none !important;" : ""}">
         <div class="b24-pdf-ctrl-group">
           <button type="button" class="b24-pdf-btn pdf-prev-btn" title="Previous page" disabled>&lsaquo; Prev</button>
           <span class="b24-pdf-page-indicator">
@@ -1380,7 +1385,7 @@
           <div class="b24-pdf-spinner"></div>
           <span>Rendering PDF document...</span>
         </div>
-        <canvas class="b24-pdf-canvas" style="display:none;"></canvas>
+        ${!isLightbox ? '<canvas class="b24-pdf-canvas" style="display:none;"></canvas>' : ""}
       </div>
     `;
     container.appendChild(viewerWrap);
@@ -1395,14 +1400,25 @@
     const zoomValEl = viewerWrap.querySelector(".b24-pdf-zoom-val");
     const stage = viewerWrap.querySelector(".b24-pdf-canvas-stage");
     const loadingEl = viewerWrap.querySelector(".b24-pdf-loading");
-    const canvas = viewerWrap.querySelector(".b24-pdf-canvas");
-    const ctx = canvas.getContext("2d");
+    const singleCanvas = viewerWrap.querySelector(".b24-pdf-canvas");
+    const singleCtx = singleCanvas ? singleCanvas.getContext("2d") : null;
 
     let pdfDoc = null;
     let pageNum = 1;
     let pageRendering = false;
     let pageNumPending = null;
     let scale = "fit";
+    let activeRenderTasks = [];
+    let zoomLevel = 1.0;
+
+    function cancelActiveTasks() {
+      activeRenderTasks.forEach((task) => {
+        try {
+          if (task && typeof task.cancel === "function") task.cancel();
+        } catch (_) {}
+      });
+      activeRenderTasks = [];
+    }
 
     function showFallback(errMsg) {
       if (!loadingEl || !stage) return;
@@ -1434,8 +1450,9 @@
       `;
     }
 
+    // Inline (single page) render function
     function renderPage(num) {
-      if (!pdfDoc) return;
+      if (!pdfDoc || !singleCanvas || !singleCtx) return;
       pageRendering = true;
       pdfDoc.getPage(num).then((page) => {
         const unscaledViewport = page.getViewport({ scale: 1.0 });
@@ -1443,25 +1460,25 @@
         if (scale === "fit") {
           const availableWidth = Math.max(stage.clientWidth - 40, 200);
           currentScale = Math.min(Math.max(availableWidth / unscaledViewport.width, 0.4), 2.5);
-          zoomValEl.textContent = `${Math.round(currentScale * 100)}%`;
+          if (zoomValEl) zoomValEl.textContent = `${Math.round(currentScale * 100)}%`;
         } else {
           currentScale = scale;
-          zoomValEl.textContent = `${Math.round(currentScale * 100)}%`;
+          if (zoomValEl) zoomValEl.textContent = `${Math.round(currentScale * 100)}%`;
         }
 
         const viewport = page.getViewport({ scale: currentScale });
         const outputScale = window.devicePixelRatio || 1;
-        canvas.width = Math.floor(viewport.width * outputScale);
-        canvas.height = Math.floor(viewport.height * outputScale);
-        canvas.style.width = Math.floor(viewport.width) + "px";
-        canvas.style.height = Math.floor(viewport.height) + "px";
+        singleCanvas.width = Math.floor(viewport.width * outputScale);
+        singleCanvas.height = Math.floor(viewport.height * outputScale);
+        singleCanvas.style.width = Math.floor(viewport.width) + "px";
+        singleCanvas.style.height = Math.floor(viewport.height) + "px";
 
         const transform = outputScale !== 1
           ? [outputScale, 0, 0, outputScale, 0, 0]
           : null;
 
         const renderContext = {
-          canvasContext: ctx,
+          canvasContext: singleCtx,
           transform: transform,
           viewport: viewport
         };
@@ -1469,11 +1486,11 @@
         const renderTask = page.render(renderContext);
         renderTask.promise.then(() => {
           pageRendering = false;
-          loadingEl.style.display = "none";
-          canvas.style.display = "block";
-          curPageEl.textContent = num;
-          prevBtn.disabled = num <= 1;
-          nextBtn.disabled = num >= pdfDoc.numPages;
+          if (loadingEl) loadingEl.style.display = "none";
+          singleCanvas.style.display = "block";
+          if (curPageEl) curPageEl.textContent = num;
+          if (prevBtn) prevBtn.disabled = num <= 1;
+          if (nextBtn) nextBtn.disabled = num >= pdfDoc.numPages;
 
           if (pageNumPending !== null) {
             renderPage(pageNumPending);
@@ -1499,34 +1516,121 @@
       }
     }
 
-    prevBtn.addEventListener("click", () => {
-      if (pageNum <= 1) return;
-      pageNum--;
-      queueRenderPage(pageNum);
-    });
+    // Lightbox continuous vertical multi-page render
+    async function renderAllLightboxPages() {
+      if (!pdfDoc) return;
+      cancelActiveTasks();
 
-    nextBtn.addEventListener("click", () => {
-      if (pageNum >= (pdfDoc?.numPages || 1)) return;
-      pageNum++;
-      queueRenderPage(pageNum);
-    });
+      // Clear existing page cards
+      const oldCards = stage.querySelectorAll(".b24-pdf-page-card");
+      oldCards.forEach((c) => c.remove());
 
-    zoomInBtn.addEventListener("click", () => {
-      const current = typeof scale === "number" ? scale : 1.0;
-      scale = Math.min(3.0, Math.round((current + 0.25) * 100) / 100);
-      queueRenderPage(pageNum);
-    });
+      if (loadingEl) loadingEl.style.display = "flex";
 
-    zoomOutBtn.addEventListener("click", () => {
-      const current = typeof scale === "number" ? scale : 1.0;
-      scale = Math.max(0.5, Math.round((current - 0.25) * 100) / 100);
-      queueRenderPage(pageNum);
-    });
+      const containerWidth = container.clientWidth || (lightboxBody ? lightboxBody.clientWidth : 0) || window.innerWidth;
+      const baseWidth = Math.min(Math.max(containerWidth - 60, 320), 860);
 
-    zoomFitBtn.addEventListener("click", () => {
-      scale = "fit";
-      queueRenderPage(pageNum);
-    });
+      const numPages = pdfDoc.numPages;
+      for (let p = 1; p <= numPages; p++) {
+        try {
+          const page = await pdfDoc.getPage(p);
+          const unscaledViewport = page.getViewport({ scale: 1.0 });
+
+          const baseScale = baseWidth / unscaledViewport.width;
+          const finalScale = baseScale * zoomLevel;
+          const viewport = page.getViewport({ scale: finalScale });
+
+          const card = document.createElement("div");
+          card.className = "b24-pdf-page-card";
+          card.dataset.pageNum = String(p);
+
+          const canvas = document.createElement("canvas");
+          canvas.className = "b24-pdf-canvas";
+          const ctx = canvas.getContext("2d");
+
+          const outputScale = window.devicePixelRatio || 1;
+          canvas.width = Math.floor(viewport.width * outputScale);
+          canvas.height = Math.floor(viewport.height * outputScale);
+          canvas.style.width = Math.floor(viewport.width) + "px";
+          canvas.style.height = Math.floor(viewport.height) + "px";
+
+          card.appendChild(canvas);
+
+          if (numPages > 1) {
+            const badge = document.createElement("div");
+            badge.className = "b24-pdf-page-num-badge";
+            badge.textContent = `Page ${p} of ${numPages}`;
+            card.appendChild(badge);
+          }
+
+          stage.appendChild(card);
+
+          if (loadingEl) loadingEl.style.display = "none";
+
+          const transform = outputScale !== 1
+            ? [outputScale, 0, 0, outputScale, 0, 0]
+            : null;
+
+          const renderContext = {
+            canvasContext: ctx,
+            transform: transform,
+            viewport: viewport,
+          };
+
+          const task = page.render(renderContext);
+          activeRenderTasks.push(task);
+
+          await task.promise.catch((err) => {
+            if (err?.name !== "RenderingCancelledException") {
+              console.warn(`PDF page ${p} render warning:`, err);
+            }
+          });
+        } catch (pageErr) {
+          console.warn(`PDF getPage ${p} error:`, pageErr);
+        }
+      }
+
+      if (loadingEl) loadingEl.style.display = "none";
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (pageNum <= 1) return;
+        pageNum--;
+        queueRenderPage(pageNum);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (pageNum >= (pdfDoc?.numPages || 1)) return;
+        pageNum++;
+        queueRenderPage(pageNum);
+      });
+    }
+
+    if (zoomInBtn) {
+      zoomInBtn.addEventListener("click", () => {
+        const current = typeof scale === "number" ? scale : 1.0;
+        scale = Math.min(3.0, Math.round((current + 0.25) * 100) / 100);
+        queueRenderPage(pageNum);
+      });
+    }
+
+    if (zoomOutBtn) {
+      zoomOutBtn.addEventListener("click", () => {
+        const current = typeof scale === "number" ? scale : 1.0;
+        scale = Math.max(0.5, Math.round((current - 0.25) * 100) / 100);
+        queueRenderPage(pageNum);
+      });
+    }
+
+    if (zoomFitBtn) {
+      zoomFitBtn.addEventListener("click", () => {
+        scale = "fit";
+        queueRenderPage(pageNum);
+      });
+    }
 
     function initDoc(pdfLib) {
       try {
@@ -1547,8 +1651,12 @@
         const task = pdfLib.getDocument(docSource);
         task.promise.then((doc) => {
           pdfDoc = doc;
-          totalPagesEl.textContent = doc.numPages;
-          renderPage(pageNum);
+          if (totalPagesEl) totalPagesEl.textContent = doc.numPages;
+          if (isLightbox) {
+            renderAllLightboxPages();
+          } else {
+            renderPage(pageNum);
+          }
         }).catch((err) => {
           console.warn("PDF loadingTask error:", err);
           showFallback(err.message);
@@ -1571,6 +1679,59 @@
       script.onerror = () => showFallback();
       document.head.appendChild(script);
     }
+
+    return {
+      zoomIn: () => {
+        if (isLightbox) {
+          zoomLevel = Math.min(3.0, Math.round((zoomLevel + 0.25) * 100) / 100);
+          renderAllLightboxPages();
+        } else {
+          const current = typeof scale === "number" ? scale : 1.0;
+          scale = Math.min(3.0, Math.round((current + 0.25) * 100) / 100);
+          queueRenderPage(pageNum);
+        }
+      },
+      zoomOut: () => {
+        if (isLightbox) {
+          zoomLevel = Math.max(0.5, Math.round((zoomLevel - 0.25) * 100) / 100);
+          renderAllLightboxPages();
+        } else {
+          const current = typeof scale === "number" ? scale : 1.0;
+          scale = Math.max(0.5, Math.round((current - 0.25) * 100) / 100);
+          queueRenderPage(pageNum);
+        }
+      },
+      toggleZoom: () => {
+        if (isLightbox) {
+          zoomLevel = zoomLevel !== 1.0 ? 1.0 : 1.5;
+          const zBtn = document.getElementById("lightbox-zoom-toggle-btn");
+          if (zBtn) {
+            zBtn.classList.toggle("active", zoomLevel > 1.0);
+          }
+          renderAllLightboxPages();
+        } else {
+          scale = scale === "fit" ? 1.5 : "fit";
+          queueRenderPage(pageNum);
+        }
+      },
+      fit: () => {
+        if (isLightbox) {
+          zoomLevel = 1.0;
+          const zBtn = document.getElementById("lightbox-zoom-toggle-btn");
+          if (zBtn) {
+            zBtn.classList.remove("active");
+          }
+          renderAllLightboxPages();
+        } else {
+          scale = "fit";
+          queueRenderPage(pageNum);
+        }
+      },
+      cleanup: () => {
+        cancelActiveTasks();
+      }
+    };
+  }
   }
 
   function _lbSetCounter() {
@@ -1682,11 +1843,31 @@
 
     if (item.isPdf) {
       if (lightboxFileIcon) lightboxFileIcon.textContent = '';
-      if (zoomToggleBtn) zoomToggleBtn.style.display = 'none';
-      if (lbZoomControls) lbZoomControls.style.display = 'none';
+      if (zoomToggleBtn) {
+        zoomToggleBtn.style.display = 'inline-flex';
+        zoomToggleBtn.classList.remove('active');
+        zoomToggleBtn.title = 'Fit Width / Actual Size';
+      }
+      if (lbZoomControls) lbZoomControls.style.display = 'flex';
+
+      const zbIn = document.getElementById('lb-zoom-in-btn');
+      const zbOut = document.getElementById('lb-zoom-out-btn');
+      if (zbIn) zbIn.style.display = 'inline-flex';
+      if (zbOut) zbOut.style.display = 'inline-flex';
 
       const proxyUrl = getPreviewUrl(item.url);
-      renderPdfCanvasViewer(lightboxBody, proxyUrl, item.name, true);
+      const pdfCtrl = renderPdfCanvasViewer(lightboxBody, proxyUrl, item.name, true);
+
+      if (zbIn) zbIn.onclick = () => pdfCtrl?.zoomIn?.();
+      if (zbOut) zbOut.onclick = () => pdfCtrl?.zoomOut?.();
+      if (zoomToggleBtn) zoomToggleBtn.onclick = () => pdfCtrl?.toggleZoom?.();
+
+      lightboxCleanup = () => {
+        if (pdfCtrl?.cleanup) pdfCtrl.cleanup();
+        if (zbIn) zbIn.onclick = null;
+        if (zbOut) zbOut.onclick = null;
+        if (zoomToggleBtn) zoomToggleBtn.onclick = null;
+      };
     } else if (item.isImage) {
       if (lightboxFileIcon) lightboxFileIcon.textContent = '';
       if (lbZoomControls) lbZoomControls.style.display = 'flex';
