@@ -36,7 +36,7 @@
     rent: { id: 'rent', enumId: '2578', title: 'Rent', icon: '', pillClass: 'layout-pill-rent' }
   };
 
-  
+
   function computeHandoverQuarter(dateStr) {
     if (!dateStr) return '';
     let y, m;
@@ -203,7 +203,7 @@
             if (id) return String(id);
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // 2. Explicit URL query parameter
@@ -377,7 +377,7 @@
       let itemData = null;
       try {
         if (el.dataset.itemData) itemData = JSON.parse(el.dataset.itemData);
-      } catch (_) {}
+      } catch (_) { }
       const val = el.value.trim();
       const numMatch = val.match(/^#?(\d+)$/);
       const selectedId = el.dataset.selectedId || (numMatch ? numMatch[1] : null);
@@ -754,7 +754,7 @@
               openBtn.style.display = 'inline-flex';
             }
           })
-          .catch(() => {});
+          .catch(() => { });
       } else {
         // Plain text title passed (e.g. from legacy data), pre-resolve ID and CRM reference
         fetch(`/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(String(rawVal).trim())}`, {
@@ -772,7 +772,7 @@
               openBtn.style.display = 'inline-flex';
             }
           })
-          .catch(() => {});
+          .catch(() => { });
       }
     }
 
@@ -1005,7 +1005,7 @@
               if (targetData) {
                 try {
                   targetInput.dataset.itemData = typeof targetData === 'string' ? targetData : JSON.stringify(targetData);
-                } catch (_) {}
+                } catch (_) { }
               }
               if (targetTitle) {
                 targetInput.value = targetTitle;
@@ -1023,7 +1023,7 @@
                         populatePropertyTypeFromLayout(match, true);
                       }
                     }
-                  }).catch(() => {});
+                  }).catch(() => { });
               }
               const targetClear = targetInput.parentElement?.querySelector('.lookup-clear-btn');
               const targetOpen = targetInput.parentElement?.querySelector('.lookup-open-btn');
@@ -1049,7 +1049,7 @@
                     if (l.parentId1048) setDependentLookup('UF_CRM_PROPERTY_LAYOUT', 'layout', l.parentId1048);
                     if (l.companyId || l.COMPANY_ID) setDependentLookup('UF_CRM_DEVELOPER_1', 'developer', l.companyId || l.COMPANY_ID);
                   }
-                }).catch(() => {});
+                }).catch(() => { });
             } else if (f.code === 'UF_CRM_PROJECT_1' || f.code === 'UF_CRM_PROJECT_NAME') {
               // 2. Project selected: auto-fill Master Project & Developer
               if (item.parentId1040) {
@@ -1284,7 +1284,7 @@
   /**
    * Create field input control supporting lookup, enumeration, boolean, money, date, text, number
    */
-  
+
   // ============================================================================
   // IN-WINDOW MEDIA & FILE PREVIEW COMPONENT + LIGHTBOX VIEWER
   // ============================================================================
@@ -1415,7 +1415,7 @@
       activeRenderTasks.forEach((task) => {
         try {
           if (task && typeof task.cancel === "function") task.cancel();
-        } catch (_) {}
+        } catch (_) { }
       });
       activeRenderTasks = [];
     }
@@ -1732,7 +1732,7 @@
       }
     };
   }
-  }
+
 
   function _lbSetCounter() {
     if (!lightboxCounter) return;
@@ -1778,7 +1778,7 @@
         filmImg.src = item.url;
         filmImg.alt = item.name;
         filmImg.loading = 'lazy';
-        filmImg.onerror = function() {
+        filmImg.onerror = function () {
           if (!this.dataset.proxied && item.url && item.url.startsWith('http')) {
             this.dataset.proxied = '1';
             this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
@@ -1894,7 +1894,7 @@
           img.dataset.proxied = '1';
           let target = item.url;
           if (target.includes('/api/file/proxy?url=')) {
-            try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) {}
+            try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) { }
           }
           img.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
           return;
@@ -2053,7 +2053,7 @@
         contentEl.style.height = '85vh';
         contentEl.style.maxHeight = '820px';
         contentEl.style.marginTop = targetTop + 'px';
-        try { contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) {}
+        try { contentEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (_) { }
       }
     } else {
       lightboxModal.style.position = 'fixed';
@@ -2171,7 +2171,7 @@
     img.src = url;
     img.alt = name;
     img.title = 'Click to open gallery viewer';
-    img.onerror = function() {
+    img.onerror = function () {
       if (!this.dataset.proxied && url.startsWith('http')) {
         this.dataset.proxied = '1';
         this.src = `/api/file/proxy?url=${encodeURIComponent(url)}`;
@@ -2250,7 +2250,7 @@
       const isPdf = isPdfFile(file.name, file.type);
       const reader = new FileReader();
 
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         const dataUrl = e.target.result;
         const pendingItem = {
           file,
@@ -2267,7 +2267,7 @@
           if (currentLeadId) {
             localStorage.setItem(`b24_filename_${currentLeadId}_${fieldCode}`, file.name);
           }
-        } catch (_) {}
+        } catch (_) { }
 
         const thumb = document.createElement('div');
         thumb.className = `thumb-item ${isImg ? 'preview-thumb-wrap' : 'preview-doc-wrap'} b24-file-tile active`;
@@ -2655,10 +2655,10 @@
 
         // Maintain accurate file title from storage cache
         if (!fileName && fid) {
-          try { fileName = localStorage.getItem(`b24_file_title_${fid}`) || ''; } catch (_) {}
+          try { fileName = localStorage.getItem(`b24_file_title_${fid}`) || ''; } catch (_) { }
         }
         if (!fileName && currentLeadId) {
-          try { fileName = localStorage.getItem(`b24_filename_${currentLeadId}_${f.code}`) || ''; } catch (_) {}
+          try { fileName = localStorage.getItem(`b24_filename_${currentLeadId}_${f.code}`) || ''; } catch (_) { }
         }
         if (!fileName && fileUrl) {
           const m = fileUrl.match(/filename=([^&]+)/i);
@@ -2670,7 +2670,7 @@
           fileName = fid ? `${f.label} (File #${fid})` : `${f.label} #${idx + 1}`;
         }
         if (fid && fileName) {
-          try { localStorage.setItem(`b24_file_title_${fid}`, fileName); } catch (_) {}
+          try { localStorage.setItem(`b24_file_title_${fid}`, fileName); } catch (_) { }
         }
 
         const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
@@ -2706,12 +2706,12 @@
           `;
 
           const imgEl = thumb.querySelector('.thumb-item-img');
-          imgEl.onerror = function() {
+          imgEl.onerror = function () {
             if (!this.dataset.proxied && fullUrl.startsWith('http')) {
               this.dataset.proxied = '1';
               let target = fullUrl;
               if (target.includes('/api/file/proxy?url=')) {
-                try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) {}
+                try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) { }
               }
               this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
             } else {
@@ -2804,7 +2804,7 @@
       inputElement.name = f.code;
       inputElement.rows = 2;
       inputElement.placeholder = f.placeholder || 'Street, Building, Apartment/Office, District, City, Country, Zip code';
-      
+
       let addrStr = '';
       if (typeof currentVal === 'object' && currentVal !== null) {
         addrStr = [currentVal.ADDRESS_1, currentVal.ADDRESS_2, currentVal.CITY, currentVal.PROVINCE, currentVal.COUNTRY, currentVal.POSTAL_CODE].filter(Boolean).join(', ');
@@ -3159,7 +3159,7 @@
   // ============================================================================
   // AUTO-CALCULATION & FIELD AUTOMATION ENGINE (LEAD LISTING LAYOUT)
   // ============================================================================
-  
+
   function undoTransactionSwitch() {
     if (!cachedUndoState) return;
     const { previousSubLayout, previousDriverVal, hiddenValues } = cachedUndoState;
@@ -3197,7 +3197,7 @@
     showToast('Transaction type switch undone and fields restored', 'info');
   }
 
-  
+
   function updatePublishReadinessBanner() {
     if (!window.ReadinessEvaluator || typeof window.ReadinessEvaluator.evaluatePublishReadiness !== 'function') return;
     if (currentLayout !== 'listing') return;
@@ -3468,7 +3468,7 @@
     }
     updatePublishReadinessBanner();
   }
-  
+
 
   /**
    * Create standard form-group wrapper with label & validation feedback
@@ -3490,7 +3490,7 @@
     const label = document.createElement('label');
     label.className = 'form-label';
     label.setAttribute('for', `field_${f.code}`);
-    
+
     // Contextual label override
     const displayLabel = (currentLayout === 'listing' && f.labelOverrides && f.labelOverrides[currentListingSubLayout])
       ? f.labelOverrides[currentListingSubLayout]
@@ -3844,7 +3844,7 @@
           if (match) {
             populatePropertyTypeFromLayout(match, false);
           }
-        }).catch(() => {});
+        }).catch(() => { });
     }
 
     resizeWindow();
@@ -4087,7 +4087,7 @@
           const fileReadPromises = inputFiles.map(file => {
             return new Promise((resolve) => {
               const reader = new FileReader();
-              reader.onload = function(evt) {
+              reader.onload = function (evt) {
                 const base64Data = (evt.target.result || '').split(',')[1];
                 if (base64Data) {
                   resolve({ name: file.name, base64: base64Data });
@@ -4340,7 +4340,7 @@
             }
             try {
               localStorage.setItem(`b24_filename_${currentLeadId}_${f.code}`, pending[0].name);
-            } catch (_) {}
+            } catch (_) { }
           }
           // Mark uploaded thumbnails as saved (remove active / ready to upload flag)
           const strip = document.getElementById(`strip_${f.code}`);
@@ -4416,7 +4416,7 @@
           if (latestData?.id) {
             currentLeadId = String(latestData.id);
           }
-        } catch (_) {}
+        } catch (_) { }
       }
       if (!currentLeadId) {
         currentLeadId = '420';
