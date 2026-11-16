@@ -2191,7 +2191,7 @@
       el.className = "lb-film-item" + (i === _lbIndex ? " active" : "");
       if (item.isImage) {
         const filmImg = document.createElement("img");
-        filmImg.src = item.url;
+        filmImg.src = getPreviewUrl(item.url);
         filmImg.alt = item.name;
         filmImg.loading = "lazy";
         filmImg.onerror = function () {
@@ -2303,7 +2303,7 @@
 
       const img = document.createElement("img");
       img.className = "lightbox-img lb-transitioning";
-      img.src = item.url;
+      img.src = getPreviewUrl(item.url);
       img.alt = item.name;
       img.onerror = () => {
         if (!img.dataset.proxied) {
@@ -2840,15 +2840,15 @@
       let fullUrl = fileUrl.startsWith("http")
         ? fileUrl
         : `https://${domain}${fileUrl.startsWith("/") ? "" : "/"}${fileUrl}`;
-      if (fullUrl.includes("ajax.php") && !fullUrl.includes("token=")) {
-        fullUrl = `/api/file/proxy?url=${encodeURIComponent(fullUrl)}`;
+      if (!fullUrl.startsWith("data:") && !fullUrl.includes("/api/file/proxy")) {
+        fullUrl = getPreviewUrl(fullUrl);
       }
 
       const isImage =
         field.isImage ||
-        /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fullUrl);
+        /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fileUrl);
       const isPdf =
-        /\.pdf($|\?)/i.test(fileName || fullUrl) || (!isImage && field.isDoc);
+        /\.pdf($|\?)/i.test(fileName || fileUrl) || (!isImage && Boolean(field.isDoc || field.code?.includes('DOC') || field.code?.includes('DEED') || field.code?.includes('FORM_A')));
 
       fieldGallery.push({
         url: fullUrl,

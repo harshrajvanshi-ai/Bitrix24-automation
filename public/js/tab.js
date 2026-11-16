@@ -1803,7 +1803,7 @@
       el.className = 'lb-film-item' + (i === _lbIndex ? ' active' : '');
       if (item.isImage) {
         const filmImg = document.createElement('img');
-        filmImg.src = item.url;
+        filmImg.src = getPreviewUrl(item.url);
         filmImg.alt = item.name;
         filmImg.loading = 'lazy';
         filmImg.onerror = function () {
@@ -1915,7 +1915,7 @@
 
       const img = document.createElement('img');
       img.className = 'lightbox-img lb-transitioning';
-      img.src = item.url;
+      img.src = getPreviewUrl(item.url);
       img.alt = item.name;
       img.onerror = () => {
         if (!img.dataset.proxied) {
@@ -2715,12 +2715,13 @@
 
         const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
         let fullUrl = fileUrl.startsWith('http') ? fileUrl : `https://${domain}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
-        if (fullUrl.includes('ajax.php') && !fullUrl.includes('token=')) {
-          fullUrl = `/api/file/proxy?url=${encodeURIComponent(fullUrl)}`;
+        if (!fullUrl.startsWith('data:') && !fullUrl.includes('/api/file/proxy')) {
+          fullUrl = getPreviewUrl(fullUrl);
         }
 
-        const isImg = isImageFile(fileName) || (isImgField && !isPdfFile(fileName));
-        const isPdf = isPdfFile(fileName);
+        const isDocField = Boolean(f.isDoc || f.code.includes('DOC') || f.code.includes('DEED') || f.code.includes('FORM_A') || f.code.includes('1791881665252'));
+        const isPdf = isPdfFile(fileName) || isPdfFile(fileUrl) || (!isImageFile(fileName) && isDocField);
+        const isImg = !isPdf && (isImageFile(fileName) || isImageFile(fileUrl) || isImgField);
 
         const item = { url: fullUrl, name: fileName, isImage: isImg, isPdf, id: fid };
         fieldGallery.push(item);

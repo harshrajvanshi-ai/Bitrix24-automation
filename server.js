@@ -655,6 +655,12 @@ app.get('/api/file/proxy', async (req, res) => {
       } catch (_) {}
     }
 
+    if (typeof targetUrl === 'string' && !targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+      const latestAuth = StorageManager.getAuth('latest');
+      const fallbackDomain = latestAuth?.domain || 'csl.bitrix24.com';
+      targetUrl = `https://${fallbackDomain}${targetUrl.startsWith('/') ? '' : '/'}${targetUrl}`;
+    }
+
     let parsed;
     try {
       parsed = new URL(targetUrl);
@@ -672,6 +678,8 @@ app.get('/api/file/proxy', async (req, res) => {
     if (!allowed) {
       return res.status(403).send('Forbidden domain');
     }
+
+    let auth = StorageManager.getAuth(domain) || StorageManager.getAuth('latest');
 
     // If URL is an internal Bitrix ajax.php endpoint without a token, resolve the signed urlMachine via BitrixClient
     if (parsed.pathname.includes('ajax.php') && !parsed.searchParams.has('token')) {
@@ -714,6 +722,7 @@ app.get('/api/file/proxy', async (req, res) => {
             }
             if (found && found.urlMachine) {
               targetUrl = found.urlMachine;
+              parsed = new URL(targetUrl);
             }
           }
         } catch (resolveErr) {
@@ -722,17 +731,76 @@ app.get('/api/file/proxy', async (req, res) => {
       }
     }
 
-    const response = await axios({
-      method: 'get',
-      url: targetUrl,
-      headers: {
+    // Attach Bitrix authentication
+    if (auth?.accessToken && !parsed.searchParams.has('auth') && !parsed.searchParams.has('token')) {
+      parsed.searchParams.set('auth', auth.accessToken);
+      targetUrl = parsed.toString();
+    }
+
+    const makeFetch = async (fetchUrl, token) => {
+      const reqHeaders = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Accept': '*/*'
-      },
-      responseType: 'stream',
-      timeout: 25000,
-      validateStatus: (status) => status < 400
-    });
+      };
+      if (token) {
+        reqHeaders['Authorization'] = `Bearer ${token}`;
+      }
+      return axios({
+        method: 'get',
+        url: fetchUrl,
+        headers: reqHeaders,
+        responseType: 'stream',
+        timeout: 25000,
+        maxRedirects: 5,
+        validateStatus: (status) => status < 400
+      });
+    };
+
+    let response;
+    try {
+      response = await makeFetch(targetUrl, auth?.accessToken);
+    } catch (err) {
+      if ((err.response?.status === 401 || err.response?.status === 403) && auth?.refreshToken) {
+        try {
+          console.log('[FILE PROXY] Bitrix returned auth error, refreshing token...');
+          auth = await BitrixClient.refreshAccessToken(auth);
+          parsed.searchParams.set('auth', auth.accessToken);
+          targetUrl = parsed.toString();
+          response = await makeFetch(targetUrl, auth.accessToken);
+        } catch (retryErr) {
+          throw err;
+        }
+      } else {
+        throw err;
+      }
+    }
+
+    // Detect Bitrix login page redirect (text/html when non-html requested)
+    const isLoginRedirect = (
+      (response.headers['content-type']?.includes('text/html') && !targetUrl.toLowerCase().endsWith('.html') && !targetUrl.toLowerCase().endsWith('.htm')) ||
+      (response.request?.res?.responseUrl && response.request.res.responseUrl.includes('/auth/'))
+    );
+
+    if (isLoginRedirect && auth?.refreshToken) {
+      console.log('[FILE PROXY] Detected HTML login redirect from Bitrix, refreshing token and retrying...');
+      try {
+        auth = await BitrixClient.refreshAccessToken(auth);
+        parsed.searchParams.set('auth', auth.accessToken);
+        targetUrl = parsed.toString();
+        response = await makeFetch(targetUrl, auth.accessToken);
+      } catch (retryErr) {
+        console.warn('[FILE PROXY] Refresh retry failed:', retryErr.message);
+      }
+    }
+
+    // If still returning HTML login page for a binary media file, do not stream HTML as image/pdf
+    if (
+      response.headers['content-type']?.includes('text/html') &&
+      !targetUrl.toLowerCase().endsWith('.html') &&
+      !targetUrl.toLowerCase().endsWith('.htm')
+    ) {
+      return res.status(401).send('Bitrix authentication required to view this file');
+    }
 
     // Remove frame restrictions so PDF and media can be rendered in iframes & canvas
     res.removeHeader('X-Frame-Options');
@@ -754,6 +822,11 @@ app.get('/api/file/proxy', async (req, res) => {
       }
     }
 
+    const qFileId = parsed.searchParams.get('fileId');
+    if ((!filename || filename === 'file') && qFileId && fileNameCache.has(String(qFileId))) {
+      filename = fileNameCache.get(String(qFileId));
+    }
+
     let contentType = response.headers['content-type'] || 'application/octet-stream';
     if (filename.toLowerCase().endsWith('.pdf') || targetUrl.toLowerCase().includes('.pdf')) {
       contentType = 'application/pdf';
@@ -768,11 +841,15 @@ app.get('/api/file/proxy', async (req, res) => {
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
     if (filename && filename !== 'file') {
-      const qFileId = parsed.searchParams.get('fileId');
       if (qFileId) fileNameCache.set(String(qFileId), filename);
       res.setHeader('X-File-Name', encodeURIComponent(filename));
       res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, X-File-Name');
     }
+    if (response.headers['content-length']) {
+      res.setHeader('Content-Length', response.headers['content-length']);
+    }
+
+    response.data.pipe(res);
 
     if (response.headers['content-length']) {
       res.setHeader('Content-Length', response.headers['content-length']);
