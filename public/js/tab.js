@@ -2334,6 +2334,7 @@
               </div>
             </div>
           `;
+          // showInWindowImage(viewportBox, dataUrl, file.name);
         } else {
           thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
