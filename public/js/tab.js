@@ -1964,9 +1964,16 @@
         filmImg.alt = item.name;
         filmImg.loading = 'lazy';
         filmImg.onerror = function () {
-          if (!this.dataset.proxied && item.url && item.url.startsWith('http')) {
+          if (!this.dataset.proxied) {
             this.dataset.proxied = '1';
-            this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+            this.src = getPreviewUrl(item.url);
+          } else if (!this.dataset.triedDirect) {
+            this.dataset.triedDirect = '1';
+            const freshAuth = window.BX24 && typeof window.BX24.getAuth === 'function' ? window.BX24.getAuth() : null;
+            const nativeUrl = getNativeFileUrl(item.url);
+            if (nativeUrl && freshAuth && freshAuth.access_token) {
+              this.src = nativeUrl + (nativeUrl.includes('?') ? '&' : '?') + `auth=${encodeURIComponent(freshAuth.access_token)}`;
+            }
           }
         };
         el.appendChild(filmImg);
@@ -2898,23 +2905,34 @@
 
           const imgEl = thumb.querySelector('.thumb-item-img');
           imgEl.onerror = function () {
-            if (!this.dataset.proxied && fullUrl.startsWith('http')) {
+            if (!this.dataset.proxied) {
               this.dataset.proxied = '1';
-              let target = fullUrl;
-              if (target.includes('/api/file/proxy?url=')) {
-                try { target = decodeURIComponent(target.split('/api/file/proxy?url=')[1]); } catch (_) { }
+              this.src = getPreviewUrl(item.url || fullUrl);
+            } else if (!this.dataset.triedDirect) {
+              this.dataset.triedDirect = '1';
+              const freshAuth = window.BX24 && typeof window.BX24.getAuth === 'function' ? window.BX24.getAuth() : null;
+              const nativeUrl = getNativeFileUrl(item.url || fullUrl);
+              if (nativeUrl && freshAuth && freshAuth.access_token) {
+                this.src = nativeUrl + (nativeUrl.includes('?') ? '&' : '?') + `auth=${encodeURIComponent(freshAuth.access_token)}`;
+                return;
               }
-              this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
+              showTabImgFallback();
             } else {
-              this.onerror = null;
+              showTabImgFallback();
+            }
+
+            function showTabImgFallback() {
+              imgEl.onerror = null;
               const wrap = thumb.querySelector('.b24-tile-thumb-wrap');
-              wrap.innerHTML = `
-                <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span></div>
-                <div class="thumb-zoom-overlay">View</div>
-                <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
-              `;
-              const retryRemove = wrap.querySelector('.thumb-remove-btn');
-              if (retryRemove) retryRemove.addEventListener('click', handleRemoveItem);
+              if (wrap) {
+                wrap.innerHTML = `
+                  <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span></div>
+                  <div class="thumb-zoom-overlay">View</div>
+                  <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
+                `;
+                const retryRemove = wrap.querySelector('.thumb-remove-btn');
+                if (retryRemove) retryRemove.addEventListener('click', handleRemoveItem);
+              }
             }
           };
         } else {

@@ -784,20 +784,27 @@ app.get('/api/file/proxy', async (req, res) => {
     if (fileId && recordId && !parsed.searchParams.has('token')) {
       try {
         let item = null;
+        const candidateTypes = [];
         if (String(entityTypeId) === '1') {
-          item = await BitrixClient.crmLeadGet(recordId, domain);
+          candidateTypes.push('lead', 1058, 16, 'deal', 1062, 18);
         } else {
+          candidateTypes.push(entityTypeId, 1058, 16, 'lead', 'deal', 1062, 18);
+        }
+        const tried = new Set();
+        for (const t of candidateTypes) {
+          if (!t || tried.has(String(t))) continue;
+          tried.add(String(t));
           try {
-            const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId }, domain);
-            item = itemRes?.item || itemRes;
-          } catch (e1) {
-            if (String(entityTypeId) === '1058') {
-              try {
-                const itemRes16 = await BitrixClient.call('crm.item.get', { entityTypeId: 16, id: recordId }, domain);
-                item = itemRes16?.item || itemRes16;
-              } catch (_) {}
+            if (t === 'lead' || String(t) === '1') {
+              item = await BitrixClient.crmLeadGet(recordId, domain);
+            } else if (t === 'deal' || String(t) === '2') {
+              item = await BitrixClient.call('crm.deal.get', { id: recordId }, domain);
+            } else {
+              const res = await BitrixClient.call('crm.item.get', { entityTypeId: t, id: recordId }, domain);
+              item = res?.item || res;
             }
-          }
+            if (item) break;
+          } catch (_) {}
         }
         if (item) {
           let found = null;
@@ -852,6 +859,20 @@ app.get('/api/file/proxy', async (req, res) => {
               } catch (_) {}
             }
           }
+        }
+        if ((!targetUrl || targetUrl.includes('crm_show_file.php')) && fileId) {
+          try {
+            const diskRes = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+            const diskUrl = diskRes?.DOWNLOAD_URL || diskRes?.downloadUrl;
+            if (diskUrl && typeof diskUrl === 'string') {
+              let resolvedDisk = diskUrl;
+              if (!resolvedDisk.startsWith('http://') && !resolvedDisk.startsWith('https://')) {
+                resolvedDisk = `https://${domain}${resolvedDisk.startsWith('/') ? '' : '/'}${resolvedDisk}`;
+              }
+              parsed = new URL(resolvedDisk);
+              targetUrl = parsed.toString();
+            }
+          } catch (_) {}
         }
       } catch (resolveErr) {
         console.warn('[FILE PROXY] Could not resolve urlMachine:', resolveErr.message);
@@ -937,6 +958,19 @@ app.get('/api/file/proxy', async (req, res) => {
       } catch (retryErr) {
         console.warn('[FILE PROXY] Refresh retry failed:', retryErr.message);
       }
+    }
+
+    if (
+      (response.headers['content-type']?.includes('text/html') || response.request?.res?.responseUrl?.includes('/auth/')) &&
+      fileId
+    ) {
+      try {
+        const diskFile = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+        const dlUrl = diskFile?.DOWNLOAD_URL || diskFile?.downloadUrl;
+        if (dlUrl) {
+          response = await makeFetch(dlUrl, auth?.accessToken);
+        }
+      } catch (_) {}
     }
 
     // If still returning HTML login page for a binary media file, do not stream HTML as image/pdf
