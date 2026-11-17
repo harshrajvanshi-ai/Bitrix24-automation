@@ -4640,6 +4640,7 @@
         }
       });
       pendingFileUploads = {};
+      removedFileIds = {};
       Object.assign(currentLead, payload);
 
       // Refresh initialFormValues
@@ -4672,6 +4673,9 @@
     contentEl.style.display = 'none';
 
     try {
+      pendingFileUploads = {};
+      removedFileIds = {};
+      setDirty(false);
       currentLead = await fetchLead(currentLeadId);
       applyLayoutForLead(currentLead);
       showToast('Lead record reloaded from Bitrix24.', 'info');
@@ -4709,10 +4713,15 @@
       }
 
       if (window.PreviewModule && typeof window.PreviewModule.configure === 'function') {
+        let bAuth = null;
+        if (window.BX24 && typeof window.BX24.getAuth === 'function') {
+          bAuth = window.BX24.getAuth();
+        }
         window.PreviewModule.configure({
           entityTypeId: 1,
           ownerId: currentLeadId,
-          domain: window.__BITRIX_DOMAIN__
+          domain: window.__BITRIX_DOMAIN__ || bAuth?.domain || (window.location ? window.location.hostname : 'csl.bitrix24.com'),
+          token: bAuth?.access_token || window.__BITRIX_AUTH_TOKEN__ || (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('b24_access_token') : '')
         });
       }
 

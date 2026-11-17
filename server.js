@@ -1067,9 +1067,9 @@ app.get('/api/file/proxy', async (req, res) => {
       if (recordId && (String(entityTypeId) === '1058' || String(entityTypeId) === '16')) {
         const altType = String(entityTypeId) === '1058' ? 16 : 1058;
         try {
-          const altRestUrl = `https://${domain}/rest/crm.controller.item.getFile.json?entityTypeId=${altType}&id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
+          const altRestUrl = `https://${domain}/bitrix/tools/crm_show_file.php?fileId=${fileId}&ownerTypeId=${altType}&ownerId=${recordId}&fieldName=${fieldName || ''}&auth=${auth?.accessToken || ''}`;
           const altRes = await makeFetch(altRestUrl, auth?.accessToken);
-          if (!altRes.headers['content-type']?.includes('text/html')) {
+          if (!altRes.headers['content-type']?.includes('text/html') && !altRes.headers['content-type']?.includes('application/json')) {
             response = altRes;
           }
         } catch (_) {}
@@ -1118,8 +1118,12 @@ app.get('/api/file/proxy', async (req, res) => {
     }
 
     const qFileId = parsed.searchParams.get('fileId');
-    if ((!filename || filename === 'file') && qFileId && fileNameCache.has(String(qFileId))) {
-      filename = fileNameCache.get(String(qFileId));
+    if (!filename || filename === 'file' || filename === 'crm_show_file.php' || filename === 'show_file.php') {
+      if (req.query.filename || req.query.name) {
+        filename = String(req.query.filename || req.query.name).trim();
+      } else if (qFileId && fileNameCache.has(String(qFileId))) {
+        filename = fileNameCache.get(String(qFileId));
+      }
     }
 
     let contentType = response.headers['content-type'] || 'application/octet-stream';

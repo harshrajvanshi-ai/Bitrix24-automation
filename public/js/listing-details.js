@@ -2831,9 +2831,9 @@ function openLightbox(
   if (window.PreviewModule && typeof window.PreviewModule.openLightbox === "function") {
     return window.PreviewModule.openLightbox(title, url, isPdf, gallery, startIdx, sourceEl);
   }
-  if (gallery && gallery.length > 1) {
+  if (gallery && gallery.length > 0) {
     _lbGallery = gallery;
-    _lbIndex = startIdx;
+    _lbIndex = Math.max(0, Math.min(startIdx, gallery.length - 1));
   } else {
     _lbGallery = [{ url, name: title, isImage: !isPdf, isPdf }];
     _lbIndex = 0;
@@ -5506,7 +5506,7 @@ function createFieldElement(f, layoutKey) {
         showToast("Please enter a 360 Virtual Tour URL first", "warning");
         return;
       }
-      openLightbox("360 Virtual Tour Preview", input.value, true);
+      openLightbox("360 Virtual Tour Preview", input.value, false, [{ url: input.value, name: "360 Virtual Tour Preview", isImage: false, isPdf: false, isIframe: true }]);
     });
 
     wrap.appendChild(input);
@@ -5540,7 +5540,7 @@ function createFieldElement(f, layoutKey) {
     testBtn.textContent = "Open";
     testBtn.addEventListener("click", (e) => {
       if (!input.value) e.preventDefault();
-      else openLightbox("Preview", input.value, true);
+      else openLightbox("Preview", input.value, false, [{ url: input.value, name: "Preview", isImage: false, isPdf: false, isIframe: true }]);
     });
 
     wrap.appendChild(input);

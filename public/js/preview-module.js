@@ -101,11 +101,19 @@
   /**
    * Resolves a same-origin proxy URL for Bitrix file attachments with active authentication.
    */
-  function getPreviewUrl(url, fieldCode, fileId, overrideOwnerId, overrideOwnerTypeId) {
+  function getPreviewUrl(url, fieldCode, fileId, overrideOwnerId, overrideOwnerTypeId, filename) {
     if (!url || typeof url !== 'string' || url.startsWith('data:')) return url;
     let base = url;
     let extractedField = fieldCode || '';
     let extractedFileId = fileId || '';
+    let extractedName = filename || '';
+
+    if (!extractedName && url) {
+      const nm = url.match(/[?&](?:fileName|filename|name)=([^&]+)/i);
+      if (nm && nm[1]) {
+        try { extractedName = decodeURIComponent(nm[1]); } catch (_) { extractedName = nm[1]; }
+      }
+    }
 
     if (url.includes('/api/file/proxy')) {
       try {
@@ -183,6 +191,7 @@
     }
     if (extractedField) params.set('fieldName', extractedField);
     if (extractedFileId) params.set('fileId', String(extractedFileId));
+    if (extractedName) params.set('filename', extractedName);
     if (token) params.set('auth', token);
     if (domain) params.set('domain', domain);
     if (memberId) params.set('member_id', memberId);
@@ -1073,6 +1082,17 @@
         if (zbReset) zbReset.onclick = null;
         if (_zoomToggleBtn) _zoomToggleBtn.onclick = null;
       };
+    } else if (item.isIframe || (!item.isPdf && !item.isImage && item.url && (item.url.startsWith('http://') || item.url.startsWith('https://')) && !item.url.includes('show_file.php'))) {
+      if (_fileIconEl) _fileIconEl.textContent = '';
+      if (_zoomToggleBtn) _zoomToggleBtn.style.display = 'none';
+      if (_zoomControls) _zoomControls.style.display = 'none';
+
+      const iframe = document.createElement('iframe');
+      iframe.className = 'lightbox-iframe';
+      iframe.src = item.url;
+      iframe.setAttribute('allowfullscreen', 'true');
+      iframe.setAttribute('allow', 'xr-spatial-tracking; vr; gyroscope; accelerometer; fullscreen');
+      _bodyEl.appendChild(iframe);
     } else {
       if (_fileIconEl) _fileIconEl.textContent = '';
       if (_zoomToggleBtn) _zoomToggleBtn.style.display = 'none';
@@ -1104,9 +1124,9 @@
   function openLightbox(title, url, isPdf = false, gallery = null, startIdx = 0, sourceEl = null) {
     ensureModal();
 
-    if (gallery && gallery.length > 1) {
+    if (gallery && gallery.length > 0) {
       _lbGallery = gallery;
-      _lbIndex = startIdx;
+      _lbIndex = Math.max(0, Math.min(startIdx, gallery.length - 1));
     } else {
       _lbGallery = [{ url, name: title, isImage: !isPdf, isPdf }];
       _lbIndex = 0;
