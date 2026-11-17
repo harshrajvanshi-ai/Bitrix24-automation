@@ -92,69 +92,86 @@ class BitrixClient {
         throw new Error('Bitrix24 authentication missing. Please install the local application first.');
       }
 
-      const executeWithRetry = async (retryCount = 0) => {
+      // Shared options across all attempts, retries, and fallbacks (no duplicated config)
+      const sharedAxiosOptions = {
+        timeout: 30000,
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity,
+        headers: { 'Content-Type': 'application/json' }
+      };
+
+      // Single unified request function ensuring maxBodyLength and res.data.error checking everywhere
+      const sendPost = async (url, data) => {
+        const res = await axios.post(url, data, sharedAxiosOptions);
+        if (res.data?.error) {
+          const errMsg = res.data.error_description || res.data.error;
+          const err = new Error(errMsg);
+          err.response = res;
+          err.bitrixError = res.data.error;
+          err.bitrixErrorDescription = res.data.error_description;
+          throw err;
+        }
+        return res.data?.result;
+      };
+
+      let retryCount = 0;
+      let tokenRefreshed = false;
+
+      while (true) {
         try {
-          const res = await axios.post(
-            endpoint,
-            postData,
-            { timeout: 15000, maxContentLength: Infinity, maxBodyLength: Infinity, headers: { 'Content-Type': 'application/json' } }
-          );
-
-          if (res.data?.error) {
-            throw new Error(res.data.error_description || res.data.error);
-          }
-
-          return res.data?.result;
+          return await sendPost(endpoint, postData);
         } catch (err) {
-          const errCode = (err.response?.data?.error || err.message || '').toLowerCase();
+          const errCode = (err.response?.data?.error || err.bitrixError || err.message || '').toLowerCase();
           const isRateLimit = errCode.includes('query_limit_exceeded') || err.response?.status === 503;
 
           // Rate limit throttle backoff (up to 3 retries)
           if (isRateLimit && retryCount < 3) {
-            const delay = (retryCount + 1) * 1000;
-            console.warn(`[API] Rate limit hit on ${method}. Backing off for ${delay}ms before retry ${retryCount + 1}/3...`);
+            retryCount++;
+            const delay = retryCount * 1000;
+            console.warn(`[API] Rate limit hit on ${method}. Backing off for ${delay}ms before retry ${retryCount}/3...`);
             await new Promise(r => setTimeout(r, delay));
-            return executeWithRetry(retryCount + 1);
+            continue;
           }
 
-          // Check if token has expired and retry once
-          if ((errCode.includes('expired_token') || errCode.includes('invalid_token') || err.response?.status === 401) && retryCount === 0) {
+          // Check if token has expired and retry once (only when auth record exists with refreshToken)
+          const isTokenExpired = (errCode.includes('expired_token') || errCode.includes('invalid_token') || err.response?.status === 401);
+          if (isTokenExpired && !tokenRefreshed && auth && auth.refreshToken) {
+            tokenRefreshed = true;
             console.warn(`[API] Token expired for method ${method}. Attempting refresh and retry...`);
             try {
               auth = await this.refreshAccessToken(auth);
               postData.auth = auth.accessToken;
-              const retryRes = await axios.post(
-                endpoint,
-                postData,
-                { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
-              );
-              return retryRes.data?.result;
+              continue;
             } catch (refreshErr) {
               console.error('[API] Retry after refresh failed:', refreshErr.message);
               if (config.INBOUND_WEBHOOK_URL) {
                 console.log(`[API] Falling back to INBOUND_WEBHOOK_URL for method ${method}...`);
-                const fallbackEndpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
-                const fallbackRes = await axios.post(
-                  fallbackEndpoint,
-                  params,
-                  { timeout: 15000, headers: { 'Content-Type': 'application/json' } }
-                );
-                return fallbackRes.data?.result;
+                endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+                const fallbackData = { ...params };
+                delete fallbackData.auth;
+                return await sendPost(endpoint, fallbackData);
               }
               throw refreshErr;
             }
           }
 
-          const bitrixErrorMsg = err.response?.data?.error_description || err.response?.data?.error;
+          // Inbound webhook fallback for 401s when no auth record exists or webhook mode
+          if (config.INBOUND_WEBHOOK_URL && endpoint !== `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}` && (err.response?.status === 401 || !auth)) {
+            console.log(`[API] Falling back to INBOUND_WEBHOOK_URL for method ${method}...`);
+            endpoint = `${config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '')}/${method}`;
+            const fallbackData = { ...params };
+            delete fallbackData.auth;
+            return await sendPost(endpoint, fallbackData);
+          }
+
+          const bitrixErrorMsg = err.response?.data?.error_description || err.response?.data?.error || err.bitrixErrorDescription;
           if (bitrixErrorMsg) {
             err.message = bitrixErrorMsg;
           }
           console.error(`[API] Bitrix24 method ${method} failed:`, err.response?.data || err.message);
           throw err;
         }
-      };
-
-      return executeWithRetry();
+      }
     });
   }
 

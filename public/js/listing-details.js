@@ -1762,11 +1762,13 @@
         })
           .then((r) => r.json())
           .then((data) => {
-            if (data.success) {
+            if (data.success && data.item) {
               if (data.entityTypeId) CONFIG.entityTypeId = data.entityTypeId;
               resolve(data.item);
+            } else if (data.success) {
+              fetchListing(listingId).then(resolve).catch(resolve);
             } else {
-              reject(new Error(data.error || "Update failed"));
+              reject(new Error(data.bitrixErrorDescription || data.error || "Update failed"));
             }
           })
           .catch(reject);
@@ -1798,8 +1800,7 @@
                     tryApiUpdate(CONFIG.entityTypeId);
                   } else {
                     CONFIG.entityTypeId = companionType;
-                    tryApiUpdate(companionType).catch(() => {});
-                    resolve(cRes.data()?.item || cRes.data());
+                    tryApiUpdate(companionType);
                   }
                 }
               );
@@ -1807,8 +1808,7 @@
               tryApiUpdate(CONFIG.entityTypeId);
             }
           } else {
-            tryApiUpdate(CONFIG.entityTypeId).catch(() => {});
-            resolve(res.data()?.item || res.data());
+            tryApiUpdate(CONFIG.entityTypeId);
           }
         },
       );
@@ -3519,7 +3519,17 @@ function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
     pendingFileUploads[fieldKey] = [];
   }
 
+  const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB limit
+
   Array.from(files).forEach((file) => {
+    if (file.size > MAX_FILE_SIZE) {
+      showToast(
+        `File "${file.name}" exceeds 25 MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`,
+        "error"
+      );
+      return;
+    }
+
     const isImage =
       file.type.startsWith("image/") ||
       /\.(png|jpe?g|webp|gif|svg)$/i.test(file.name);
@@ -5941,9 +5951,12 @@ if (saveBtnTop) {
   });
 }
 
+let isSavingListing = false;
+
 formEl.addEventListener("submit", async (e) => {
   e.preventDefault();
-  if (!currentListingId) return;
+  if (!currentListingId || isSavingListing) return;
+  isSavingListing = true;
 
   saveBtn.disabled = true;
   saveBtn.innerHTML = "SAVING...";
@@ -6319,9 +6332,27 @@ formEl.addEventListener("submit", async (e) => {
     }
 
     console.log("[LISTING] Saving payload:", payload);
-    await updateListing(currentListingId, payload);
+    const updatedItem = await updateListing(currentListingId, payload);
 
-    showToast("Listing updated successfully in Bitrix24!", "success");
+    // Verify response reflects changed file fields
+    let verificationFailed = false;
+    for (const fieldKey of allFileFieldKeys) {
+      const fConfig = findFieldConfig(fieldKey);
+      const canonicalKey = fConfig ? fConfig.key : fieldKey;
+      if (payload[canonicalKey] === "") {
+        const checkVal = updatedItem?.[canonicalKey];
+        if (checkVal && typeof checkVal === "object" && checkVal.id) {
+          verificationFailed = true;
+        }
+      }
+    }
+
+    if (verificationFailed) {
+      showToast("Save completed, but some file fields were not cleared in Bitrix24.", "error");
+    } else {
+      showToast("Listing updated successfully in Bitrix24!", "success");
+    }
+
     const undoBannerEl = document.getElementById("transaction-undo-banner");
     if (undoBannerEl) undoBannerEl.style.display = "none";
     cachedUndoState = null;
@@ -6329,11 +6360,20 @@ formEl.addEventListener("submit", async (e) => {
     removedFileIds = {};
     setDirty(false);
 
-    await loadListingDetails(false);
+    if (updatedItem && typeof updatedItem === "object") {
+      currentListing = updatedItem;
+      const layoutKey = detectLayoutFromListing(currentListing);
+      renderLayout(layoutKey);
+      runListingAutomations({ isInitialLoad: false });
+      scheduleResize();
+    } else {
+      await loadListingDetails(false);
+    }
   } catch (err) {
     console.error("Failed to save listing:", err);
     showToast(`Save failed: ${err.message}`, "error");
   } finally {
+    isSavingListing = false;
     saveBtn.disabled = false;
     saveBtn.innerHTML = "SAVE CHANGES";
     if (saveBtnTop) {

@@ -812,10 +812,12 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
           }
         }
       }
-      if (mapping.type === 'file' && (rawVal === undefined || rawVal === null || rawVal === '' || (Array.isArray(rawVal) && rawVal.length === 0))) {
-        leadUpdates[mapping.leadCode] = '';
-        if (mapping.leadAltCodes) {
-          for (const ac of mapping.leadAltCodes) leadUpdates[ac] = '';
+      if (mapping.type === 'file') {
+        if (rawVal === undefined || rawVal === null || rawVal === '' || (Array.isArray(rawVal) && rawVal.length === 0)) {
+          leadUpdates[mapping.leadCode] = '';
+          if (mapping.leadAltCodes) {
+            for (const ac of mapping.leadAltCodes) leadUpdates[ac] = '';
+          }
         }
         continue;
       }

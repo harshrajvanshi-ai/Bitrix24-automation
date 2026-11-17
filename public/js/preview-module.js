@@ -469,8 +469,9 @@
     function showFallback(errMsg) {
       if (!loadingEl || !stage) return;
       loadingEl.style.display = 'none';
+      const nativeUrl = getNativeFileUrl(pdfUrl);
       stage.innerHTML = `
-        <div class="b24-pdf-fallback-card">
+        <div class="b24-pdf-fallback-card lb-error-box">
           <div class="pdf-fallback-icon">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -482,18 +483,29 @@
           </div>
           <h3 class="pdf-fallback-title">PDF Document Preview</h3>
           <p class="pdf-fallback-desc">
-            ${errMsg ? 'Browser security policy prevented direct in-frame rendering.' : 'Click below to open or download this document.'}
+            ${errMsg ? 'Browser security or portal authentication prevented in-frame rendering.' : 'Click below to open in Bitrix24 or download this document.'}
           </p>
           <div class="pdf-fallback-btns">
-            <a href="${pdfUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-              <span>↗</span> Open in New Window
-            </a>
+            <button type="button" class="btn btn-primary lb-open-b24-btn" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+              <span>↗</span> Open in Bitrix24
+            </button>
             <a href="${pdfUrl}" download="${docName}" class="btn btn-secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
               <span>⤓</span> Download File
             </a>
           </div>
         </div>
       `;
+      const openBtn = stage.querySelector('.lb-open-b24-btn');
+      if (openBtn) {
+        openBtn.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          if (typeof window !== 'undefined' && window.BX24 && typeof window.BX24.openPath === 'function') {
+            openInBitrixViewer(pdfUrl);
+          } else {
+            window.open(nativeUrl || pdfUrl, '_blank');
+          }
+        });
+      }
     }
 
     function renderPage(num) {
@@ -805,6 +817,10 @@
       },
       cleanup: () => {
         cancelActiveTasks();
+        if (pdfDoc) {
+          try { pdfDoc.destroy(); } catch (_) {}
+          pdfDoc = null;
+        }
       }
     };
   }
@@ -986,7 +1002,10 @@
         const nativeUrl = getNativeFileUrl(item.url);
         err.innerHTML = `
           <span>Unable to preview image directly in frame</span>
-          <a href="${nativeUrl || item.url}" target="_blank" rel="noopener" class="lb-error-link">Open in Bitrix24</a>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <a href="${nativeUrl || item.url}" target="_blank" rel="noopener" class="lb-error-link">Open in Bitrix24</a>
+            <a href="${img.src}" download="${item.name || 'image'}" class="lb-error-link" style="margin-left:8px;">Download</a>
+          </div>
         `;
         const openLink = err.querySelector('.lb-error-link');
         if (openLink) {

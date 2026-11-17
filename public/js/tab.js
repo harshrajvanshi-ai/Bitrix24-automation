@@ -2462,12 +2462,19 @@
       pendingFileUploads[fieldCode] = [];
     }
 
+    const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB limit
+
     if (!isMultiple) {
       pendingFileUploads[fieldCode] = [];
       stripWrap.querySelectorAll('.thumb-item.active').forEach(el => el.remove());
     }
 
     Array.from(files).forEach(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        showToast(`File "${file.name}" exceeds 25 MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`, 'error');
+        return;
+      }
+
       const isImg = isImageFile(file.name, file.type);
       const isPdf = isPdfFile(file.name, file.type);
       const reader = new FileReader();
@@ -4238,12 +4245,15 @@
     showToast('Unsaved changes discarded.', 'info');
   });
 
+  let isSavingLead = false;
+
   /**
    * Save form edits to Bitrix24
    */
   async function handleSave(e) {
     e.preventDefault();
-    if (!currentLayout) return;
+    if (!currentLayout || isSavingLead) return;
+    isSavingLead = true;
 
     // --- Validation Rules ---
     if (currentLayout === 'enquiry') {
@@ -4315,7 +4325,15 @@
             return { name: item.name, base64: b64 };
           });
           if (isMultiple) {
-            payload[f.code] = tuples.map(t => ({ fileData: [t.name, t.base64] }));
+            const existingRaw = currentLead?.[f.code];
+            const existingList = Array.isArray(existingRaw) ? existingRaw : (existingRaw ? [existingRaw] : []);
+            const remSet = removedFileIds[f.code] || new Set();
+            const keptIds = existingList
+              .map(it => typeof it === 'object' ? (it.id || it.ID || it.fileId) : it)
+              .filter(Boolean)
+              .filter(id => !remSet.has(String(id)) && !remSet.has('__ALL__'));
+            const newTuples = tuples.map(t => ({ fileData: [t.name, t.base64] }));
+            payload[f.code] = [...keptIds, ...newTuples];
           } else {
             payload[f.code] = { fileData: [tuples[0].name, tuples[0].base64] };
           }
@@ -4653,6 +4671,7 @@
       console.error('Save error:', err);
       showToast(`Error: ${err.message}`, 'error');
     } finally {
+      isSavingLead = false;
       saveBtn.disabled = false;
       saveBtn.textContent = 'SAVE CHANGES';
       if (saveBtnTop) {

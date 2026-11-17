@@ -76,9 +76,9 @@ app.use(helmet({
 
 app.use(cors());
 
-// Parse incoming URL-encoded bodies (standard Bitrix24 webhooks) & JSON (up to 25MB for file attachments)
-app.use(express.urlencoded({ extended: true, limit: '25mb' }));
-app.use(express.json({ limit: '25mb' }));
+// Parse incoming URL-encoded bodies (standard Bitrix24 webhooks) & JSON (up to 50MB for multiple base64 attachments)
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 // Serve static assets with explicit no-cache headers so embedded Bitrix24 iframes never serve stale scripts
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -509,40 +509,84 @@ async function getListingSpaItem(listingId, preferredTypeId = 1058, domain = nul
   throw lastErr || new Error(`Listing #${listingId} not found`);
 }
 
+const spaItemFieldsCache = new Map();
+
+async function getCachedSpaItemFields(entityTypeId, domain = null) {
+  const cacheKey = `${domain || 'default'}_${entityTypeId}`;
+  const cached = spaItemFieldsCache.get(cacheKey);
+  if (cached && (Date.now() - cached.timestamp < 3600000)) {
+    return cached.fields;
+  }
+  try {
+    const res = await BitrixClient.call('crm.item.fields', { entityTypeId }, domain);
+    const rawFields = res?.fields || res || {};
+    const fieldMap = new Map();
+    for (const k of Object.keys(rawFields)) {
+      fieldMap.set(k.toLowerCase(), k);
+    }
+    spaItemFieldsCache.set(cacheKey, { fields: fieldMap, timestamp: Date.now() });
+    return fieldMap;
+  } catch (err) {
+    console.warn(`[SPA SCHEMA] Could not fetch schema fields for entityTypeId ${entityTypeId}:`, err.message);
+    return null;
+  }
+}
+
 /**
  * Resilient SPA item updater supporting dynamic entityTypeId (e.g. 1058 <-> 16)
+ * with schema whitelisting, canonical key enforcement, and post-save re-fetch verification
  */
 async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, domain = null) {
   const pId = parseInt(preferredTypeId, 10) || 1058;
   const candidates = [pId, pId === 1058 ? 16 : 1058];
   let lastErr = null;
-  // Sanitize fields: replace any `{ del: 'Y' }` with `""` so Bitrix SPA does not choke
-  const sanitizedFields = { ...fields };
-  const invalidAliases = new Set([
-    'ufCrm16Photos', 'UF_CRM_16_PHOTOS',
-    'ufCrm16Documents', 'UF_CRM_16_DOCUMENTS',
-    'ufCrm16PrimaryImage', 'UF_CRM_16_PRIMARY_IMAGE',
-    'ufCrm16FormA', 'UF_CRM_16_FORM_A',
-    'ufCrm16FormADocument', 'UF_CRM_16_FORM_A_DOCUMENT',
-    'ufCrm16_1791544736052', 'ufCrm16_1791172957'
-  ]);
-  for (const [k, v] of Object.entries(sanitizedFields)) {
-    if (invalidAliases.has(k)) {
-      delete sanitizedFields[k];
-      continue;
-    }
-    if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
-      sanitizedFields[k] = '';
-    } else if (Array.isArray(v)) {
-      sanitizedFields[k] = v.map(toFileData).filter(Boolean);
-    }
-  }
+
   for (const t of candidates) {
     try {
+      const schemaFieldMap = await getCachedSpaItemFields(t, domain);
+      const sanitizedFields = {};
+
+      const invalidAliases = new Set([
+        'ufcrm16photos', 'uf_crm_16_photos',
+        'ufcrm16documents', 'uf_crm_16_documents',
+        'ufcrm16primaryimage', 'uf_crm_16_primary_image',
+        'ufcrm16forma', 'uf_crm_16_form_a',
+        'ufcrm16formadocument', 'uf_crm_16_form_a_document',
+        'ufcrm16_1791544736052', 'ufcrm16_1791172957'
+      ]);
+
+      for (const [k, v] of Object.entries(fields || {})) {
+        const lowerK = k.toLowerCase();
+        if (invalidAliases.has(lowerK)) {
+          console.warn(`[SPA UPDATE] Dropping legacy alias '${k}' for entityTypeId ${t}`);
+          continue;
+        }
+
+        let targetKey = k;
+        if (schemaFieldMap && schemaFieldMap.size > 0) {
+          if (!schemaFieldMap.has(lowerK)) {
+            console.warn(`[SPA UPDATE] Dropping unknown field '${k}' not in crm.item.fields schema for entityTypeId ${t}`);
+            continue;
+          }
+          targetKey = schemaFieldMap.get(lowerK) || k;
+        }
+
+        if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
+          sanitizedFields[targetKey] = '';
+        } else if (Array.isArray(v)) {
+          sanitizedFields[targetKey] = v.map(toFileData).filter(Boolean);
+        } else if (v && typeof v === 'object' && v.fileData) {
+          sanitizedFields[targetKey] = toFileData(v);
+        } else {
+          sanitizedFields[targetKey] = v;
+        }
+      }
+
       const res = await BitrixClient.call('crm.item.update', { entityTypeId: t, id: listingId, fields: sanitizedFields }, domain);
-      const item = res?.item || res;
-      if (item) {
-        return { item, entityTypeId: t };
+      if (res?.item || res) {
+        // Re-fetch item with fresh file field values to guarantee verification
+        const fresh = await getListingSpaItem(listingId, t, domain);
+        return { item: fresh.item, entityTypeId: t };
       }
     } catch (err) {
       lastErr = err;
@@ -635,7 +679,13 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
     res.json({ success: true, item: item || null, entityTypeId });
   } catch (err) {
     console.error(`[API] Error updating listing #${req.params.id}:`, err.message);
-    res.status(500).json({ success: false, error: err.message });
+    const status = err.response?.status || (err.status >= 400 && err.status < 600 ? err.status : 500);
+    res.status(status).json({
+      success: false,
+      error: err.message,
+      bitrixError: err.response?.data?.error || err.bitrixError || null,
+      bitrixErrorDescription: err.response?.data?.error_description || err.bitrixErrorDescription || err.message
+    });
   }
 });
 
@@ -800,14 +850,31 @@ app.get('/api/file/proxy', async (req, res) => {
       return res.status(400).send('Invalid url');
     }
 
-    const domain = parsed.hostname.toLowerCase();
-    const allowed = domain.endsWith('bitrix24.com') ||
-                    domain.endsWith('bitrix24.ae') ||
-                    domain.endsWith('bitrix24.eu') ||
-                    domain.endsWith('bitrix24.in') ||
-                    domain.endsWith('bitrix.info');
+    const isAllowedHost = (hostname) => {
+      if (!hostname) return false;
+      const h = hostname.toLowerCase();
+      return (
+        h.endsWith('bitrix24.com') ||
+        h.endsWith('bitrix24.ae') ||
+        h.endsWith('bitrix24.eu') ||
+        h.endsWith('bitrix24.in') ||
+        h.endsWith('bitrix24.de') ||
+        h.endsWith('bitrix24.es') ||
+        h.endsWith('bitrix24.fr') ||
+        h.endsWith('bitrix24.it') ||
+        h.endsWith('bitrix24.pl') ||
+        h.endsWith('bitrix24.com.br') ||
+        h.endsWith('bitrix24.tr') ||
+        h.endsWith('bitrix24.cn') ||
+        h.endsWith('bitrix24.vn') ||
+        h.endsWith('bitrix24.id') ||
+        h.endsWith('bitrix.info') ||
+        h.endsWith('.amazonaws.com') ||
+        h.endsWith('.yandexcloud.net')
+      );
+    };
 
-    if (!allowed) {
+    if (!isAllowedHost(domain)) {
       return res.status(403).send('Forbidden domain');
     }
 
@@ -996,6 +1063,9 @@ app.get('/api/file/proxy', async (req, res) => {
       if (token) {
         reqHeaders['Authorization'] = `Bearer ${token}`;
       }
+      if (req.headers.range) {
+        reqHeaders['Range'] = req.headers.range;
+      }
       return axios({
         method: 'get',
         url: fetchUrl,
@@ -1004,6 +1074,9 @@ app.get('/api/file/proxy', async (req, res) => {
         timeout: 25000,
         maxRedirects: 5,
         beforeRedirect: (options) => {
+          if (options.hostname && !isAllowedHost(options.hostname)) {
+            throw new Error(`SSRF guard: Redirect to unauthorized host ${options.hostname} blocked`);
+          }
           if (options.hostname && !options.hostname.includes('bitrix24') && !options.hostname.includes('bitrix.info')) {
             delete options.headers['authorization'];
             delete options.headers['Authorization'];
@@ -1151,14 +1224,21 @@ app.get('/api/file/proxy', async (req, res) => {
       contentType = 'image/webp';
     }
 
+    if (response.status === 206) {
+      res.status(206);
+      if (response.headers['content-range']) {
+        res.setHeader('Content-Range', response.headers['content-range']);
+      }
+    }
+
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
     if (filename && filename !== 'file') {
       if (qFileId) fileNameCache.set(String(qFileId), filename);
       res.setHeader('X-File-Name', encodeURIComponent(filename));
-      res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, X-File-Name');
+      res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, X-File-Name, Content-Range');
     }
-    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Cache-Control', 'private, max-age=3600');
     if (response.headers['content-length']) {
       res.setHeader('Content-Length', response.headers['content-length']);
     }
