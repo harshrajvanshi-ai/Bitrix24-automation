@@ -6033,7 +6033,7 @@ function resolveCountryCode(countryName) {
 
       setDirty(false);
       loadingEl.style.display = "none";
-      contentEl.style.display = "block";
+      contentEl.style.display = "flex";
       scheduleResize(40);
       setTimeout(() => scheduleResize(300), 300);
     } catch (err) {

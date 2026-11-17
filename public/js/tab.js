@@ -4479,7 +4479,7 @@
       showToast(`Refresh failed: ${err.message}`, 'error');
     } finally {
       loadingEl.style.display = 'none';
-      contentEl.style.display = 'block';
+      contentEl.style.display = 'flex';
       resizeWindow();
     }
   }
@@ -4517,12 +4517,12 @@
       applyLayoutForLead(lead);
 
       loadingEl.style.display = 'none';
-      contentEl.style.display = 'block';
+      contentEl.style.display = 'flex';
       resizeWindow();
     } catch (err) {
       console.error('Initialization error:', err);
       loadingEl.style.display = 'none';
-      contentEl.style.display = 'block';
+      contentEl.style.display = 'flex';
       contentEl.innerHTML = `
         <div style="padding: 24px; max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; border: 1px solid #e0e0e0; box-shadow: 0 4px 12px rgba(0,0,0,0.05); text-align: center;">
           <div style="font-size: 32px; margin-bottom: 12px;">⚠️</div>
