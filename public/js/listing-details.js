@@ -49,28 +49,28 @@
         id: "external_stock",
         enumId: "164",
         title: "External Stock",
-        
+
         pillClass: "layout-pill-external_stock",
       },
       off_plan: {
         id: "off_plan",
         enumId: "162",
         title: "Off-plan",
-        
+
         pillClass: "layout-pill-off_plan",
       },
       overseas_sale: {
         id: "overseas_sale",
         enumId: "160",
         title: "Overseas Sale",
-        
+
         pillClass: "layout-pill-overseas_sale",
       },
       rent: {
         id: "rent",
         enumId: "158",
         title: "Rent",
-        
+
         pillClass: "layout-pill-rent",
       },
     },
@@ -1262,7 +1262,7 @@
   // ============================================================================
   // 2. HELPER & UTILITY FUNCTIONS
   // ============================================================================
-  
+
   function computeHandoverQuarter(dateStr) {
     if (!dateStr) return '';
     let y, m;
@@ -1401,7 +1401,7 @@
         try {
           sessionStorage.setItem("b24_access_token", auth.access_token);
           if (auth.domain) sessionStorage.setItem("b24_domain", auth.domain);
-        } catch (_) {}
+        } catch (_) { }
         headers["X-Bitrix-Auth"] = auth.access_token;
         headers["X-Bitrix-Domain"] = auth.domain || "csl.bitrix24.com";
       }
@@ -1447,7 +1447,7 @@
       ) {
         window.BX24.resizeWindow(null, h + 30);
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   if (typeof ResizeObserver !== "undefined") {
@@ -1456,7 +1456,7 @@
         scheduleResize(50);
       });
       ro.observe(document.body);
-    } catch (_) {}
+    } catch (_) { }
   }
 
   window.addEventListener("load", () => scheduleResize(100));
@@ -1501,7 +1501,7 @@
                 parsed.listingId ||
                 parsed.LISTING_ID;
               if (id) return String(id);
-            } catch (e) {}
+            } catch (e) { }
           } else if (typeof options === "object") {
             const id =
               options.ID ||
@@ -1513,7 +1513,7 @@
             if (id) return String(id);
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // 2. Explicit URL query parameter or PLACEMENT_OPTIONS in URL
@@ -1541,7 +1541,7 @@
           parsed.listingId ||
           parsed.LISTING_ID;
         if (id) return String(id);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // 3. Document Referrer (contains CRM dynamic 1058 / 16 detail card URL: /crm/type/1058/details/<id>/)
@@ -1555,7 +1555,7 @@
           return String(refMatch[1]);
         }
       }
-    } catch (_) {}
+    } catch (_) { }
 
     // 4. Server injected initial listing ID
     if (window.__INITIAL_LISTING_ID__) {
@@ -1566,7 +1566,7 @@
     try {
       const stored = sessionStorage.getItem("b24_last_listing_id");
       if (stored) return String(stored);
-    } catch (_) {}
+    } catch (_) { }
 
     return null;
   }
@@ -1870,7 +1870,7 @@
       } catch (_) {
         try {
           base = decodeURIComponent(url.split("/api/file/proxy?url=")[1].split("&")[0]);
-        } catch (_) {}
+        } catch (_) { }
       }
     }
     if (!/^https?:\/\//i.test(base)) {
@@ -1929,7 +1929,7 @@
         const u = new URL(url, window.location.origin);
         const extracted = u.searchParams.get("url");
         if (extracted) return extracted;
-      } catch (_) {}
+      } catch (_) { }
       const marker = "/api/file/proxy?url=";
       try {
         const part = url.slice(url.indexOf(marker) + marker.length);
@@ -2026,7 +2026,7 @@
       activeRenderTasks.forEach((task) => {
         try {
           if (task && typeof task.cancel === "function") task.cancel();
-        } catch (_) {}
+        } catch (_) { }
       });
       activeRenderTasks = [];
     }
@@ -2262,623 +2262,623 @@
     function initDoc(pdfLib) {
       try {
         pdfLib.GlobalWorkerOptions.workerSrc = "/js/vendor/pdf.worker.min.js";
-        if (pdfUrl.startsWith("data:application/pdf;base64,"")) {
+        if (pdfUrl.startsWith("data:application/pdf;base64,")) {
           const base64 = pdfUrl.split("base64,")[1];
-          const binaryStr = atob(base64);
-          const bytes = new Uint8Array(binaryStr.length);
-          for (let i = 0; i < binaryStr.length; i++) {
-            bytes[i] = binaryStr.charCodeAt(i);
-          }
-          startRenderDoc(pdfLib, { data: bytes });
-          return;
+        const binaryStr = atob(base64);
+        const bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+          bytes[i] = binaryStr.charCodeAt(i);
         }
+        startRenderDoc(pdfLib, { data: bytes });
+        return;
+      }
 
         // For HTTP(S) URLs, stream as ArrayBuffer to verify binary PDF content and bypass frame/CORS blockers
         fetch(pdfUrl, {
           headers: getCrmAuthHeaders()
         })
-          .then(async (res) => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-            const ct = res.headers.get("content-type") || "";
-            if (ct.includes("text/html")) throw new Error("Received HTML login page instead of PDF");
-            return res.arrayBuffer();
-          })
-          .then((buf) => {
-            const bytes = new Uint8Array(buf);
-            if (bytes.length < 4 || bytes[0] !== 0x25 || bytes[1] !== 0x50 || bytes[2] !== 0x44 || bytes[3] !== 0x46) {
-              throw new Error("Invalid PDF header signature");
-            }
-            startRenderDoc(pdfLib, { data: bytes });
-          })
-          .catch(async (fetchErr) => {
-            console.warn("[PDF PREVIEW] Primary proxy stream failed:", fetchErr.message);
-            // Fallback 1: try fetching directly with fresh BX24 access token if inside Bitrix iframe
-            const nativeUrl = getNativeFileUrl(pdfUrl);
-            const freshAuth = window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth() : null;
-            if (nativeUrl && freshAuth && freshAuth.access_token) {
-              try {
-                const directUrl = nativeUrl + (nativeUrl.includes("?") ? "&" : "?") + `auth=${encodeURIComponent(freshAuth.access_token)}`;
-                const directRes = await fetch(directUrl);
-                if (directRes.ok) {
-                  const directBuf = await directRes.arrayBuffer();
-                  const directBytes = new Uint8Array(directBuf);
-                  if (directBytes.length >= 4 && directBytes[0] === 0x25 && directBytes[1] === 0x50) {
-                    startRenderDoc(pdfLib, { data: directBytes });
-                    return;
-                  }
-                }
-              } catch (_) {}
-            }
-            // Fallback 2: Direct PDF.js document loader
+        .then(async (res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+          const ct = res.headers.get("content-type") || "";
+          if (ct.includes("text/html")) throw new Error("Received HTML login page instead of PDF");
+          return res.arrayBuffer();
+        })
+        .then((buf) => {
+          const bytes = new Uint8Array(buf);
+          if (bytes.length < 4 || bytes[0] !== 0x25 || bytes[1] !== 0x50 || bytes[2] !== 0x44 || bytes[3] !== 0x46) {
+            throw new Error("Invalid PDF header signature");
+          }
+          startRenderDoc(pdfLib, { data: bytes });
+        })
+        .catch(async (fetchErr) => {
+          console.warn("[PDF PREVIEW] Primary proxy stream failed:", fetchErr.message);
+          // Fallback 1: try fetching directly with fresh BX24 access token if inside Bitrix iframe
+          const nativeUrl = getNativeFileUrl(pdfUrl);
+          const freshAuth = window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth() : null;
+          if (nativeUrl && freshAuth && freshAuth.access_token) {
             try {
-              const fallbackTask = pdfLib.getDocument({ url: pdfUrl, withCredentials: false });
-              fallbackTask.promise.then((doc) => {
-                pdfDoc = doc;
-                if (totalPagesEl) totalPagesEl.textContent = doc.numPages;
-                if (isLightbox) renderAllLightboxPages();
-                else renderPage(pageNum);
-              }).catch((err) => {
-                showFallback(err.message);
-              });
-            } catch (e) {
-              showFallback(e.message);
-            }
-          });
-      } catch (e) {
-        console.warn("initDoc error:", e);
-        showFallback(e.message);
-      }
-    }
-
-    if (window.pdfjsLib) {
-      initDoc(window.pdfjsLib);
-    } else {
-      const script = document.createElement("script");
-      script.src = "/js/vendor/pdf.min.js";
-      script.onload = () => {
-        if (window.pdfjsLib) initDoc(window.pdfjsLib);
-        else showFallback();
-      };
-      script.onerror = () => showFallback();
-      document.head.appendChild(script);
-    }
-
-    return {
-      zoomIn: () => {
-        if (isLightbox) {
-          zoomLevel = Math.min(3.0, Math.round((zoomLevel + 0.25) * 100) / 100);
-          renderAllLightboxPages();
-        } else {
-          const current = typeof scale === "number" ? scale : 1.0;
-          scale = Math.min(3.0, Math.round((current + 0.25) * 100) / 100);
-          queueRenderPage(pageNum);
-        }
-      },
-      zoomOut: () => {
-        if (isLightbox) {
-          zoomLevel = Math.max(0.5, Math.round((zoomLevel - 0.25) * 100) / 100);
-          renderAllLightboxPages();
-        } else {
-          const current = typeof scale === "number" ? scale : 1.0;
-          scale = Math.max(0.5, Math.round((current - 0.25) * 100) / 100);
-          queueRenderPage(pageNum);
-        }
-      },
-      toggleZoom: () => {
-        if (isLightbox) {
-          zoomLevel = zoomLevel !== 1.0 ? 1.0 : 1.5;
-          const zBtn = document.getElementById("lightbox-zoom-toggle-btn");
-          if (zBtn) {
-            zBtn.classList.toggle("active", zoomLevel > 1.0);
+              const directUrl = nativeUrl + (nativeUrl.includes("?") ? "&" : "?") + `auth=${encodeURIComponent(freshAuth.access_token)}`;
+              const directRes = await fetch(directUrl);
+              if (directRes.ok) {
+                const directBuf = await directRes.arrayBuffer();
+                const directBytes = new Uint8Array(directBuf);
+                if (directBytes.length >= 4 && directBytes[0] === 0x25 && directBytes[1] === 0x50) {
+                  startRenderDoc(pdfLib, { data: directBytes });
+                  return;
+                }
+              }
+            } catch (_) { }
           }
-          renderAllLightboxPages();
-        } else {
-          scale = scale === "fit" ? 1.5 : "fit";
-          queueRenderPage(pageNum);
-        }
-      },
-      fit: () => {
-        if (isLightbox) {
-          zoomLevel = 1.0;
-          const zBtn = document.getElementById("lightbox-zoom-toggle-btn");
-          if (zBtn) {
-            zBtn.classList.remove("active");
+          // Fallback 2: Direct PDF.js document loader
+          try {
+            const fallbackTask = pdfLib.getDocument({ url: pdfUrl, withCredentials: false });
+            fallbackTask.promise.then((doc) => {
+              pdfDoc = doc;
+              if (totalPagesEl) totalPagesEl.textContent = doc.numPages;
+              if (isLightbox) renderAllLightboxPages();
+              else renderPage(pageNum);
+            }).catch((err) => {
+              showFallback(err.message);
+            });
+          } catch (e) {
+            showFallback(e.message);
           }
-          renderAllLightboxPages();
-        } else {
-          scale = "fit";
-          queueRenderPage(pageNum);
-        }
-      },
-      cleanup: () => {
-        cancelActiveTasks();
-      }
-    };
+        });
+    } catch (e) {
+      console.warn("initDoc error:", e);
+      showFallback(e.message);
+    }
   }
+
+  if (window.pdfjsLib) {
+    initDoc(window.pdfjsLib);
+  } else {
+    const script = document.createElement("script");
+    script.src = "/js/vendor/pdf.min.js";
+    script.onload = () => {
+      if (window.pdfjsLib) initDoc(window.pdfjsLib);
+      else showFallback();
+    };
+    script.onerror = () => showFallback();
+    document.head.appendChild(script);
+  }
+
+  return {
+    zoomIn: () => {
+      if (isLightbox) {
+        zoomLevel = Math.min(3.0, Math.round((zoomLevel + 0.25) * 100) / 100);
+        renderAllLightboxPages();
+      } else {
+        const current = typeof scale === "number" ? scale : 1.0;
+        scale = Math.min(3.0, Math.round((current + 0.25) * 100) / 100);
+        queueRenderPage(pageNum);
+      }
+    },
+    zoomOut: () => {
+      if (isLightbox) {
+        zoomLevel = Math.max(0.5, Math.round((zoomLevel - 0.25) * 100) / 100);
+        renderAllLightboxPages();
+      } else {
+        const current = typeof scale === "number" ? scale : 1.0;
+        scale = Math.max(0.5, Math.round((current - 0.25) * 100) / 100);
+        queueRenderPage(pageNum);
+      }
+    },
+    toggleZoom: () => {
+      if (isLightbox) {
+        zoomLevel = zoomLevel !== 1.0 ? 1.0 : 1.5;
+        const zBtn = document.getElementById("lightbox-zoom-toggle-btn");
+        if (zBtn) {
+          zBtn.classList.toggle("active", zoomLevel > 1.0);
+        }
+        renderAllLightboxPages();
+      } else {
+        scale = scale === "fit" ? 1.5 : "fit";
+        queueRenderPage(pageNum);
+      }
+    },
+    fit: () => {
+      if (isLightbox) {
+        zoomLevel = 1.0;
+        const zBtn = document.getElementById("lightbox-zoom-toggle-btn");
+        if (zBtn) {
+          zBtn.classList.remove("active");
+        }
+        renderAllLightboxPages();
+      } else {
+        scale = "fit";
+        queueRenderPage(pageNum);
+      }
+    },
+    cleanup: () => {
+      cancelActiveTasks();
+    }
+  };
+}
 
   function _lbSetCounter() {
-    if (_lbGallery.length > 1) {
-      lightboxCounter.textContent = `${_lbIndex + 1} / ${_lbGallery.length}`;
-      lightboxCounter.style.display = "";
-    } else {
-      lightboxCounter.style.display = "none";
-    }
+  if (_lbGallery.length > 1) {
+    lightboxCounter.textContent = `${_lbIndex + 1} / ${_lbGallery.length}`;
+    lightboxCounter.style.display = "";
+  } else {
+    lightboxCounter.style.display = "none";
   }
+}
 
-  function _lbSetNavState() {
-    const multi = _lbGallery.length > 1;
-    lbNavPrev.style.display = multi ? "flex" : "none";
-    lbNavNext.style.display = multi ? "flex" : "none";
-    lbNavPrev.disabled = _lbIndex === 0;
-    lbNavNext.disabled = _lbIndex === _lbGallery.length - 1;
-  }
+function _lbSetNavState() {
+  const multi = _lbGallery.length > 1;
+  lbNavPrev.style.display = multi ? "flex" : "none";
+  lbNavNext.style.display = multi ? "flex" : "none";
+  lbNavPrev.disabled = _lbIndex === 0;
+  lbNavNext.disabled = _lbIndex === _lbGallery.length - 1;
+}
 
-  function _lbSyncFilmstrip() {
-    lbFilmstrip.querySelectorAll(".lb-film-item").forEach((el, i) => {
-      el.classList.toggle("active", i === _lbIndex);
+function _lbSyncFilmstrip() {
+  lbFilmstrip.querySelectorAll(".lb-film-item").forEach((el, i) => {
+    el.classList.toggle("active", i === _lbIndex);
+  });
+  const activeEl = lbFilmstrip.querySelectorAll(".lb-film-item")[_lbIndex];
+  if (activeEl)
+    activeEl.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
     });
-    const activeEl = lbFilmstrip.querySelectorAll(".lb-film-item")[_lbIndex];
-    if (activeEl)
-      activeEl.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-  }
+}
 
-  function _lbBuildFilmstrip(gallery) {
-    lbFilmstrip.innerHTML = "";
-    if (gallery.length <= 1) {
-      lbFilmstrip.style.display = "none";
-      return;
-    }
-    lbFilmstrip.style.display = "flex";
-    gallery.forEach((item, i) => {
-      const el = document.createElement("div");
-      el.className = "lb-film-item" + (i === _lbIndex ? " active" : "");
-      if (item.isImage) {
-        const filmImg = document.createElement("img");
-        filmImg.src = getPreviewUrl(item.url);
-        filmImg.alt = item.name;
-        filmImg.loading = "lazy";
-        filmImg.onerror = function () {
-          if (
-            !this.dataset.proxied &&
-            item.url &&
-            item.url.startsWith("http")
-          ) {
-            this.dataset.proxied = "1";
-            this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
-          }
-        };
-        el.appendChild(filmImg);
-      } else {
-        const badgeClass = item.isPdf ? "pdf" : "doc";
-        const icon = item.isPdf ? "PDF" : "DOC";
-        el.innerHTML = `
+function _lbBuildFilmstrip(gallery) {
+  lbFilmstrip.innerHTML = "";
+  if (gallery.length <= 1) {
+    lbFilmstrip.style.display = "none";
+    return;
+  }
+  lbFilmstrip.style.display = "flex";
+  gallery.forEach((item, i) => {
+    const el = document.createElement("div");
+    el.className = "lb-film-item" + (i === _lbIndex ? " active" : "");
+    if (item.isImage) {
+      const filmImg = document.createElement("img");
+      filmImg.src = getPreviewUrl(item.url);
+      filmImg.alt = item.name;
+      filmImg.loading = "lazy";
+      filmImg.onerror = function () {
+        if (
+          !this.dataset.proxied &&
+          item.url &&
+          item.url.startsWith("http")
+        ) {
+          this.dataset.proxied = "1";
+          this.src = `/api/file/proxy?url=${encodeURIComponent(item.url)}`;
+        }
+      };
+      el.appendChild(filmImg);
+    } else {
+      const badgeClass = item.isPdf ? "pdf" : "doc";
+      const icon = item.isPdf ? "PDF" : "DOC";
+      el.innerHTML = `
           <div class="lb-film-item-doc">
             <span>${icon}</span>
             <span class="lb-film-badge ${badgeClass}">${item.isPdf ? "PDF" : "DOC"}</span>
           </div>
         `;
-      }
-      el.addEventListener("click", () => _lbGoTo(i));
-      lbFilmstrip.appendChild(el);
-    });
+    }
+    el.addEventListener("click", () => _lbGoTo(i));
+    lbFilmstrip.appendChild(el);
+  });
+}
+
+function _lbGoTo(idx) {
+  if (idx < 0 || idx >= _lbGallery.length) return;
+  _lbIndex = idx;
+  _lbScale = 1;
+  _lbImgX = 0;
+  _lbImgY = 0;
+  _lbRenderCurrent();
+  _lbSetCounter();
+  _lbSetNavState();
+  _lbSyncFilmstrip();
+}
+
+function _lbRenderCurrent() {
+  if (lightboxCleanup) {
+    lightboxCleanup();
+    lightboxCleanup = null;
   }
 
-  function _lbGoTo(idx) {
-    if (idx < 0 || idx >= _lbGallery.length) return;
-    _lbIndex = idx;
+  // Clear only the main content (keep nav buttons, hints, zoom controls)
+  const existingImg = lightboxBody.querySelector(".lightbox-img");
+  const existingIframe = lightboxBody.querySelector(".lightbox-iframe");
+  const existingError = lightboxBody.querySelector(".lb-error-box");
+  const existingPdf = lightboxBody.querySelector(".b24-pdf-viewer");
+  if (existingImg) existingImg.remove();
+  if (existingIframe) existingIframe.remove();
+  if (existingError) existingError.remove();
+  if (existingPdf) existingPdf.remove();
+
+  const item = _lbGallery[_lbIndex];
+  lightboxTitle.textContent = item.name || "Preview";
+  lightboxDownloadLink.href = getPreviewUrl(item.url);
+  lightboxDownloadLink.setAttribute("download", item.name || "download");
+
+  const zoomToggleBtn = document.getElementById("lightbox-zoom-toggle-btn");
+
+  if (item.isPdf) {
+    if (lightboxFileIcon) lightboxFileIcon.textContent = "";
+    if (zoomToggleBtn) {
+      zoomToggleBtn.style.display = "inline-flex";
+      zoomToggleBtn.classList.remove("active");
+      zoomToggleBtn.title = "Fit Width / Actual Size";
+    }
+    if (lbZoomControls) lbZoomControls.style.display = "flex";
+
+    const zbIn = document.getElementById("lb-zoom-in-btn");
+    const zbOut = document.getElementById("lb-zoom-out-btn");
+    if (zbIn) zbIn.style.display = "inline-flex";
+    if (zbOut) zbOut.style.display = "inline-flex";
+
+    const proxyUrl = getPreviewUrl(item.url);
+    const pdfCtrl = renderPdfCanvasViewer(lightboxBody, proxyUrl, item.name, true);
+
+    if (zbIn) zbIn.onclick = () => pdfCtrl?.zoomIn?.();
+    if (zbOut) zbOut.onclick = () => pdfCtrl?.zoomOut?.();
+    if (zoomToggleBtn) zoomToggleBtn.onclick = () => pdfCtrl?.toggleZoom?.();
+
+    lightboxCleanup = () => {
+      if (pdfCtrl?.cleanup) pdfCtrl.cleanup();
+      if (zbIn) zbIn.onclick = null;
+      if (zbOut) zbOut.onclick = null;
+      if (zoomToggleBtn) zoomToggleBtn.onclick = null;
+    };
+  } else if (item.isImage) {
+    // Image
+    if (lightboxFileIcon) lightboxFileIcon.textContent = "";
+    if (lbZoomControls) lbZoomControls.style.display = "flex";
+
+    if (zoomToggleBtn) {
+      zoomToggleBtn.style.display = "inline-flex";
+      zoomToggleBtn.classList.remove("active");
+      zoomToggleBtn.title = "Fit to Screen / 1:1 Size";
+    }
+
     _lbScale = 1;
     _lbImgX = 0;
     _lbImgY = 0;
-    _lbRenderCurrent();
-    _lbSetCounter();
-    _lbSetNavState();
-    _lbSyncFilmstrip();
-  }
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let hasDragged = false;
 
-  function _lbRenderCurrent() {
-    if (lightboxCleanup) {
-      lightboxCleanup();
-      lightboxCleanup = null;
-    }
-
-    // Clear only the main content (keep nav buttons, hints, zoom controls)
-    const existingImg = lightboxBody.querySelector(".lightbox-img");
-    const existingIframe = lightboxBody.querySelector(".lightbox-iframe");
-    const existingError = lightboxBody.querySelector(".lb-error-box");
-    const existingPdf = lightboxBody.querySelector(".b24-pdf-viewer");
-    if (existingImg) existingImg.remove();
-    if (existingIframe) existingIframe.remove();
-    if (existingError) existingError.remove();
-    if (existingPdf) existingPdf.remove();
-
-    const item = _lbGallery[_lbIndex];
-    lightboxTitle.textContent = item.name || "Preview";
-    lightboxDownloadLink.href = getPreviewUrl(item.url);
-    lightboxDownloadLink.setAttribute("download", item.name || "download");
-
-    const zoomToggleBtn = document.getElementById("lightbox-zoom-toggle-btn");
-
-    if (item.isPdf) {
-      if (lightboxFileIcon) lightboxFileIcon.textContent = "";
-      if (zoomToggleBtn) {
-        zoomToggleBtn.style.display = "inline-flex";
-        zoomToggleBtn.classList.remove("active");
-        zoomToggleBtn.title = "Fit Width / Actual Size";
-      }
-      if (lbZoomControls) lbZoomControls.style.display = "flex";
-
-      const zbIn = document.getElementById("lb-zoom-in-btn");
-      const zbOut = document.getElementById("lb-zoom-out-btn");
-      if (zbIn) zbIn.style.display = "inline-flex";
-      if (zbOut) zbOut.style.display = "inline-flex";
-
-      const proxyUrl = getPreviewUrl(item.url);
-      const pdfCtrl = renderPdfCanvasViewer(lightboxBody, proxyUrl, item.name, true);
-
-      if (zbIn) zbIn.onclick = () => pdfCtrl?.zoomIn?.();
-      if (zbOut) zbOut.onclick = () => pdfCtrl?.zoomOut?.();
-      if (zoomToggleBtn) zoomToggleBtn.onclick = () => pdfCtrl?.toggleZoom?.();
-
-      lightboxCleanup = () => {
-        if (pdfCtrl?.cleanup) pdfCtrl.cleanup();
-        if (zbIn) zbIn.onclick = null;
-        if (zbOut) zbOut.onclick = null;
-        if (zoomToggleBtn) zoomToggleBtn.onclick = null;
-      };
-    } else if (item.isImage) {
-      // Image
-      if (lightboxFileIcon) lightboxFileIcon.textContent = "";
-      if (lbZoomControls) lbZoomControls.style.display = "flex";
-
-      if (zoomToggleBtn) {
-        zoomToggleBtn.style.display = "inline-flex";
-        zoomToggleBtn.classList.remove("active");
-        zoomToggleBtn.title = "Fit to Screen / 1:1 Size";
-      }
-
-      _lbScale = 1;
-      _lbImgX = 0;
-      _lbImgY = 0;
-      let isDragging = false;
-      let dragStartX = 0;
-      let dragStartY = 0;
-      let hasDragged = false;
-
-      const img = document.createElement("img");
-      img.className = "lightbox-img lb-transitioning";
-      img.src = getPreviewUrl(item.url);
-      img.alt = item.name;
-      img.onerror = () => {
-        if (!img.dataset.triedDirect) {
-          img.dataset.triedDirect = "1";
-          const freshAuth = window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth() : null;
-          const nativeUrl = getNativeFileUrl(item.url);
-          if (nativeUrl && freshAuth && freshAuth.access_token) {
-            img.src = nativeUrl + (nativeUrl.includes("?") ? "&" : "?") + `auth=${encodeURIComponent(freshAuth.access_token)}`;
-            return;
-          }
+    const img = document.createElement("img");
+    img.className = "lightbox-img lb-transitioning";
+    img.src = getPreviewUrl(item.url);
+    img.alt = item.name;
+    img.onerror = () => {
+      if (!img.dataset.triedDirect) {
+        img.dataset.triedDirect = "1";
+        const freshAuth = window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth() : null;
+        const nativeUrl = getNativeFileUrl(item.url);
+        if (nativeUrl && freshAuth && freshAuth.access_token) {
+          img.src = nativeUrl + (nativeUrl.includes("?") ? "&" : "?") + `auth=${encodeURIComponent(freshAuth.access_token)}`;
+          return;
         }
-        img.style.display = "none";
-        const err = document.createElement("div");
-        err.className = "lb-error-box";
-        err.innerHTML = `
+      }
+      img.style.display = "none";
+      const err = document.createElement("div");
+      err.className = "lb-error-box";
+      err.innerHTML = `
           <span>Unable to preview image</span>
           <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab</a>
         `;
-        lightboxBody.appendChild(err);
-      };
-      lightboxBody.appendChild(img);
+      lightboxBody.appendChild(err);
+    };
+    lightboxBody.appendChild(img);
 
-      // Trigger fade-in
-      requestAnimationFrame(() =>
-        requestAnimationFrame(() => {
-          img.classList.remove("lb-transitioning");
-        }),
-      );
+    // Trigger fade-in
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        img.classList.remove("lb-transitioning");
+      }),
+    );
 
-      const applyTransform = (smooth = true) => {
-        img.style.transition = smooth
-          ? "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)"
-          : "none";
-        img.style.transform = `translate(${_lbImgX}px, ${_lbImgY}px) scale(${_lbScale})`;
-      };
+    const applyTransform = (smooth = true) => {
+      img.style.transition = smooth
+        ? "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1)"
+        : "none";
+      img.style.transform = `translate(${_lbImgX}px, ${_lbImgY}px) scale(${_lbScale})`;
+    };
 
-      const setZoom = (scale, smooth = true) => {
-        _lbScale = Math.max(1, Math.min(8, scale));
-        if (_lbScale === 1) {
-          _lbImgX = 0;
-          _lbImgY = 0;
-        }
-        applyTransform(smooth);
-        img.classList.toggle("zoomed-in", _lbScale > 1);
-        if (zoomToggleBtn) {
-          zoomToggleBtn.classList.toggle("active", _lbScale > 1);
-          zoomToggleBtn.title =
-            _lbScale > 1 ? "Fit to Screen" : "1:1 Original Size";
-        }
-      };
-
-      const toggleZoom = () => setZoom(_lbScale > 1 ? 1 : 4);
-
-      // Zoom-in/out/reset buttons
-      const zbIn = document.getElementById("lb-zoom-in-btn");
-      const zbOut = document.getElementById("lb-zoom-out-btn");
-      const zbReset = document.getElementById("lb-zoom-reset-btn");
-      if (zbIn) zbIn.onclick = () => setZoom(_lbScale * 1.5);
-      if (zbOut) zbOut.onclick = () => setZoom(_lbScale / 1.5);
-      if (zbReset) zbReset.onclick = () => setZoom(1);
-
-      // Click to toggle zoom
-      img.addEventListener("click", () => {
-        if (hasDragged) {
-          hasDragged = false;
-          return;
-        }
-        toggleZoom();
-      });
-
-      if (zoomToggleBtn) zoomToggleBtn.onclick = toggleZoom;
-
-      // Drag to pan
-      img.addEventListener("mousedown", (e) => {
-        if (_lbScale <= 1) return;
-        isDragging = true;
-        hasDragged = false;
-        dragStartX = e.clientX - _lbImgX;
-        dragStartY = e.clientY - _lbImgY;
-        img.classList.add("grabbing");
-        e.preventDefault();
-      });
-
-      const onMove = (e) => {
-        if (!isDragging || _lbScale <= 1) return;
-        const nx = e.clientX - dragStartX;
-        const ny = e.clientY - dragStartY;
-        if (Math.abs(nx - _lbImgX) > 3 || Math.abs(ny - _lbImgY) > 3)
-          hasDragged = true;
-        _lbImgX = nx;
-        _lbImgY = ny;
-        applyTransform(false);
-      };
-
-      const onUp = () => {
-        if (!isDragging) return;
-        isDragging = false;
-        img.classList.remove("grabbing");
-      };
-
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("mouseup", onUp);
-
-      // Wheel scroll to zoom
-      const onWheel = (e) => {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? 0.85 : 1.2;
-        setZoom(_lbScale * delta, false);
-      };
-      lightboxBody.addEventListener("wheel", onWheel, { passive: false });
-
-      lightboxCleanup = () => {
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", onUp);
-        lightboxBody.removeEventListener("wheel", onWheel);
-        if (zbIn) zbIn.onclick = null;
-        if (zbOut) zbOut.onclick = null;
-        if (zbReset) zbReset.onclick = null;
-        if (zoomToggleBtn) zoomToggleBtn.onclick = null;
-      };
-    } else {
-      // Bitrix previews PDFs inline. Other document types (DOCX, XLSX, ZIP,
-      // etc.) must be handed back to Bitrix rather than being forced into a
-      // PDF iframe, which is the source of the blank/broken preview bug.
-      if (lightboxFileIcon) lightboxFileIcon.textContent = "";
-      if (zoomToggleBtn) zoomToggleBtn.style.display = "none";
-      if (lbZoomControls) lbZoomControls.style.display = "none";
-
-      const panel = document.createElement("div");
-      panel.className = "lb-document-panel";
-      const icon = document.createElement("span");
-      icon.className = "lb-document-icon";
-      icon.textContent = "PDF";
-      const name = document.createElement("strong");
-      name.className = "lb-document-name";
-      name.textContent = item.name || "Document";
-      const message = document.createElement("p");
-      message.textContent = "Open this file using the Bitrix24 viewer.";
-      const openButton = document.createElement("button");
-      openButton.type = "button";
-      openButton.className = "lb-document-open";
-      openButton.textContent = "Open in Bitrix24";
-      openButton.addEventListener("click", () => openInBitrixViewer(item.url));
-      panel.append(icon, name, message, openButton);
-      lightboxBody.appendChild(panel);
-    }
-  }
-
-  /**
-   * Opens the premium gallery lightbox.
-   * @param {string} title   - file name / title
-   * @param {string} url     - file URL
-   * @param {boolean} isPdf  - true = PDF iframe, false = image
-   * @param {Array} gallery  - optional array of {url,name,isImage,isPdf} for multi-item galleries
-   * @param {number} startIdx - index in gallery to open
-   */
-  function openLightbox(
-    title,
-    url,
-    isPdf = false,
-    gallery = null,
-    startIdx = 0,
-    sourceEl = null,
-  ) {
-    if (gallery && gallery.length > 1) {
-      _lbGallery = gallery;
-      _lbIndex = startIdx;
-    } else {
-      _lbGallery = [{ url, name: title, isImage: !isPdf, isPdf }];
-      _lbIndex = 0;
-    }
-
-    _lbBuildFilmstrip(_lbGallery);
-    _lbRenderCurrent();
-    _lbSetCounter();
-    _lbSetNavState();
-
-    const contentEl = lightboxModal.querySelector(".lightbox-content");
-    lightboxModal.style.position = "fixed";
-    lightboxModal.style.inset = "0";
-    lightboxModal.style.top = "0px";
-    lightboxModal.style.left = "0px";
-    lightboxModal.style.width = "100vw";
-    lightboxModal.style.height = "100vh";
-    lightboxModal.style.zIndex = "999999";
-    lightboxModal.style.display = "flex";
-    lightboxModal.style.alignItems = "center";
-    lightboxModal.style.justifyContent = "center";
-
-    if (contentEl) {
-      contentEl.style.height = "90vh";
-      contentEl.style.maxHeight = "90vh";
-      contentEl.style.marginTop = "0px";
-      contentEl.style.width = "92vw";
-      contentEl.style.maxWidth = "1200px";
-      try {
-        contentEl.scrollIntoView({ behavior: "smooth", block: "center" });
-      } catch (_) {}
-    }
-
-    lightboxModal.style.display = "flex";
-    lightboxModal.classList.add("is-open");
-    document.body.style.overflow = "hidden";
-  }
-
-  function closeLightbox() {
-    if (lightboxCleanup) {
-      lightboxCleanup();
-      lightboxCleanup = null;
-    }
-    const contentEl = lightboxModal.querySelector(".lightbox-content");
-    if (contentEl) {
-      contentEl.style.height = "";
-      contentEl.style.maxHeight = "";
-      contentEl.style.marginTop = "";
-    }
-    lightboxModal.style.display = "none";
-    lightboxModal.classList.remove("is-open");
-    lightboxModal.style.position = "";
-    lightboxModal.style.top = "";
-    lightboxModal.style.left = "";
-    lightboxModal.style.width = "";
-    lightboxModal.style.height = "";
-    lightboxModal.style.minHeight = "";
-    lightboxModal.style.maxHeight = "";
-    lightboxModal.style.alignItems = "";
-    document.body.style.overflow = "";
-    // Clear dynamic children
-    const img = lightboxBody.querySelector(".lightbox-img");
-    const iframe = lightboxBody.querySelector(".lightbox-iframe");
-    const errorBox = lightboxBody.querySelector(".lb-error-box");
-    const pdfViewer = lightboxBody.querySelector(".b24-pdf-viewer");
-    if (img) img.remove();
-    if (iframe) iframe.remove();
-    if (errorBox) errorBox.remove();
-    if (pdfViewer) pdfViewer.remove();
-    document.body.style.overflow = "";
-    _lbGallery = [];
-    _lbIndex = 0;
-    _lbScale = 1;
-    _lbImgX = 0;
-    _lbImgY = 0;
-    const zoomToggleBtn = document.getElementById("lightbox-zoom-toggle-btn");
-    if (zoomToggleBtn) {
-      zoomToggleBtn.style.display = "none";
-      zoomToggleBtn.onclick = null;
-    }
-    if (lbZoomControls) lbZoomControls.style.display = "none";
-    lbFilmstrip.style.display = "none";
-    lightboxCounter.style.display = "none";
-    lbNavPrev.style.display = "none";
-    lbNavNext.style.display = "none";
-  }
-
-  // Event listeners
-  lightboxCloseBtn.addEventListener("click", closeLightbox);
-  lightboxModal.addEventListener("click", (e) => {
-    if (
-      e.target === lightboxModal ||
-      e.target.classList.contains("b24-native-viewer")
-    ) {
-      closeLightbox();
-    }
-  });
-  lbNavPrev.addEventListener("click", () => _lbGoTo(_lbIndex - 1));
-  lbNavNext.addEventListener("click", () => _lbGoTo(_lbIndex + 1));
-
-  // Native Bitrix24 Viewer '•••' more options button (opens path natively in Bitrix24 or new tab)
-  const b24ViewerMoreBtn = document.getElementById("b24-viewer-more-btn");
-  if (b24ViewerMoreBtn) {
-    b24ViewerMoreBtn.addEventListener("click", () => {
-      const item = _lbGallery[_lbIndex];
-      if (item && item.url) {
-        openInBitrixViewer(item.url);
+    const setZoom = (scale, smooth = true) => {
+      _lbScale = Math.max(1, Math.min(8, scale));
+      if (_lbScale === 1) {
+        _lbImgX = 0;
+        _lbImgY = 0;
       }
+      applyTransform(smooth);
+      img.classList.toggle("zoomed-in", _lbScale > 1);
+      if (zoomToggleBtn) {
+        zoomToggleBtn.classList.toggle("active", _lbScale > 1);
+        zoomToggleBtn.title =
+          _lbScale > 1 ? "Fit to Screen" : "1:1 Original Size";
+      }
+    };
+
+    const toggleZoom = () => setZoom(_lbScale > 1 ? 1 : 4);
+
+    // Zoom-in/out/reset buttons
+    const zbIn = document.getElementById("lb-zoom-in-btn");
+    const zbOut = document.getElementById("lb-zoom-out-btn");
+    const zbReset = document.getElementById("lb-zoom-reset-btn");
+    if (zbIn) zbIn.onclick = () => setZoom(_lbScale * 1.5);
+    if (zbOut) zbOut.onclick = () => setZoom(_lbScale / 1.5);
+    if (zbReset) zbReset.onclick = () => setZoom(1);
+
+    // Click to toggle zoom
+    img.addEventListener("click", () => {
+      if (hasDragged) {
+        hasDragged = false;
+        return;
+      }
+      toggleZoom();
     });
+
+    if (zoomToggleBtn) zoomToggleBtn.onclick = toggleZoom;
+
+    // Drag to pan
+    img.addEventListener("mousedown", (e) => {
+      if (_lbScale <= 1) return;
+      isDragging = true;
+      hasDragged = false;
+      dragStartX = e.clientX - _lbImgX;
+      dragStartY = e.clientY - _lbImgY;
+      img.classList.add("grabbing");
+      e.preventDefault();
+    });
+
+    const onMove = (e) => {
+      if (!isDragging || _lbScale <= 1) return;
+      const nx = e.clientX - dragStartX;
+      const ny = e.clientY - dragStartY;
+      if (Math.abs(nx - _lbImgX) > 3 || Math.abs(ny - _lbImgY) > 3)
+        hasDragged = true;
+      _lbImgX = nx;
+      _lbImgY = ny;
+      applyTransform(false);
+    };
+
+    const onUp = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      img.classList.remove("grabbing");
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+
+    // Wheel scroll to zoom
+    const onWheel = (e) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 0.85 : 1.2;
+      setZoom(_lbScale * delta, false);
+    };
+    lightboxBody.addEventListener("wheel", onWheel, { passive: false });
+
+    lightboxCleanup = () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      lightboxBody.removeEventListener("wheel", onWheel);
+      if (zbIn) zbIn.onclick = null;
+      if (zbOut) zbOut.onclick = null;
+      if (zbReset) zbReset.onclick = null;
+      if (zoomToggleBtn) zoomToggleBtn.onclick = null;
+    };
+  } else {
+    // Bitrix previews PDFs inline. Other document types (DOCX, XLSX, ZIP,
+    // etc.) must be handed back to Bitrix rather than being forced into a
+    // PDF iframe, which is the source of the blank/broken preview bug.
+    if (lightboxFileIcon) lightboxFileIcon.textContent = "";
+    if (zoomToggleBtn) zoomToggleBtn.style.display = "none";
+    if (lbZoomControls) lbZoomControls.style.display = "none";
+
+    const panel = document.createElement("div");
+    panel.className = "lb-document-panel";
+    const icon = document.createElement("span");
+    icon.className = "lb-document-icon";
+    icon.textContent = "PDF";
+    const name = document.createElement("strong");
+    name.className = "lb-document-name";
+    name.textContent = item.name || "Document";
+    const message = document.createElement("p");
+    message.textContent = "Open this file using the Bitrix24 viewer.";
+    const openButton = document.createElement("button");
+    openButton.type = "button";
+    openButton.className = "lb-document-open";
+    openButton.textContent = "Open in Bitrix24";
+    openButton.addEventListener("click", () => openInBitrixViewer(item.url));
+    panel.append(icon, name, message, openButton);
+    lightboxBody.appendChild(panel);
+  }
+}
+
+/**
+ * Opens the premium gallery lightbox.
+ * @param {string} title   - file name / title
+ * @param {string} url     - file URL
+ * @param {boolean} isPdf  - true = PDF iframe, false = image
+ * @param {Array} gallery  - optional array of {url,name,isImage,isPdf} for multi-item galleries
+ * @param {number} startIdx - index in gallery to open
+ */
+function openLightbox(
+  title,
+  url,
+  isPdf = false,
+  gallery = null,
+  startIdx = 0,
+  sourceEl = null,
+) {
+  if (gallery && gallery.length > 1) {
+    _lbGallery = gallery;
+    _lbIndex = startIdx;
+  } else {
+    _lbGallery = [{ url, name: title, isImage: !isPdf, isPdf }];
+    _lbIndex = 0;
   }
 
-  document.addEventListener("keydown", (e) => {
-    if (lightboxModal.style.display !== "flex") return;
-    if (e.key === "Escape") {
-      closeLightbox();
-      return;
-    }
-    if (e.key === "ArrowLeft") {
-      _lbGoTo(_lbIndex - 1);
-      return;
-    }
-    if (e.key === "ArrowRight") {
-      _lbGoTo(_lbIndex + 1);
-      return;
-    }
-    if (e.key === "+" || e.key === "=") {
-      const zbIn = document.getElementById("lb-zoom-in-btn");
-      if (zbIn) zbIn.click();
-      return;
-    }
-    if (e.key === "-" || e.key === "_") {
-      const zbOut = document.getElementById("lb-zoom-out-btn");
-      if (zbOut) zbOut.click();
-      return;
-    }
-    if (e.key === "0") {
-      const zbReset = document.getElementById("lb-zoom-reset-btn");
-      if (zbReset) zbReset.click();
-      return;
+  _lbBuildFilmstrip(_lbGallery);
+  _lbRenderCurrent();
+  _lbSetCounter();
+  _lbSetNavState();
+
+  const contentEl = lightboxModal.querySelector(".lightbox-content");
+  lightboxModal.style.position = "fixed";
+  lightboxModal.style.inset = "0";
+  lightboxModal.style.top = "0px";
+  lightboxModal.style.left = "0px";
+  lightboxModal.style.width = "100vw";
+  lightboxModal.style.height = "100vh";
+  lightboxModal.style.zIndex = "999999";
+  lightboxModal.style.display = "flex";
+  lightboxModal.style.alignItems = "center";
+  lightboxModal.style.justifyContent = "center";
+
+  if (contentEl) {
+    contentEl.style.height = "90vh";
+    contentEl.style.maxHeight = "90vh";
+    contentEl.style.marginTop = "0px";
+    contentEl.style.width = "92vw";
+    contentEl.style.maxWidth = "1200px";
+    try {
+      contentEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (_) { }
+  }
+
+  lightboxModal.style.display = "flex";
+  lightboxModal.classList.add("is-open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeLightbox() {
+  if (lightboxCleanup) {
+    lightboxCleanup();
+    lightboxCleanup = null;
+  }
+  const contentEl = lightboxModal.querySelector(".lightbox-content");
+  if (contentEl) {
+    contentEl.style.height = "";
+    contentEl.style.maxHeight = "";
+    contentEl.style.marginTop = "";
+  }
+  lightboxModal.style.display = "none";
+  lightboxModal.classList.remove("is-open");
+  lightboxModal.style.position = "";
+  lightboxModal.style.top = "";
+  lightboxModal.style.left = "";
+  lightboxModal.style.width = "";
+  lightboxModal.style.height = "";
+  lightboxModal.style.minHeight = "";
+  lightboxModal.style.maxHeight = "";
+  lightboxModal.style.alignItems = "";
+  document.body.style.overflow = "";
+  // Clear dynamic children
+  const img = lightboxBody.querySelector(".lightbox-img");
+  const iframe = lightboxBody.querySelector(".lightbox-iframe");
+  const errorBox = lightboxBody.querySelector(".lb-error-box");
+  const pdfViewer = lightboxBody.querySelector(".b24-pdf-viewer");
+  if (img) img.remove();
+  if (iframe) iframe.remove();
+  if (errorBox) errorBox.remove();
+  if (pdfViewer) pdfViewer.remove();
+  document.body.style.overflow = "";
+  _lbGallery = [];
+  _lbIndex = 0;
+  _lbScale = 1;
+  _lbImgX = 0;
+  _lbImgY = 0;
+  const zoomToggleBtn = document.getElementById("lightbox-zoom-toggle-btn");
+  if (zoomToggleBtn) {
+    zoomToggleBtn.style.display = "none";
+    zoomToggleBtn.onclick = null;
+  }
+  if (lbZoomControls) lbZoomControls.style.display = "none";
+  lbFilmstrip.style.display = "none";
+  lightboxCounter.style.display = "none";
+  lbNavPrev.style.display = "none";
+  lbNavNext.style.display = "none";
+}
+
+// Event listeners
+lightboxCloseBtn.addEventListener("click", closeLightbox);
+lightboxModal.addEventListener("click", (e) => {
+  if (
+    e.target === lightboxModal ||
+    e.target.classList.contains("b24-native-viewer")
+  ) {
+    closeLightbox();
+  }
+});
+lbNavPrev.addEventListener("click", () => _lbGoTo(_lbIndex - 1));
+lbNavNext.addEventListener("click", () => _lbGoTo(_lbIndex + 1));
+
+// Native Bitrix24 Viewer '•••' more options button (opens path natively in Bitrix24 or new tab)
+const b24ViewerMoreBtn = document.getElementById("b24-viewer-more-btn");
+if (b24ViewerMoreBtn) {
+  b24ViewerMoreBtn.addEventListener("click", () => {
+    const item = _lbGallery[_lbIndex];
+    if (item && item.url) {
+      openInBitrixViewer(item.url);
     }
   });
+}
 
-  // ============================================================================
-  // 5. IN-WINDOW MEDIA & FILE PREVIEW COMPONENT
-  // ============================================================================
-  function formatBytes(bytes) {
-    if (!bytes || bytes === 0) return "";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+document.addEventListener("keydown", (e) => {
+  if (lightboxModal.style.display !== "flex") return;
+  if (e.key === "Escape") {
+    closeLightbox();
+    return;
   }
+  if (e.key === "ArrowLeft") {
+    _lbGoTo(_lbIndex - 1);
+    return;
+  }
+  if (e.key === "ArrowRight") {
+    _lbGoTo(_lbIndex + 1);
+    return;
+  }
+  if (e.key === "+" || e.key === "=") {
+    const zbIn = document.getElementById("lb-zoom-in-btn");
+    if (zbIn) zbIn.click();
+    return;
+  }
+  if (e.key === "-" || e.key === "_") {
+    const zbOut = document.getElementById("lb-zoom-out-btn");
+    if (zbOut) zbOut.click();
+    return;
+  }
+  if (e.key === "0") {
+    const zbReset = document.getElementById("lb-zoom-reset-btn");
+    if (zbReset) zbReset.click();
+    return;
+  }
+});
 
-  function renderMediaField(field, rawValue, container) {
-    const card = document.createElement("div");
-    card.className = "file-upload-card";
+// ============================================================================
+// 5. IN-WINDOW MEDIA & FILE PREVIEW COMPONENT
+// ============================================================================
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return "";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + " " + sizes[i];
+}
 
-    // 1. Bitrix24 Native View Switcher Bar (Tile, List, Fit width)
-    const switcher = document.createElement("div");
-    switcher.className = "b24-view-switcher";
-    switcher.innerHTML = `
+function renderMediaField(field, rawValue, container) {
+  const card = document.createElement("div");
+  card.className = "file-upload-card";
+
+  // 1. Bitrix24 Native View Switcher Bar (Tile, List, Fit width)
+  const switcher = document.createElement("div");
+  switcher.className = "b24-view-switcher";
+  switcher.innerHTML = `
       <button type="button" class="b24-view-btn active" data-view="tile" title="Tile view">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         Tile
@@ -2893,24 +2893,24 @@
       </button>
     `;
 
-    // 2. Dropzone Bar (Clean, single-line icon + text group)
-    const dropzone = document.createElement("div");
-    dropzone.className = "dropzone-box";
-    const isMulti =
-      field.isMultiple ||
-      field.key.includes("DOCS") ||
-      field.key.includes("1791544736052") ||
-      field.key.includes("1791881642219") ||
-      field.key.includes("1791881665252");
-    const uploadLabel = field.isImage
-      ? isMulti
-        ? "Upload Photos"
-        : "Upload Image"
-      : isMulti
-        ? "Upload Documents"
-        : "Upload Document";
+  // 2. Dropzone Bar (Clean, single-line icon + text group)
+  const dropzone = document.createElement("div");
+  dropzone.className = "dropzone-box";
+  const isMulti =
+    field.isMultiple ||
+    field.key.includes("DOCS") ||
+    field.key.includes("1791544736052") ||
+    field.key.includes("1791881642219") ||
+    field.key.includes("1791881665252");
+  const uploadLabel = field.isImage
+    ? isMulti
+      ? "Upload Photos"
+      : "Upload Image"
+    : isMulti
+      ? "Upload Documents"
+      : "Upload Document";
 
-    dropzone.innerHTML = `
+  dropzone.innerHTML = `
       
       <div class="dropzone-text-group">
         <span class="dropzone-title">${uploadLabel}</span>
@@ -2919,182 +2919,182 @@
       <input type="file" id="file_input_${field.key}" style="display:none" ${isMulti ? "multiple" : ""}>
     `;
 
-    const fileInput = dropzone.querySelector("input");
-    dropzone.addEventListener("click", () => fileInput.click());
+  const fileInput = dropzone.querySelector("input");
+  dropzone.addEventListener("click", () => fileInput.click());
 
-    dropzone.addEventListener("dragover", (e) => {
-      e.preventDefault();
-      dropzone.classList.add("dragover");
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+  dropzone.addEventListener("dragleave", () =>
+    dropzone.classList.remove("dragover"),
+  );
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+    if (e.dataTransfer.files?.length) {
+      handleLocalFiles(
+        field.key,
+        e.dataTransfer.files,
+        viewportBox,
+        stripWrap,
+      );
+    }
+  });
+
+  fileInput.addEventListener("change", () => {
+    if (fileInput.files?.length) {
+      handleLocalFiles(field.key, fileInput.files, viewportBox, stripWrap);
+    }
+  });
+
+  // 3. In-Window Inline Preview Viewport (Kept for compatibility)
+  const viewportBox = document.createElement("div");
+  viewportBox.className = "inline-preview-viewport";
+  viewportBox.id = `viewport_${field.key}`;
+  viewportBox.style.display = "none";
+
+  // 4. Bitrix24 Files Container (Unified Preview Tiles Strip)
+  const stripWrap = document.createElement("div");
+  stripWrap.className = "thumbnail-strip b24-files-container";
+  stripWrap.id = `strip_${field.key}`;
+
+  switcher.querySelectorAll(".b24-view-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      switcher
+        .querySelectorAll(".b24-view-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const viewMode = btn.dataset.view;
+      stripWrap.classList.remove("view-tile", "view-list", "view-fit");
+      stripWrap.classList.add(`view-${viewMode}`);
     });
-    dropzone.addEventListener("dragleave", () =>
-      dropzone.classList.remove("dragover"),
-    );
-    dropzone.addEventListener("drop", (e) => {
-      e.preventDefault();
-      dropzone.classList.remove("dragover");
-      if (e.dataTransfer.files?.length) {
-        handleLocalFiles(
-          field.key,
-          e.dataTransfer.files,
-          viewportBox,
-          stripWrap,
-        );
+  });
+
+  // Collect and normalize all existing files into a field gallery
+  const existingList = Array.isArray(rawValue)
+    ? rawValue
+    : rawValue
+      ? [rawValue]
+      : [];
+  const fieldGallery = [];
+
+  existingList.forEach((fileItem, idx) => {
+    if (!fileItem) return;
+
+    let fileUrl = "";
+    let fileName = "";
+    let fid = null;
+
+    if (typeof fileItem === "object") {
+      fileUrl =
+        fileItem.urlMachine ||
+        fileItem.showUrl ||
+        fileItem.downloadUrl ||
+        fileItem.url ||
+        fileItem.src ||
+        fileItem.SRC ||
+        "";
+      fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
+      const fieldCode = field.crmCode || field.key || field.code || '';
+      const effectiveId = currentListingId || currentListing?.id || '';
+      if (!fileUrl && fid) {
+        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
       }
-    });
-
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files?.length) {
-        handleLocalFiles(field.key, fileInput.files, viewportBox, stripWrap);
-      }
-    });
-
-    // 3. In-Window Inline Preview Viewport (Kept for compatibility)
-    const viewportBox = document.createElement("div");
-    viewportBox.className = "inline-preview-viewport";
-    viewportBox.id = `viewport_${field.key}`;
-    viewportBox.style.display = "none";
-
-    // 4. Bitrix24 Files Container (Unified Preview Tiles Strip)
-    const stripWrap = document.createElement("div");
-    stripWrap.className = "thumbnail-strip b24-files-container";
-    stripWrap.id = `strip_${field.key}`;
-
-    switcher.querySelectorAll(".b24-view-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        switcher
-          .querySelectorAll(".b24-view-btn")
-          .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        const viewMode = btn.dataset.view;
-        stripWrap.classList.remove("view-tile", "view-list", "view-fit");
-        stripWrap.classList.add(`view-${viewMode}`);
-      });
-    });
-
-    // Collect and normalize all existing files into a field gallery
-    const existingList = Array.isArray(rawValue)
-      ? rawValue
-      : rawValue
-        ? [rawValue]
-        : [];
-    const fieldGallery = [];
-
-    existingList.forEach((fileItem, idx) => {
-      if (!fileItem) return;
-
-      let fileUrl = "";
-      let fileName = "";
-      let fid = null;
-
-      if (typeof fileItem === "object") {
-        fileUrl =
-          fileItem.urlMachine ||
-          fileItem.showUrl ||
-          fileItem.downloadUrl ||
-          fileItem.url ||
-          fileItem.src ||
-          fileItem.SRC ||
-          "";
-        fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
-        const fieldCode = field.crmCode || field.key || field.code || '';
-        const effectiveId = currentListingId || currentListing?.id || '';
-        if (!fileUrl && fid) {
-          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
-        }
-        fileName =
-          fileItem.name ||
-          fileItem.NAME ||
-          fileItem.fileName ||
-          fileItem.originalName ||
-          fileItem.ORIGINAL_NAME ||
-          "";
-        if (!fileName && fileUrl) {
-          const m = fileUrl.match(/filename=([^&]+)/i);
-          if (m && m[1]) {
-            try {
-              fileName = decodeURIComponent(m[1]);
-            } catch (_) {
-              fileName = m[1];
-            }
+      fileName =
+        fileItem.name ||
+        fileItem.NAME ||
+        fileItem.fileName ||
+        fileItem.originalName ||
+        fileItem.ORIGINAL_NAME ||
+        "";
+      if (!fileName && fileUrl) {
+        const m = fileUrl.match(/filename=([^&]+)/i);
+        if (m && m[1]) {
+          try {
+            fileName = decodeURIComponent(m[1]);
+          } catch (_) {
+            fileName = m[1];
           }
         }
-        if (!fileName) {
-          fileName = fid ? `File #${fid}` : `${field.label} #${idx + 1}`;
-        }
-      } else if (
-        typeof fileItem === "number" ||
-        (typeof fileItem === "string" && /^\d+$/.test(fileItem.trim()))
-      ) {
-        fid = String(fileItem).trim();
-        const fieldCode = field.crmCode || field.key || field.code || '';
-        const effectiveId = currentListingId || currentListing?.id || '';
-        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
-        fileName = `${field.label} #${idx + 1}`;
-      } else if (typeof fileItem === "string" && fileItem.startsWith("http")) {
-        fileUrl = fileItem;
-        fileName = fileItem.split("/").pop().split("?")[0] || "Attached File";
-      } else if (typeof fileItem === "string" && fileItem.trim()) {
-        fileUrl = fileItem.trim();
-        fileName =
-          fileItem.split("/").pop().split("?")[0] ||
-          `${field.label} #${idx + 1}`;
       }
-
-      if (!fileUrl) return;
-
-      if (!fid && fileUrl) {
-        const idMatch =
-          fileUrl.match(/(?:fileId|file_id|id)=(\d+)/i) ||
-          fileUrl.match(/\/file\/(\d+)/i);
-        if (idMatch) fid = idMatch[1];
+      if (!fileName) {
+        fileName = fid ? `File #${fid}` : `${field.label} #${idx + 1}`;
       }
+    } else if (
+      typeof fileItem === "number" ||
+      (typeof fileItem === "string" && /^\d+$/.test(fileItem.trim()))
+    ) {
+      fid = String(fileItem).trim();
+      const fieldCode = field.crmCode || field.key || field.code || '';
+      const effectiveId = currentListingId || currentListing?.id || '';
+      fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
+      fileName = `${field.label} #${idx + 1}`;
+    } else if (typeof fileItem === "string" && fileItem.startsWith("http")) {
+      fileUrl = fileItem;
+      fileName = fileItem.split("/").pop().split("?")[0] || "Attached File";
+    } else if (typeof fileItem === "string" && fileItem.trim()) {
+      fileUrl = fileItem.trim();
+      fileName =
+        fileItem.split("/").pop().split("?")[0] ||
+        `${field.label} #${idx + 1}`;
+    }
 
-      if (fileUrl.includes("crm_show_file.php")) {
-        const effectiveId = currentListingId || currentListing?.id || '';
-        const fieldCode = field.crmCode || field.key || field.code || '';
-        if (effectiveId && !fileUrl.includes("ownerId=")) {
-          fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerId=${encodeURIComponent(effectiveId)}`;
-        }
-        if (!fileUrl.includes("ownerTypeId=")) {
-          fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerTypeId=1058`;
-        }
-        if (fieldCode && !fileUrl.includes("fieldName=")) {
-          fileUrl += `${fileUrl.includes("?") ? "&" : "?"}fieldName=${encodeURIComponent(fieldCode)}`;
-        }
+    if (!fileUrl) return;
+
+    if (!fid && fileUrl) {
+      const idMatch =
+        fileUrl.match(/(?:fileId|file_id|id)=(\d+)/i) ||
+        fileUrl.match(/\/file\/(\d+)/i);
+      if (idMatch) fid = idMatch[1];
+    }
+
+    if (fileUrl.includes("crm_show_file.php")) {
+      const effectiveId = currentListingId || currentListing?.id || '';
+      const fieldCode = field.crmCode || field.key || field.code || '';
+      if (effectiveId && !fileUrl.includes("ownerId=")) {
+        fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerId=${encodeURIComponent(effectiveId)}`;
       }
-
-      const domain =
-        window.__BITRIX_DOMAIN__ ||
-        (window.location ? window.location.hostname : "csl.bitrix24.com");
-      let fullUrl = fileUrl.startsWith("http")
-        ? fileUrl
-        : `https://${domain}${fileUrl.startsWith("/") ? "" : "/"}${fileUrl}`;
-      if (!fullUrl.startsWith("data:") && !fullUrl.includes("/api/file/proxy")) {
-        fullUrl = getPreviewUrl(fullUrl);
+      if (!fileUrl.includes("ownerTypeId=")) {
+        fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerTypeId=1058`;
       }
+      if (fieldCode && !fileUrl.includes("fieldName=")) {
+        fileUrl += `${fileUrl.includes("?") ? "&" : "?"}fieldName=${encodeURIComponent(fieldCode)}`;
+      }
+    }
 
-      const isImage =
-        field.isImage ||
-        /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fileUrl);
-      const isPdf =
-        /\.pdf($|\?)/i.test(fileName || fileUrl) || (!isImage && Boolean(field.isDoc || field.code?.includes('DOC') || field.code?.includes('DEED') || field.code?.includes('FORM_A')));
+    const domain =
+      window.__BITRIX_DOMAIN__ ||
+      (window.location ? window.location.hostname : "csl.bitrix24.com");
+    let fullUrl = fileUrl.startsWith("http")
+      ? fileUrl
+      : `https://${domain}${fileUrl.startsWith("/") ? "" : "/"}${fileUrl}`;
+    if (!fullUrl.startsWith("data:") && !fullUrl.includes("/api/file/proxy")) {
+      fullUrl = getPreviewUrl(fullUrl);
+    }
 
-      fieldGallery.push({
-        url: fullUrl,
-        name: fileName,
-        isImage,
-        isPdf,
-        id: fid,
-      });
+    const isImage =
+      field.isImage ||
+      /\.(png|jpe?g|webp|gif|svg)($|\?)/i.test(fileName || fileUrl);
+    const isPdf =
+      /\.pdf($|\?)/i.test(fileName || fileUrl) || (!isImage && Boolean(field.isDoc || field.code?.includes('DOC') || field.code?.includes('DEED') || field.code?.includes('FORM_A')));
+
+    fieldGallery.push({
+      url: fullUrl,
+      name: fileName,
+      isImage,
+      isPdf,
+      id: fid,
     });
+  });
 
-    fieldGallery.forEach((item, itemIdx) => {
-      const thumb = document.createElement("div");
-      thumb.className = `thumb-item ${item.isImage ? "preview-thumb-wrap" : "preview-doc-wrap"} b24-file-tile`;
-      thumb.title = `${item.name} - Click to preview`;
+  fieldGallery.forEach((item, itemIdx) => {
+    const thumb = document.createElement("div");
+    thumb.className = `thumb-item ${item.isImage ? "preview-thumb-wrap" : "preview-doc-wrap"} b24-file-tile`;
+    thumb.title = `${item.name} - Click to preview`;
 
-      if (item.isImage) {
-        thumb.innerHTML = `
+    if (item.isImage) {
+      thumb.innerHTML = `
           <div class="b24-tile-thumb-wrap">
             <img class="thumb-item-img b24-tile-img" src="${item.url}" alt="${item.name}" loading="lazy">
             <div class="thumb-zoom-overlay">View</div>
@@ -3109,34 +3109,34 @@
           </div>
         `;
 
-        const thumbImg = thumb.querySelector(".thumb-item-img");
-        thumbImg.onerror = function () {
-          if (!this.dataset.proxied) {
-            this.dataset.proxied = "1";
-            let target = item.url;
-            if (target.includes("/api/file/proxy?url=")) {
-              try {
-                target = decodeURIComponent(
-                  target.split("/api/file/proxy?url=")[1],
-                );
-              } catch (_) {}
-            }
-            this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
-          } else {
-            this.onerror = null;
-            const wrap = thumb.querySelector(".b24-tile-thumb-wrap");
-            wrap.innerHTML = `
+      const thumbImg = thumb.querySelector(".thumb-item-img");
+      thumbImg.onerror = function () {
+        if (!this.dataset.proxied) {
+          this.dataset.proxied = "1";
+          let target = item.url;
+          if (target.includes("/api/file/proxy?url=")) {
+            try {
+              target = decodeURIComponent(
+                target.split("/api/file/proxy?url=")[1],
+              );
+            } catch (_) { }
+          }
+          this.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
+        } else {
+          this.onerror = null;
+          const wrap = thumb.querySelector(".b24-tile-thumb-wrap");
+          wrap.innerHTML = `
               <div class="doc-tile-inner"><span class="doc-tile-badge img">IMG</span></div>
               <div class="thumb-zoom-overlay">View</div>
               <button type="button" class="thumb-remove-btn" title="Remove file" aria-label="Remove file">&times;</button>
             `;
-            const retryRemove = wrap.querySelector(".thumb-remove-btn");
-            if (retryRemove)
-              retryRemove.addEventListener("click", handleRemoveItem);
-          }
-        };
-      } else {
-        thumb.innerHTML = `
+          const retryRemove = wrap.querySelector(".thumb-remove-btn");
+          if (retryRemove)
+            retryRemove.addEventListener("click", handleRemoveItem);
+        }
+      };
+    } else {
+      thumb.innerHTML = `
           <div class="b24-tile-thumb-wrap">
             <div class="doc-tile-inner">
               <span class="doc-tile-badge ${item.isPdf ? "pdf" : "doc"}">${item.isPdf ? "PDF" : "DOC"}</span>
@@ -3153,68 +3153,44 @@
             </div>
           </div>
         `;
+    }
+
+    const handleRemoveItem = (ev) => {
+      ev.stopPropagation();
+      ev.preventDefault();
+
+      if (item.id) {
+        if (!removedFileIds[field.key]) {
+          removedFileIds[field.key] = new Set();
+        }
+        removedFileIds[field.key].add(String(item.id));
       }
 
-      const handleRemoveItem = (ev) => {
+      const gIdx = fieldGallery.indexOf(item);
+      if (gIdx !== -1) {
+        fieldGallery.splice(gIdx, 1);
+      }
+
+      thumb.remove();
+      setDirty(true);
+      resizeWindow();
+      showToast(
+        `Marked "${item.name}" for removal. Click Save Changes to apply.`,
+        "info",
+      );
+    };
+
+    const removeBtn = thumb.querySelector(".thumb-remove-btn");
+    if (removeBtn) removeBtn.addEventListener("click", handleRemoveItem);
+
+    const listRemoveBtn = thumb.querySelector(".thumb-remove-btn-list");
+    if (listRemoveBtn)
+      listRemoveBtn.addEventListener("click", handleRemoveItem);
+
+    const listViewBtn = thumb.querySelector(".b24-list-btn.view-btn");
+    if (listViewBtn) {
+      listViewBtn.addEventListener("click", (ev) => {
         ev.stopPropagation();
-        ev.preventDefault();
-
-        if (item.id) {
-          if (!removedFileIds[field.key]) {
-            removedFileIds[field.key] = new Set();
-          }
-          removedFileIds[field.key].add(String(item.id));
-        }
-
-        const gIdx = fieldGallery.indexOf(item);
-        if (gIdx !== -1) {
-          fieldGallery.splice(gIdx, 1);
-        }
-
-        thumb.remove();
-        setDirty(true);
-        resizeWindow();
-        showToast(
-          `Marked "${item.name}" for removal. Click Save Changes to apply.`,
-          "info",
-        );
-      };
-
-      const removeBtn = thumb.querySelector(".thumb-remove-btn");
-      if (removeBtn) removeBtn.addEventListener("click", handleRemoveItem);
-
-      const listRemoveBtn = thumb.querySelector(".thumb-remove-btn-list");
-      if (listRemoveBtn)
-        listRemoveBtn.addEventListener("click", handleRemoveItem);
-
-      const listViewBtn = thumb.querySelector(".b24-list-btn.view-btn");
-      if (listViewBtn) {
-        listViewBtn.addEventListener("click", (ev) => {
-          ev.stopPropagation();
-          const currIdx = Math.max(0, fieldGallery.indexOf(item));
-          openLightbox(
-            item.name,
-            item.url,
-            item.isPdf,
-            fieldGallery,
-            currIdx,
-            thumb,
-          );
-          stripWrap
-            .querySelectorAll(".thumb-item")
-            .forEach((t) => t.classList.remove("active"));
-          thumb.classList.add("active");
-        });
-      }
-
-      thumb.addEventListener("click", (ev) => {
-        if (
-          ev.target.closest(".thumb-remove-btn") ||
-          ev.target.closest(".thumb-remove-btn-list") ||
-          ev.target.closest(".b24-list-actions")
-        ) {
-          return;
-        }
         const currIdx = Math.max(0, fieldGallery.indexOf(item));
         openLightbox(
           item.name,
@@ -3229,27 +3205,51 @@
           .forEach((t) => t.classList.remove("active"));
         thumb.classList.add("active");
       });
+    }
 
-      stripWrap.appendChild(thumb);
+    thumb.addEventListener("click", (ev) => {
+      if (
+        ev.target.closest(".thumb-remove-btn") ||
+        ev.target.closest(".thumb-remove-btn-list") ||
+        ev.target.closest(".b24-list-actions")
+      ) {
+        return;
+      }
+      const currIdx = Math.max(0, fieldGallery.indexOf(item));
+      openLightbox(
+        item.name,
+        item.url,
+        item.isPdf,
+        fieldGallery,
+        currIdx,
+        thumb,
+      );
+      stripWrap
+        .querySelectorAll(".thumb-item")
+        .forEach((t) => t.classList.remove("active"));
+      thumb.classList.add("active");
     });
 
-    card.appendChild(switcher);
-    card.appendChild(stripWrap);
-    card.appendChild(dropzone);
-    card.appendChild(viewportBox);
-    container.appendChild(card);
-  }
+    stripWrap.appendChild(thumb);
+  });
 
-  // Shows an image directly inside the inline viewport in the same window
-  function showInWindowImage(
-    viewportBox,
-    url,
-    name,
-    gallery = null,
-    index = 0,
-  ) {
-    viewportBox.style.display = "flex";
-    viewportBox.innerHTML = `
+  card.appendChild(switcher);
+  card.appendChild(stripWrap);
+  card.appendChild(dropzone);
+  card.appendChild(viewportBox);
+  container.appendChild(card);
+}
+
+// Shows an image directly inside the inline viewport in the same window
+function showInWindowImage(
+  viewportBox,
+  url,
+  name,
+  gallery = null,
+  index = 0,
+) {
+  viewportBox.style.display = "flex";
+  viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">Preview: ${name}</span>
         <div class="inline-preview-topbar-actions">
@@ -3260,56 +3260,56 @@
       </div>
     `;
 
-    const img = document.createElement("img");
-    img.className = "inline-preview-img";
-    img.src = url;
-    img.alt = name;
-    img.title = "Click to open gallery viewer";
-    img.onerror = function () {
-      if (!this.dataset.proxied && url.startsWith("http")) {
-        this.dataset.proxied = "1";
-        this.src = `/api/file/proxy?url=${encodeURIComponent(url)}`;
-      } else {
-        this.onerror = null;
-        this.style.display = "none";
-        const errDiv = document.createElement("div");
-        errDiv.style.cssText =
-          "display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;";
-        errDiv.innerHTML = `<span>Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link</a>`;
-        viewportBox.appendChild(errDiv);
-      }
-    };
-    viewportBox.appendChild(img);
+  const img = document.createElement("img");
+  img.className = "inline-preview-img";
+  img.src = url;
+  img.alt = name;
+  img.title = "Click to open gallery viewer";
+  img.onerror = function () {
+    if (!this.dataset.proxied && url.startsWith("http")) {
+      this.dataset.proxied = "1";
+      this.src = `/api/file/proxy?url=${encodeURIComponent(url)}`;
+    } else {
+      this.onerror = null;
+      this.style.display = "none";
+      const errDiv = document.createElement("div");
+      errDiv.style.cssText =
+        "display:flex;flex-direction:column;align-items:center;justify-content:center;height:140px;color:#94a3b8;font-size:13px;";
+      errDiv.innerHTML = `<span>Unable to load preview</span><a href="${url}" target="_blank" style="color:#38bdf8;margin-top:6px;font-size:12px;text-decoration:none;">Open image link</a>`;
+      viewportBox.appendChild(errDiv);
+    }
+  };
+  viewportBox.appendChild(img);
 
-    const openViewer = () =>
-      openLightbox(name, url, false, gallery, index, viewportBox);
-    viewportBox
-      .querySelector(".zoom-btn")
-      .addEventListener("click", openViewer);
-    img.addEventListener("click", openViewer);
-    viewportBox.classList.remove("is-pdf-viewport");
-    viewportBox
-      .querySelector(".inline-preview-close")
-      .addEventListener("click", () => {
-        viewportBox.classList.remove("is-pdf-viewport");
-        viewportBox.style.display = "none";
-        viewportBox.innerHTML = "";
-        resizeWindow();
-      });
-    resizeWindow();
-  }
+  const openViewer = () =>
+    openLightbox(name, url, false, gallery, index, viewportBox);
+  viewportBox
+    .querySelector(".zoom-btn")
+    .addEventListener("click", openViewer);
+  img.addEventListener("click", openViewer);
+  viewportBox.classList.remove("is-pdf-viewport");
+  viewportBox
+    .querySelector(".inline-preview-close")
+    .addEventListener("click", () => {
+      viewportBox.classList.remove("is-pdf-viewport");
+      viewportBox.style.display = "none";
+      viewportBox.innerHTML = "";
+      resizeWindow();
+    });
+  resizeWindow();
+}
 
-  // Shows a PDF directly inside the inline viewport in the same window
-  function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
-    if (!viewportBox) return;
-    const proxyUrl =
-      url.startsWith("http") && !url.includes("/api/file/proxy")
-        ? `/api/file/proxy?url=${encodeURIComponent(url)}`
-        : url;
+// Shows a PDF directly inside the inline viewport in the same window
+function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
+  if (!viewportBox) return;
+  const proxyUrl =
+    url.startsWith("http") && !url.includes("/api/file/proxy")
+      ? `/api/file/proxy?url=${encodeURIComponent(url)}`
+      : url;
 
-    viewportBox.classList.add("is-pdf-viewport");
-    viewportBox.style.display = "flex";
-    viewportBox.innerHTML = `
+  viewportBox.classList.add("is-pdf-viewport");
+  viewportBox.style.display = "flex";
+  viewportBox.innerHTML = `
       <div class="inline-preview-topbar">
         <span class="inline-preview-name">PDF Viewer: ${name}</span>
         <div class="inline-preview-topbar-actions">
@@ -3322,59 +3322,59 @@
       <div class="inline-pdf-container" style="width:100%;height:calc(100% - 36px);margin-top:36px;"></div>
     `;
 
-    const container = viewportBox.querySelector(".inline-pdf-container");
-    renderPdfCanvasViewer(container, proxyUrl, name, false);
+  const container = viewportBox.querySelector(".inline-pdf-container");
+  renderPdfCanvasViewer(container, proxyUrl, name, false);
 
-    viewportBox
-      .querySelector(".zoom-btn")
-      .addEventListener("click", () =>
-        openLightbox(name, url, true, gallery, index, viewportBox),
-      );
-    viewportBox
-      .querySelector(".inline-preview-close")
-      .addEventListener("click", () => {
-        viewportBox.classList.remove("is-pdf-viewport");
-        viewportBox.style.display = "none";
-        viewportBox.innerHTML = "";
-        resizeWindow();
-      });
-    resizeWindow();
+  viewportBox
+    .querySelector(".zoom-btn")
+    .addEventListener("click", () =>
+      openLightbox(name, url, true, gallery, index, viewportBox),
+    );
+  viewportBox
+    .querySelector(".inline-preview-close")
+    .addEventListener("click", () => {
+      viewportBox.classList.remove("is-pdf-viewport");
+      viewportBox.style.display = "none";
+      viewportBox.innerHTML = "";
+      resizeWindow();
+    });
+  resizeWindow();
+}
+
+// Handle local newly selected files with instant in-window FileReader preview
+function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
+  if (!pendingFileUploads[fieldKey]) {
+    pendingFileUploads[fieldKey] = [];
   }
 
-  // Handle local newly selected files with instant in-window FileReader preview
-  function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
-    if (!pendingFileUploads[fieldKey]) {
-      pendingFileUploads[fieldKey] = [];
-    }
+  Array.from(files).forEach((file) => {
+    const isImage =
+      file.type.startsWith("image/") ||
+      /\.(png|jpe?g|webp|gif|svg)$/i.test(file.name);
+    const isPdf =
+      file.type === "application/pdf" || file.name.endsWith(".pdf");
+    const reader = new FileReader();
 
-    Array.from(files).forEach((file) => {
-      const isImage =
-        file.type.startsWith("image/") ||
-        /\.(png|jpe?g|webp|gif|svg)$/i.test(file.name);
-      const isPdf =
-        file.type === "application/pdf" || file.name.endsWith(".pdf");
-      const reader = new FileReader();
+    reader.onload = function (e) {
+      const dataUrl = e.target.result;
+      const pendingItem = {
+        file,
+        dataUrl,
+        name: file.name,
+        size: file.size,
+        isImage,
+        isPdf,
+      };
+      pendingFileUploads[fieldKey].push(pendingItem);
+      setDirty(true);
 
-      reader.onload = function (e) {
-        const dataUrl = e.target.result;
-        const pendingItem = {
-          file,
-          dataUrl,
-          name: file.name,
-          size: file.size,
-          isImage,
-          isPdf,
-        };
-        pendingFileUploads[fieldKey].push(pendingItem);
-        setDirty(true);
-
-        if (isImage) {
-          // Append thumbnail tile to strip (Bitrix24 native 140x110px tile)
-          const thumb = document.createElement("div");
-          thumb.className =
-            "thumb-item preview-thumb-wrap b24-file-tile active";
-          thumb.title = `${file.name} (Ready to upload)`;
-          thumb.innerHTML = `
+      if (isImage) {
+        // Append thumbnail tile to strip (Bitrix24 native 140x110px tile)
+        const thumb = document.createElement("div");
+        thumb.className =
+          "thumb-item preview-thumb-wrap b24-file-tile active";
+        thumb.title = `${file.name} (Ready to upload)`;
+        thumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
               <img class="thumb-item-img b24-tile-img" src="${dataUrl}" alt="${file.name}">
               <div class="thumb-zoom-overlay">View</div>
@@ -3389,60 +3389,60 @@
             </div>
           `;
 
-          const removeLocalItem = (ev) => {
+        const removeLocalItem = (ev) => {
+          ev.stopPropagation();
+          const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
+          if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
+          thumb.remove();
+          viewportBox.style.display = "none";
+          viewportBox.innerHTML = "";
+          setDirty(true);
+          resizeWindow();
+        };
+
+        thumb
+          .querySelector(".thumb-remove-btn")
+          .addEventListener("click", removeLocalItem);
+        const listRem = thumb.querySelector(".thumb-remove-btn-list");
+        if (listRem) listRem.addEventListener("click", removeLocalItem);
+
+        const listVw = thumb.querySelector(".b24-list-btn.view-btn");
+        if (listVw) {
+          listVw.addEventListener("click", (ev) => {
             ev.stopPropagation();
-            const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
-            if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
-            thumb.remove();
-            viewportBox.style.display = "none";
-            viewportBox.innerHTML = "";
-            setDirty(true);
-            resizeWindow();
-          };
-
-          thumb
-            .querySelector(".thumb-remove-btn")
-            .addEventListener("click", removeLocalItem);
-          const listRem = thumb.querySelector(".thumb-remove-btn-list");
-          if (listRem) listRem.addEventListener("click", removeLocalItem);
-
-          const listVw = thumb.querySelector(".b24-list-btn.view-btn");
-          if (listVw) {
-            listVw.addEventListener("click", (ev) => {
-              ev.stopPropagation();
-              openLightbox(file.name, dataUrl, false, null, 0, thumb);
-              stripWrap
-                .querySelectorAll(".thumb-item")
-                .forEach((t) => t.classList.remove("active"));
-              thumb.classList.add("active");
-            });
-          }
-
-          thumb.addEventListener("click", (ev) => {
-            if (
-              ev.target.closest(".thumb-remove-btn") ||
-              ev.target.closest(".thumb-remove-btn-list") ||
-              ev.target.closest(".b24-list-actions")
-            )
-              return;
             openLightbox(file.name, dataUrl, false, null, 0, thumb);
             stripWrap
               .querySelectorAll(".thumb-item")
               .forEach((t) => t.classList.remove("active"));
             thumb.classList.add("active");
           });
+        }
 
+        thumb.addEventListener("click", (ev) => {
+          if (
+            ev.target.closest(".thumb-remove-btn") ||
+            ev.target.closest(".thumb-remove-btn-list") ||
+            ev.target.closest(".b24-list-actions")
+          )
+            return;
+          openLightbox(file.name, dataUrl, false, null, 0, thumb);
           stripWrap
             .querySelectorAll(".thumb-item")
             .forEach((t) => t.classList.remove("active"));
-          stripWrap.appendChild(thumb);
-        } else {
-          // Document tile of exact same Bitrix24 native 140x110px size
-          const docThumb = document.createElement("div");
-          docThumb.className =
-            "thumb-item preview-doc-wrap b24-file-tile active";
-          docThumb.title = `${file.name} (Ready to upload)`;
-          docThumb.innerHTML = `
+          thumb.classList.add("active");
+        });
+
+        stripWrap
+          .querySelectorAll(".thumb-item")
+          .forEach((t) => t.classList.remove("active"));
+        stripWrap.appendChild(thumb);
+      } else {
+        // Document tile of exact same Bitrix24 native 140x110px size
+        const docThumb = document.createElement("div");
+        docThumb.className =
+          "thumb-item preview-doc-wrap b24-file-tile active";
+        docThumb.title = `${file.name} (Ready to upload)`;
+        docThumb.innerHTML = `
             <div class="b24-tile-thumb-wrap">
               <div class="doc-tile-inner">
                 <span class="doc-tile-badge ${isPdf ? "pdf" : "doc"}">${isPdf ? "PDF" : "DOC"}</span>
@@ -3460,120 +3460,120 @@
             </div>
           `;
 
-          const removeDocItem = (ev) => {
+        const removeDocItem = (ev) => {
+          ev.stopPropagation();
+          const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
+          if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
+          docThumb.remove();
+          viewportBox.style.display = "none";
+          viewportBox.innerHTML = "";
+          setDirty(true);
+          scheduleResize(40);
+        };
+
+        docThumb
+          .querySelector(".thumb-remove-btn")
+          .addEventListener("click", removeDocItem);
+        const docListRem = docThumb.querySelector(".thumb-remove-btn-list");
+        if (docListRem) docListRem.addEventListener("click", removeDocItem);
+
+        const docListVw = docThumb.querySelector(".b24-list-btn.view-btn");
+        if (docListVw) {
+          docListVw.addEventListener("click", (ev) => {
             ev.stopPropagation();
-            const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
-            if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
-            docThumb.remove();
-            viewportBox.style.display = "none";
-            viewportBox.innerHTML = "";
-            setDirty(true);
-            scheduleResize(40);
-          };
-
-          docThumb
-            .querySelector(".thumb-remove-btn")
-            .addEventListener("click", removeDocItem);
-          const docListRem = docThumb.querySelector(".thumb-remove-btn-list");
-          if (docListRem) docListRem.addEventListener("click", removeDocItem);
-
-          const docListVw = docThumb.querySelector(".b24-list-btn.view-btn");
-          if (docListVw) {
-            docListVw.addEventListener("click", (ev) => {
-              ev.stopPropagation();
-              openLightbox(file.name, dataUrl, isPdf, null, 0, docThumb);
-              stripWrap
-                .querySelectorAll(".thumb-item")
-                .forEach((t) => t.classList.remove("active"));
-              docThumb.classList.add("active");
-            });
-          }
-
-          docThumb.addEventListener("click", (ev) => {
-            if (
-              ev.target.closest(".thumb-remove-btn") ||
-              ev.target.closest(".thumb-remove-btn-list") ||
-              ev.target.closest(".b24-list-actions")
-            )
-              return;
             openLightbox(file.name, dataUrl, isPdf, null, 0, docThumb);
             stripWrap
               .querySelectorAll(".thumb-item")
               .forEach((t) => t.classList.remove("active"));
             docThumb.classList.add("active");
           });
+        }
 
+        docThumb.addEventListener("click", (ev) => {
+          if (
+            ev.target.closest(".thumb-remove-btn") ||
+            ev.target.closest(".thumb-remove-btn-list") ||
+            ev.target.closest(".b24-list-actions")
+          )
+            return;
+          openLightbox(file.name, dataUrl, isPdf, null, 0, docThumb);
           stripWrap
             .querySelectorAll(".thumb-item")
             .forEach((t) => t.classList.remove("active"));
-          stripWrap.appendChild(docThumb);
-        }
-      };
+          docThumb.classList.add("active");
+        });
 
-      reader.readAsDataURL(file);
+        stripWrap
+          .querySelectorAll(".thumb-item")
+          .forEach((t) => t.classList.remove("active"));
+        stripWrap.appendChild(docThumb);
+      }
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+// ============================================================================
+// 6. DYNAMIC LAYOUT & FIELD RENDERING
+// ============================================================================
+function renderLayout(layoutKey) {
+  currentLayout = layoutKey;
+  const meta = CONFIG.layoutMeta[layoutKey] || CONFIG.layoutMeta.rent;
+
+  // 1. Update Layout Mode Pill in Toolbar
+  layoutModeBadge.className = `layout-pill ${meta.pillClass}`;
+  layoutModeBadge.textContent = meta.title || "Rent";
+
+  // 2. Clear container
+  sectionsContainer.innerHTML = "";
+  sectionNavPills.innerHTML = "";
+  initialFormValues = {};
+
+  let totalActiveFieldsCount = 0;
+
+  CONFIG.sections.forEach((sec, secIdx) => {
+    const activeFields = [];
+
+    sec.fields.forEach((f) => {
+      const rule = f.rules?.[layoutKey] || "show";
+      if (rule !== "hide") {
+        activeFields.push(f);
+      }
     });
-  }
 
-  // ============================================================================
-  // 6. DYNAMIC LAYOUT & FIELD RENDERING
-  // ============================================================================
-  function renderLayout(layoutKey) {
-    currentLayout = layoutKey;
-    const meta = CONFIG.layoutMeta[layoutKey] || CONFIG.layoutMeta.rent;
+    const sectionActiveCount = activeFields.length;
+    totalActiveFieldsCount += sectionActiveCount;
 
-    // 1. Update Layout Mode Pill in Toolbar
-    layoutModeBadge.className = `layout-pill ${meta.pillClass}`;
-    layoutModeBadge.textContent = meta.title || "Rent";
+    if (sectionActiveCount === 0) return;
 
-    // 2. Clear container
-    sectionsContainer.innerHTML = "";
-    sectionNavPills.innerHTML = "";
-    initialFormValues = {};
+    // Jump-to Navigation Pill
+    const pill = document.createElement("button");
+    pill.type = "button";
+    pill.className = `nav-pill ${secIdx === 0 ? "active" : ""}`;
+    pill.setAttribute("data-target-sec", sec.id);
+    pill.innerHTML = `<span>${sec.title}</span><span class="nav-pill-count">${sectionActiveCount}</span>`;
+    pill.addEventListener("click", () => {
+      document
+        .querySelectorAll(".nav-pill")
+        .forEach((p) => p.classList.remove("active"));
+      pill.classList.add("active");
+      const targetEl = document.getElementById(`sec_${sec.id}`);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+    sectionNavPills.appendChild(pill);
 
-    let totalActiveFieldsCount = 0;
+    // Section Card
+    const card = document.createElement("div");
+    card.className = "section-card";
+    card.id = `sec_${sec.id}`;
 
-    CONFIG.sections.forEach((sec, secIdx) => {
-      const activeFields = [];
-
-      sec.fields.forEach((f) => {
-        const rule = f.rules?.[layoutKey] || "show";
-        if (rule !== "hide") {
-          activeFields.push(f);
-        }
-      });
-
-      const sectionActiveCount = activeFields.length;
-      totalActiveFieldsCount += sectionActiveCount;
-
-      if (sectionActiveCount === 0) return;
-
-      // Jump-to Navigation Pill
-      const pill = document.createElement("button");
-      pill.type = "button";
-      pill.className = `nav-pill ${secIdx === 0 ? "active" : ""}`;
-      pill.setAttribute("data-target-sec", sec.id);
-      pill.innerHTML = `<span>${sec.title}</span><span class="nav-pill-count">${sectionActiveCount}</span>`;
-      pill.addEventListener("click", () => {
-        document
-          .querySelectorAll(".nav-pill")
-          .forEach((p) => p.classList.remove("active"));
-        pill.classList.add("active");
-        const targetEl = document.getElementById(`sec_${sec.id}`);
-        if (targetEl) {
-          targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      });
-      sectionNavPills.appendChild(pill);
-
-      // Section Card
-      const card = document.createElement("div");
-      card.className = "section-card";
-      card.id = `sec_${sec.id}`;
-
-      // Card Header (Minimal)
-      const header = document.createElement("div");
-      header.className = "section-header";
-      header.innerHTML = `
+    // Card Header (Minimal)
+    const header = document.createElement("div");
+    header.className = "section-header";
+    header.innerHTML = `
         <div class="section-title-wrap">
           
           <span class="section-title">${sec.title}</span>
@@ -3584,456 +3584,456 @@
           <span class="section-chevron"></span>
         </div>
       `;
-      header.addEventListener("click", () => {
-        card.classList.toggle("collapsed");
-        scheduleResize(50);
-      });
-      card.appendChild(header);
-
-      // Card Body
-      const body = document.createElement("div");
-      body.className = "section-body";
-
-      // Primary Grid (renders all active fields in section order)
-      const primaryGrid = document.createElement("div");
-      primaryGrid.className = "fields-grid";
-
-      activeFields.forEach((f) => {
-        primaryGrid.appendChild(createFieldElement(f, layoutKey));
-      });
-      body.appendChild(primaryGrid);
-
-      card.appendChild(body);
-      sectionsContainer.appendChild(card);
+    header.addEventListener("click", () => {
+      card.classList.toggle("collapsed");
+      scheduleResize(50);
     });
+    card.appendChild(header);
 
-    fieldsCountBadge.textContent = `${totalActiveFieldsCount} fields`;
-    resizeWindow();
-  }
+    // Card Body
+    const body = document.createElement("div");
+    body.className = "section-body";
 
-  // ============================================================================
-  // 6b. LOOKUP FIELDS & LINKED RECORD ACCESSIBILITY
-  // ============================================================================
-  const entityTitleCache = {};
+    // Primary Grid (renders all active fields in section order)
+    const primaryGrid = document.createElement("div");
+    primaryGrid.className = "fields-grid";
 
-  function isLookupField(f) {
-    if (!f) return false;
-    const lookupTypes = [
-      "crm_company",
-      "crm_contact",
-      "crm_contact_multi",
-      "crm_entity",
-      "user",
-      "crm",
-      "lookup",
-    ];
-    if (lookupTypes.includes(f.type)) return true;
-    if (f.lookupEntity) return true;
-    if (
-      f.key === "companyId" ||
-      f.key === "contactId" ||
-      f.key === "contactIds" ||
-      f.key === "assignedById"
-    )
-      return true;
-    if (f.key && f.key.startsWith("parentId")) return true;
-    if (
-      f.key === "ufCrm16ProjectName" ||
-      f.key === "ufCrm16MasterProject" ||
-      f.key === "ufCrm16_1791173000" ||
-      f.key === "ufCrm16_1791173131" ||
-      f.key === "ufCrm16Layout" ||
-      f.key === "ufCrm16Listing" ||
-      f.key === "ufCrm16ListingAgent" ||
-      f.key === "ufCrm16_1791172932"
-    )
-      return true;
-    return false;
-  }
+    activeFields.forEach((f) => {
+      primaryGrid.appendChild(createFieldElement(f, layoutKey));
+    });
+    body.appendChild(primaryGrid);
 
-  function resolveLookupEntity(f) {
-    if (!f) return "master_project";
-    if (f.lookupEntity) return f.lookupEntity;
-    const key = f.key || "";
-    const crmCode = f.crmCode || "";
-    const type = f.type || "";
-    const k = (key + "_" + crmCode).toLowerCase();
+    card.appendChild(body);
+    sectionsContainer.appendChild(card);
+  });
 
-    if (
-      k.includes("developer") ||
-      key === "companyId" ||
-      type === "crm_company"
-    )
-      return "developer";
-    if (
-      k.includes("contact") ||
-      key === "contactId" ||
-      key === "contactIds" ||
-      type === "crm_contact" ||
-      type === "crm_contact_multi"
-    )
-      return "contact";
-    if (k.includes("property") && !k.includes("masterproject"))
-      return "property";
-    if (key === "parentId1052" || type === "crm_entity") return "property";
-    if (k.includes("layout")) return "layout";
-    if (
-      k.includes("masterproject") ||
-      k.includes("master_project") ||
-      key === "ufCrm16_1791173000"
-    )
-      return "master_project";
-    if (k.includes("project") || key === "ufCrm16_1791173131") return "project";
-    if (
-      k.includes("listingagent") ||
-      k.includes("broker") ||
-      k.includes("agent")
-    )
-      return "broker";
-    if (k.includes("listing")) return "listing";
-    if (key === "assignedById" || type === "user") return "user";
+  fieldsCountBadge.textContent = `${totalActiveFieldsCount} fields`;
+  resizeWindow();
+}
+
+// ============================================================================
+// 6b. LOOKUP FIELDS & LINKED RECORD ACCESSIBILITY
+// ============================================================================
+const entityTitleCache = {};
+
+function isLookupField(f) {
+  if (!f) return false;
+  const lookupTypes = [
+    "crm_company",
+    "crm_contact",
+    "crm_contact_multi",
+    "crm_entity",
+    "user",
+    "crm",
+    "lookup",
+  ];
+  if (lookupTypes.includes(f.type)) return true;
+  if (f.lookupEntity) return true;
+  if (
+    f.key === "companyId" ||
+    f.key === "contactId" ||
+    f.key === "contactIds" ||
+    f.key === "assignedById"
+  )
+    return true;
+  if (f.key && f.key.startsWith("parentId")) return true;
+  if (
+    f.key === "ufCrm16ProjectName" ||
+    f.key === "ufCrm16MasterProject" ||
+    f.key === "ufCrm16_1791173000" ||
+    f.key === "ufCrm16_1791173131" ||
+    f.key === "ufCrm16Layout" ||
+    f.key === "ufCrm16Listing" ||
+    f.key === "ufCrm16ListingAgent" ||
+    f.key === "ufCrm16_1791172932"
+  )
+    return true;
+  return false;
+}
+
+function resolveLookupEntity(f) {
+  if (!f) return "master_project";
+  if (f.lookupEntity) return f.lookupEntity;
+  const key = f.key || "";
+  const crmCode = f.crmCode || "";
+  const type = f.type || "";
+  const k = (key + "_" + crmCode).toLowerCase();
+
+  if (
+    k.includes("developer") ||
+    key === "companyId" ||
+    type === "crm_company"
+  )
+    return "developer";
+  if (
+    k.includes("contact") ||
+    key === "contactId" ||
+    key === "contactIds" ||
+    type === "crm_contact" ||
+    type === "crm_contact_multi"
+  )
+    return "contact";
+  if (k.includes("property") && !k.includes("masterproject"))
+    return "property";
+  if (key === "parentId1052" || type === "crm_entity") return "property";
+  if (k.includes("layout")) return "layout";
+  if (
+    k.includes("masterproject") ||
+    k.includes("master_project") ||
+    key === "ufCrm16_1791173000"
+  )
     return "master_project";
+  if (k.includes("project") || key === "ufCrm16_1791173131") return "project";
+  if (
+    k.includes("listingagent") ||
+    k.includes("broker") ||
+    k.includes("agent")
+  )
+    return "broker";
+  if (k.includes("listing")) return "listing";
+  if (key === "assignedById" || type === "user") return "user";
+  return "master_project";
+}
+
+function getEntityMeta(type, key) {
+  const k = String(key || "").toLowerCase();
+  if (
+    type === "crm_company" ||
+    key === "companyId" ||
+    k.includes("company") ||
+    k.includes("developer")
+  ) {
+    return {
+
+      label: "Company / Developer",
+      defaultPrefix: "Company #",
+    };
+  }
+  if (
+    type === "crm_contact" ||
+    key === "contactId" ||
+    k.includes("contact")
+  ) {
+    return { label: "Contact", defaultPrefix: "Contact #" };
+  }
+  if (type === "crm_contact_multi" || key === "contactIds") {
+    return { label: "Contact", defaultPrefix: "Contact #" };
+  }
+  if (type === "user" || key === "assignedById") {
+    return {
+
+      label: "Responsible Person",
+      defaultPrefix: "User #",
+    };
+  }
+  if (
+    key === "parentId1052" ||
+    (k.includes("property") && !k.includes("masterproject"))
+  ) {
+    return {
+
+      label: "Master Property",
+      defaultPrefix: "Master Property #",
+    };
+  }
+  if (k.includes("masterproject") || k.includes("master_project")) {
+    return {
+
+      label: "Master Project",
+      defaultPrefix: "Master Project #",
+    };
+  }
+  if (k.includes("project")) {
+    return { label: "Project", defaultPrefix: "Project #" };
+  }
+  if (k.includes("layout")) {
+    return { label: "Layout", defaultPrefix: "Layout #" };
+  }
+  if (k.includes("listingagent") || k.includes("broker")) {
+    return {
+
+      label: "Listing Agent / Broker",
+      defaultPrefix: "Broker #",
+    };
+  }
+  if (k.includes("listing")) {
+    return { label: "Listing", defaultPrefix: "Listing #" };
+  }
+  return { label: "CRM Entity", defaultPrefix: "Record #" };
+}
+
+function getEntityPath(type, rawId, key) {
+  if (!rawId) return "";
+  const idStr = String(rawId).trim();
+
+  if (idStr.startsWith("CO_")) {
+    return `/crm/company/details/${idStr.replace(/^CO_/, "")}/`;
+  }
+  if (idStr.startsWith("C_")) {
+    return `/crm/contact/details/${idStr.replace(/^C_/, "")}/`;
+  }
+  if (idStr.startsWith("D_")) {
+    return `/crm/deal/details/${idStr.replace(/^D_/, "")}/`;
+  }
+  if (idStr.startsWith("L_")) {
+    return `/crm/lead/details/${idStr.replace(/^L_/, "")}/`;
+  }
+  if (/^DYNAMIC_(\d+)_(\d+)$/.test(idStr)) {
+    const parts = idStr.match(/^DYNAMIC_(\d+)_(\d+)$/);
+    return `/crm/type/${parts[1]}/details/${parts[2]}/`;
+  }
+  if (/^T[0-9a-fA-F]+_(\d+)$/.test(idStr)) {
+    const parts = idStr.split("_");
+    const hex = parts[0].substring(1);
+    const spTypeId = parseInt(hex, 16) || 1052;
+    return `/crm/type/${spTypeId}/details/${parts[1]}/`;
   }
 
-  function getEntityMeta(type, key) {
-    const k = String(key || "").toLowerCase();
-    if (
-      type === "crm_company" ||
-      key === "companyId" ||
-      k.includes("company") ||
-      k.includes("developer")
-    ) {
-      return {
-        
-        label: "Company / Developer",
-        defaultPrefix: "Company #",
-      };
-    }
-    if (
-      type === "crm_contact" ||
-      key === "contactId" ||
-      k.includes("contact")
-    ) {
-      return {  label: "Contact", defaultPrefix: "Contact #" };
-    }
-    if (type === "crm_contact_multi" || key === "contactIds") {
-      return {  label: "Contact", defaultPrefix: "Contact #" };
-    }
-    if (type === "user" || key === "assignedById") {
-      return {
-        
-        label: "Responsible Person",
-        defaultPrefix: "User #",
-      };
-    }
-    if (
-      key === "parentId1052" ||
-      (k.includes("property") && !k.includes("masterproject"))
-    ) {
-      return {
-        
-        label: "Master Property",
-        defaultPrefix: "Master Property #",
-      };
-    }
-    if (k.includes("masterproject") || k.includes("master_project")) {
-      return {
-        
-        label: "Master Project",
-        defaultPrefix: "Master Project #",
-      };
-    }
-    if (k.includes("project")) {
-      return {  label: "Project", defaultPrefix: "Project #" };
-    }
-    if (k.includes("layout")) {
-      return {  label: "Layout", defaultPrefix: "Layout #" };
-    }
-    if (k.includes("listingagent") || k.includes("broker")) {
-      return {
-        
-        label: "Listing Agent / Broker",
-        defaultPrefix: "Broker #",
-      };
-    }
-    if (k.includes("listing")) {
-      return {  label: "Listing", defaultPrefix: "Listing #" };
-    }
-    return {  label: "CRM Entity", defaultPrefix: "Record #" };
+  const num = idStr.replace(/[^\d]/g, "");
+  if (!num) return "";
+
+  const k = String(key || "").toLowerCase();
+  if (
+    type === "crm_company" ||
+    key === "companyId" ||
+    k.includes("company") ||
+    k.includes("developer")
+  ) {
+    return `/crm/company/details/${num}/`;
   }
-
-  function getEntityPath(type, rawId, key) {
-    if (!rawId) return "";
-    const idStr = String(rawId).trim();
-
-    if (idStr.startsWith("CO_")) {
-      return `/crm/company/details/${idStr.replace(/^CO_/, "")}/`;
-    }
-    if (idStr.startsWith("C_")) {
-      return `/crm/contact/details/${idStr.replace(/^C_/, "")}/`;
-    }
-    if (idStr.startsWith("D_")) {
-      return `/crm/deal/details/${idStr.replace(/^D_/, "")}/`;
-    }
-    if (idStr.startsWith("L_")) {
-      return `/crm/lead/details/${idStr.replace(/^L_/, "")}/`;
-    }
-    if (/^DYNAMIC_(\d+)_(\d+)$/.test(idStr)) {
-      const parts = idStr.match(/^DYNAMIC_(\d+)_(\d+)$/);
-      return `/crm/type/${parts[1]}/details/${parts[2]}/`;
-    }
-    if (/^T[0-9a-fA-F]+_(\d+)$/.test(idStr)) {
-      const parts = idStr.split("_");
-      const hex = parts[0].substring(1);
-      const spTypeId = parseInt(hex, 16) || 1052;
-      return `/crm/type/${spTypeId}/details/${parts[1]}/`;
-    }
-
-    const num = idStr.replace(/[^\d]/g, "");
-    if (!num) return "";
-
-    const k = String(key || "").toLowerCase();
-    if (
-      type === "crm_company" ||
-      key === "companyId" ||
-      k.includes("company") ||
-      k.includes("developer")
-    ) {
-      return `/crm/company/details/${num}/`;
-    }
-    if (
-      type === "crm_contact" ||
-      type === "crm_contact_multi" ||
-      key === "contactId" ||
-      key === "contactIds" ||
-      k.includes("contact")
-    ) {
-      return `/crm/contact/details/${num}/`;
-    }
-    if (type === "user" || key === "assignedById") {
-      return `/company/personal/user/${num}/`;
-    }
-    if (key === "parentId1052" || k.includes("property")) {
-      return `/crm/type/1052/details/${num}/`;
-    }
-    if (
-      k.includes("masterproject") ||
-      k.includes("master_project") ||
-      key === "ufCrm16_1791173000"
-    ) {
-      return `/crm/type/1040/details/${num}/`;
-    }
-    if (k.includes("project") || key === "ufCrm16_1791173131") {
-      return `/crm/type/1044/details/${num}/`;
-    }
-    if (k.includes("layout")) {
-      return `/crm/type/1048/details/${num}/`;
-    }
-    if (k.includes("listingagent") || k.includes("broker")) {
-      return `/crm/type/1094/details/${num}/`;
-    }
-    if (k.includes("listing")) {
-      return `/crm/type/1058/details/${num}/`;
-    }
+  if (
+    type === "crm_contact" ||
+    type === "crm_contact_multi" ||
+    key === "contactId" ||
+    key === "contactIds" ||
+    k.includes("contact")
+  ) {
+    return `/crm/contact/details/${num}/`;
+  }
+  if (type === "user" || key === "assignedById") {
+    return `/company/personal/user/${num}/`;
+  }
+  if (key === "parentId1052" || k.includes("property")) {
     return `/crm/type/1052/details/${num}/`;
   }
+  if (
+    k.includes("masterproject") ||
+    k.includes("master_project") ||
+    key === "ufCrm16_1791173000"
+  ) {
+    return `/crm/type/1040/details/${num}/`;
+  }
+  if (k.includes("project") || key === "ufCrm16_1791173131") {
+    return `/crm/type/1044/details/${num}/`;
+  }
+  if (k.includes("layout")) {
+    return `/crm/type/1048/details/${num}/`;
+  }
+  if (k.includes("listingagent") || k.includes("broker")) {
+    return `/crm/type/1094/details/${num}/`;
+  }
+  if (k.includes("listing")) {
+    return `/crm/type/1058/details/${num}/`;
+  }
+  return `/crm/type/1052/details/${num}/`;
+}
 
-  function openLinkedRecord(type, rawId, key, ev) {
-    if (ev) {
-      ev.preventDefault();
-      ev.stopPropagation();
-    }
-    const path = getEntityPath(type, rawId, key);
-    if (!path) {
-      showToast("No valid linked record ID to open", "warning");
-      return;
-    }
-
-    if (window.BX24 && typeof window.BX24.openPath === "function") {
-      window.BX24.openPath(path);
-    } else {
-      const domain =
-        window.__BITRIX_DOMAIN__ ||
-        (window.location ? window.location.hostname : "csl.bitrix24.com");
-      const fullUrl = path.startsWith("http")
-        ? path
-        : `https://${domain}${path}`;
-      window.open(fullUrl, "_blank");
-    }
+function openLinkedRecord(type, rawId, key, ev) {
+  if (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
+  const path = getEntityPath(type, rawId, key);
+  if (!path) {
+    showToast("No valid linked record ID to open", "warning");
+    return;
   }
 
-  function fetchEntityTitle(type, id, key, callback) {
-    if (!id) return;
-    const cacheKey = `${type}_${id}`;
-    if (entityTitleCache[cacheKey]) {
-      callback(entityTitleCache[cacheKey]);
-      return;
-    }
-    if (!window.BX24 || typeof window.BX24.callMethod !== "function") return;
+  if (window.BX24 && typeof window.BX24.openPath === "function") {
+    window.BX24.openPath(path);
+  } else {
+    const domain =
+      window.__BITRIX_DOMAIN__ ||
+      (window.location ? window.location.hostname : "csl.bitrix24.com");
+    const fullUrl = path.startsWith("http")
+      ? path
+      : `https://${domain}${path}`;
+    window.open(fullUrl, "_blank");
+  }
+}
 
-    const idStr = String(id).trim();
-    const num = idStr.replace(/[^\d]/g, "");
-    if (!num) return;
+function fetchEntityTitle(type, id, key, callback) {
+  if (!id) return;
+  const cacheKey = `${type}_${id}`;
+  if (entityTitleCache[cacheKey]) {
+    callback(entityTitleCache[cacheKey]);
+    return;
+  }
+  if (!window.BX24 || typeof window.BX24.callMethod !== "function") return;
 
-    if (
-      idStr.startsWith("CO_") ||
-      type === "crm_company" ||
-      key === "companyId"
-    ) {
-      window.BX24.callMethod("crm.company.get", { id: num }, (res) => {
-        if (!res.error() && res.data()?.TITLE) {
-          entityTitleCache[cacheKey] = res.data().TITLE;
-          callback(res.data().TITLE);
+  const idStr = String(id).trim();
+  const num = idStr.replace(/[^\d]/g, "");
+  if (!num) return;
+
+  if (
+    idStr.startsWith("CO_") ||
+    type === "crm_company" ||
+    key === "companyId"
+  ) {
+    window.BX24.callMethod("crm.company.get", { id: num }, (res) => {
+      if (!res.error() && res.data()?.TITLE) {
+        entityTitleCache[cacheKey] = res.data().TITLE;
+        callback(res.data().TITLE);
+      }
+    });
+  } else if (
+    idStr.startsWith("C_") ||
+    type === "crm_contact" ||
+    type === "crm_contact_multi" ||
+    key === "contactId" ||
+    key === "contactIds"
+  ) {
+    window.BX24.callMethod("crm.contact.get", { id: num }, (res) => {
+      if (!res.error()) {
+        const d = res.data();
+        const name =
+          [d?.NAME, d?.LAST_NAME].filter(Boolean).join(" ") || d?.NAME;
+        if (name) {
+          entityTitleCache[cacheKey] = name;
+          callback(name);
         }
-      });
-    } else if (
-      idStr.startsWith("C_") ||
-      type === "crm_contact" ||
-      type === "crm_contact_multi" ||
-      key === "contactId" ||
-      key === "contactIds"
-    ) {
-      window.BX24.callMethod("crm.contact.get", { id: num }, (res) => {
+      }
+    });
+  } else if (type === "user" || key === "assignedById") {
+    window.BX24.callMethod("user.get", { ID: num }, (res) => {
+      if (!res.error() && res.data()?.[0]) {
+        const u = res.data()[0];
+        const name =
+          [u.NAME, u.LAST_NAME].filter(Boolean).join(" ") || u.LOGIN;
+        if (name) {
+          entityTitleCache[cacheKey] = name;
+          callback(name);
+        }
+      }
+    });
+  } else if (key === "parentId1052" || type === "crm_entity") {
+    window.BX24.callMethod(
+      "crm.item.get",
+      { entityTypeId: 1052, id: num },
+      (res) => {
         if (!res.error()) {
-          const d = res.data();
-          const name =
-            [d?.NAME, d?.LAST_NAME].filter(Boolean).join(" ") || d?.NAME;
-          if (name) {
-            entityTitleCache[cacheKey] = name;
-            callback(name);
+          const item = res.data()?.item || res.data();
+          const title = item?.title || item?.TITLE || res.data()?.TITLE;
+          if (title) {
+            entityTitleCache[cacheKey] = title;
+            callback(title);
           }
         }
-      });
-    } else if (type === "user" || key === "assignedById") {
-      window.BX24.callMethod("user.get", { ID: num }, (res) => {
-        if (!res.error() && res.data()?.[0]) {
-          const u = res.data()[0];
-          const name =
-            [u.NAME, u.LAST_NAME].filter(Boolean).join(" ") || u.LOGIN;
-          if (name) {
-            entityTitleCache[cacheKey] = name;
-            callback(name);
-          }
-        }
-      });
-    } else if (key === "parentId1052" || type === "crm_entity") {
-      window.BX24.callMethod(
-        "crm.item.get",
-        { entityTypeId: 1052, id: num },
-        (res) => {
-          if (!res.error()) {
-            const item = res.data()?.item || res.data();
-            const title = item?.title || item?.TITLE || res.data()?.TITLE;
-            if (title) {
-              entityTitleCache[cacheKey] = title;
-              callback(title);
-            }
-          }
-        },
-      );
-    }
-  }
-
-  function findFieldConfig(key) {
-    if (!CONFIG.sections) return null;
-    for (const sec of CONFIG.sections) {
-      const found = sec.fields.find(
-        (f) =>
-          f.key === key ||
-          f.crmCode === key ||
-          (Array.isArray(f.fallbackKeys) && f.fallbackKeys.includes(key)),
-      );
-      if (found) return found;
-    }
-    return null;
-  }
-
-  function getFieldValue(f, item) {
-    if (!item) return undefined;
-    const candidates = [f.key, f.crmCode, ...(f.fallbackKeys || [])].filter(
-      Boolean,
+      },
     );
+  }
+}
 
-    for (const key of candidates) {
-      if (item[key] !== undefined && item[key] !== null && item[key] !== "") {
-        const val = item[key];
-        // If date field has an empty / placeholder value ("N", false, "0", "0000-00-00", etc.), continue to fallback
-        if (f.type === "date") {
-          if (
-            val === "N" ||
-            val === false ||
-            val === 0 ||
-            val === "0" ||
-            val === "0000-00-00" ||
-            val === "00.00.0000" ||
-            val === "01.01.1970" ||
-            val === "1970-01-01"
-          ) {
-            continue;
-          }
-        }
-        // If lookup field has '0' or 0, continue to fallback
+function findFieldConfig(key) {
+  if (!CONFIG.sections) return null;
+  for (const sec of CONFIG.sections) {
+    const found = sec.fields.find(
+      (f) =>
+        f.key === key ||
+        f.crmCode === key ||
+        (Array.isArray(f.fallbackKeys) && f.fallbackKeys.includes(key)),
+    );
+    if (found) return found;
+  }
+  return null;
+}
+
+function getFieldValue(f, item) {
+  if (!item) return undefined;
+  const candidates = [f.key, f.crmCode, ...(f.fallbackKeys || [])].filter(
+    Boolean,
+  );
+
+  for (const key of candidates) {
+    if (item[key] !== undefined && item[key] !== null && item[key] !== "") {
+      const val = item[key];
+      // If date field has an empty / placeholder value ("N", false, "0", "0000-00-00", etc.), continue to fallback
+      if (f.type === "date") {
         if (
-          (f.type === "crm_company" || f.key === "companyId") &&
-          (val === 0 || val === "0")
+          val === "N" ||
+          val === false ||
+          val === 0 ||
+          val === "0" ||
+          val === "0000-00-00" ||
+          val === "00.00.0000" ||
+          val === "01.01.1970" ||
+          val === "1970-01-01"
         ) {
           continue;
         }
-        // If file field has an empty array [], continue to fallback
-        if (f.type === "file" && Array.isArray(val) && val.length === 0) {
-          continue;
-        }
-        if (typeof val === "object" && val !== null) {
-          if (f.type === "url" || f.key === "ufCrm16QrCodeLink") {
-            const u = val.url || val.showUrl || val.src || val.defaultUrl;
-            if (u) return u;
-          }
-          if (val.title || val.name || val.value) {
-            return val.title || val.name || val.value;
-          }
-        }
-        return val;
       }
-      // Case-insensitive match fallback
-      const lower = key.toLowerCase();
-      const matchKey = Object.keys(item).find((k) => k.toLowerCase() === lower);
+      // If lookup field has '0' or 0, continue to fallback
       if (
-        matchKey &&
-        item[matchKey] !== undefined &&
-        item[matchKey] !== null &&
-        item[matchKey] !== ""
+        (f.type === "crm_company" || f.key === "companyId") &&
+        (val === 0 || val === "0")
       ) {
-        const val = item[matchKey];
-        if (
-          (f.type === "crm_company" || f.key === "companyId") &&
-          (val === 0 || val === "0")
-        ) {
-          continue;
-        }
-        if (f.type === "file" && Array.isArray(val) && val.length === 0) {
-          continue;
-        }
-        if (typeof val === "object" && val !== null) {
-          if (f.type === "url" || f.key === "ufCrm16QrCodeLink") {
-            const u = val.url || val.showUrl || val.src || val.defaultUrl;
-            if (u) return u;
-          }
-          if (val.title || val.name || val.value) {
-            return val.title || val.name || val.value;
-          }
-        }
-        return val;
+        continue;
       }
+      // If file field has an empty array [], continue to fallback
+      if (f.type === "file" && Array.isArray(val) && val.length === 0) {
+        continue;
+      }
+      if (typeof val === "object" && val !== null) {
+        if (f.type === "url" || f.key === "ufCrm16QrCodeLink") {
+          const u = val.url || val.showUrl || val.src || val.defaultUrl;
+          if (u) return u;
+        }
+        if (val.title || val.name || val.value) {
+          return val.title || val.name || val.value;
+        }
+      }
+      return val;
     }
-    return undefined;
+    // Case-insensitive match fallback
+    const lower = key.toLowerCase();
+    const matchKey = Object.keys(item).find((k) => k.toLowerCase() === lower);
+    if (
+      matchKey &&
+      item[matchKey] !== undefined &&
+      item[matchKey] !== null &&
+      item[matchKey] !== ""
+    ) {
+      const val = item[matchKey];
+      if (
+        (f.type === "crm_company" || f.key === "companyId") &&
+        (val === 0 || val === "0")
+      ) {
+        continue;
+      }
+      if (f.type === "file" && Array.isArray(val) && val.length === 0) {
+        continue;
+      }
+      if (typeof val === "object" && val !== null) {
+        if (f.type === "url" || f.key === "ufCrm16QrCodeLink") {
+          const u = val.url || val.showUrl || val.src || val.defaultUrl;
+          if (u) return u;
+        }
+        if (val.title || val.name || val.value) {
+          return val.title || val.name || val.value;
+        }
+      }
+      return val;
+    }
   }
+  return undefined;
+}
 
-  function cleanNumericValue(val) {
-    if (val === null || val === undefined || val === "") return "";
-    if (typeof val === "number") return val;
-    const str = String(val).split("|")[0].trim();
-    return str.replace(/[^\d.-]/g, "");
-  }
+function cleanNumericValue(val) {
+  if (val === null || val === undefined || val === "") return "";
+  if (typeof val === "number") return val;
+  const str = String(val).split("|")[0].trim();
+  return str.replace(/[^\d.-]/g, "");
+}
 
 /**
  * Country Code Mapping & Resolution Utility
@@ -4299,941 +4299,887 @@ function resolveCountryCode(countryName) {
 
 
 
-  function formatDateForInput(val) {
-    if (!val) return "";
-    if (val instanceof Date) {
-      if (isNaN(val.getTime())) return "";
-      return val.toISOString().slice(0, 10);
-    }
-    const str = String(val).trim();
-    if (
-      str === "" ||
-      str === "N" ||
-      str === "false" ||
-      str === "0" ||
-      str === "0000-00-00" ||
-      str === "00.00.0000" ||
-      str === "01.01.1970" ||
-      str === "1970-01-01" ||
-      str === "null" ||
-      str === "undefined"
-    ) {
-      return "";
-    }
-    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
-      return str.slice(0, 10);
-    }
-    if (/^\d{2}\.\d{2}\.\d{4}/.test(str)) {
-      const parts = str.split(".");
-      return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
-    }
-    if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
-      const parts = str.split("/");
-      return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
-    }
-    if (/^\d{10,13}$/.test(str)) {
-      const d = new Date(Number(str.length === 10 ? str * 1000 : str));
-      if (!isNaN(d.getTime())) {
-        return d.toISOString().slice(0, 10);
-      }
-    }
-    const parsed = new Date(str);
-    if (!isNaN(parsed.getTime()) && parsed.getFullYear() > 1970 && parsed.getFullYear() < 2100) {
-      return parsed.toISOString().slice(0, 10);
-    }
+function formatDateForInput(val) {
+  if (!val) return "";
+  if (val instanceof Date) {
+    if (isNaN(val.getTime())) return "";
+    return val.toISOString().slice(0, 10);
+  }
+  const str = String(val).trim();
+  if (
+    str === "" ||
+    str === "N" ||
+    str === "false" ||
+    str === "0" ||
+    str === "0000-00-00" ||
+    str === "00.00.0000" ||
+    str === "01.01.1970" ||
+    str === "1970-01-01" ||
+    str === "null" ||
+    str === "undefined"
+  ) {
     return "";
   }
-
-  // ============================================================================
-  // 6c. AUTO-CALCULATION & FIELD AUTOMATION ENGINE
-  // ============================================================================
-  
-  function updateListingPublishReadinessBanner() {
-    if (!window.ReadinessEvaluator || typeof window.ReadinessEvaluator.evaluatePublishReadiness !== 'function') return;
-
-    const bannerEl = document.getElementById("readiness-banner");
-    if (bannerEl) bannerEl.remove();
-
-    const getVal = (id) => {
-      const el = document.getElementById(`field_${id}`) || document.querySelector(`[name="${id}"]`);
-      if (!el) return currentListing[id] || "";
-      if (el.dataset?.selectedRef) return el.dataset.selectedRef;
-      return el.value !== undefined ? String(el.value).trim() : "";
-    };
-
-    const isRent = (currentLayout === "rent");
-    const isOffPlan = (currentLayout === "off_plan");
-    const isOverseas = (currentLayout === "overseas_sale");
-
-    const item = {
-      transaction: isRent ? "RENT" : "SALE",
-      market_segment: isOffPlan ? "OFF_PLAN" : isOverseas ? "OVERSEAS" : "READY",
-      stock_source: currentLayout === "external_stock" ? "EXTERNAL" : "OWN",
-      property_type: getVal("ufCrm16PropertyType"),
-      property_sub_type: getVal("ufCrm16PropertySubType"),
-      built_up_area: getVal("ufCrm16Size") || getVal("UF_CRM_16_SIZE") || getVal("ufCrm16SqFt"),
-      bedrooms: getVal("ufCrm16_1791172802"),
-      bathrooms: getVal("ufCrm16_1791172828") || getVal("ufCrm16_1791172787"),
-      price: getVal("ufCrm16_1790154936"),
-      rental_frequency: getVal("ufCrm16RentFrequency") || getVal("ufCrm16HoaFrequency"),
-      cheques: getVal("ufCrm16_1792127520") || getVal("UF_CRM_16_1792127520") || getVal("ufCrm16Cheques"),
-      available_from: getVal("ufCrm16_1790155057") || getVal("UF_CRM_16_1790155057") || getVal("ufCrm16AvailableFrom"),
-      payment_plan_booking_pct: getVal("ufCrm16RePpBookingPct") || getVal("ufCrm16_1791172880"),
-      payment_plan_construction_pct: getVal("ufCrm16RePpConstructionPct"),
-      payment_plan_handover_pct: getVal("ufCrm16RePpHandoverPct") || getVal("ufCrm16_1791172893"),
-      payment_plan_post_handover_pct: getVal("ufCrm16RePpPostHandoverPct"),
-      expected_handover_date: getVal("ufCrm16CompletionDate"),
-      country: isOverseas ? (getVal("ufCrm16_1791172854") || "Spain") : "United Arab Emirates",
-      trakheesi_permit_no: getVal("ufCrm16_1791787455285") || getVal("UF_CRM_16_1791787455285") || getVal("ufCrm16ReraPermitNumber") || getVal("ufCrm16_1791172906"),
-      permit_expiry: getVal("ufCrm16_1791787502111") || getVal("UF_CRM_16_1791787502111") || getVal("ufCrm16PermitExpiryDate") || getVal("ufCrm16_1791172919"),
-      form_a_expiry: getVal("ufCrm16ExpirationDate") || getVal("UF_CRM_16_EXPIRATION_DATE") || getVal("ufCrm16FormAExpiryDate") || getVal("UF_CRM_16_FORM_A_EXPIRY_DATE"),
-      signed_form_a: getVal("ufCrm16_1791787381785") || getVal("UF_CRM_16_1791787381785") || getVal("ufCrm16FormA"),
-      photos: (currentListing?.ufCrm16Images || currentListing?.ufCrm16_1791881642219 || []).length || (document.querySelectorAll('.file-tile-wrap').length || 0),
-      title: getVal("title"),
-      description: getVal("ufCrm16SummaryDescription") || getVal("ufCrm16Description")
-    };
-
-    const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
-
-    const publishInputs = [
-      document.getElementById("field_ufCrm16PublishPortals"),
-      document.getElementById("field_UF_CRM_16_RE_PUBLISH_PORTALS"),
-      document.querySelector('[name="ufCrm16PublishPortals"]'),
-      document.querySelector('[name="UF_CRM_16_RE_PUBLISH_PORTALS"]')
-    ].filter(Boolean);
-
-    publishInputs.forEach(input => {
-      if (!result.ready) {
-        input.disabled = true;
-        input.checked = false;
-        input.title = `Publishing disabled: Complete missing portal specifications (${result.missing.join(', ')})`;
-        if (input.parentElement) {
-          input.parentElement.style.opacity = '0.6';
-          input.parentElement.style.cursor = 'not-allowed';
-        }
-      } else {
-        input.disabled = false;
-        input.title = 'Ready for portal syndication (100% score)';
-        if (input.parentElement) {
-          input.parentElement.style.opacity = '1';
-          input.parentElement.style.cursor = 'pointer';
-        }
-      }
-    });
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+    return str.slice(0, 10);
   }
-
-  function runListingAutomations(options = {}) {
-    const isInitialLoad = !!options.isInitialLoad;
-    const trigger = options.triggerField || "";
-
-    const getEl = (id) =>
-      document.getElementById(`field_${id}`) ||
-      (id === "ufCrm16Size"
-        ? document.getElementById("field_UF_CRM_16_SIZE") ||
-          document.getElementById("field_ufCrm16SqFt")
-        : id === "UF_CRM_16_SIZE" || id === "ufCrm16SqFt"
-          ? document.getElementById("field_ufCrm16Size") ||
-            document.getElementById("field_UF_CRM_16_SIZE") ||
-            document.getElementById("field_ufCrm16SqFt")
-          : null);
-    const getVal = (id) => {
-      const el = getEl(id);
-      if (!el) return "";
-      if (id === "ufCrm16ProjectName")
-        return el.value !== undefined ? String(el.value).trim() : "";
-      if (el.dataset && el.dataset.id !== undefined && el.dataset.id !== "")
-        return el.dataset.id;
-      return el.value !== undefined ? String(el.value).trim() : "";
-    };
-
-    const getNum = (id) => {
-      const val = getVal(id);
-      if (!val) return 0;
-      const clean = String(val)
-        .split("|")[0]
-        .replace(/[^\d.-]/g, "");
-      const num = parseFloat(clean);
-      return isNaN(num) ? 0 : num;
-    };
-
-    const getText = (id) => {
-      const el = getEl(id);
-      if (!el) return "";
-      if (el.tagName === "SELECT") {
-        const selected = el.options[el.selectedIndex];
-        return selected && selected.value ? selected.textContent.trim() : "";
-      }
-      return el.value !== undefined ? String(el.value).trim() : "";
-    };
-
-    const setVal = (id, newVal, markDirty = true) => {
-      const el = getEl(id);
-      if (!el) return false;
-      const currentVal = el.value !== undefined ? String(el.value).trim() : "";
-      const formattedNew = String(
-        newVal !== null && newVal !== undefined ? newVal : "",
-      ).trim();
-      if (currentVal !== formattedNew) {
-        el.value = formattedNew;
-        if (el.dataset) {
-          el.dataset.id = formattedNew;
-          if (!formattedNew) {
-            el.dataset.selectedId = "";
-            el.dataset.selectedRef = "";
-            el.dataset.selectedTitle = "";
-            el.title = "";
-          }
-        }
-        const container = el.closest(".lookup-container");
-        if (container) {
-          const clearBtn = container.querySelector(".lookup-clear-btn");
-          const openBtn = container.querySelector(".lookup-open-btn");
-          if (clearBtn) clearBtn.style.display = formattedNew ? "block" : "none";
-          if (openBtn && !formattedNew) openBtn.style.display = "none";
-        }
-        if (isInitialLoad) {
-          initialFormValues[id] = formattedNew;
-        } else if (markDirty) {
-          setDirty(true);
-        }
-        return true;
-      }
-      return false;
-    };
-
-    // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area (Read-Only Calculated, No Reverse Editing)
-    const price = getNum("ufCrm16_1790154936");
-    const sqft =
-      getNum("ufCrm16Size") ||
-      getNum("UF_CRM_16_SIZE") ||
-      getNum("ufCrm16SqFt");
-
-    if (price > 0 && sqft > 0) {
-      const calcPricePerSqFt = (price / sqft).toFixed(2);
-      setVal("ufCrm16ListPricePerSqFt", calcPricePerSqFt, !isInitialLoad);
-    }
-
-    // 2. FIELD MIRRORING: Project Name <-> Bayut Building Name
-    const projName = getVal("ufCrm16ProjectName");
-    const bayutBuilding = getVal("ufCrm16BuildingBayut");
-    if (trigger === "ufCrm16ProjectName") {
-      setVal("ufCrm16BuildingBayut", projName, !isInitialLoad);
-    } else if (trigger === "ufCrm16BuildingBayut") {
-      setVal("ufCrm16ProjectName", bayutBuilding, !isInitialLoad);
-    } else if (isInitialLoad) {
-      if (projName && !bayutBuilding) {
-        setVal("ufCrm16BuildingBayut", projName, false);
-      } else if (bayutBuilding && !projName) {
-        setVal("ufCrm16ProjectName", bayutBuilding, false);
-      }
-    }
-
-    // 3. FIELD MIRRORING: Community <-> Propertyfinder Community
-    const community = getVal("ufCrm16_1791173032");
-    const pfCommunity = getVal("ufCrm16CommunityPropertyfinder");
-    if (trigger === "ufCrm16_1791173032") {
-      setVal("ufCrm16CommunityPropertyfinder", community, !isInitialLoad);
-    } else if (trigger === "ufCrm16CommunityPropertyfinder") {
-      setVal("ufCrm16_1791173032", pfCommunity, !isInitialLoad);
-    } else if (isInitialLoad) {
-      if (community && !pfCommunity) {
-        setVal("ufCrm16CommunityPropertyfinder", community, false);
-      } else if (pfCommunity && !community) {
-        setVal("ufCrm16_1791173032", pfCommunity, false);
-      }
-    }
-
-    // 4. FIELD DERIVATION: Composite Title strictly from actual non-empty record fields
-    const beds = getVal("ufCrm16_1791172802");
-    const propType = getText("ufCrm16PropertyType");
-    const activeProject =
-      getText("ufCrm16ProjectName") || getVal("ufCrm16BuildingBayut");
-    const activeCommunity =
-      getVal("ufCrm16_1791173032") || getVal("ufCrm16CommunityPropertyfinder");
-    const city = getVal("ufCrm16_1791172815");
-
-    if (propType) {
-      let bedPrefix = "";
-      if (beds === "0" || String(beds).toLowerCase() === "studio") {
-        bedPrefix = "Studio";
-      } else if (beds) {
-        bedPrefix = `${beds} BR`;
-      }
-
-      const locParts = [activeProject, activeCommunity, city].filter(Boolean);
-      const locStr = locParts.length > 0 ? ` in ${locParts.join(", ")}` : "";
-      const autoTitle =
-        [bedPrefix, propType].filter(Boolean).join(" ") + locStr;
-
-      const currentTitle = getVal("title");
-      const currentPortalTitle = getVal("ufCrm16SummaryDescription");
-
-      if (!currentTitle || currentTitle.toLowerCase().startsWith("untitled")) {
-        setVal("title", autoTitle, !isInitialLoad);
-      }
-      if (!currentPortalTitle) {
-        setVal("ufCrm16SummaryDescription", autoTitle, !isInitialLoad);
-      }
-    }
-
-    // 5. FIELD DERIVATION: Address strictly from actual non-empty record fields
-    const currentAddress = getVal("ufCrm16_1791172676");
-    const unitNo = getVal("ufCrm16UnitNumber");
-    const street = getVal("ufCrm16Street");
-    if (
-      !currentAddress &&
-      (unitNo || activeProject || activeCommunity || street)
-    ) {
-      const addrParts = [
-        unitNo ? `Unit ${unitNo}` : "",
-        activeProject,
-        street,
-        activeCommunity,
-        city,
-      ].filter(Boolean);
-      if (addrParts.length > 0) {
-        setVal("ufCrm16_1791172676", addrParts.join(", "), !isInitialLoad);
-      }
-    }
-
-    // 6. FIELD DERIVATION: Portal Description composition from Intro, Features 1-10, and Outro Text
-    const introText = getVal("ufCrm16DescriptionIntroText");
-    const outroText = getVal("ufCrm16DescriptionOutroText");
-    const featuresList = [];
-    for (let i = 1; i <= 10; i++) {
-      const featVal =
-        getVal(`ufCrm_16_FEATURE_${i}`) || getVal(`ufCrm16Feature${i}`);
-      if (featVal) featuresList.push(`- ${featVal}`);
-    }
-    if (introText || featuresList.length > 0 || outroText) {
-      const compositeParts = [];
-      if (introText) compositeParts.push(introText);
-      if (featuresList.length > 0) compositeParts.push(featuresList.join("\n"));
-      if (outroText) compositeParts.push(outroText);
-      const autoDesc = compositeParts.join("\n\n");
-      const currentDesc = getVal("ufCrm16Description");
-      if (!currentDesc && autoDesc) {
-        setVal("ufCrm16Description", autoDesc, !isInitialLoad);
-      }
-    }
-
-    // 7. AUTO-POPULATION: Country Code from Country Name (fallback to blank)
-    const countryName = getVal("ufCrm16_1791172854") || getVal("UF_CRM_16_1791172854");
-    if (trigger === "ufCrm16_1791172854" || trigger === "UF_CRM_16_1791172854" || isInitialLoad) {
-      const countryCode = resolveCountryCode(countryName);
-      setVal("ufCrm16CountryCode", countryCode, !isInitialLoad);
+  if (/^\d{2}\.\d{2}\.\d{4}/.test(str)) {
+    const parts = str.split(".");
+    return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+  }
+  if (/^\d{2}\/\d{2}\/\d{4}/.test(str)) {
+    const parts = str.split("/");
+    return `${parts[2]}-${parts[1].padStart(2, "0")}-${parts[0].padStart(2, "0")}`;
+  }
+  if (/^\d{10,13}$/.test(str)) {
+    const d = new Date(Number(str.length === 10 ? str * 1000 : str));
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().slice(0, 10);
     }
   }
+  const parsed = new Date(str);
+  if (!isNaN(parsed.getTime()) && parsed.getFullYear() > 1970 && parsed.getFullYear() < 2100) {
+    return parsed.toISOString().slice(0, 10);
+  }
+  return "";
+}
 
-  function renderLookupField(f, rawVal, group, displayLabel) {
-    const entity = f.lookupEntity || resolveLookupEntity(f);
-    f.lookupEntity = entity;
-    const meta = getEntityMeta(f.type, f.key);
+// ============================================================================
+// 6c. AUTO-CALCULATION & FIELD AUTOMATION ENGINE
+// ============================================================================
 
-    const container = document.createElement("div");
-    container.className = "lookup-container";
+function updateListingPublishReadinessBanner() {
+  if (!window.ReadinessEvaluator || typeof window.ReadinessEvaluator.evaluatePublishReadiness !== 'function') return;
 
-    const wrap = document.createElement("div");
-    wrap.className = "lookup-input-wrap";
+  const bannerEl = document.getElementById("readiness-banner");
+  if (bannerEl) bannerEl.remove();
 
-    const icon = document.createElement("span");
-    icon.className = "lookup-icon";
-    icon.textContent = "";
+  const getVal = (id) => {
+    const el = document.getElementById(`field_${id}`) || document.querySelector(`[name="${id}"]`);
+    if (!el) return currentListing[id] || "";
+    if (el.dataset?.selectedRef) return el.dataset.selectedRef;
+    return el.value !== undefined ? String(el.value).trim() : "";
+  };
 
-    const input = document.createElement("input");
-    input.id = `field_${f.key}`;
-    input.name = f.key;
-    input.type = "text";
-    input.className = "form-control";
-    input.placeholder = f.placeholder || `Search ${displayLabel}...`;
-    input.autocomplete = "off";
+  const isRent = (currentLayout === "rent");
+  const isOffPlan = (currentLayout === "off_plan");
+  const isOverseas = (currentLayout === "overseas_sale");
 
-    let rawIdStr = "";
-    if (Array.isArray(rawVal)) {
-      rawIdStr = rawVal
-        .map((v) =>
-          typeof v === "object" ? v.id || v.ID || JSON.stringify(v) : v,
-        )
-        .join(", ");
-    } else if (rawVal && typeof rawVal === "object") {
-      rawIdStr = String(rawVal.id || rawVal.ID || rawVal.value || "");
-    } else if (rawVal !== null && rawVal !== undefined) {
-      rawIdStr = String(rawVal).replace(/^#/, "");
-    }
+  const item = {
+    transaction: isRent ? "RENT" : "SALE",
+    market_segment: isOffPlan ? "OFF_PLAN" : isOverseas ? "OVERSEAS" : "READY",
+    stock_source: currentLayout === "external_stock" ? "EXTERNAL" : "OWN",
+    property_type: getVal("ufCrm16PropertyType"),
+    property_sub_type: getVal("ufCrm16PropertySubType"),
+    built_up_area: getVal("ufCrm16Size") || getVal("UF_CRM_16_SIZE") || getVal("ufCrm16SqFt"),
+    bedrooms: getVal("ufCrm16_1791172802"),
+    bathrooms: getVal("ufCrm16_1791172828") || getVal("ufCrm16_1791172787"),
+    price: getVal("ufCrm16_1790154936"),
+    rental_frequency: getVal("ufCrm16RentFrequency") || getVal("ufCrm16HoaFrequency"),
+    cheques: getVal("ufCrm16_1792127520") || getVal("UF_CRM_16_1792127520") || getVal("ufCrm16Cheques"),
+    available_from: getVal("ufCrm16_1790155057") || getVal("UF_CRM_16_1790155057") || getVal("ufCrm16AvailableFrom"),
+    payment_plan_booking_pct: getVal("ufCrm16RePpBookingPct") || getVal("ufCrm16_1791172880"),
+    payment_plan_construction_pct: getVal("ufCrm16RePpConstructionPct"),
+    payment_plan_handover_pct: getVal("ufCrm16RePpHandoverPct") || getVal("ufCrm16_1791172893"),
+    payment_plan_post_handover_pct: getVal("ufCrm16RePpPostHandoverPct"),
+    expected_handover_date: getVal("ufCrm16CompletionDate"),
+    country: isOverseas ? (getVal("ufCrm16_1791172854") || "Spain") : "United Arab Emirates",
+    trakheesi_permit_no: getVal("ufCrm16_1791787455285") || getVal("UF_CRM_16_1791787455285") || getVal("ufCrm16ReraPermitNumber") || getVal("ufCrm16_1791172906"),
+    permit_expiry: getVal("ufCrm16_1791787502111") || getVal("UF_CRM_16_1791787502111") || getVal("ufCrm16PermitExpiryDate") || getVal("ufCrm16_1791172919"),
+    form_a_expiry: getVal("ufCrm16ExpirationDate") || getVal("UF_CRM_16_EXPIRATION_DATE") || getVal("ufCrm16FormAExpiryDate") || getVal("UF_CRM_16_FORM_A_EXPIRY_DATE"),
+    signed_form_a: getVal("ufCrm16_1791787381785") || getVal("UF_CRM_16_1791787381785") || getVal("ufCrm16FormA"),
+    photos: (currentListing?.ufCrm16Images || currentListing?.ufCrm16_1791881642219 || []).length || (document.querySelectorAll('.file-tile-wrap').length || 0),
+    title: getVal("title"),
+    description: getVal("ufCrm16SummaryDescription") || getVal("ufCrm16Description")
+  };
 
-    // Check if known title is already present on listing object
-    let knownTitle = "";
-    if (rawVal && typeof rawVal === "object" && (rawVal.title || rawVal.name)) {
-      knownTitle = rawVal.title || rawVal.name;
-    } else if (f.key === "companyId" && currentListing.company?.title) {
-      knownTitle = currentListing.company.title;
-    } else if (f.key === "contactId" && currentListing.contact?.name) {
-      knownTitle = currentListing.contact.name;
-    } else if (f.key === "assignedById" && currentListing.assignedBy?.name) {
-      knownTitle = currentListing.assignedBy.name;
-    } else if (f.key === "parentId1052" && currentListing.parentId1052?.title) {
-      knownTitle = currentListing.parentId1052.title;
-    } else if (
-      (f.key === "ufCrm16MasterProject" || f.key === "ufCrm16_1791173000") &&
-      currentListing.ufCrm16MasterProjectInfo
-    ) {
-      knownTitle = currentListing.ufCrm16MasterProjectInfo;
-    } else if (currentListing[`${f.key}_TITLE`]) {
-      knownTitle = currentListing[`${f.key}_TITLE`];
-    } else if (currentListing[`${f.key}_NAME`]) {
-      knownTitle = currentListing[`${f.key}_NAME`];
-    }
+  const result = window.ReadinessEvaluator.evaluatePublishReadiness(item);
 
-    const cleanId = rawIdStr
-      .replace(/^[A-Z]+_/, "")
-      .replace(/^DYNAMIC_\d+_/, "")
-      .replace(/^#/, "")
-      .trim();
-    const isNumericId = /^\d+$/.test(cleanId) && cleanId !== "0";
-    const hasValidId = isNumericId;
+  const publishInputs = [
+    document.getElementById("field_ufCrm16PublishPortals"),
+    document.getElementById("field_UF_CRM_16_RE_PUBLISH_PORTALS"),
+    document.querySelector('[name="ufCrm16PublishPortals"]'),
+    document.querySelector('[name="UF_CRM_16_RE_PUBLISH_PORTALS"]')
+  ].filter(Boolean);
 
-    if (knownTitle) {
-      input.value = knownTitle;
-      input.title = `${knownTitle} (ID: ${cleanId || rawIdStr})`;
-      input.dataset.selectedId = cleanId || rawIdStr;
-      input.dataset.selectedRef = rawIdStr;
-      input.dataset.selectedTitle = knownTitle;
-      input.dataset.id = cleanId || rawIdStr;
-    } else if (hasValidId) {
-      input.value = `#${cleanId}`;
-      input.title = `${meta.label} ID: ${cleanId}`;
-      input.dataset.selectedId = cleanId;
-      input.dataset.selectedRef = rawIdStr;
-      input.dataset.id = cleanId;
-    } else if (rawVal && typeof rawVal === "string" && rawVal.trim()) {
-      const plainTitle = rawVal.trim();
-      input.value = plainTitle;
-      input.title = plainTitle;
-      input.dataset.selectedTitle = plainTitle;
-      input.dataset.id = f.key === "ufCrm16ProjectName" ? plainTitle : "";
-      // Pre-resolve ID & CRM ref in background by title
-      fetch(
-        `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(plainTitle)}`,
-        {
-          headers: getCrmAuthHeaders(),
-        },
-      )
-        .then((r) => r.json())
-        .then((d) => {
-          const match = (d.items || []).find(
-            (it) =>
-              it.title && it.title.toLowerCase() === plainTitle.toLowerCase(),
-          );
-          if (match && input.value === plainTitle) {
-            input.dataset.selectedId = String(match.id);
-            input.dataset.selectedRef = match.crmRef || match.id;
-            input.dataset.selectedTitle = match.title;
-            if (f.key !== "ufCrm16ProjectName")
-              input.dataset.id = String(match.id);
-            input.title = `${match.title} (ID: ${match.id})`;
-            openBtn.style.display = "inline-flex";
-          }
-        })
-        .catch(() => {});
+  publishInputs.forEach(input => {
+    if (!result.ready) {
+      input.disabled = true;
+      input.checked = false;
+      input.title = `Publishing disabled: Complete missing portal specifications (${result.missing.join(', ')})`;
+      if (input.parentElement) {
+        input.parentElement.style.opacity = '0.6';
+        input.parentElement.style.cursor = 'not-allowed';
+      }
     } else {
-      input.value = "";
-      input.dataset.id = "";
-      input.dataset.selectedId = "";
-      input.dataset.selectedRef = "";
+      input.disabled = false;
+      input.title = 'Ready for portal syndication (100% score)';
+      if (input.parentElement) {
+        input.parentElement.style.opacity = '1';
+        input.parentElement.style.cursor = 'pointer';
+      }
+    }
+  });
+}
+
+function runListingAutomations(options = {}) {
+  const isInitialLoad = !!options.isInitialLoad;
+  const trigger = options.triggerField || "";
+
+  const getEl = (id) =>
+    document.getElementById(`field_${id}`) ||
+    (id === "ufCrm16Size"
+      ? document.getElementById("field_UF_CRM_16_SIZE") ||
+      document.getElementById("field_ufCrm16SqFt")
+      : id === "UF_CRM_16_SIZE" || id === "ufCrm16SqFt"
+        ? document.getElementById("field_ufCrm16Size") ||
+        document.getElementById("field_UF_CRM_16_SIZE") ||
+        document.getElementById("field_ufCrm16SqFt")
+        : null);
+  const getVal = (id) => {
+    const el = getEl(id);
+    if (!el) return "";
+    if (id === "ufCrm16ProjectName")
+      return el.value !== undefined ? String(el.value).trim() : "";
+    if (el.dataset && el.dataset.id !== undefined && el.dataset.id !== "")
+      return el.dataset.id;
+    return el.value !== undefined ? String(el.value).trim() : "";
+  };
+
+  const getNum = (id) => {
+    const val = getVal(id);
+    if (!val) return 0;
+    const clean = String(val)
+      .split("|")[0]
+      .replace(/[^\d.-]/g, "");
+    const num = parseFloat(clean);
+    return isNaN(num) ? 0 : num;
+  };
+
+  const getText = (id) => {
+    const el = getEl(id);
+    if (!el) return "";
+    if (el.tagName === "SELECT") {
+      const selected = el.options[el.selectedIndex];
+      return selected && selected.value ? selected.textContent.trim() : "";
+    }
+    return el.value !== undefined ? String(el.value).trim() : "";
+  };
+
+  const setVal = (id, newVal, markDirty = true) => {
+    const el = getEl(id);
+    if (!el) return false;
+    const currentVal = el.value !== undefined ? String(el.value).trim() : "";
+    const formattedNew = String(
+      newVal !== null && newVal !== undefined ? newVal : "",
+    ).trim();
+    if (currentVal !== formattedNew) {
+      el.value = formattedNew;
+      if (el.dataset) {
+        el.dataset.id = formattedNew;
+        if (!formattedNew) {
+          el.dataset.selectedId = "";
+          el.dataset.selectedRef = "";
+          el.dataset.selectedTitle = "";
+          el.title = "";
+        }
+      }
+      const container = el.closest(".lookup-container");
+      if (container) {
+        const clearBtn = container.querySelector(".lookup-clear-btn");
+        const openBtn = container.querySelector(".lookup-open-btn");
+        if (clearBtn) clearBtn.style.display = formattedNew ? "block" : "none";
+        if (openBtn && !formattedNew) openBtn.style.display = "none";
+      }
+      if (isInitialLoad) {
+        initialFormValues[id] = formattedNew;
+      } else if (markDirty) {
+        setDirty(true);
+      }
+      return true;
+    }
+    return false;
+  };
+
+  // 1. AUTO-CALCULATION: Price Per Sq Ft = Listing Price / Built-up Area (Read-Only Calculated, No Reverse Editing)
+  const price = getNum("ufCrm16_1790154936");
+  const sqft =
+    getNum("ufCrm16Size") ||
+    getNum("UF_CRM_16_SIZE") ||
+    getNum("ufCrm16SqFt");
+
+  if (price > 0 && sqft > 0) {
+    const calcPricePerSqFt = (price / sqft).toFixed(2);
+    setVal("ufCrm16ListPricePerSqFt", calcPricePerSqFt, !isInitialLoad);
+  }
+
+  // 2. FIELD MIRRORING: Project Name <-> Bayut Building Name
+  const projName = getVal("ufCrm16ProjectName");
+  const bayutBuilding = getVal("ufCrm16BuildingBayut");
+  if (trigger === "ufCrm16ProjectName") {
+    setVal("ufCrm16BuildingBayut", projName, !isInitialLoad);
+  } else if (trigger === "ufCrm16BuildingBayut") {
+    setVal("ufCrm16ProjectName", bayutBuilding, !isInitialLoad);
+  } else if (isInitialLoad) {
+    if (projName && !bayutBuilding) {
+      setVal("ufCrm16BuildingBayut", projName, false);
+    } else if (bayutBuilding && !projName) {
+      setVal("ufCrm16ProjectName", bayutBuilding, false);
+    }
+  }
+
+  // 3. FIELD MIRRORING: Community <-> Propertyfinder Community
+  const community = getVal("ufCrm16_1791173032");
+  const pfCommunity = getVal("ufCrm16CommunityPropertyfinder");
+  if (trigger === "ufCrm16_1791173032") {
+    setVal("ufCrm16CommunityPropertyfinder", community, !isInitialLoad);
+  } else if (trigger === "ufCrm16CommunityPropertyfinder") {
+    setVal("ufCrm16_1791173032", pfCommunity, !isInitialLoad);
+  } else if (isInitialLoad) {
+    if (community && !pfCommunity) {
+      setVal("ufCrm16CommunityPropertyfinder", community, false);
+    } else if (pfCommunity && !community) {
+      setVal("ufCrm16_1791173032", pfCommunity, false);
+    }
+  }
+
+  // 4. FIELD DERIVATION: Composite Title strictly from actual non-empty record fields
+  const beds = getVal("ufCrm16_1791172802");
+  const propType = getText("ufCrm16PropertyType");
+  const activeProject =
+    getText("ufCrm16ProjectName") || getVal("ufCrm16BuildingBayut");
+  const activeCommunity =
+    getVal("ufCrm16_1791173032") || getVal("ufCrm16CommunityPropertyfinder");
+  const city = getVal("ufCrm16_1791172815");
+
+  if (propType) {
+    let bedPrefix = "";
+    if (beds === "0" || String(beds).toLowerCase() === "studio") {
+      bedPrefix = "Studio";
+    } else if (beds) {
+      bedPrefix = `${beds} BR`;
     }
 
-    const clearBtn = document.createElement("button");
-    clearBtn.type = "button";
-    clearBtn.className = "lookup-clear-btn";
-    clearBtn.innerHTML = "&times;";
-    clearBtn.title = "Clear selection";
-    clearBtn.style.display = input.value ? "block" : "none";
+    const locParts = [activeProject, activeCommunity, city].filter(Boolean);
+    const locStr = locParts.length > 0 ? ` in ${locParts.join(", ")}` : "";
+    const autoTitle =
+      [bedPrefix, propType].filter(Boolean).join(" ") + locStr;
 
-    // Open button
-    const openBtn = document.createElement("button");
-    openBtn.type = "button";
-    openBtn.className = "lookup-open-btn";
-    openBtn.innerHTML = `<span>↗</span>`;
-    openBtn.title = `Open linked ${meta.label} in Bitrix24`;
-    const hasInitialOpen = !!(hasValidId || input.dataset.selectedId || input.dataset.selectedRef);
-    openBtn.style.display = hasInitialOpen ? "inline-flex" : "none";
-    if (hasInitialOpen) wrap.classList.add("has-open-btn");
+    const currentTitle = getVal("title");
+    const currentPortalTitle = getVal("ufCrm16SummaryDescription");
 
-    // Fetch title in background via /api/lookup or Bitrix fallback
-    if (hasValidId && !knownTitle) {
-      fetch(
-        `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`,
-        {
-          headers: getCrmAuthHeaders(),
-        },
+    if (!currentTitle || currentTitle.toLowerCase().startsWith("untitled")) {
+      setVal("title", autoTitle, !isInitialLoad);
+    }
+    if (!currentPortalTitle) {
+      setVal("ufCrm16SummaryDescription", autoTitle, !isInitialLoad);
+    }
+  }
+
+  // 5. FIELD DERIVATION: Address strictly from actual non-empty record fields
+  const currentAddress = getVal("ufCrm16_1791172676");
+  const unitNo = getVal("ufCrm16UnitNumber");
+  const street = getVal("ufCrm16Street");
+  if (
+    !currentAddress &&
+    (unitNo || activeProject || activeCommunity || street)
+  ) {
+    const addrParts = [
+      unitNo ? `Unit ${unitNo}` : "",
+      activeProject,
+      street,
+      activeCommunity,
+      city,
+    ].filter(Boolean);
+    if (addrParts.length > 0) {
+      setVal("ufCrm16_1791172676", addrParts.join(", "), !isInitialLoad);
+    }
+  }
+
+  // 6. FIELD DERIVATION: Portal Description composition from Intro, Features 1-10, and Outro Text
+  const introText = getVal("ufCrm16DescriptionIntroText");
+  const outroText = getVal("ufCrm16DescriptionOutroText");
+  const featuresList = [];
+  for (let i = 1; i <= 10; i++) {
+    const featVal =
+      getVal(`ufCrm_16_FEATURE_${i}`) || getVal(`ufCrm16Feature${i}`);
+    if (featVal) featuresList.push(`- ${featVal}`);
+  }
+  if (introText || featuresList.length > 0 || outroText) {
+    const compositeParts = [];
+    if (introText) compositeParts.push(introText);
+    if (featuresList.length > 0) compositeParts.push(featuresList.join("\n"));
+    if (outroText) compositeParts.push(outroText);
+    const autoDesc = compositeParts.join("\n\n");
+    const currentDesc = getVal("ufCrm16Description");
+    if (!currentDesc && autoDesc) {
+      setVal("ufCrm16Description", autoDesc, !isInitialLoad);
+    }
+  }
+
+  // 7. AUTO-POPULATION: Country Code from Country Name (fallback to blank)
+  const countryName = getVal("ufCrm16_1791172854") || getVal("UF_CRM_16_1791172854");
+  if (trigger === "ufCrm16_1791172854" || trigger === "UF_CRM_16_1791172854" || isInitialLoad) {
+    const countryCode = resolveCountryCode(countryName);
+    setVal("ufCrm16CountryCode", countryCode, !isInitialLoad);
+  }
+}
+
+function renderLookupField(f, rawVal, group, displayLabel) {
+  const entity = f.lookupEntity || resolveLookupEntity(f);
+  f.lookupEntity = entity;
+  const meta = getEntityMeta(f.type, f.key);
+
+  const container = document.createElement("div");
+  container.className = "lookup-container";
+
+  const wrap = document.createElement("div");
+  wrap.className = "lookup-input-wrap";
+
+  const icon = document.createElement("span");
+  icon.className = "lookup-icon";
+  icon.textContent = "";
+
+  const input = document.createElement("input");
+  input.id = `field_${f.key}`;
+  input.name = f.key;
+  input.type = "text";
+  input.className = "form-control";
+  input.placeholder = f.placeholder || `Search ${displayLabel}...`;
+  input.autocomplete = "off";
+
+  let rawIdStr = "";
+  if (Array.isArray(rawVal)) {
+    rawIdStr = rawVal
+      .map((v) =>
+        typeof v === "object" ? v.id || v.ID || JSON.stringify(v) : v,
       )
-        .then((r) => r.json())
-        .then((d) => {
-          const match = (d.items || []).find(
-            (it) => String(it.id) === cleanId || it.crmRef === rawIdStr,
-          );
+      .join(", ");
+  } else if (rawVal && typeof rawVal === "object") {
+    rawIdStr = String(rawVal.id || rawVal.ID || rawVal.value || "");
+  } else if (rawVal !== null && rawVal !== undefined) {
+    rawIdStr = String(rawVal).replace(/^#/, "");
+  }
+
+  // Check if known title is already present on listing object
+  let knownTitle = "";
+  if (rawVal && typeof rawVal === "object" && (rawVal.title || rawVal.name)) {
+    knownTitle = rawVal.title || rawVal.name;
+  } else if (f.key === "companyId" && currentListing.company?.title) {
+    knownTitle = currentListing.company.title;
+  } else if (f.key === "contactId" && currentListing.contact?.name) {
+    knownTitle = currentListing.contact.name;
+  } else if (f.key === "assignedById" && currentListing.assignedBy?.name) {
+    knownTitle = currentListing.assignedBy.name;
+  } else if (f.key === "parentId1052" && currentListing.parentId1052?.title) {
+    knownTitle = currentListing.parentId1052.title;
+  } else if (
+    (f.key === "ufCrm16MasterProject" || f.key === "ufCrm16_1791173000") &&
+    currentListing.ufCrm16MasterProjectInfo
+  ) {
+    knownTitle = currentListing.ufCrm16MasterProjectInfo;
+  } else if (currentListing[`${f.key}_TITLE`]) {
+    knownTitle = currentListing[`${f.key}_TITLE`];
+  } else if (currentListing[`${f.key}_NAME`]) {
+    knownTitle = currentListing[`${f.key}_NAME`];
+  }
+
+  const cleanId = rawIdStr
+    .replace(/^[A-Z]+_/, "")
+    .replace(/^DYNAMIC_\d+_/, "")
+    .replace(/^#/, "")
+    .trim();
+  const isNumericId = /^\d+$/.test(cleanId) && cleanId !== "0";
+  const hasValidId = isNumericId;
+
+  if (knownTitle) {
+    input.value = knownTitle;
+    input.title = `${knownTitle} (ID: ${cleanId || rawIdStr})`;
+    input.dataset.selectedId = cleanId || rawIdStr;
+    input.dataset.selectedRef = rawIdStr;
+    input.dataset.selectedTitle = knownTitle;
+    input.dataset.id = cleanId || rawIdStr;
+  } else if (hasValidId) {
+    input.value = `#${cleanId}`;
+    input.title = `${meta.label} ID: ${cleanId}`;
+    input.dataset.selectedId = cleanId;
+    input.dataset.selectedRef = rawIdStr;
+    input.dataset.id = cleanId;
+  } else if (rawVal && typeof rawVal === "string" && rawVal.trim()) {
+    const plainTitle = rawVal.trim();
+    input.value = plainTitle;
+    input.title = plainTitle;
+    input.dataset.selectedTitle = plainTitle;
+    input.dataset.id = f.key === "ufCrm16ProjectName" ? plainTitle : "";
+    // Pre-resolve ID & CRM ref in background by title
+    fetch(
+      `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(plainTitle)}`,
+      {
+        headers: getCrmAuthHeaders(),
+      },
+    )
+      .then((r) => r.json())
+      .then((d) => {
+        const match = (d.items || []).find(
+          (it) =>
+            it.title && it.title.toLowerCase() === plainTitle.toLowerCase(),
+        );
+        if (match && input.value === plainTitle) {
+          input.dataset.selectedId = String(match.id);
+          input.dataset.selectedRef = match.crmRef || match.id;
+          input.dataset.selectedTitle = match.title;
+          if (f.key !== "ufCrm16ProjectName")
+            input.dataset.id = String(match.id);
+          input.title = `${match.title} (ID: ${match.id})`;
+          openBtn.style.display = "inline-flex";
+        }
+      })
+      .catch(() => { });
+  } else {
+    input.value = "";
+    input.dataset.id = "";
+    input.dataset.selectedId = "";
+    input.dataset.selectedRef = "";
+  }
+
+  const clearBtn = document.createElement("button");
+  clearBtn.type = "button";
+  clearBtn.className = "lookup-clear-btn";
+  clearBtn.innerHTML = "&times;";
+  clearBtn.title = "Clear selection";
+  clearBtn.style.display = input.value ? "block" : "none";
+
+  // Open button
+  const openBtn = document.createElement("button");
+  openBtn.type = "button";
+  openBtn.className = "lookup-open-btn";
+  openBtn.innerHTML = `<span>↗</span>`;
+  openBtn.title = `Open linked ${meta.label} in Bitrix24`;
+  const hasInitialOpen = !!(hasValidId || input.dataset.selectedId || input.dataset.selectedRef);
+  openBtn.style.display = hasInitialOpen ? "inline-flex" : "none";
+  if (hasInitialOpen) wrap.classList.add("has-open-btn");
+
+  // Fetch title in background via /api/lookup or Bitrix fallback
+  if (hasValidId && !knownTitle) {
+    fetch(
+      `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanId)}`,
+      {
+        headers: getCrmAuthHeaders(),
+      },
+    )
+      .then((r) => r.json())
+      .then((d) => {
+        const match = (d.items || []).find(
+          (it) => String(it.id) === cleanId || it.crmRef === rawIdStr,
+        );
+        if (
+          match &&
+          (input.dataset.id === cleanId ||
+            !input.value ||
+            input.value === `#${cleanId}`)
+        ) {
+          input.value = match.title;
+          input.title = `${match.title} (ID: ${cleanId})`;
+          input.dataset.selectedRef = match.crmRef || rawIdStr;
+          input.dataset.selectedTitle = match.title;
+          input.dataset.selectedId = String(match.id);
+          input.dataset.id = String(match.id);
+          clearBtn.style.display = "block";
+          openBtn.style.display = "inline-flex";
+          if (f.key === "ufCrm16_1791172932" || f.key === "companyId") {
+            const devNameInput = document.getElementById(
+              "field_ufCrm16DeveloperName",
+            );
+            if (devNameInput && !devNameInput.value) {
+              devNameInput.value = match.title;
+            }
+          }
+        }
+      })
+      .catch(() => {
+        fetchEntityTitle(f.type, cleanId, f.key, (resolvedTitle) => {
           if (
-            match &&
+            resolvedTitle &&
             (input.dataset.id === cleanId ||
               !input.value ||
               input.value === `#${cleanId}`)
           ) {
-            input.value = match.title;
-            input.title = `${match.title} (ID: ${cleanId})`;
-            input.dataset.selectedRef = match.crmRef || rawIdStr;
-            input.dataset.selectedTitle = match.title;
-            input.dataset.selectedId = String(match.id);
-            input.dataset.id = String(match.id);
+            input.value = resolvedTitle;
+            input.title = `${resolvedTitle} (ID: ${cleanId})`;
+            input.dataset.selectedTitle = resolvedTitle;
             clearBtn.style.display = "block";
             openBtn.style.display = "inline-flex";
-            if (f.key === "ufCrm16_1791172932" || f.key === "companyId") {
-              const devNameInput = document.getElementById(
-                "field_ufCrm16DeveloperName",
-              );
-              if (devNameInput && !devNameInput.value) {
-                devNameInput.value = match.title;
-              }
-            }
           }
-        })
-        .catch(() => {
-          fetchEntityTitle(f.type, cleanId, f.key, (resolvedTitle) => {
-            if (
-              resolvedTitle &&
-              (input.dataset.id === cleanId ||
-                !input.value ||
-                input.value === `#${cleanId}`)
-            ) {
-              input.value = resolvedTitle;
-              input.title = `${resolvedTitle} (ID: ${cleanId})`;
-              input.dataset.selectedTitle = resolvedTitle;
-              clearBtn.style.display = "block";
-              openBtn.style.display = "inline-flex";
-            }
-          });
         });
-    }
+      });
+  }
 
-    const dropdown = document.createElement("div");
-    dropdown.className = "lookup-dropdown";
+  const dropdown = document.createElement("div");
+  dropdown.className = "lookup-dropdown";
 
-    wrap.appendChild(icon);
-    wrap.appendChild(input);
-    wrap.appendChild(clearBtn);
-    wrap.appendChild(openBtn);
-    container.appendChild(wrap);
-    container.appendChild(dropdown);
+  wrap.appendChild(icon);
+  wrap.appendChild(input);
+  wrap.appendChild(clearBtn);
+  wrap.appendChild(openBtn);
+  container.appendChild(wrap);
+  container.appendChild(dropdown);
 
-    let debounceTimer = null;
+  let debounceTimer = null;
 
-    function closeDropdown() {
-      dropdown.style.display = "none";
+  function closeDropdown() {
+    dropdown.style.display = "none";
+    dropdown.classList.remove("dropup");
+    container.classList.remove("has-open-dropdown");
+    group.classList.remove("has-open-dropdown");
+    const card = container.closest(".section-card");
+    if (card) card.classList.remove("has-open-dropdown");
+  }
+
+  function adjustDropdownPosition() {
+    const rect = wrap.getBoundingClientRect();
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    if (spaceBelow < 250 && spaceAbove > spaceBelow) {
+      dropdown.classList.add("dropup");
+    } else {
       dropdown.classList.remove("dropup");
-      container.classList.remove("has-open-dropdown");
-      group.classList.remove("has-open-dropdown");
-      const card = container.closest(".section-card");
-      if (card) card.classList.remove("has-open-dropdown");
     }
+  }
 
-    function adjustDropdownPosition() {
-      const rect = wrap.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
-      if (spaceBelow < 250 && spaceAbove > spaceBelow) {
-        dropdown.classList.add("dropup");
-      } else {
-        dropdown.classList.remove("dropup");
+  function openDropdown() {
+    adjustDropdownPosition();
+    dropdown.style.display = "block";
+    container.classList.add("has-open-dropdown");
+    group.classList.add("has-open-dropdown");
+    const card = container.closest(".section-card");
+    if (card) card.classList.add("has-open-dropdown");
+  }
+
+  async function queryLookup(query = "", refresh = false) {
+    dropdown.innerHTML =
+      '<div class="lookup-spinner">Searching Bitrix24 records...</div>';
+    openDropdown();
+
+    try {
+      const cleanQuery = String(query).replace(/^#/, "").trim();
+      const refreshParam = refresh ? "&refresh=1" : "";
+      let extraParams = "";
+      const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
+      if (projInput?.dataset?.selectedId) extraParams += `&project_id=${encodeURIComponent(projInput.dataset.selectedId)}`;
+      const mpInput = document.getElementById("field_ufCrm16MasterProject") || document.getElementById("field_ufCrm16_1791173000");
+      if (mpInput?.dataset?.selectedId) extraParams += `&master_project_id=${encodeURIComponent(mpInput.dataset.selectedId)}`;
+      const propInput = document.getElementById("field_parentId1052") || document.getElementById("field_UF_CRM_PROPERTY");
+      if (propInput?.dataset?.selectedId) extraParams += `&property_id=${encodeURIComponent(propInput.dataset.selectedId)}`;
+      const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
+      if (layoutInput?.dataset?.selectedId) extraParams += `&layout_id=${encodeURIComponent(layoutInput.dataset.selectedId)}`;
+      const devInput = document.getElementById("field_companyId") || document.getElementById("field_ufCrm16_1791172932");
+      if (devInput?.dataset?.selectedId) extraParams += `&developer_id=${encodeURIComponent(devInput.dataset.selectedId)}`;
+
+      const res = await fetch(
+        `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanQuery)}${refreshParam}${extraParams}`,
+        {
+          headers: getCrmAuthHeaders(),
+        },
+      );
+      const data = await res.json();
+      const items = data.items || [];
+
+      dropdown.innerHTML = "";
+
+      const relatedCount = items.filter((it) => it.isRelated).length;
+      const countText =
+        relatedCount > 0
+          ? `${items.length} records (${relatedCount} related)`
+          : `${items.length} records`;
+
+      const header = document.createElement("div");
+      header.className = "lookup-dropdown-header";
+      header.innerHTML = `<span>${countText}</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">Refresh</button>`;
+      const refreshBtnEl = header.querySelector(".lookup-refresh-btn");
+      if (refreshBtnEl) {
+        refreshBtnEl.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          queryLookup(input.value.trim(), true);
+        });
       }
-    }
+      dropdown.appendChild(header);
 
-    function openDropdown() {
-      adjustDropdownPosition();
-      dropdown.style.display = "block";
-      container.classList.add("has-open-dropdown");
-      group.classList.add("has-open-dropdown");
-      const card = container.closest(".section-card");
-      if (card) card.classList.add("has-open-dropdown");
-    }
+      if (items.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "lookup-item";
+        empty.style.cssText = "color: #828b95; cursor: default;";
+        empty.textContent = "No matching records found";
+        dropdown.appendChild(empty);
+        adjustDropdownPosition();
+        return;
+      }
 
-    async function queryLookup(query = "", refresh = false) {
-      dropdown.innerHTML =
-        '<div class="lookup-spinner">Searching Bitrix24 records...</div>';
-      openDropdown();
-
-      try {
-        const cleanQuery = String(query).replace(/^#/, "").trim();
-        const refreshParam = refresh ? "&refresh=1" : "";
-        let extraParams = "";
-        const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
-        if (projInput?.dataset?.selectedId) extraParams += `&project_id=${encodeURIComponent(projInput.dataset.selectedId)}`;
-        const mpInput = document.getElementById("field_ufCrm16MasterProject") || document.getElementById("field_ufCrm16_1791173000");
-        if (mpInput?.dataset?.selectedId) extraParams += `&master_project_id=${encodeURIComponent(mpInput.dataset.selectedId)}`;
-        const propInput = document.getElementById("field_parentId1052") || document.getElementById("field_UF_CRM_PROPERTY");
-        if (propInput?.dataset?.selectedId) extraParams += `&property_id=${encodeURIComponent(propInput.dataset.selectedId)}`;
-        const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
-        if (layoutInput?.dataset?.selectedId) extraParams += `&layout_id=${encodeURIComponent(layoutInput.dataset.selectedId)}`;
-        const devInput = document.getElementById("field_companyId") || document.getElementById("field_ufCrm16_1791172932");
-        if (devInput?.dataset?.selectedId) extraParams += `&developer_id=${encodeURIComponent(devInput.dataset.selectedId)}`;
-
-        const res = await fetch(
-          `/api/lookup?entity=${encodeURIComponent(entity)}&q=${encodeURIComponent(cleanQuery)}${refreshParam}${extraParams}`,
-          {
-            headers: getCrmAuthHeaders(),
-          },
-        );
-        const data = await res.json();
-        const items = data.items || [];
-
-        dropdown.innerHTML = "";
-
-        const relatedCount = items.filter((it) => it.isRelated).length;
-        const countText =
-          relatedCount > 0
-            ? `${items.length} records (${relatedCount} related)`
-            : `${items.length} records`;
-
-        const header = document.createElement("div");
-        header.className = "lookup-dropdown-header";
-        header.innerHTML = `<span>${countText}</span><button type="button" class="lookup-refresh-btn" title="Refresh records from Bitrix24">Refresh</button>`;
-        const refreshBtnEl = header.querySelector(".lookup-refresh-btn");
-        if (refreshBtnEl) {
-          refreshBtnEl.addEventListener("click", (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            queryLookup(input.value.trim(), true);
-          });
-        }
-        dropdown.appendChild(header);
-
-        if (items.length === 0) {
-          const empty = document.createElement("div");
-          empty.className = "lookup-item";
-          empty.style.cssText = "color: #828b95; cursor: default;";
-          empty.textContent = "No matching records found";
-          dropdown.appendChild(empty);
-          adjustDropdownPosition();
-          return;
+      let seenNonRelated = false;
+      items.forEach((item) => {
+        if (relatedCount > 0 && !item.isRelated && !seenNonRelated) {
+          seenNonRelated = true;
+          const divider = document.createElement("div");
+          divider.className = "lookup-divider-header";
+          divider.textContent = "Other Records";
+          dropdown.appendChild(divider);
         }
 
-        let seenNonRelated = false;
-        items.forEach((item) => {
-          if (relatedCount > 0 && !item.isRelated && !seenNonRelated) {
-            seenNonRelated = true;
-            const divider = document.createElement("div");
-            divider.className = "lookup-divider-header";
-            divider.textContent = "Other Records";
-            dropdown.appendChild(divider);
+        const itemEl = document.createElement("div");
+        itemEl.className = "lookup-item";
+        if (item.isRelated) itemEl.classList.add("is-related");
+
+        const titleSpan = document.createElement("span");
+        titleSpan.className = "lookup-item-title";
+        if (item.isRelated) {
+          const badge = document.createElement("span");
+          badge.className = "lookup-related-badge";
+          badge.textContent = `Related${item.relationReason ? ": " + item.relationReason : ""}`;
+          titleSpan.appendChild(badge);
+        }
+        const textNode = document.createTextNode(item.title);
+        titleSpan.appendChild(textNode);
+
+        const idSpan = document.createElement("span");
+        idSpan.className = "lookup-item-id";
+        idSpan.textContent = `#${item.id}`;
+
+        itemEl.appendChild(titleSpan);
+        itemEl.appendChild(idSpan);
+
+        const selectItem = (item) => {
+          if (!item) return;
+          clearTimeout(debounceTimer);
+          input.value = item.title;
+          input.dataset.id = String(item.id);
+          input.dataset.selectedId = String(item.id);
+          input.dataset.selectedTitle = item.title;
+          input.dataset.selectedRef = item.crmRef || item.id;
+          input.dataset.itemData = JSON.stringify(item);
+          input.title = `${item.title} (ID: ${item.id})`;
+          clearBtn.style.display = "block";
+          openBtn.style.display = "inline-flex";
+          closeDropdown();
+
+          // Auto-populate companion fields
+          if (
+            (f.key === "companyId" || f.key === "ufCrm16_1791172932") &&
+            item.title
+          ) {
+            const devNameInput = document.getElementById(
+              "field_ufCrm16DeveloperName",
+            );
+            if (devNameInput) devNameInput.value = item.title;
           }
+          if (
+            (f.key === "ufCrm16ProjectName" ||
+              f.key === "ufCrm16_1791173131") &&
+            item.title
+          ) {
+            const bayutInput = document.getElementById(
+              "field_ufCrm16BuildingBayut",
+            );
+            if (bayutInput)
+              bayutInput.value = item.title;
 
-          const itemEl = document.createElement("div");
-          itemEl.className = "lookup-item";
-          if (item.isRelated) itemEl.classList.add("is-related");
-
-          const titleSpan = document.createElement("span");
-          titleSpan.className = "lookup-item-title";
-          if (item.isRelated) {
-            const badge = document.createElement("span");
-            badge.className = "lookup-related-badge";
-            badge.textContent = `Related${item.relationReason ? ": " + item.relationReason : ""}`;
-            titleSpan.appendChild(badge);
-          }
-          const textNode = document.createTextNode(item.title);
-          titleSpan.appendChild(textNode);
-
-          const idSpan = document.createElement("span");
-          idSpan.className = "lookup-item-id";
-          idSpan.textContent = `#${item.id}`;
-
-          itemEl.appendChild(titleSpan);
-          itemEl.appendChild(idSpan);
-
-          const selectItem = (item) => {
-            if (!item) return;
-            clearTimeout(debounceTimer);
-            input.value = item.title;
-            input.dataset.id = String(item.id);
-            input.dataset.selectedId = String(item.id);
-            input.dataset.selectedTitle = item.title;
-            input.dataset.selectedRef = item.crmRef || item.id;
-            input.dataset.itemData = JSON.stringify(item);
-            input.title = `${item.title} (ID: ${item.id})`;
-            clearBtn.style.display = "block";
-            openBtn.style.display = "inline-flex";
-            closeDropdown();
-
-            // Auto-populate companion fields
-            if (
-              (f.key === "companyId" || f.key === "ufCrm16_1791172932") &&
-              item.title
-            ) {
-              const devNameInput = document.getElementById(
-                "field_ufCrm16DeveloperName",
-              );
-              if (devNameInput) devNameInput.value = item.title;
-            }
-            if (
-              (f.key === "ufCrm16ProjectName" ||
-                f.key === "ufCrm16_1791173131") &&
-              item.title
-            ) {
-              const bayutInput = document.getElementById(
-                "field_ufCrm16BuildingBayut",
-              );
-              if (bayutInput)
-                bayutInput.value = item.title;
-
-              // Auto-link Master Project if Project has a parent Master Project (parentId1040)
-              if (item.parentId1040) {
-                const mpInput =
-                  document.getElementById("field_ufCrm16MasterProject") ||
-                  document.getElementById("field_ufCrm16_1791173000");
-                if (
-                  mpInput &&
-                  (!mpInput.value || !mpInput.dataset.selectedId)
-                ) {
-                  fetch(
-                    `/api/lookup?entity=master_project&q=${item.parentId1040}`,
-                    {
-                      headers: getCrmAuthHeaders(),
-                    },
-                  )
-                    .then((r) => r.json())
-                    .then((d) => {
-                      const mpMatch = (d.items || []).find(
-                        (it) => String(it.id) === String(item.parentId1040),
-                      );
-                      if (mpMatch && mpInput) {
-                        mpInput.value = mpMatch.title;
-                        mpInput.dataset.selectedId = String(mpMatch.id);
-                        mpInput.dataset.selectedRef =
-                          mpMatch.crmRef || String(mpMatch.id);
-                        mpInput.dataset.selectedTitle = mpMatch.title;
-                        mpInput.dataset.id = String(mpMatch.id);
-                        mpInput.title = `${mpMatch.title} (ID: ${mpMatch.id})`;
-                        const mpClear =
-                          mpInput.parentElement?.querySelector(
-                            ".lookup-clear-btn",
-                          );
-                        const mpOpen =
-                          mpInput.parentElement?.querySelector(
-                            ".lookup-open-btn",
-                          );
-                        if (mpClear) mpClear.style.display = "block";
-                        if (mpOpen) mpOpen.style.display = "inline-flex";
-                      }
-                    })
-                    .catch(() => {});
-                }
+            // Auto-link Master Project if Project has a parent Master Project (parentId1040)
+            if (item.parentId1040) {
+              const mpInput =
+                document.getElementById("field_ufCrm16MasterProject") ||
+                document.getElementById("field_ufCrm16_1791173000");
+              if (
+                mpInput &&
+                (!mpInput.value || !mpInput.dataset.selectedId)
+              ) {
+                fetch(
+                  `/api/lookup?entity=master_project&q=${item.parentId1040}`,
+                  {
+                    headers: getCrmAuthHeaders(),
+                  },
+                )
+                  .then((r) => r.json())
+                  .then((d) => {
+                    const mpMatch = (d.items || []).find(
+                      (it) => String(it.id) === String(item.parentId1040),
+                    );
+                    if (mpMatch && mpInput) {
+                      mpInput.value = mpMatch.title;
+                      mpInput.dataset.selectedId = String(mpMatch.id);
+                      mpInput.dataset.selectedRef =
+                        mpMatch.crmRef || String(mpMatch.id);
+                      mpInput.dataset.selectedTitle = mpMatch.title;
+                      mpInput.dataset.id = String(mpMatch.id);
+                      mpInput.title = `${mpMatch.title} (ID: ${mpMatch.id})`;
+                      const mpClear =
+                        mpInput.parentElement?.querySelector(
+                          ".lookup-clear-btn",
+                        );
+                      const mpOpen =
+                        mpInput.parentElement?.querySelector(
+                          ".lookup-open-btn",
+                        );
+                      if (mpClear) mpClear.style.display = "block";
+                      if (mpOpen) mpOpen.style.display = "inline-flex";
+                    }
+                  })
+                  .catch(() => { });
               }
             }
+          }
 
-            // Auto-link Project, Layout, Master Project if Property selected with cascade prompt
-            if (f.key === "parentId1052" || f.key === "UF_CRM_PROPERTY") {
-              const curProj = document.getElementById("field_ufCrm16ProjectName")?.dataset?.selectedId || document.getElementById("field_ufCrm16ProjectName")?.value || "";
-              const curDev = document.getElementById("field_companyId")?.dataset?.selectedId || document.getElementById("field_companyId")?.value || "";
+          // Auto-link Project, Layout, Master Project if Property selected with cascade prompt
+          if (f.key === "parentId1052" || f.key === "UF_CRM_PROPERTY") {
+            const curProj = document.getElementById("field_ufCrm16ProjectName")?.dataset?.selectedId || document.getElementById("field_ufCrm16ProjectName")?.value || "";
+            const curDev = document.getElementById("field_companyId")?.dataset?.selectedId || document.getElementById("field_companyId")?.value || "";
 
-              const shouldPrompt = (
-                (item.parentId1044 && curProj && String(curProj) !== String(item.parentId1044)) ||
-                (item.companyId && curDev && String(curDev) !== String(item.companyId))
-              );
+            const shouldPrompt = (
+              (item.parentId1044 && curProj && String(curProj) !== String(item.parentId1044)) ||
+              (item.companyId && curDev && String(curDev) !== String(item.companyId))
+            );
 
-              const applyUnitParents = (includeProjectAndDev = true) => {
-                if (includeProjectAndDev) {
-                  if (item.parentId1044) {
-                    const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
-                    fetch(`/api/lookup?entity=project&q=${item.parentId1044}`, { headers: getCrmAuthHeaders() })
-                      .then(r => r.json())
-                      .then(d => {
-                        const match = (d.items || []).find(it => String(it.id) === String(item.parentId1044));
-                        if (match && projInput) {
-                          projInput.value = match.title;
-                          projInput.dataset.selectedId = String(match.id);
-                          projInput.dataset.selectedRef = match.crmRef || String(match.id);
-                          projInput.dataset.selectedTitle = match.title;
-                          projInput.dataset.id = String(match.id);
-                          projInput.title = `${match.title} (ID: ${match.id})`;
-                          const pClear = projInput.parentElement?.querySelector(".lookup-clear-btn");
-                          const pOpen = projInput.parentElement?.querySelector(".lookup-open-btn");
-                          if (pClear) pClear.style.display = "block";
-                          if (pOpen) pOpen.style.display = "inline-flex";
-                          setDirty(true);
-                        }
-                      }).catch(() => {});
-                  }
-                  if (item.companyId) {
-                    const devInput = document.getElementById("field_companyId") || document.getElementById("field_ufCrm16_1791172932");
-                    fetch(`/api/lookup?entity=developer&q=${item.companyId}`, { headers: getCrmAuthHeaders() })
-                      .then(r => r.json())
-                      .then(d => {
-                        const match = (d.items || []).find(it => String(it.id) === String(item.companyId));
-                        if (match && devInput) {
-                          devInput.value = match.title;
-                          devInput.dataset.selectedId = String(match.id);
-                          devInput.dataset.selectedRef = match.crmRef || String(match.id);
-                          devInput.dataset.selectedTitle = match.title;
-                          devInput.dataset.id = String(match.id);
-                          devInput.title = `${match.title} (ID: ${match.id})`;
-                          const dClear = devInput.parentElement?.querySelector(".lookup-clear-btn");
-                          const dOpen = devInput.parentElement?.querySelector(".lookup-open-btn");
-                          if (dClear) dClear.style.display = "block";
-                          if (dOpen) dOpen.style.display = "inline-flex";
-                          setDirty(true);
-                        }
-                      }).catch(() => {});
-                  }
-                }
-                if (item.parentId1048) {
-                  const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
-                  fetch(`/api/lookup?entity=layout&q=${item.parentId1048}`, { headers: getCrmAuthHeaders() })
+            const applyUnitParents = (includeProjectAndDev = true) => {
+              if (includeProjectAndDev) {
+                if (item.parentId1044) {
+                  const projInput = document.getElementById("field_ufCrm16ProjectName") || document.getElementById("field_ufCrm16_1791173131");
+                  fetch(`/api/lookup?entity=project&q=${item.parentId1044}`, { headers: getCrmAuthHeaders() })
                     .then(r => r.json())
                     .then(d => {
-                      const match = (d.items || []).find(it => String(it.id) === String(item.parentId1048));
-                      if (match && layoutInput) {
-                        layoutInput.value = match.title;
-                        layoutInput.dataset.selectedId = String(match.id);
-                        layoutInput.dataset.selectedRef = match.crmRef || String(match.id);
-                        layoutInput.dataset.selectedTitle = match.title;
-                        layoutInput.dataset.id = String(match.id);
-                        layoutInput.title = `${match.title} (ID: ${match.id})`;
-                        const lClear = layoutInput.parentElement?.querySelector(".lookup-clear-btn");
-                        const lOpen = layoutInput.parentElement?.querySelector(".lookup-open-btn");
-                        if (lClear) lClear.style.display = "block";
-                        if (lOpen) lOpen.style.display = "inline-flex";
+                      const match = (d.items || []).find(it => String(it.id) === String(item.parentId1044));
+                      if (match && projInput) {
+                        projInput.value = match.title;
+                        projInput.dataset.selectedId = String(match.id);
+                        projInput.dataset.selectedRef = match.crmRef || String(match.id);
+                        projInput.dataset.selectedTitle = match.title;
+                        projInput.dataset.id = String(match.id);
+                        projInput.title = `${match.title} (ID: ${match.id})`;
+                        const pClear = projInput.parentElement?.querySelector(".lookup-clear-btn");
+                        const pOpen = projInput.parentElement?.querySelector(".lookup-open-btn");
+                        if (pClear) pClear.style.display = "block";
+                        if (pOpen) pOpen.style.display = "inline-flex";
                         setDirty(true);
                       }
-                    }).catch(() => {});
+                    }).catch(() => { });
                 }
-              };
-
-              if (shouldPrompt) {
-                promptCascadeUpdate(
-                  "Update parent project and developer to match new unit?",
-                  () => applyUnitParents(true),
-                  () => applyUnitParents(false)
-                );
-              } else {
-                applyUnitParents(true);
+                if (item.companyId) {
+                  const devInput = document.getElementById("field_companyId") || document.getElementById("field_ufCrm16_1791172932");
+                  fetch(`/api/lookup?entity=developer&q=${item.companyId}`, { headers: getCrmAuthHeaders() })
+                    .then(r => r.json())
+                    .then(d => {
+                      const match = (d.items || []).find(it => String(it.id) === String(item.companyId));
+                      if (match && devInput) {
+                        devInput.value = match.title;
+                        devInput.dataset.selectedId = String(match.id);
+                        devInput.dataset.selectedRef = match.crmRef || String(match.id);
+                        devInput.dataset.selectedTitle = match.title;
+                        devInput.dataset.id = String(match.id);
+                        devInput.title = `${match.title} (ID: ${match.id})`;
+                        const dClear = devInput.parentElement?.querySelector(".lookup-clear-btn");
+                        const dOpen = devInput.parentElement?.querySelector(".lookup-open-btn");
+                        if (dClear) dClear.style.display = "block";
+                        if (dOpen) dOpen.style.display = "inline-flex";
+                        setDirty(true);
+                      }
+                    }).catch(() => { });
+                }
               }
-              setDirty(true);
-              runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-              return;
+              if (item.parentId1048) {
+                const layoutInput = document.getElementById("field_ufCrm16Layout") || document.getElementById("field_UF_CRM_PROPERTY_LAYOUT");
+                fetch(`/api/lookup?entity=layout&q=${item.parentId1048}`, { headers: getCrmAuthHeaders() })
+                  .then(r => r.json())
+                  .then(d => {
+                    const match = (d.items || []).find(it => String(it.id) === String(item.parentId1048));
+                    if (match && layoutInput) {
+                      layoutInput.value = match.title;
+                      layoutInput.dataset.selectedId = String(match.id);
+                      layoutInput.dataset.selectedRef = match.crmRef || String(match.id);
+                      layoutInput.dataset.selectedTitle = match.title;
+                      layoutInput.dataset.id = String(match.id);
+                      layoutInput.title = `${match.title} (ID: ${match.id})`;
+                      const lClear = layoutInput.parentElement?.querySelector(".lookup-clear-btn");
+                      const lOpen = layoutInput.parentElement?.querySelector(".lookup-open-btn");
+                      if (lClear) lClear.style.display = "block";
+                      if (lOpen) lOpen.style.display = "inline-flex";
+                      setDirty(true);
+                    }
+                  }).catch(() => { });
+              }
+            };
+
+            if (shouldPrompt) {
+              promptCascadeUpdate(
+                "Update parent project and developer to match new unit?",
+                () => applyUnitParents(true),
+                () => applyUnitParents(false)
+              );
+            } else {
+              applyUnitParents(true);
             }
-
             setDirty(true);
-            runListingAutomations({
-              isInitialLoad: false,
-              triggerField: f.key,
-            });
-          };
+            runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+            return;
+          }
 
-          itemEl.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            selectItem(item);
+          setDirty(true);
+          runListingAutomations({
+            isInitialLoad: false,
+            triggerField: f.key,
           });
+        };
 
-          itemEl.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            selectItem(item);
-          });
-
-          dropdown.appendChild(itemEl);
+        itemEl.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectItem(item);
         });
-        adjustDropdownPosition();
-      } catch (err) {
-        dropdown.innerHTML =
-          '<div class="lookup-item" style="color: var(--danger);">Failed to load records</div>';
-        adjustDropdownPosition();
+
+        itemEl.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectItem(item);
+        });
+
+        dropdown.appendChild(itemEl);
+      });
+      adjustDropdownPosition();
+    } catch (err) {
+      dropdown.innerHTML =
+        '<div class="lookup-item" style="color: var(--danger);">Failed to load records</div>';
+      adjustDropdownPosition();
+    }
+  }
+
+  input.addEventListener("focus", () => {
+    const cleanVal = input.value.replace(/^#/, "").trim();
+    queryLookup(cleanVal);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeDropdown();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const firstItem = dropdown.querySelector(
+        '.lookup-item:not([style*="cursor: default"])',
+      );
+      if (firstItem) {
+        firstItem.click();
+      } else {
+        closeDropdown();
       }
     }
+  });
 
-    input.addEventListener("focus", () => {
-      const cleanVal = input.value.replace(/^#/, "").trim();
-      queryLookup(cleanVal);
-    });
+  input.addEventListener("input", () => {
+    const val = input.value.trim();
+    clearBtn.style.display = val ? "block" : "none";
 
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeDropdown();
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        const firstItem = dropdown.querySelector(
-          '.lookup-item:not([style*="cursor: default"])',
-        );
-        if (firstItem) {
-          firstItem.click();
-        } else {
-          closeDropdown();
-        }
-      }
-    });
-
-    input.addEventListener("input", () => {
-      const val = input.value.trim();
-      clearBtn.style.display = val ? "block" : "none";
-
-      if (!val) {
-        input.dataset.id = "";
-        input.dataset.selectedId = "";
-        input.dataset.selectedRef = "";
-        input.dataset.selectedTitle = "";
-        input.title = "";
-        openBtn.style.display = "none";
-
-        if (f.key === "companyId" || f.key === "ufCrm16_1791172932") {
-          const devNameInput = document.getElementById(
-            "field_ufCrm16DeveloperName",
-          );
-          if (devNameInput) devNameInput.value = "";
-        }
-        if (f.key === "ufCrm16ProjectName") {
-          const bayutInput = document.getElementById(
-            "field_ufCrm16BuildingBayut",
-          );
-          if (bayutInput) bayutInput.value = "";
-        }
-      } else {
-        if (
-          input.dataset.selectedTitle &&
-          input.dataset.selectedTitle !== val
-        ) {
-          input.dataset.selectedId = "";
-          input.dataset.selectedRef = "";
-          openBtn.style.display = "none";
-        }
-        const numMatch = val.match(/^#?(\d+)$/);
-        if (numMatch) {
-          input.dataset.id = numMatch[1];
-          input.dataset.selectedId = numMatch[1];
-          openBtn.style.display = "inline-flex";
-        } else if (f.key === "ufCrm16ProjectName") {
-          input.dataset.id = val;
-        } else {
-          input.dataset.id = "";
-        }
-      }
-
-      setDirty(true);
-
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        const cleanQ = val.replace(/^#/, "").trim();
-        queryLookup(cleanQ);
-      }, 250);
-      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-    });
-
-    clearBtn.addEventListener("click", () => {
-      input.value = "";
+    if (!val) {
       input.dataset.id = "";
       input.dataset.selectedId = "";
       input.dataset.selectedRef = "";
       input.dataset.selectedTitle = "";
       input.title = "";
-      clearBtn.style.display = "none";
       openBtn.style.display = "none";
-      closeDropdown();
 
       if (f.key === "companyId" || f.key === "ufCrm16_1791172932") {
         const devNameInput = document.getElementById(
@@ -5247,286 +5193,340 @@ function resolveCountryCode(countryName) {
         );
         if (bayutInput) bayutInput.value = "";
       }
-      if (f.key === "parentId1048" || f.key === "ufCrm16Layout" || f.key === "UF_CRM_PROPERTY_LAYOUT") {
-        const propTypeInput = document.getElementById("field_ufCrm16PropertyType") || document.getElementById("field_UF_CRM_PROPERTY_TYPE");
-        if (propTypeInput) {
-          propTypeInput.disabled = false;
-          propTypeInput.style.pointerEvents = "auto";
-          propTypeInput.style.cursor = "default";
-          propTypeInput.style.backgroundColor = "";
-          propTypeInput.style.opacity = "1";
-          propTypeInput.title = "Select Property Type";
-          const pGroup = propTypeInput.closest(".form-group");
-          const badge = pGroup?.querySelector(".lock-badge");
-          if (badge) badge.remove();
-        }
+    } else {
+      if (
+        input.dataset.selectedTitle &&
+        input.dataset.selectedTitle !== val
+      ) {
+        input.dataset.selectedId = "";
+        input.dataset.selectedRef = "";
+        openBtn.style.display = "none";
       }
-
-      setDirty(true);
-      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      input.focus();
-    });
-
-    openBtn.addEventListener("click", (e) => {
-      const currentTargetId =
-        input.dataset.selectedRef ||
-        input.dataset.selectedId ||
-        input.dataset.id;
-      if (!currentTargetId) {
-        showToast(`Please select a valid ${meta.label} first`, "warning");
-        return;
+      const numMatch = val.match(/^#?(\d+)$/);
+      if (numMatch) {
+        input.dataset.id = numMatch[1];
+        input.dataset.selectedId = numMatch[1];
+        openBtn.style.display = "inline-flex";
+      } else if (f.key === "ufCrm16ProjectName") {
+        input.dataset.id = val;
+      } else {
+        input.dataset.id = "";
       }
-      const firstId = currentTargetId.includes(",")
-        ? currentTargetId.split(",")[0].trim()
-        : currentTargetId;
-      openLinkedRecord(f.type, firstId, f.key, e);
-    });
+    }
 
-    document.addEventListener("click", (e) => {
-      if (!container.contains(e.target)) {
-        closeDropdown();
+    setDirty(true);
+
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      const cleanQ = val.replace(/^#/, "").trim();
+      queryLookup(cleanQ);
+    }, 250);
+    runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+  });
+
+  clearBtn.addEventListener("click", () => {
+    input.value = "";
+    input.dataset.id = "";
+    input.dataset.selectedId = "";
+    input.dataset.selectedRef = "";
+    input.dataset.selectedTitle = "";
+    input.title = "";
+    clearBtn.style.display = "none";
+    openBtn.style.display = "none";
+    closeDropdown();
+
+    if (f.key === "companyId" || f.key === "ufCrm16_1791172932") {
+      const devNameInput = document.getElementById(
+        "field_ufCrm16DeveloperName",
+      );
+      if (devNameInput) devNameInput.value = "";
+    }
+    if (f.key === "ufCrm16ProjectName") {
+      const bayutInput = document.getElementById(
+        "field_ufCrm16BuildingBayut",
+      );
+      if (bayutInput) bayutInput.value = "";
+    }
+    if (f.key === "parentId1048" || f.key === "ufCrm16Layout" || f.key === "UF_CRM_PROPERTY_LAYOUT") {
+      const propTypeInput = document.getElementById("field_ufCrm16PropertyType") || document.getElementById("field_UF_CRM_PROPERTY_TYPE");
+      if (propTypeInput) {
+        propTypeInput.disabled = false;
+        propTypeInput.style.pointerEvents = "auto";
+        propTypeInput.style.cursor = "default";
+        propTypeInput.style.backgroundColor = "";
+        propTypeInput.style.opacity = "1";
+        propTypeInput.title = "Select Property Type";
+        const pGroup = propTypeInput.closest(".form-group");
+        const badge = pGroup?.querySelector(".lock-badge");
+        if (badge) badge.remove();
       }
-    });
+    }
 
-    group.appendChild(container);
-    initialFormValues[f.key] = input.dataset.id || input.value;
-  }
+    setDirty(true);
+    runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    input.focus();
+  });
 
-  // Field element factory
-  function createFieldElement(f, layoutKey) {
-    const group = document.createElement("div");
-    group.className = `field-group ${f.fullWidth ? "full-width" : ""}`;
-    group.setAttribute("data-field-key", f.key);
+  openBtn.addEventListener("click", (e) => {
+    const currentTargetId =
+      input.dataset.selectedRef ||
+      input.dataset.selectedId ||
+      input.dataset.id;
+    if (!currentTargetId) {
+      showToast(`Please select a valid ${meta.label} first`, "warning");
+      return;
+    }
+    const firstId = currentTargetId.includes(",")
+      ? currentTargetId.split(",")[0].trim()
+      : currentTargetId;
+    openLinkedRecord(f.type, firstId, f.key, e);
+  });
 
-    const displayLabel = f.labelOverrides?.[layoutKey] || f.label;
-    const labelEl = document.createElement("label");
-    labelEl.className = "field-label";
-    labelEl.setAttribute("for", `field_${f.key}`);
-    labelEl.innerHTML = `
+  document.addEventListener("click", (e) => {
+    if (!container.contains(e.target)) {
+      closeDropdown();
+    }
+  });
+
+  group.appendChild(container);
+  initialFormValues[f.key] = input.dataset.id || input.value;
+}
+
+// Field element factory
+function createFieldElement(f, layoutKey) {
+  const group = document.createElement("div");
+  group.className = `field-group ${f.fullWidth ? "full-width" : ""}`;
+  group.setAttribute("data-field-key", f.key);
+
+  const displayLabel = f.labelOverrides?.[layoutKey] || f.label;
+  const labelEl = document.createElement("label");
+  labelEl.className = "field-label";
+  labelEl.setAttribute("for", `field_${f.key}`);
+  labelEl.innerHTML = `
       <span>${displayLabel}</span>
       ${f.labelOverrides?.[layoutKey] ? `<span class="field-context-hint">${layoutKey.replace("_", " ")}</span>` : ""}
     `;
-    group.appendChild(labelEl);
+  group.appendChild(labelEl);
 
-    const rawVal = getFieldValue(f, currentListing);
+  const rawVal = getFieldValue(f, currentListing);
 
-    if (f.type === "file") {
-      renderMediaField(f, rawVal, group);
-    } else if (isLookupField(f)) {
-      renderLookupField(f, rawVal, group, displayLabel);
-    } else if (f.type === "tour_url") {
-      const card = document.createElement("div");
-      card.className = "file-upload-card media-url-card";
+  if (f.type === "file") {
+    renderMediaField(f, rawVal, group);
+  } else if (isLookupField(f)) {
+    renderLookupField(f, rawVal, group, displayLabel);
+  } else if (f.type === "tour_url") {
+    const card = document.createElement("div");
+    card.className = "file-upload-card media-url-card";
 
-      const wrap = document.createElement("div");
-      wrap.className = "media-url-input-wrap";
+    const wrap = document.createElement("div");
+    wrap.className = "media-url-input-wrap";
 
-      const input = document.createElement("input");
-      input.type = "url";
-      input.id = `field_${f.key}`;
-      input.name = f.key;
-      input.className = "form-control";
-      input.placeholder =
-        f.placeholder || "https://my.matterport.com/show/?m=...";
-      input.value = rawVal || "";
-      input.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
+    const input = document.createElement("input");
+    input.type = "url";
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.className = "form-control";
+    input.placeholder =
+      f.placeholder || "https://my.matterport.com/show/?m=...";
+    input.value = rawVal || "";
+    input.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
 
-      const launchBtn = document.createElement("button");
-      launchBtn.type = "button";
-      launchBtn.className = "btn btn-secondary launch-tour-btn";
-      launchBtn.innerHTML = `<span>Launch 360</span>`;
-      launchBtn.title = "Open interactive 360 tour preview";
-      launchBtn.addEventListener("click", () => {
-        if (!input.value) {
-          showToast("Please enter a 360 Virtual Tour URL first", "warning");
-          return;
-        }
-        openLightbox("360 Virtual Tour Preview", input.value, true);
-      });
+    const launchBtn = document.createElement("button");
+    launchBtn.type = "button";
+    launchBtn.className = "btn btn-secondary launch-tour-btn";
+    launchBtn.innerHTML = `<span>Launch 360</span>`;
+    launchBtn.title = "Open interactive 360 tour preview";
+    launchBtn.addEventListener("click", () => {
+      if (!input.value) {
+        showToast("Please enter a 360 Virtual Tour URL first", "warning");
+        return;
+      }
+      openLightbox("360 Virtual Tour Preview", input.value, true);
+    });
 
-      wrap.appendChild(input);
-      wrap.appendChild(launchBtn);
-      card.appendChild(wrap);
-      group.appendChild(card);
-      initialFormValues[f.key] = input.value;
-    } else if (f.type === "url") {
-      const card = document.createElement("div");
-      card.className = "file-upload-card media-url-card";
+    wrap.appendChild(input);
+    wrap.appendChild(launchBtn);
+    card.appendChild(wrap);
+    group.appendChild(card);
+    initialFormValues[f.key] = input.value;
+  } else if (f.type === "url") {
+    const card = document.createElement("div");
+    card.className = "file-upload-card media-url-card";
 
-      const wrap = document.createElement("div");
-      wrap.className = "media-url-input-wrap";
+    const wrap = document.createElement("div");
+    wrap.className = "media-url-input-wrap";
 
-      const input = document.createElement("input");
-      input.type = "url";
-      input.id = `field_${f.key}`;
-      input.name = f.key;
-      input.className = "form-control";
-      input.placeholder = f.placeholder || "https://...";
-      input.value = rawVal || "";
-      input.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
+    const input = document.createElement("input");
+    input.type = "url";
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.className = "form-control";
+    input.placeholder = f.placeholder || "https://...";
+    input.value = rawVal || "";
+    input.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
 
-      const testBtn = document.createElement("a");
-      testBtn.href = rawVal || "#";
-      testBtn.target = "_self";
-      testBtn.className = "btn btn-secondary launch-tour-btn";
-      testBtn.textContent = "Open";
-      testBtn.addEventListener("click", (e) => {
-        if (!input.value) e.preventDefault();
-        else openLightbox("Preview", input.value, true);
-      });
+    const testBtn = document.createElement("a");
+    testBtn.href = rawVal || "#";
+    testBtn.target = "_self";
+    testBtn.className = "btn btn-secondary launch-tour-btn";
+    testBtn.textContent = "Open";
+    testBtn.addEventListener("click", (e) => {
+      if (!input.value) e.preventDefault();
+      else openLightbox("Preview", input.value, true);
+    });
 
-      wrap.appendChild(input);
-      wrap.appendChild(testBtn);
-      card.appendChild(wrap);
-      group.appendChild(card);
-      initialFormValues[f.key] = input.value;
-    } else if (f.type === "textarea") {
-      const textarea = document.createElement("textarea");
-      textarea.id = `field_${f.key}`;
-      textarea.name = f.key;
-      textarea.className = "form-control";
-      textarea.placeholder = f.placeholder || "";
-      textarea.value = rawVal !== null && rawVal !== undefined ? rawVal : "";
-      textarea.rows = 2;
-      textarea.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-      group.appendChild(textarea);
-      initialFormValues[f.key] = textarea.value;
-    } else if (f.type === "enumeration" || f.type === "stage") {
-      const select = document.createElement("select");
-      select.id = `field_${f.key}`;
-      select.name = f.key;
-      select.className = "form-control";
+    wrap.appendChild(input);
+    wrap.appendChild(testBtn);
+    card.appendChild(wrap);
+    group.appendChild(card);
+    initialFormValues[f.key] = input.value;
+  } else if (f.type === "textarea") {
+    const textarea = document.createElement("textarea");
+    textarea.id = `field_${f.key}`;
+    textarea.name = f.key;
+    textarea.className = "form-control";
+    textarea.placeholder = f.placeholder || "";
+    textarea.value = rawVal !== null && rawVal !== undefined ? rawVal : "";
+    textarea.rows = 2;
+    textarea.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
+    group.appendChild(textarea);
+    initialFormValues[f.key] = textarea.value;
+  } else if (f.type === "enumeration" || f.type === "stage") {
+    const select = document.createElement("select");
+    select.id = `field_${f.key}`;
+    select.name = f.key;
+    select.className = "form-control";
 
-      const defOpt = document.createElement("option");
-      defOpt.value = "";
-      defOpt.textContent = `-- Select ${displayLabel} --`;
-      select.appendChild(defOpt);
+    const defOpt = document.createElement("option");
+    defOpt.value = "";
+    defOpt.textContent = `-- Select ${displayLabel} --`;
+    select.appendChild(defOpt);
 
-      const rawStr =
-        rawVal !== null && rawVal !== undefined
-          ? String(rawVal).trim().toLowerCase()
-          : "";
-      let options = f.options ? [...f.options] : [];
+    const rawStr =
+      rawVal !== null && rawVal !== undefined
+        ? String(rawVal).trim().toLowerCase()
+        : "";
+    let options = f.options ? [...f.options] : [];
 
-      if (f.type === "stage") {
-        const pipelineId =
-          currentListing?.categoryId !== undefined &&
+    if (f.type === "stage") {
+      const pipelineId =
+        currentListing?.categoryId !== undefined &&
           currentListing?.categoryId !== null
-            ? currentListing.categoryId
-            : currentListing?.CATEGORY_ID !== undefined &&
-                currentListing?.CATEGORY_ID !== null
-              ? currentListing.CATEGORY_ID
-              : 0;
-        const pipeKey = `pipe_${pipelineId}`;
-        if (
-          stageOptionsByPipeline[pipeKey] &&
-          stageOptionsByPipeline[pipeKey].length > 0
-        ) {
-          options = stageOptionsByPipeline[pipeKey];
-        }
-      }
-
-      // If record has an existing stage value, preserve it in the picklist
+          ? currentListing.categoryId
+          : currentListing?.CATEGORY_ID !== undefined &&
+            currentListing?.CATEGORY_ID !== null
+            ? currentListing.CATEGORY_ID
+            : 0;
+      const pipeKey = `pipe_${pipelineId}`;
       if (
-        rawVal &&
-        !options.some(
-          (opt) =>
-            String(opt.id).trim().toLowerCase() === rawStr ||
-            String(opt.value).trim().toLowerCase() === rawStr,
-        )
+        stageOptionsByPipeline[pipeKey] &&
+        stageOptionsByPipeline[pipeKey].length > 0
       ) {
-        options.unshift({ id: String(rawVal), value: String(rawVal) });
+        options = stageOptionsByPipeline[pipeKey];
       }
+    }
 
-      options.forEach((opt) => {
-        const optionEl = document.createElement("option");
-        optionEl.value = opt.id;
-        optionEl.textContent = opt.value;
-        const optIdStr = String(opt.id).trim().toLowerCase();
-        const optValStr = String(opt.value).trim().toLowerCase();
-        if (rawStr && (rawStr === optIdStr || rawStr === optValStr)) {
-          optionEl.selected = true;
-        }
-        select.appendChild(optionEl);
-      });
+    // If record has an existing stage value, preserve it in the picklist
+    if (
+      rawVal &&
+      !options.some(
+        (opt) =>
+          String(opt.id).trim().toLowerCase() === rawStr ||
+          String(opt.value).trim().toLowerCase() === rawStr,
+      )
+    ) {
+      options.unshift({ id: String(rawVal), value: String(rawVal) });
+    }
 
-      // Lock Property Type only when derived from Layout
-      if (f.key === "ufCrm16PropertyType") {
-        const hasLinkedLayout = !!(
-          (currentListing && currentListing.parentId1048) ||
-          document.getElementById("field_parentId1048")?.dataset?.selectedId ||
-          document.getElementById("field_parentId1048")?.value
-        );
-        if (hasLinkedLayout) {
-          select.disabled = true;
-          select.style.pointerEvents = "none";
-          select.style.cursor = "not-allowed";
-          select.style.backgroundColor = "var(--bg-secondary, #f1f5f9)";
-          select.style.opacity = "0.85";
-          select.title = "Property Type is auto-populated from Layout and cannot be changed manually.";
-
-          const lockBadge = document.createElement("div");
-          lockBadge.className = "form-text text-muted lock-badge";
-          lockBadge.style.cssText = "font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;";
-          lockBadge.innerHTML = "Auto-populated from Layout (Read-only)";
-          group.appendChild(lockBadge);
-        }
+    options.forEach((opt) => {
+      const optionEl = document.createElement("option");
+      optionEl.value = opt.id;
+      optionEl.textContent = opt.value;
+      const optIdStr = String(opt.id).trim().toLowerCase();
+      const optValStr = String(opt.value).trim().toLowerCase();
+      if (rawStr && (rawStr === optIdStr || rawStr === optValStr)) {
+        optionEl.selected = true;
       }
+      select.appendChild(optionEl);
+    });
 
-      // Special: When Listing Type is changed in General section, adapt layout dynamically with undo!
-      if (f.key === CONFIG.layoutField) {
-        select.addEventListener("change", () => {
-          const selectedEnumId = select.value;
-          const mappedLayout = CONFIG.layoutEnumMap[selectedEnumId] || "rent";
-          const prevLayout = currentLayout;
-          const prevEnumId = initialFormValues[f.key] || currentListing[f.key] || "";
+    // Lock Property Type only when derived from Layout
+    if (f.key === "ufCrm16PropertyType") {
+      const hasLinkedLayout = !!(
+        (currentListing && currentListing.parentId1048) ||
+        document.getElementById("field_parentId1048")?.dataset?.selectedId ||
+        document.getElementById("field_parentId1048")?.value
+      );
+      if (hasLinkedLayout) {
+        select.disabled = true;
+        select.style.pointerEvents = "none";
+        select.style.cursor = "not-allowed";
+        select.style.backgroundColor = "var(--bg-secondary, #f1f5f9)";
+        select.style.opacity = "0.85";
+        select.title = "Property Type is auto-populated from Layout and cannot be changed manually.";
 
-          // Capture non-empty values of fields that are visible in prevLayout but hidden in mappedLayout
-          const hiddenValues = {};
-          let hasHiddenData = false;
+        const lockBadge = document.createElement("div");
+        lockBadge.className = "form-text text-muted lock-badge";
+        lockBadge.style.cssText = "font-size:11px;color:#94a3b8;margin-top:4px;display:flex;align-items:center;gap:4px;";
+        lockBadge.innerHTML = "Auto-populated from Layout (Read-only)";
+        group.appendChild(lockBadge);
+      }
+    }
 
-          CONFIG.sections.forEach(sec => {
-            (sec.fields || []).forEach(secF => {
-              const wasVis = (secF.rules?.[prevLayout] || "show") !== "hide";
-              const isNowVis = (secF.rules?.[mappedLayout] || "show") !== "hide";
-              if (wasVis && !isNowVis) {
-                const el = document.getElementById(`field_${secF.key}`) || document.querySelector(`[name="${secF.key}"]`);
-                if (el) {
-                  const val = el.type === "checkbox" ? el.checked : el.value;
-                  const hasVal = el.type === "checkbox" ? el.checked : (val !== "" && val !== null && val !== undefined);
-                  if (hasVal) {
-                    hasHiddenData = true;
-                    hiddenValues[secF.key] = {
-                      value: el.value,
-                      checked: el.type === "checkbox" ? el.checked : false,
-                      selectedId: el.dataset?.selectedId || "",
-                      selectedRef: el.dataset?.selectedRef || "",
-                      selectedTitle: el.dataset?.selectedTitle || ""
-                    };
-                  }
+    // Special: When Listing Type is changed in General section, adapt layout dynamically with undo!
+    if (f.key === CONFIG.layoutField) {
+      select.addEventListener("change", () => {
+        const selectedEnumId = select.value;
+        const mappedLayout = CONFIG.layoutEnumMap[selectedEnumId] || "rent";
+        const prevLayout = currentLayout;
+        const prevEnumId = initialFormValues[f.key] || currentListing[f.key] || "";
+
+        // Capture non-empty values of fields that are visible in prevLayout but hidden in mappedLayout
+        const hiddenValues = {};
+        let hasHiddenData = false;
+
+        CONFIG.sections.forEach(sec => {
+          (sec.fields || []).forEach(secF => {
+            const wasVis = (secF.rules?.[prevLayout] || "show") !== "hide";
+            const isNowVis = (secF.rules?.[mappedLayout] || "show") !== "hide";
+            if (wasVis && !isNowVis) {
+              const el = document.getElementById(`field_${secF.key}`) || document.querySelector(`[name="${secF.key}"]`);
+              if (el) {
+                const val = el.type === "checkbox" ? el.checked : el.value;
+                const hasVal = el.type === "checkbox" ? el.checked : (val !== "" && val !== null && val !== undefined);
+                if (hasVal) {
+                  hasHiddenData = true;
+                  hiddenValues[secF.key] = {
+                    value: el.value,
+                    checked: el.type === "checkbox" ? el.checked : false,
+                    selectedId: el.dataset?.selectedId || "",
+                    selectedRef: el.dataset?.selectedRef || "",
+                    selectedTitle: el.dataset?.selectedTitle || ""
+                  };
                 }
               }
-            });
+            }
           });
+        });
 
-          const undoBannerEl = document.getElementById("transaction-undo-banner");
-          if (hasHiddenData) {
-            cachedUndoState = {
-              previousLayout: prevLayout,
-              previousEnumId: prevEnumId,
-              hiddenValues
-            };
-            if (undoBannerEl) {
-              undoBannerEl.innerHTML = `
+        const undoBannerEl = document.getElementById("transaction-undo-banner");
+        if (hasHiddenData) {
+          cachedUndoState = {
+            previousLayout: prevLayout,
+            previousEnumId: prevEnumId,
+            hiddenValues
+          };
+          if (undoBannerEl) {
+            undoBannerEl.innerHTML = `
                 <div class="undo-banner-inner">
                   <div class="undo-banner-text">
                     <span class="undo-banner-icon"></span>
@@ -5535,651 +5535,651 @@ function resolveCountryCode(countryName) {
                   <button type="button" class="btn-undo-switch" id="btn-undo-transaction-switch">Undo Switch</button>
                 </div>
               `;
-              undoBannerEl.style.display = "flex";
-              const undoBtn = document.getElementById("btn-undo-transaction-switch");
-              if (undoBtn) {
-                undoBtn.onclick = (e) => {
-                  e.preventDefault();
-                  undoTransactionSwitch();
-                };
-              }
+            undoBannerEl.style.display = "flex";
+            const undoBtn = document.getElementById("btn-undo-transaction-switch");
+            if (undoBtn) {
+              undoBtn.onclick = (e) => {
+                e.preventDefault();
+                undoTransactionSwitch();
+              };
             }
-          } else if (!cachedUndoState && undoBannerEl) {
-            undoBannerEl.style.display = "none";
           }
+        } else if (!cachedUndoState && undoBannerEl) {
+          undoBannerEl.style.display = "none";
+        }
 
-          showToast(
-            `Layout updated to ${CONFIG.layoutMeta[mappedLayout].title}`,
-            "info",
-          );
-          currentListing[f.key] = selectedEnumId;
-          renderLayout(mappedLayout);
-          setDirty(true);
-          runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-        });
-      } else {
-        select.addEventListener("change", () => {
-          setDirty(true);
-          runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-        });
-      }
-
-      group.appendChild(select);
-      initialFormValues[f.key] = select.value;
-    } else if (f.type === "boolean") {
-      const select = document.createElement("select");
-      select.id = `field_${f.key}`;
-      select.name = f.key;
-      select.className = "form-control";
-      select.innerHTML = `
-        <option value="">-- Select --</option>
-        <option value="Y" ${rawVal === "Y" || rawVal === true || rawVal === 1 ? "selected" : ""}>Yes</option>
-        <option value="N" ${rawVal === "N" || rawVal === false || rawVal === 0 ? "selected" : ""}>No</option>
-      `;
+        showToast(
+          `Layout updated to ${CONFIG.layoutMeta[mappedLayout].title}`,
+          "info",
+        );
+        currentListing[f.key] = selectedEnumId;
+        renderLayout(mappedLayout);
+        setDirty(true);
+        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+      });
+    } else {
       select.addEventListener("change", () => {
         setDirty(true);
         runListingAutomations({ isInitialLoad: false, triggerField: f.key });
       });
-      group.appendChild(select);
-      initialFormValues[f.key] = select.value;
-    } else if (f.type === "address") {
-      const input = document.createElement("input");
-      input.id = `field_${f.key}`;
-      input.name = f.key;
-      input.type = "text";
-      input.className = "form-control";
-      input.placeholder = f.placeholder || "Street, building, area...";
-      if (rawVal && typeof rawVal === "object") {
-        input.value =
-          rawVal.text ||
-          rawVal.street ||
-          Object.values(rawVal)
-            .filter((v) => typeof v === "string")
-            .join(", ") ||
-          "";
-      } else {
-        input.value = rawVal !== null && rawVal !== undefined ? rawVal : "";
-      }
-      input.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-      group.appendChild(input);
-      initialFormValues[f.key] = input.value;
-    } else if (
-      f.type === "number" ||
-      f.type === "money" ||
-      f.type === "integer"
-    ) {
-      const isAddon = !!f.addon;
-      const input = document.createElement("input");
-      input.id = `field_${f.key}`;
-      input.name = f.key;
-      input.type = "number";
-      input.step = f.type === "integer" ? "1" : "any";
-      input.className = "form-control";
-      input.placeholder = f.placeholder || "";
-      input.value = cleanNumericValue(rawVal);
-      input.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-      input.addEventListener("change", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
+    }
 
-      if (isAddon) {
-        const addonWrap = document.createElement("div");
-        addonWrap.className = "input-addon-group";
-        addonWrap.appendChild(input);
-        const addonSpan = document.createElement("span");
-        addonSpan.className = "input-addon";
-        addonSpan.textContent = f.addon;
-        addonWrap.appendChild(addonSpan);
-        group.appendChild(addonWrap);
-      } else {
-        group.appendChild(input);
-      }
-      initialFormValues[f.key] = input.value;
-    } else if (f.type === "date") {
-      const input = document.createElement("input");
-      input.id = `field_${f.key}`;
-      input.name = f.key;
-      input.type = "date";
-      input.className = "form-control";
-      input.value = formatDateForInput(rawVal);
-      input.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-      input.addEventListener("change", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-      group.appendChild(input);
-      initialFormValues[f.key] = input.value;
-    } else {
-      const isAddon = !!f.addon;
-      const input = document.createElement("input");
-      input.id = `field_${f.key}`;
-      input.name = f.key;
-      input.type = "text";
-      input.className = "form-control";
-      input.placeholder = f.placeholder || "";
-
-      let displayVal = rawVal;
-      if (
-        displayVal !== null &&
-        displayVal !== undefined &&
-        typeof displayVal === "object"
-      ) {
-        displayVal =
-          displayVal.title ||
-          displayVal.name ||
-          displayVal.id ||
-          displayVal.value ||
-          "";
-      }
+    group.appendChild(select);
+    initialFormValues[f.key] = select.value;
+  } else if (f.type === "boolean") {
+    const select = document.createElement("select");
+    select.id = `field_${f.key}`;
+    select.name = f.key;
+    select.className = "form-control";
+    select.innerHTML = `
+        <option value="">-- Select --</option>
+        <option value="Y" ${rawVal === "Y" || rawVal === true || rawVal === 1 ? "selected" : ""}>Yes</option>
+        <option value="N" ${rawVal === "N" || rawVal === false || rawVal === 0 ? "selected" : ""}>No</option>
+      `;
+    select.addEventListener("change", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
+    group.appendChild(select);
+    initialFormValues[f.key] = select.value;
+  } else if (f.type === "address") {
+    const input = document.createElement("input");
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.type = "text";
+    input.className = "form-control";
+    input.placeholder = f.placeholder || "Street, building, area...";
+    if (rawVal && typeof rawVal === "object") {
       input.value =
-        displayVal !== null && displayVal !== undefined ? displayVal : "";
-      input.addEventListener("input", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-      input.addEventListener("change", () => {
-        setDirty(true);
-        runListingAutomations({ isInitialLoad: false, triggerField: f.key });
-      });
-
-      if (isAddon) {
-        const addonWrap = document.createElement("div");
-        addonWrap.className = "input-addon-group";
-        addonWrap.appendChild(input);
-        const addonSpan = document.createElement("span");
-        addonSpan.className = "input-addon";
-        addonSpan.textContent = f.addon;
-        addonWrap.appendChild(addonSpan);
-        group.appendChild(addonWrap);
-      } else {
-        group.appendChild(input);
-      }
-      initialFormValues[f.key] = input.value;
+        rawVal.text ||
+        rawVal.street ||
+        Object.values(rawVal)
+          .filter((v) => typeof v === "string")
+          .join(", ") ||
+        "";
+    } else {
+      input.value = rawVal !== null && rawVal !== undefined ? rawVal : "";
     }
-
-    return group;
-  }
-
-  // ============================================================================
-  // 7. EVENT LISTENERS
-  // ============================================================================
-  // Search Filter
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.toLowerCase().trim();
-    clearSearchBtn.style.display = q ? "block" : "none";
-
-    document.querySelectorAll(".field-group").forEach((group) => {
-      const text = group.textContent.toLowerCase();
-      group.style.display = !q || text.includes(q) ? "" : "none";
+    input.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
     });
-  });
-
-  clearSearchBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    clearSearchBtn.style.display = "none";
-    document.querySelectorAll(".field-group").forEach((group) => {
-      group.style.display = "";
+    group.appendChild(input);
+    initialFormValues[f.key] = input.value;
+  } else if (
+    f.type === "number" ||
+    f.type === "money" ||
+    f.type === "integer"
+  ) {
+    const isAddon = !!f.addon;
+    const input = document.createElement("input");
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.type = "number";
+    input.step = f.type === "integer" ? "1" : "any";
+    input.className = "form-control";
+    input.placeholder = f.placeholder || "";
+    input.value = cleanNumericValue(rawVal);
+    input.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
     });
-  });
-
-  // Toggle all sections
-  toggleAllBtn.addEventListener("click", () => {
-    allSectionsCollapsed = !allSectionsCollapsed;
-    document.querySelectorAll(".section-card").forEach((card) => {
-      card.classList.toggle("collapsed", allSectionsCollapsed);
+    input.addEventListener("change", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
     });
-    toggleAllBtn.textContent = allSectionsCollapsed
-      ? "Expand All"
-      : "Collapse All";
-    scheduleResize(50);
-  });
 
-  // Refresh
-  refreshBtn.addEventListener("click", () => {
-    loadListingDetails();
-  });
+    if (isAddon) {
+      const addonWrap = document.createElement("div");
+      addonWrap.className = "input-addon-group";
+      addonWrap.appendChild(input);
+      const addonSpan = document.createElement("span");
+      addonSpan.className = "input-addon";
+      addonSpan.textContent = f.addon;
+      addonWrap.appendChild(addonSpan);
+      group.appendChild(addonWrap);
+    } else {
+      group.appendChild(input);
+    }
+    initialFormValues[f.key] = input.value;
+  } else if (f.type === "date") {
+    const input = document.createElement("input");
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.type = "date";
+    input.className = "form-control";
+    input.value = formatDateForInput(rawVal);
+    input.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
+    input.addEventListener("change", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
+    group.appendChild(input);
+    initialFormValues[f.key] = input.value;
+  } else {
+    const isAddon = !!f.addon;
+    const input = document.createElement("input");
+    input.id = `field_${f.key}`;
+    input.name = f.key;
+    input.type = "text";
+    input.className = "form-control";
+    input.placeholder = f.placeholder || "";
 
-  // Cancel
-  cancelBtn.addEventListener("click", () => {
+    let displayVal = rawVal;
     if (
-      confirm("Discard all unsaved changes and reload original listing data?")
+      displayVal !== null &&
+      displayVal !== undefined &&
+      typeof displayVal === "object"
     ) {
-      loadListingDetails();
+      displayVal =
+        displayVal.title ||
+        displayVal.name ||
+        displayVal.id ||
+        displayVal.value ||
+        "";
     }
-  });
-
-  // Save changes
-  if (saveBtnTop) {
-    saveBtnTop.addEventListener("click", () => {
-      if (typeof formEl.requestSubmit === "function") {
-        formEl.requestSubmit();
-      } else {
-        formEl.dispatchEvent(new Event("submit", { cancelable: true }));
-      }
+    input.value =
+      displayVal !== null && displayVal !== undefined ? displayVal : "";
+    input.addEventListener("input", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
     });
+    input.addEventListener("change", () => {
+      setDirty(true);
+      runListingAutomations({ isInitialLoad: false, triggerField: f.key });
+    });
+
+    if (isAddon) {
+      const addonWrap = document.createElement("div");
+      addonWrap.className = "input-addon-group";
+      addonWrap.appendChild(input);
+      const addonSpan = document.createElement("span");
+      addonSpan.className = "input-addon";
+      addonSpan.textContent = f.addon;
+      addonWrap.appendChild(addonSpan);
+      group.appendChild(addonWrap);
+    } else {
+      group.appendChild(input);
+    }
+    initialFormValues[f.key] = input.value;
   }
 
-  formEl.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!currentListingId) return;
+  return group;
+}
 
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = "SAVING...";
-    if (saveBtnTop) {
-      saveBtnTop.disabled = true;
-      saveBtnTop.innerHTML = "SAVING...";
+// ============================================================================
+// 7. EVENT LISTENERS
+// ============================================================================
+// Search Filter
+searchInput.addEventListener("input", () => {
+  const q = searchInput.value.toLowerCase().trim();
+  clearSearchBtn.style.display = q ? "block" : "none";
+
+  document.querySelectorAll(".field-group").forEach((group) => {
+    const text = group.textContent.toLowerCase();
+    group.style.display = !q || text.includes(q) ? "" : "none";
+  });
+});
+
+clearSearchBtn.addEventListener("click", () => {
+  searchInput.value = "";
+  clearSearchBtn.style.display = "none";
+  document.querySelectorAll(".field-group").forEach((group) => {
+    group.style.display = "";
+  });
+});
+
+// Toggle all sections
+toggleAllBtn.addEventListener("click", () => {
+  allSectionsCollapsed = !allSectionsCollapsed;
+  document.querySelectorAll(".section-card").forEach((card) => {
+    card.classList.toggle("collapsed", allSectionsCollapsed);
+  });
+  toggleAllBtn.textContent = allSectionsCollapsed
+    ? "Expand All"
+    : "Collapse All";
+  scheduleResize(50);
+});
+
+// Refresh
+refreshBtn.addEventListener("click", () => {
+  loadListingDetails();
+});
+
+// Cancel
+cancelBtn.addEventListener("click", () => {
+  if (
+    confirm("Discard all unsaved changes and reload original listing data?")
+  ) {
+    loadListingDetails();
+  }
+});
+
+// Save changes
+if (saveBtnTop) {
+  saveBtnTop.addEventListener("click", () => {
+    if (typeof formEl.requestSubmit === "function") {
+      formEl.requestSubmit();
+    } else {
+      formEl.dispatchEvent(new Event("submit", { cancelable: true }));
+    }
+  });
+}
+
+formEl.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!currentListingId) return;
+
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = "SAVING...";
+  if (saveBtnTop) {
+    saveBtnTop.disabled = true;
+    saveBtnTop.innerHTML = "SAVING...";
+  }
+
+  try {
+    const payload = {};
+
+    const formData = new FormData(formEl);
+    for (const [key, val] of formData.entries()) {
+      payload[key] = val;
     }
 
-    try {
-      const payload = {};
-
-      const formData = new FormData(formEl);
-      for (const [key, val] of formData.entries()) {
-        payload[key] = val;
-      }
-
-      document
-        .querySelectorAll(
-          "#sections-container input, #sections-container select, #sections-container textarea",
-        )
-        .forEach((el) => {
-          if (el.name && el.type !== "file") {
-            let fieldVal =
-              el.dataset.id !== undefined && el.dataset.id !== ""
-                ? el.dataset.id
-                : el.value;
-            const fConfig = findFieldConfig(el.name);
-            if (
-              fConfig &&
-              (fConfig.key === "ufCrm16ProjectName" ||
-                fConfig.crmCode === "UF_CRM_16_PROJECT_NAME")
-            ) {
-              fieldVal = el.value.trim();
-            } else if (fConfig && isLookupField(fConfig)) {
-              const selectedId = el.dataset.selectedId || el.dataset.id;
-              const isNumeric = /^\d+$/.test(String(selectedId || "").trim());
-              if (isNumeric) {
-                fieldVal = selectedId;
-              } else if (
-                el.name === "companyId" ||
-                el.name === "parentId1052" ||
-                el.name === "contactId" ||
-                el.name === "assignedById"
-              ) {
-                fieldVal = 0;
-              } else {
-                fieldVal = selectedId || "";
-              }
-            } else if (
-              fConfig &&
-              fConfig.type === "money" &&
-              fieldVal &&
-              !String(fieldVal).includes("|")
-            ) {
-              const numPart = String(fieldVal).replace(/[^\d.-]/g, "");
-              fieldVal = numPart ? `${numPart}|AED` : "";
-            }
-            payload[el.name] = fieldVal;
-          }
-        });
-
-      // Synchronize developer companion field ufCrm16DeveloperName if needed
-      if (payload["companyId"] && !payload["ufCrm16DeveloperName"]) {
-        const compEl = document.getElementById("field_companyId");
-        if (compEl?.value)
-          payload["ufCrm16DeveloperName"] = compEl.value.trim();
-      }
-
-      // Synchronize Project & Master Project companion and native Bitrix CRM binding fields
-      const projEl = document.getElementById("field_ufCrm16ProjectName");
-      if (projEl) {
-        const trimmedProj = projEl.value.trim();
-        payload["ufCrm16ProjectName"] = trimmedProj;
-        if (!trimmedProj) {
-          payload["ufCrm16BuildingBayut"] = "";
-          payload["ufCrm16_1791173131"] = 0;
-        } else {
-          payload["ufCrm16BuildingBayut"] =
-            payload["ufCrm16BuildingBayut"] || trimmedProj;
+    document
+      .querySelectorAll(
+        "#sections-container input, #sections-container select, #sections-container textarea",
+      )
+      .forEach((el) => {
+        if (el.name && el.type !== "file") {
+          let fieldVal =
+            el.dataset.id !== undefined && el.dataset.id !== ""
+              ? el.dataset.id
+              : el.value;
+          const fConfig = findFieldConfig(el.name);
           if (
-            projEl.dataset.selectedId &&
-            /^\d+$/.test(projEl.dataset.selectedId)
+            fConfig &&
+            (fConfig.key === "ufCrm16ProjectName" ||
+              fConfig.crmCode === "UF_CRM_16_PROJECT_NAME")
           ) {
-            payload["ufCrm16_1791173131"] = projEl.dataset.selectedId;
+            fieldVal = el.value.trim();
+          } else if (fConfig && isLookupField(fConfig)) {
+            const selectedId = el.dataset.selectedId || el.dataset.id;
+            const isNumeric = /^\d+$/.test(String(selectedId || "").trim());
+            if (isNumeric) {
+              fieldVal = selectedId;
+            } else if (
+              el.name === "companyId" ||
+              el.name === "parentId1052" ||
+              el.name === "contactId" ||
+              el.name === "assignedById"
+            ) {
+              fieldVal = 0;
+            } else {
+              fieldVal = selectedId || "";
+            }
+          } else if (
+            fConfig &&
+            fConfig.type === "money" &&
+            fieldVal &&
+            !String(fieldVal).includes("|")
+          ) {
+            const numPart = String(fieldVal).replace(/[^\d.-]/g, "");
+            fieldVal = numPart ? `${numPart}|AED` : "";
           }
+          payload[el.name] = fieldVal;
+        }
+      });
+
+    // Synchronize developer companion field ufCrm16DeveloperName if needed
+    if (payload["companyId"] && !payload["ufCrm16DeveloperName"]) {
+      const compEl = document.getElementById("field_companyId");
+      if (compEl?.value)
+        payload["ufCrm16DeveloperName"] = compEl.value.trim();
+    }
+
+    // Synchronize Project & Master Project companion and native Bitrix CRM binding fields
+    const projEl = document.getElementById("field_ufCrm16ProjectName");
+    if (projEl) {
+      const trimmedProj = projEl.value.trim();
+      payload["ufCrm16ProjectName"] = trimmedProj;
+      if (!trimmedProj) {
+        payload["ufCrm16BuildingBayut"] = "";
+        payload["ufCrm16_1791173131"] = 0;
+      } else {
+        payload["ufCrm16BuildingBayut"] =
+          payload["ufCrm16BuildingBayut"] || trimmedProj;
+        if (
+          projEl.dataset.selectedId &&
+          /^\d+$/.test(projEl.dataset.selectedId)
+        ) {
+          payload["ufCrm16_1791173131"] = projEl.dataset.selectedId;
         }
       }
+    }
 
-      const mpEl = document.getElementById("field_ufCrm16MasterProject");
-      if (mpEl) {
-        if (mpEl.dataset.selectedId && /^\d+$/.test(mpEl.dataset.selectedId)) {
-          payload["ufCrm16_1791173000"] = mpEl.dataset.selectedId;
-          payload["ufCrm16MasterProjectInfo"] = mpEl.value.trim();
-          payload["ufCrm16MasterProject"] = mpEl.dataset.selectedId;
-        } else if (!mpEl.value.trim()) {
-          payload["ufCrm16_1791173000"] = 0;
-          payload["ufCrm16MasterProjectInfo"] = "";
-          payload["ufCrm16MasterProject"] = "";
-        }
+    const mpEl = document.getElementById("field_ufCrm16MasterProject");
+    if (mpEl) {
+      if (mpEl.dataset.selectedId && /^\d+$/.test(mpEl.dataset.selectedId)) {
+        payload["ufCrm16_1791173000"] = mpEl.dataset.selectedId;
+        payload["ufCrm16MasterProjectInfo"] = mpEl.value.trim();
+        payload["ufCrm16MasterProject"] = mpEl.dataset.selectedId;
+      } else if (!mpEl.value.trim()) {
+        payload["ufCrm16_1791173000"] = 0;
+        payload["ufCrm16MasterProjectInfo"] = "";
+        payload["ufCrm16MasterProject"] = "";
       }
+    }
 
-      // Synchronize Listing Agent / Broker native and camelCase field variants
-      const agentEl = document.getElementById("field_ufCrm16ListingAgent");
-      if (agentEl) {
-        const agentId = agentEl.dataset.selectedId || agentEl.dataset.id;
-        if (agentId && /^\d+$/.test(agentId)) {
-          payload["ufCrm16ListingAgent"] = agentId;
-          payload["ufCrm16PortalListingAgent"] = agentId;
-          payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = agentId;
-        } else if (!agentEl.value.trim()) {
-          payload["ufCrm16ListingAgent"] = 0;
-          payload["ufCrm16PortalListingAgent"] = 0;
-          payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = 0;
-        }
+    // Synchronize Listing Agent / Broker native and camelCase field variants
+    const agentEl = document.getElementById("field_ufCrm16ListingAgent");
+    if (agentEl) {
+      const agentId = agentEl.dataset.selectedId || agentEl.dataset.id;
+      if (agentId && /^\d+$/.test(agentId)) {
+        payload["ufCrm16ListingAgent"] = agentId;
+        payload["ufCrm16PortalListingAgent"] = agentId;
+        payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = agentId;
+      } else if (!agentEl.value.trim()) {
+        payload["ufCrm16ListingAgent"] = 0;
+        payload["ufCrm16PortalListingAgent"] = 0;
+        payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = 0;
       }
+    }
 
-      // Synchronize Built-up Area / Sq Ft field with Bitrix UF_CRM_16_SIZE and ufCrm16Size
-      const sqftEl =
-        document.getElementById("field_ufCrm16Size") ||
-        document.getElementById("field_UF_CRM_16_SIZE") ||
-        document.getElementById("field_ufCrm16SqFt");
-      if (sqftEl) {
-        const rawSqft =
-          sqftEl.value !== undefined ? String(sqftEl.value).trim() : "";
-        if (rawSqft !== "") {
-          const numSqft = Number(rawSqft);
-          const valToSave = !isNaN(numSqft) ? numSqft : rawSqft;
-          payload["UF_CRM_16_SIZE"] = valToSave;
-          payload["ufCrm16Size"] = valToSave;
-        } else {
-          payload["UF_CRM_16_SIZE"] = "";
-          payload["ufCrm16Size"] = "";
-        }
-      } else if (
-        payload["ufCrm16Size"] !== undefined ||
-        payload["UF_CRM_16_SIZE"] !== undefined ||
-        payload["ufCrm16SqFt"] !== undefined
-      ) {
-        const rawSqft =
-          payload["UF_CRM_16_SIZE"] !== undefined
-            ? payload["UF_CRM_16_SIZE"]
-            : payload["ufCrm16Size"] !== undefined
-              ? payload["ufCrm16Size"]
-              : payload["ufCrm16SqFt"];
+    // Synchronize Built-up Area / Sq Ft field with Bitrix UF_CRM_16_SIZE and ufCrm16Size
+    const sqftEl =
+      document.getElementById("field_ufCrm16Size") ||
+      document.getElementById("field_UF_CRM_16_SIZE") ||
+      document.getElementById("field_ufCrm16SqFt");
+    if (sqftEl) {
+      const rawSqft =
+        sqftEl.value !== undefined ? String(sqftEl.value).trim() : "";
+      if (rawSqft !== "") {
         const numSqft = Number(rawSqft);
-        const valToSave =
-          rawSqft === "" ? "" : !isNaN(numSqft) ? numSqft : rawSqft;
+        const valToSave = !isNaN(numSqft) ? numSqft : rawSqft;
         payload["UF_CRM_16_SIZE"] = valToSave;
         payload["ufCrm16Size"] = valToSave;
+      } else {
+        payload["UF_CRM_16_SIZE"] = "";
+        payload["ufCrm16Size"] = "";
       }
-
-      // Synchronize Description Intro/Outro and Features 1-10 with native Bitrix UF_CRM_16_* fields
-      for (let i = 1; i <= 10; i++) {
-        const featureKey = `ufCrm_16_FEATURE_${i}`;
-        const upper = `UF_CRM_16_FEATURE_${i}`;
-        const camel = `ufCrm16Feature${i}`;
-        const el =
-          document.getElementById(`field_${featureKey}`) ||
-          document.getElementById(`field_${camel}`);
-        if (el && el.value !== undefined) {
-          const val = el.value.trim();
-          payload[featureKey] = val;
-          payload[upper] = val;
-          payload[camel] = val;
-        } else if (payload[featureKey] !== undefined) {
-          payload[upper] = payload[featureKey];
-          payload[camel] = payload[featureKey];
-        }
-      }
-      [
-        ["ufCrm16DescriptionIntroText", "UF_CRM_16_DESCRIPTION_INTRO_TEXT"],
-        ["ufCrm16DescriptionOutroText", "UF_CRM_16_DESCRIPTION_OUTRO_TEXT"],
-      ].forEach(([camel, upper]) => {
-        const el = document.getElementById(`field_${camel}`);
-        if (el && el.value !== undefined) {
-          const val = el.value.trim();
-          payload[camel] = val;
-          payload[upper] = val;
-        } else if (payload[camel] !== undefined) {
-          payload[upper] = payload[camel];
-        }
-      });
-
-      // Synchronize Country Code from Country Name (fallback to blank)
-      const countryEl = document.getElementById("field_ufCrm16_1791172854") || document.getElementById("field_UF_CRM_16_1791172854");
-      const rawCountry = countryEl && countryEl.value !== undefined ? String(countryEl.value).trim() : (payload["ufCrm16_1791172854"] || payload["UF_CRM_16_1791172854"] || "");
-      const resolvedCode = resolveCountryCode(rawCountry);
-      payload["ufCrm16CountryCode"] = resolvedCode;
-      payload["UF_CRM_16_COUNTRY_CODE"] = resolvedCode;
-      if (rawCountry) {
-        payload["ufCrm16_1791172854"] = rawCountry;
-        payload["UF_CRM_16_1791172854"] = rawCountry;
-      }
-
-      // Synchronize Trakheesi Permit Expiry Date across all variants
-      const trakheesiExpiryEl =
-        document.getElementById("field_ufCrm16_1791787502111") ||
-        document.getElementById("field_UF_CRM_16_1791787502111") ||
-        document.getElementById("field_ufCrm16FormAExpiryDate");
-      if (trakheesiExpiryEl) {
-        const rawExpiry =
-          trakheesiExpiryEl.value !== undefined
-            ? String(trakheesiExpiryEl.value).trim()
-            : "";
-        const formattedDate = formatDateForInput(rawExpiry);
-        payload["ufCrm16_1791787502111"] = formattedDate;
-        payload["UF_CRM_16_1791787502111"] = formattedDate;
-        payload["ufCrm16FormAExpiryDate"] = formattedDate;
-        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;
-      } else if (
-        payload["ufCrm16_1791787502111"] !== undefined ||
-        payload["UF_CRM_16_1791787502111"] !== undefined ||
-        payload["ufCrm16FormAExpiryDate"] !== undefined ||
-        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] !== undefined
-      ) {
-        const val =
-          payload["ufCrm16_1791787502111"] ??
-          payload["UF_CRM_16_1791787502111"] ??
-          payload["ufCrm16FormAExpiryDate"] ??
-          payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] ??
-          "";
-        const formattedDate = formatDateForInput(val);
-        payload["ufCrm16_1791787502111"] = formattedDate;
-        payload["UF_CRM_16_1791787502111"] = formattedDate;
-        payload["ufCrm16FormAExpiryDate"] = formattedDate;
-        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;
-      }
-
-      // Synchronize Trakheesi Permit No across all variants
-      const trakheesiNoEl =
-        document.getElementById("field_ufCrm16_1791787455285") ||
-        document.getElementById("field_UF_CRM_16_1791787455285") ||
-        document.getElementById("field_ufCrm16DtcmPermitNumber") ||
-        document.getElementById("field_ufCrm16ReraPermitNumber");
-      if (trakheesiNoEl) {
-        const rawNo =
-          trakheesiNoEl.value !== undefined
-            ? String(trakheesiNoEl.value).trim()
-            : "";
-        payload["ufCrm16_1791787455285"] = rawNo;
-        payload["UF_CRM_16_1791787455285"] = rawNo;
-        if (!payload["ufCrm16DtcmPermitNumber"])
-          payload["ufCrm16DtcmPermitNumber"] = rawNo;
-        if (!payload["UF_CRM_16_DTCM_PERMIT_NUMBER"])
-          payload["UF_CRM_16_DTCM_PERMIT_NUMBER"] = rawNo;
-      } else if (payload["ufCrm16_1791787455285"] !== undefined) {
-        payload["UF_CRM_16_1791787455285"] = payload["ufCrm16_1791787455285"];
-      }
-
-      if (
-        payload["contactIds"] &&
-        typeof payload["contactIds"] === "string" &&
-        payload["contactIds"].includes(",")
-      ) {
-        payload["contactIds"] = payload["contactIds"]
-          .split(",")
-          .map((s) => s.trim())
-          .filter(Boolean);
-      }
-
-      // Package pending file uploads & removals
-      const allFileFieldKeys = new Set([
-        ...Object.keys(pendingFileUploads),
-        ...Object.keys(removedFileIds),
-      ]);
-
-      for (const fieldKey of allFileFieldKeys) {
-        const fileList = pendingFileUploads[fieldKey] || [];
-        const removedSet = removedFileIds[fieldKey] || new Set();
-        if (fileList.length === 0 && removedSet.size === 0) continue;
-
-        const fConfig = findFieldConfig(fieldKey);
-        const isMulti =
-          Boolean(
-            fConfig?.isMultiple ||
-            fConfig?.multiple ||
-            fieldKey.includes("1791881642219") ||
-            fieldKey.includes("1791881665252") ||
-            fieldKey.includes("1791544736052") ||
-            fieldKey.includes("PHOTOS") ||
-            fieldKey.includes("DOCUMENTS")
-          );
-
-        if (isMulti) {
-          // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
-          const existingRaw =
-            (fConfig ? getFieldValue(fConfig, currentListing) : null) ||
-            currentListing?.[fieldKey] ||
-            (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
-          const existingList = Array.isArray(existingRaw)
-            ? existingRaw
-            : existingRaw
-              ? [existingRaw]
-              : [];
-          const keptIds = existingList
-            .map((it) =>
-              typeof it === "object" ? it.id || it.ID || it.fileId : it,
-            )
-            .filter(Boolean)
-            .filter((id) => !removedSet.has(String(id)));
-
-          const newTuples = fileList.map((item) => [
-            item.name,
-            (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
-          ]);
-          const combined = [...keptIds, ...newTuples];
-          payload[fieldKey] = combined.length ? combined : [""];
-        } else {
-          // Single file field
-          if (fileList.length > 0) {
-            const item = fileList[0];
-            const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
-            payload[fieldKey] = { fileData: [item.name, base64] };
-          } else if (removedSet.size > 0) {
-            // Delete existing single file in Bitrix CRM
-            payload[fieldKey] = { del: "Y" };
-          }
-        }
-      }
-
-      console.log("[LISTING] Saving payload:", payload);
-      await updateListing(currentListingId, payload);
-
-      showToast("Listing updated successfully in Bitrix24!", "success");
-      const undoBannerEl = document.getElementById("transaction-undo-banner");
-      if (undoBannerEl) undoBannerEl.style.display = "none";
-      cachedUndoState = null;
-      pendingFileUploads = {};
-      removedFileIds = {};
-      setDirty(false);
-
-      await loadListingDetails(false);
-    } catch (err) {
-      console.error("Failed to save listing:", err);
-      showToast(`Save failed: ${err.message}`, "error");
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = "SAVE CHANGES";
-      if (saveBtnTop) {
-        saveBtnTop.disabled = false;
-        saveBtnTop.innerHTML = "SAVE CHANGES";
-      }
-    }
-  });
-
-  // ============================================================================
-  // 8. INITIALIZATION
-  // ============================================================================
-  async function loadListingDetails(showLoader = true) {
-    if (!isEmbeddedInCrm()) {
-      console.warn(
-        "[SECURITY] Standalone URL access blocked. App is only accessible inside Bitrix24 CRM.",
-      );
-      renderCrmLockoutScreen();
-      return;
+    } else if (
+      payload["ufCrm16Size"] !== undefined ||
+      payload["UF_CRM_16_SIZE"] !== undefined ||
+      payload["ufCrm16SqFt"] !== undefined
+    ) {
+      const rawSqft =
+        payload["UF_CRM_16_SIZE"] !== undefined
+          ? payload["UF_CRM_16_SIZE"]
+          : payload["ufCrm16Size"] !== undefined
+            ? payload["ufCrm16Size"]
+            : payload["ufCrm16SqFt"];
+      const numSqft = Number(rawSqft);
+      const valToSave =
+        rawSqft === "" ? "" : !isNaN(numSqft) ? numSqft : rawSqft;
+      payload["UF_CRM_16_SIZE"] = valToSave;
+      payload["ufCrm16Size"] = valToSave;
     }
 
+    // Synchronize Description Intro/Outro and Features 1-10 with native Bitrix UF_CRM_16_* fields
+    for (let i = 1; i <= 10; i++) {
+      const featureKey = `ufCrm_16_FEATURE_${i}`;
+      const upper = `UF_CRM_16_FEATURE_${i}`;
+      const camel = `ufCrm16Feature${i}`;
+      const el =
+        document.getElementById(`field_${featureKey}`) ||
+        document.getElementById(`field_${camel}`);
+      if (el && el.value !== undefined) {
+        const val = el.value.trim();
+        payload[featureKey] = val;
+        payload[upper] = val;
+        payload[camel] = val;
+      } else if (payload[featureKey] !== undefined) {
+        payload[upper] = payload[featureKey];
+        payload[camel] = payload[featureKey];
+      }
+    }
+    [
+      ["ufCrm16DescriptionIntroText", "UF_CRM_16_DESCRIPTION_INTRO_TEXT"],
+      ["ufCrm16DescriptionOutroText", "UF_CRM_16_DESCRIPTION_OUTRO_TEXT"],
+    ].forEach(([camel, upper]) => {
+      const el = document.getElementById(`field_${camel}`);
+      if (el && el.value !== undefined) {
+        const val = el.value.trim();
+        payload[camel] = val;
+        payload[upper] = val;
+      } else if (payload[camel] !== undefined) {
+        payload[upper] = payload[camel];
+      }
+    });
+
+    // Synchronize Country Code from Country Name (fallback to blank)
+    const countryEl = document.getElementById("field_ufCrm16_1791172854") || document.getElementById("field_UF_CRM_16_1791172854");
+    const rawCountry = countryEl && countryEl.value !== undefined ? String(countryEl.value).trim() : (payload["ufCrm16_1791172854"] || payload["UF_CRM_16_1791172854"] || "");
+    const resolvedCode = resolveCountryCode(rawCountry);
+    payload["ufCrm16CountryCode"] = resolvedCode;
+    payload["UF_CRM_16_COUNTRY_CODE"] = resolvedCode;
+    if (rawCountry) {
+      payload["ufCrm16_1791172854"] = rawCountry;
+      payload["UF_CRM_16_1791172854"] = rawCountry;
+    }
+
+    // Synchronize Trakheesi Permit Expiry Date across all variants
+    const trakheesiExpiryEl =
+      document.getElementById("field_ufCrm16_1791787502111") ||
+      document.getElementById("field_UF_CRM_16_1791787502111") ||
+      document.getElementById("field_ufCrm16FormAExpiryDate");
+    if (trakheesiExpiryEl) {
+      const rawExpiry =
+        trakheesiExpiryEl.value !== undefined
+          ? String(trakheesiExpiryEl.value).trim()
+          : "";
+      const formattedDate = formatDateForInput(rawExpiry);
+      payload["ufCrm16_1791787502111"] = formattedDate;
+      payload["UF_CRM_16_1791787502111"] = formattedDate;
+      payload["ufCrm16FormAExpiryDate"] = formattedDate;
+      payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;
+    } else if (
+      payload["ufCrm16_1791787502111"] !== undefined ||
+      payload["UF_CRM_16_1791787502111"] !== undefined ||
+      payload["ufCrm16FormAExpiryDate"] !== undefined ||
+      payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] !== undefined
+    ) {
+      const val =
+        payload["ufCrm16_1791787502111"] ??
+        payload["UF_CRM_16_1791787502111"] ??
+        payload["ufCrm16FormAExpiryDate"] ??
+        payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] ??
+        "";
+      const formattedDate = formatDateForInput(val);
+      payload["ufCrm16_1791787502111"] = formattedDate;
+      payload["UF_CRM_16_1791787502111"] = formattedDate;
+      payload["ufCrm16FormAExpiryDate"] = formattedDate;
+      payload["UF_CRM_16_FORM_A_EXPIRY_DATE"] = formattedDate;
+    }
+
+    // Synchronize Trakheesi Permit No across all variants
+    const trakheesiNoEl =
+      document.getElementById("field_ufCrm16_1791787455285") ||
+      document.getElementById("field_UF_CRM_16_1791787455285") ||
+      document.getElementById("field_ufCrm16DtcmPermitNumber") ||
+      document.getElementById("field_ufCrm16ReraPermitNumber");
+    if (trakheesiNoEl) {
+      const rawNo =
+        trakheesiNoEl.value !== undefined
+          ? String(trakheesiNoEl.value).trim()
+          : "";
+      payload["ufCrm16_1791787455285"] = rawNo;
+      payload["UF_CRM_16_1791787455285"] = rawNo;
+      if (!payload["ufCrm16DtcmPermitNumber"])
+        payload["ufCrm16DtcmPermitNumber"] = rawNo;
+      if (!payload["UF_CRM_16_DTCM_PERMIT_NUMBER"])
+        payload["UF_CRM_16_DTCM_PERMIT_NUMBER"] = rawNo;
+    } else if (payload["ufCrm16_1791787455285"] !== undefined) {
+      payload["UF_CRM_16_1791787455285"] = payload["ufCrm16_1791787455285"];
+    }
+
+    if (
+      payload["contactIds"] &&
+      typeof payload["contactIds"] === "string" &&
+      payload["contactIds"].includes(",")
+    ) {
+      payload["contactIds"] = payload["contactIds"]
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    // Package pending file uploads & removals
+    const allFileFieldKeys = new Set([
+      ...Object.keys(pendingFileUploads),
+      ...Object.keys(removedFileIds),
+    ]);
+
+    for (const fieldKey of allFileFieldKeys) {
+      const fileList = pendingFileUploads[fieldKey] || [];
+      const removedSet = removedFileIds[fieldKey] || new Set();
+      if (fileList.length === 0 && removedSet.size === 0) continue;
+
+      const fConfig = findFieldConfig(fieldKey);
+      const isMulti =
+        Boolean(
+          fConfig?.isMultiple ||
+          fConfig?.multiple ||
+          fieldKey.includes("1791881642219") ||
+          fieldKey.includes("1791881665252") ||
+          fieldKey.includes("1791544736052") ||
+          fieldKey.includes("PHOTOS") ||
+          fieldKey.includes("DOCUMENTS")
+        );
+
+      if (isMulti) {
+        // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
+        const existingRaw =
+          (fConfig ? getFieldValue(fConfig, currentListing) : null) ||
+          currentListing?.[fieldKey] ||
+          (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
+        const existingList = Array.isArray(existingRaw)
+          ? existingRaw
+          : existingRaw
+            ? [existingRaw]
+            : [];
+        const keptIds = existingList
+          .map((it) =>
+            typeof it === "object" ? it.id || it.ID || it.fileId : it,
+          )
+          .filter(Boolean)
+          .filter((id) => !removedSet.has(String(id)));
+
+        const newTuples = fileList.map((item) => [
+          item.name,
+          (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
+        ]);
+        const combined = [...keptIds, ...newTuples];
+        payload[fieldKey] = combined.length ? combined : [""];
+      } else {
+        // Single file field
+        if (fileList.length > 0) {
+          const item = fileList[0];
+          const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
+          payload[fieldKey] = { fileData: [item.name, base64] };
+        } else if (removedSet.size > 0) {
+          // Delete existing single file in Bitrix CRM
+          payload[fieldKey] = { del: "Y" };
+        }
+      }
+    }
+
+    console.log("[LISTING] Saving payload:", payload);
+    await updateListing(currentListingId, payload);
+
+    showToast("Listing updated successfully in Bitrix24!", "success");
+    const undoBannerEl = document.getElementById("transaction-undo-banner");
+    if (undoBannerEl) undoBannerEl.style.display = "none";
+    cachedUndoState = null;
     pendingFileUploads = {};
     removedFileIds = {};
-    if (showLoader) {
-      loadingEl.style.display = "flex";
-      contentEl.style.display = "none";
+    setDirty(false);
+
+    await loadListingDetails(false);
+  } catch (err) {
+    console.error("Failed to save listing:", err);
+    showToast(`Save failed: ${err.message}`, "error");
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerHTML = "SAVE CHANGES";
+    if (saveBtnTop) {
+      saveBtnTop.disabled = false;
+      saveBtnTop.innerHTML = "SAVE CHANGES";
+    }
+  }
+});
+
+// ============================================================================
+// 8. INITIALIZATION
+// ============================================================================
+async function loadListingDetails(showLoader = true) {
+  if (!isEmbeddedInCrm()) {
+    console.warn(
+      "[SECURITY] Standalone URL access blocked. App is only accessible inside Bitrix24 CRM.",
+    );
+    renderCrmLockoutScreen();
+    return;
+  }
+
+  pendingFileUploads = {};
+  removedFileIds = {};
+  if (showLoader) {
+    loadingEl.style.display = "flex";
+    contentEl.style.display = "none";
+  }
+
+  try {
+    currentListingId = resolveListingId();
+    if (!currentListingId) {
+      throw new Error(
+        "No Listing ID detected. Open from Listing CRM detail card or pass ?ID=108",
+      );
     }
 
-    try {
-      currentListingId = resolveListingId();
-      if (!currentListingId) {
-        throw new Error(
-          "No Listing ID detected. Open from Listing CRM detail card or pass ?ID=108",
-        );
-      }
+    console.log(`[LISTING] Loading listing #${currentListingId}...`);
+    currentListing = await fetchListing(currentListingId);
+    console.log("[LISTING] Loaded item data:", currentListing);
 
-      console.log(`[LISTING] Loading listing #${currentListingId}...`);
-      currentListing = await fetchListing(currentListingId);
-      console.log("[LISTING] Loaded item data:", currentListing);
-
-      // Determine current pipeline (categoryId) strictly from the record
-      const pipelineId =
-        currentListing?.categoryId !== undefined &&
+    // Determine current pipeline (categoryId) strictly from the record
+    const pipelineId =
+      currentListing?.categoryId !== undefined &&
         currentListing?.categoryId !== null
-          ? currentListing.categoryId
-          : currentListing?.CATEGORY_ID !== undefined &&
-              currentListing?.CATEGORY_ID !== null
-            ? currentListing.CATEGORY_ID
-            : 0;
+        ? currentListing.categoryId
+        : currentListing?.CATEGORY_ID !== undefined &&
+          currentListing?.CATEGORY_ID !== null
+          ? currentListing.CATEGORY_ID
+          : 0;
 
-      // Fetch stages strictly for the current pipeline
-      const stages = await fetchStageOptions(pipelineId).catch(() => []);
-      const stageF = findFieldConfig("stageId");
-      if (stageF) {
-        stageF.options = stages || [];
-      }
+    // Fetch stages strictly for the current pipeline
+    const stages = await fetchStageOptions(pipelineId).catch(() => []);
+    const stageF = findFieldConfig("stageId");
+    if (stageF) {
+      stageF.options = stages || [];
+    }
 
-      // Render strictly driven by the field value
-      const layoutKey = detectLayoutFromListing(currentListing);
-      renderLayout(layoutKey);
+    // Render strictly driven by the field value
+    const layoutKey = detectLayoutFromListing(currentListing);
+    renderLayout(layoutKey);
 
-      // Execute auto-calculations and field automations each time record is opened!
-      runListingAutomations({ isInitialLoad: true });
+    // Execute auto-calculations and field automations each time record is opened!
+    runListingAutomations({ isInitialLoad: true });
 
-      setDirty(false);
-      loadingEl.style.display = "none";
-      contentEl.style.display = "flex";
-      scheduleResize(40);
-      setTimeout(() => scheduleResize(300), 300);
-    } catch (err) {
-      console.error("[LISTING] Init error:", err);
-      loadingEl.innerHTML = `
+    setDirty(false);
+    loadingEl.style.display = "none";
+    contentEl.style.display = "flex";
+    scheduleResize(40);
+    setTimeout(() => scheduleResize(300), 300);
+  } catch (err) {
+    console.error("[LISTING] Init error:", err);
+    loadingEl.innerHTML = `
         <div style="text-align: center; color: var(--danger); max-width: 450px;">
           
           <strong style="font-size: 13px; display: block; margin-bottom: 4px;">Unable to Load Listing</strong>
@@ -6187,38 +6187,38 @@ function resolveCountryCode(countryName) {
           <button type="button" class="btn btn-secondary" onclick="window.location.reload()">Retry</button>
         </div>
       `;
-    }
   }
+}
 
-  // Export app instance for validation and testing
-  window.__LISTING_DETAILS_APP__ = {
-    CONFIG,
-    detectLayoutFromListing,
-    getCurrentListing: () => currentListing,
-    getCurrentLayout: () => currentLayout,
-    setLayout: (key) => renderLayout(key),
-    getPendingUploads: () => pendingFileUploads,
-    getRemovedFileIds: () => removedFileIds,
-    openLightbox,
-    closeLightbox,
-    showInWindowImage,
-    showInWindowPdf,
-    openLinkedRecord,
-    getEntityPath,
-    isLookupField,
-    getEntityMeta,
-    runListingAutomations,
-  };
+// Export app instance for validation and testing
+window.__LISTING_DETAILS_APP__ = {
+  CONFIG,
+  detectLayoutFromListing,
+  getCurrentListing: () => currentListing,
+  getCurrentLayout: () => currentLayout,
+  setLayout: (key) => renderLayout(key),
+  getPendingUploads: () => pendingFileUploads,
+  getRemovedFileIds: () => removedFileIds,
+  openLightbox,
+  closeLightbox,
+  showInWindowImage,
+  showInWindowPdf,
+  openLinkedRecord,
+  getEntityPath,
+  isLookupField,
+  getEntityMeta,
+  runListingAutomations,
+};
 
-  if (!isEmbeddedInCrm()) {
-    renderCrmLockoutScreen();
-  } else if (window.BX24) {
-    window.BX24.init(() => loadListingDetails(true));
+if (!isEmbeddedInCrm()) {
+  renderCrmLockoutScreen();
+} else if (window.BX24) {
+  window.BX24.init(() => loadListingDetails(true));
+} else {
+  if (document.readyState === "complete" || document.readyState === "interactive") {
+    loadListingDetails(true);
   } else {
-    if (document.readyState === "complete" || document.readyState === "interactive") {
-      loadListingDetails(true);
-    } else {
-      window.addEventListener("DOMContentLoaded", () => loadListingDetails(true));
-    }
+    window.addEventListener("DOMContentLoaded", () => loadListingDetails(true));
   }
+}
 })();

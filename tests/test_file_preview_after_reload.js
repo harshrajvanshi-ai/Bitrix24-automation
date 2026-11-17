@@ -92,9 +92,9 @@ const authMiddlewareCode = fs.readFileSync(path.join(__dirname, '../src/middlewa
 
 assert.ok(authMiddlewareCode.includes('StorageManager.saveAuth'), 'PASS: auth.js registers incoming active CRM tokens directly into persistent StorageManager');
 assert.ok(serverCode.includes('beforeRedirect'), 'PASS: server.js cleans Authorization headers before cloud storage redirects');
-assert.ok(tabCode.includes('fetch(pdfUrl, {\n          headers: getCrmAuthHeaders()') || tabCode.includes('fetch(pdfUrl, {\r\n          headers: getCrmAuthHeaders()'), 'PASS: tab.js attaches CRM auth headers to PDF ArrayBuffer fetch');
+assert.ok(tabCode.includes('fetch(pdfUrl, {') && tabCode.includes('headers: getCrmAuthHeaders()'), 'PASS: tab.js attaches CRM auth headers to PDF ArrayBuffer fetch');
 assert.ok(tabCode.includes("window.BX24.callMethod('crm.lead.update'"), 'PASS: tab.js implements direct client-side BX24 lead update with API fallback');
-assert.ok(listingDetailsCode.includes('fetch(pdfUrl, {\n          headers: getCrmAuthHeaders()') || listingDetailsCode.includes('fetch(pdfUrl, {\r\n          headers: getCrmAuthHeaders()'), 'PASS: listing-details.js attaches CRM auth headers to PDF ArrayBuffer fetch');
+assert.ok(listingDetailsCode.includes('fetch(pdfUrl, {') && listingDetailsCode.includes('headers: getCrmAuthHeaders()'), 'PASS: listing-details.js attaches CRM auth headers to PDF ArrayBuffer fetch');
 assert.ok(listingDetailsCode.includes('Using local fallback shell') && listingDetailsCode.includes('timer = setTimeout'), 'PASS: listing-details.js implements timed bxPromise and safe record fallback');
 console.log('  ✓ PASS: Token synchronization, S3 redirect safety, and non-blocking placement resolution verified\n');
 
