@@ -3001,6 +3001,10 @@
           ev.preventDefault();
           if (!removedFileIds[f.code]) removedFileIds[f.code] = new Set();
           removedFileIds[f.code].add(item.id ? String(item.id) : '__ALL__');
+          try {
+            localStorage.removeItem(`b24_filename_${currentLeadId}_${f.code}`);
+            if (item.id) localStorage.removeItem(`b24_file_title_${item.id}`);
+          } catch (_) {}
           const gIdx = fieldGallery.indexOf(item);
           if (gIdx !== -1) fieldGallery.splice(gIdx, 1);
           thumb.remove();

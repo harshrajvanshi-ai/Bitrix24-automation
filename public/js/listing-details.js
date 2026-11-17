@@ -3103,13 +3103,13 @@ function renderMediaField(field, rawValue, container) {
   // Collect and normalize all existing files into a field gallery
   const existingList = Array.isArray(rawValue)
     ? rawValue
-    : rawValue
+    : (rawValue && rawValue !== "0" && rawValue !== 0)
       ? [rawValue]
       : [];
   const fieldGallery = [];
 
   existingList.forEach((fileItem, idx) => {
-    if (!fileItem) return;
+    if (!fileItem || fileItem === "0" || fileItem === 0) return;
 
     let fileUrl = "";
     let fileName = "";
@@ -3152,8 +3152,8 @@ function renderMediaField(field, rawValue, container) {
         fileName = fid ? `File #${fid}` : `${field.label} #${idx + 1}`;
       }
     } else if (
-      typeof fileItem === "number" ||
-      (typeof fileItem === "string" && /^\d+$/.test(fileItem.trim()))
+      (typeof fileItem === "number" && fileItem > 0) ||
+      (typeof fileItem === "string" && /^\d+$/.test(fileItem.trim()) && parseInt(fileItem.trim(), 10) > 0)
     ) {
       fid = String(fileItem).trim();
       const fieldCode = field.crmCode || field.key || field.code || '';
@@ -3164,14 +3164,14 @@ function renderMediaField(field, rawValue, container) {
     } else if (typeof fileItem === "string" && fileItem.startsWith("http")) {
       fileUrl = fileItem;
       fileName = fileItem.split("/").pop().split("?")[0] || "Attached File";
-    } else if (typeof fileItem === "string" && fileItem.trim()) {
+    } else if (typeof fileItem === "string" && fileItem.trim() && fileItem.trim() !== "0") {
       fileUrl = fileItem.trim();
       fileName =
         fileItem.split("/").pop().split("?")[0] ||
         `${field.label} #${idx + 1}`;
     }
 
-    if (!fileUrl) return;
+    if (!fileUrl || fid === "0" || fid === 0) return;
 
     if (!fid && fileUrl) {
       const idMatch =
@@ -4161,9 +4161,17 @@ function getFieldValue(f, item) {
       ) {
         continue;
       }
-      // If file field has an empty array [], continue to fallback
-      if (f.type === "file" && Array.isArray(val) && val.length === 0) {
-        continue;
+      // If file field has an empty array [], 0, "0", or false, continue to fallback
+      if (f.type === "file") {
+        if (
+          val === 0 ||
+          val === "0" ||
+          val === false ||
+          val === null ||
+          (Array.isArray(val) && val.length === 0)
+        ) {
+          continue;
+        }
       }
       if (typeof val === "object" && val !== null) {
         if (f.type === "url" || f.key === "ufCrm16QrCodeLink") {
@@ -4192,8 +4200,16 @@ function getFieldValue(f, item) {
       ) {
         continue;
       }
-      if (f.type === "file" && Array.isArray(val) && val.length === 0) {
-        continue;
+      if (f.type === "file") {
+        if (
+          val === 0 ||
+          val === "0" ||
+          val === false ||
+          val === null ||
+          (Array.isArray(val) && val.length === 0)
+        ) {
+          continue;
+        }
       }
       if (typeof val === "object" && val !== null) {
         if (f.type === "url" || f.key === "ufCrm16QrCodeLink") {
@@ -6287,28 +6303,26 @@ formEl.addEventListener("submit", async (e) => {
           .filter(Boolean)
           .filter((id) => !removedSet.has(String(id)) && !removedSet.has("__ALL__"));
 
-        const newTuples = fileList.map((item) => ({
-          fileData: [
-            item.name,
-            (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
-          ],
-        }));
+        const newTuples = fileList.map((item) => [
+          item.name,
+          (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
+        ]);
         const combined = [...keptIds, ...newTuples];
-        payload[canonicalKey] = combined.length > 0 ? combined : "";
+        payload[canonicalKey] = combined.length > 0 ? combined : [];
         if (currentListing) {
           for (const ck of candKeys) {
             currentListing[ck] = combined;
           }
         }
       } else {
-        // Single file field
+        // Single file field: Bitrix SPA accepts [fileName, base64] directly
         if (fileList.length > 0) {
           const item = fileList[0];
           const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
-          payload[canonicalKey] = { fileData: [item.name, base64] };
+          payload[canonicalKey] = [item.name, base64];
           if (currentListing) {
             for (const ck of candKeys) {
-              currentListing[ck] = { fileData: [item.name, base64] };
+              currentListing[ck] = [item.name, base64];
             }
           }
         } else if (removedSet.size > 0) {
@@ -6339,9 +6353,9 @@ formEl.addEventListener("submit", async (e) => {
     for (const fieldKey of allFileFieldKeys) {
       const fConfig = findFieldConfig(fieldKey);
       const canonicalKey = fConfig ? fConfig.key : fieldKey;
-      if (payload[canonicalKey] === "") {
+      if (payload[canonicalKey] === "" || (Array.isArray(payload[canonicalKey]) && payload[canonicalKey].length === 0)) {
         const checkVal = updatedItem?.[canonicalKey];
-        if (checkVal && typeof checkVal === "object" && checkVal.id) {
+        if (checkVal && checkVal !== 0 && checkVal !== "0" && ((Array.isArray(checkVal) && checkVal.length > 0) || (typeof checkVal === "object" && checkVal.id))) {
           verificationFailed = true;
         }
       }

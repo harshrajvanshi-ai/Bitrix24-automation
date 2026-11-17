@@ -536,6 +536,24 @@ async function getCachedSpaItemFields(entityTypeId, domain = null) {
  * Resilient SPA item updater supporting dynamic entityTypeId (e.g. 1058 <-> 16)
  * with schema whitelisting, canonical key enforcement, and post-save re-fetch verification
  */
+function toSpaFileData(item) {
+  if (!item) return null;
+  if (typeof item === 'number' || (typeof item === 'string' && /^\d+$/.test(String(item).trim()))) {
+    const num = parseInt(item, 10);
+    return num > 0 ? num : null;
+  }
+  if (item.fileData && Array.isArray(item.fileData) && item.fileData.length === 2) {
+    return [String(item.fileData[0]), cleanBase64(item.fileData[1])];
+  }
+  if (Array.isArray(item) && item.length === 2 && typeof item[0] === 'string' && typeof item[1] === 'string') {
+    return [item[0], cleanBase64(item[1])];
+  }
+  if (item.name && item.base64) {
+    return [item.name, cleanBase64(item.base64)];
+  }
+  return item;
+}
+
 async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, domain = null) {
   const pId = parseInt(preferredTypeId, 10) || 1058;
   const candidates = [pId, pId === 1058 ? 16 : 1058];
@@ -573,10 +591,17 @@ async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, d
 
         if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
           sanitizedFields[targetKey] = '';
+        } else if (v === '' || v === null) {
+          sanitizedFields[targetKey] = '';
+        } else if (Array.isArray(v) && v.length === 2 && typeof v[0] === 'string' && typeof v[1] === 'string' && (v[1].length > 50 || v[1].startsWith('data:'))) {
+          // Single file tuple [fileName, base64]
+          sanitizedFields[targetKey] = toSpaFileData(v);
         } else if (Array.isArray(v)) {
-          sanitizedFields[targetKey] = v.map(toFileData).filter(Boolean);
+          // Multiple file array [ id, [fileName, base64], ... ]
+          sanitizedFields[targetKey] = v.map(toSpaFileData).filter(x => x !== null);
         } else if (v && typeof v === 'object' && v.fileData) {
-          sanitizedFields[targetKey] = toFileData(v);
+          // Single file object { fileData: [fileName, base64] }
+          sanitizedFields[targetKey] = toSpaFileData(v);
         } else {
           sanitizedFields[targetKey] = v;
         }
@@ -849,6 +874,8 @@ app.get('/api/file/proxy', async (req, res) => {
     } catch (_) {
       return res.status(400).send('Invalid url');
     }
+
+    const domain = parsed.hostname;
 
     const isAllowedHost = (hostname) => {
       if (!hostname) return false;
