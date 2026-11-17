@@ -214,9 +214,18 @@
     if (window.BX24 && typeof window.BX24.getAuth === 'function') {
       const auth = window.BX24.getAuth();
       if (auth && auth.access_token) {
+        window.__BITRIX_AUTH_TOKEN__ = auth.access_token;
+        try {
+          sessionStorage.setItem('b24_access_token', auth.access_token);
+          if (auth.domain) sessionStorage.setItem('b24_domain', auth.domain);
+        } catch (_) {}
         headers['X-Bitrix-Auth'] = auth.access_token;
         headers['X-Bitrix-Domain'] = auth.domain || 'csl.bitrix24.com';
       }
+    }
+    if (!headers['X-Bitrix-Auth']) {
+      const fallbackToken = window.__BITRIX_AUTH_TOKEN__ || (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('b24_access_token') : null);
+      if (fallbackToken) headers['X-Bitrix-Auth'] = fallbackToken;
     }
     return headers;
   }
@@ -230,7 +239,7 @@
         if (options) {
           const parsed = typeof options === 'string' ? JSON.parse(options) : options;
           const id = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.leadId || parsed.LEAD_ID;
-          if (id && String(id) !== '420') return String(id);
+          if (id) return String(id);
         }
       } catch (e) { }
     }
@@ -238,14 +247,14 @@
     // 2. Explicit URL query parameter or PLACEMENT_OPTIONS in URL
     const urlParams = new URLSearchParams(window.location.search);
     const directId = urlParams.get('ID') || urlParams.get('id') || urlParams.get('leadId') || urlParams.get('ENTITY_ID') || urlParams.get('entityId');
-    if (directId && String(directId) !== '420') return String(directId);
+    if (directId) return String(directId);
 
     const placementParam = urlParams.get('PLACEMENT_OPTIONS') || urlParams.get('options') || urlParams.get('params');
     if (placementParam) {
       try {
         const parsed = JSON.parse(placementParam);
         const id = parsed.ID || parsed.id || parsed.ENTITY_ID || parsed.entityId || parsed.leadId || parsed.LEAD_ID;
-        if (id && String(id) !== '420') return String(id);
+        if (id) return String(id);
       } catch (e) { }
     }
 
@@ -254,21 +263,21 @@
       if (document.referrer) {
         const refMatch = document.referrer.match(/\/crm\/lead\/details\/(\d+)/i) ||
           document.referrer.match(/[?&](?:ID|id|leadId)=(\d+)/i);
-        if (refMatch && refMatch[1] && String(refMatch[1]) !== '420') {
+        if (refMatch && refMatch[1]) {
           return String(refMatch[1]);
         }
       }
     } catch (_) { }
 
     // 4. Server injected initial lead ID
-    if (window.__INITIAL_LEAD_ID__ && String(window.__INITIAL_LEAD_ID__) !== '420') {
+    if (window.__INITIAL_LEAD_ID__) {
       return String(window.__INITIAL_LEAD_ID__);
     }
 
     // 5. Session storage from recent view
     try {
       const stored = sessionStorage.getItem('b24_last_lead_id');
-      if (stored && String(stored) !== '420') return String(stored);
+      if (stored) return String(stored);
     } catch (_) { }
 
     return null;
@@ -1395,9 +1404,10 @@
       base = `https://${domain}${base.startsWith('/') ? '' : '/'}${base}`;
     }
 
+    const effectiveLeadId = currentLeadId || currentLead?.id || resolveLeadId();
     if (base.includes('crm_show_file.php')) {
-      if (currentLeadId && !base.includes('ownerId=')) {
-        base += `${base.includes('?') ? '&' : '?'}ownerTypeId=1&ownerId=${encodeURIComponent(currentLeadId)}`;
+      if (effectiveLeadId && !base.includes('ownerId=')) {
+        base += `${base.includes('?') ? '&' : '?'}ownerTypeId=1&ownerId=${encodeURIComponent(effectiveLeadId)}`;
       }
       if (!base.includes('ownerTypeId=')) {
         base += `${base.includes('?') ? '&' : '?'}ownerTypeId=1`;
@@ -1419,6 +1429,12 @@
     }
     if (!token && window.__BITRIX_AUTH_TOKEN__) {
       token = window.__BITRIX_AUTH_TOKEN__;
+    }
+    if (!token && typeof sessionStorage !== 'undefined') {
+      token = sessionStorage.getItem('b24_access_token') || '';
+    }
+    if (!domain && typeof sessionStorage !== 'undefined') {
+      domain = sessionStorage.getItem('b24_domain') || '';
     }
 
     const params = new URLSearchParams();
@@ -1780,7 +1796,9 @@
         }
 
         // For HTTP(S) URLs, stream as ArrayBuffer to verify binary PDF content and bypass frame/CORS blockers
-        fetch(pdfUrl)
+        fetch(pdfUrl, {
+          headers: getCrmAuthHeaders()
+        })
           .then(async (res) => {
             if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             const ct = res.headers.get("content-type") || "";
@@ -4463,17 +4481,53 @@
     await Promise.all(filePromises);
 
     try {
-      const res = await fetch(`/api/lead/${currentLeadId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...getCrmAuthHeaders()
-        },
-        body: JSON.stringify({ fields: payload })
-      });
+      let saveSuccess = false;
+      let lastSaveError = null;
 
-      const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'Failed to update lead');
+      // 1. If running inside Bitrix24 iframe with active BX24 SDK, try direct client-side update first
+      if (window.BX24 && typeof window.BX24.callMethod === 'function') {
+        try {
+          const bxSavePromise = new Promise((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error('BX24 timeout')), 5000);
+            window.BX24.callMethod('crm.lead.update', { id: currentLeadId, fields: payload }, (res) => {
+              clearTimeout(timer);
+              if (res.error()) {
+                reject(new Error(res.error().toString()));
+              } else {
+                resolve(res.data());
+              }
+            });
+          });
+          await bxSavePromise;
+          saveSuccess = true;
+          // Synchronize to server in background so server cache / storage stays warm
+          fetch(`/api/lead/${currentLeadId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...getCrmAuthHeaders() },
+            body: JSON.stringify({ fields: payload })
+          }).catch(() => {});
+        } catch (bxErr) {
+          lastSaveError = bxErr;
+          console.warn('[TAB SAVE] Direct BX24.callMethod failed, falling back to server API:', bxErr.message);
+        }
+      }
+
+      // 2. Fallback to server API if BX24 was not available or failed
+      if (!saveSuccess) {
+        const res = await fetch(`/api/lead/${currentLeadId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...getCrmAuthHeaders()
+          },
+          body: JSON.stringify({ fields: payload })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || lastSaveError?.message || 'Failed to update lead');
+        }
+      }
 
       showToast('Lead details saved to Bitrix24!', 'success');
       const undoBannerEl = document.getElementById('transaction-undo-banner');
@@ -4581,7 +4635,7 @@
         try {
           const latestRes = await fetch('/api/lead/latest', { headers: getCrmAuthHeaders() });
           const latestData = await latestRes.json();
-          if (latestData?.id && String(latestData.id) !== '420') {
+          if (latestData?.id) {
             currentLeadId = String(latestData.id);
           }
         } catch (_) { }

@@ -223,14 +223,16 @@ app.all('/tab', (req, res) => {
   // Ensure iframing is allowed
   res.removeHeader('X-Frame-Options');
 
-  // If Bitrix24 POSTs auth details to the tab, update storage in background
-  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
-    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
+  // If Bitrix24 POSTs or GETs auth details to the tab, update storage in background
+  const tabAuthId = req.body?.AUTH_ID || req.query?.AUTH_ID || req.query?.auth;
+  const tabDomain = req.body?.DOMAIN || req.query?.DOMAIN || req.query?.domain;
+  if (tabAuthId && tabDomain) {
+    registerCrmSessionToken(tabAuthId, tabDomain);
     StorageManager.saveAuth({
-      access_token: req.body.AUTH_ID,
-      refresh_token: req.body.REFRESH_ID,
-      domain: req.body.DOMAIN,
-      member_id: req.body.member_id
+      access_token: tabAuthId,
+      refresh_token: req.body?.REFRESH_ID || req.query?.REFRESH_ID,
+      domain: tabDomain,
+      member_id: req.body?.member_id || req.query?.member_id
     });
   }
 
@@ -264,7 +266,7 @@ app.all('/tab', (req, res) => {
   const htmlPath = path.join(__dirname, 'views/tab.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
-  if (initialLeadId && String(initialLeadId) !== '420') {
+  if (initialLeadId) {
     html = html.replace(
       'window.__INITIAL_LEAD_ID__ = null;',
       `window.__INITIAL_LEAD_ID__ = "${initialLeadId}";`
@@ -308,13 +310,15 @@ app.all('/tab', (req, res) => {
 app.all('/matching-listings', (req, res) => {
   res.removeHeader('X-Frame-Options');
 
-  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
-    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
+  const listAuthId = req.body?.AUTH_ID || req.query?.AUTH_ID || req.query?.auth;
+  const listDomain = req.body?.DOMAIN || req.query?.DOMAIN || req.query?.domain;
+  if (listAuthId && listDomain) {
+    registerCrmSessionToken(listAuthId, listDomain);
     StorageManager.saveAuth({
-      access_token: req.body.AUTH_ID,
-      refresh_token: req.body.REFRESH_ID,
-      domain: req.body.DOMAIN,
-      member_id: req.body.member_id
+      access_token: listAuthId,
+      refresh_token: req.body?.REFRESH_ID || req.query?.REFRESH_ID,
+      domain: listDomain,
+      member_id: req.body?.member_id || req.query?.member_id
     });
   }
 
@@ -343,13 +347,15 @@ app.all('/matching-install', (req, res) => {
 app.all('/listing-details', (req, res) => {
   res.removeHeader('X-Frame-Options');
 
-  if (req.body?.AUTH_ID && req.body?.DOMAIN) {
-    registerCrmSessionToken(req.body.AUTH_ID, req.body.DOMAIN);
+  const listAuthId = req.body?.AUTH_ID || req.query?.AUTH_ID || req.query?.auth;
+  const listDomain = req.body?.DOMAIN || req.query?.DOMAIN || req.query?.domain;
+  if (listAuthId && listDomain) {
+    registerCrmSessionToken(listAuthId, listDomain);
     StorageManager.saveAuth({
-      access_token: req.body.AUTH_ID,
-      refresh_token: req.body.REFRESH_ID,
-      domain: req.body.DOMAIN,
-      member_id: req.body.member_id
+      access_token: listAuthId,
+      refresh_token: req.body?.REFRESH_ID || req.query?.REFRESH_ID,
+      domain: listDomain,
+      member_id: req.body?.member_id || req.query?.member_id
     });
   }
 
@@ -388,7 +394,7 @@ app.all('/listing-details', (req, res) => {
   const htmlPath = path.join(__dirname, 'views/listing-details.html');
   let html = fs.readFileSync(htmlPath, 'utf-8');
 
-  if (initialListingId && String(initialListingId) !== '108') {
+  if (initialListingId) {
     html = html.replace(
       'window.__INITIAL_LISTING_ID__ = null;',
       `window.__INITIAL_LISTING_ID__ = "${initialListingId}";`
@@ -490,6 +496,15 @@ app.get('/api/listing/:id', verifyCrmAccess, async (req, res) => {
     const listingId = parseInt(req.params.id, 10);
     if (!listingId) {
       return res.status(400).json({ success: false, error: 'Invalid listing ID' });
+    }
+    const incomingAuth = req.headers['x-bitrix-auth'] || req.query?.auth;
+    const incomingDomain = req.headers['x-bitrix-domain'] || req.query?.domain;
+    if (incomingAuth && incomingAuth.length >= 20) {
+      StorageManager.saveAuth({
+        access_token: incomingAuth,
+        domain: incomingDomain || 'csl.bitrix24.com',
+        member_id: 'active_crm_session'
+      });
     }
     const result = await BitrixClient.call('crm.item.get', {
       entityTypeId: 1058,
@@ -772,8 +787,17 @@ app.get('/api/file/proxy', async (req, res) => {
         if (String(entityTypeId) === '1') {
           item = await BitrixClient.crmLeadGet(recordId, domain);
         } else {
-          const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId }, domain);
-          item = itemRes?.item || itemRes;
+          try {
+            const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId }, domain);
+            item = itemRes?.item || itemRes;
+          } catch (e1) {
+            if (String(entityTypeId) === '1058') {
+              try {
+                const itemRes16 = await BitrixClient.call('crm.item.get', { entityTypeId: 16, id: recordId }, domain);
+                item = itemRes16?.item || itemRes16;
+              } catch (_) {}
+            }
+          }
         }
         if (item) {
           let found = null;
@@ -848,7 +872,7 @@ app.get('/api/file/proxy', async (req, res) => {
     }
 
     // Attach Bitrix authentication
-    if (auth?.accessToken && !parsed.searchParams.has('auth') && !parsed.searchParams.has('token')) {
+    if (auth?.accessToken && !parsed.searchParams.has('token')) {
       parsed.searchParams.set('auth', auth.accessToken);
       targetUrl = parsed.toString();
     }
@@ -868,6 +892,12 @@ app.get('/api/file/proxy', async (req, res) => {
         responseType: 'stream',
         timeout: 25000,
         maxRedirects: 5,
+        beforeRedirect: (options) => {
+          if (options.hostname && !options.hostname.includes('bitrix24') && !options.hostname.includes('bitrix.info')) {
+            delete options.headers['authorization'];
+            delete options.headers['Authorization'];
+          }
+        },
         validateStatus: (status) => status < 400
       });
     };
@@ -1682,6 +1712,16 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
 
   if (!leadId) {
     return res.status(400).json({ success: false, error: 'Missing lead ID' });
+  }
+
+  const incomingAuth = req.headers['x-bitrix-auth'] || req.query?.auth || req.body?.auth;
+  const incomingDomain = req.headers['x-bitrix-domain'] || req.query?.domain || req.body?.domain;
+  if (incomingAuth && incomingAuth.length >= 20) {
+    StorageManager.saveAuth({
+      access_token: incomingAuth,
+      domain: incomingDomain || 'csl.bitrix24.com',
+      member_id: req.body?.member_id || 'active_crm_session'
+    });
   }
 
   if (Object.keys(fields).length === 0) {

@@ -1397,9 +1397,18 @@
     if (window.BX24 && typeof window.BX24.getAuth === "function") {
       const auth = window.BX24.getAuth();
       if (auth && auth.access_token) {
+        window.__BITRIX_AUTH_TOKEN__ = auth.access_token;
+        try {
+          sessionStorage.setItem("b24_access_token", auth.access_token);
+          if (auth.domain) sessionStorage.setItem("b24_domain", auth.domain);
+        } catch (_) {}
         headers["X-Bitrix-Auth"] = auth.access_token;
         headers["X-Bitrix-Domain"] = auth.domain || "csl.bitrix24.com";
       }
+    }
+    if (!headers["X-Bitrix-Auth"]) {
+      const fallbackToken = window.__BITRIX_AUTH_TOKEN__ || (typeof sessionStorage !== "undefined" ? sessionStorage.getItem("b24_access_token") : null);
+      if (fallbackToken) headers["X-Bitrix-Auth"] = fallbackToken;
     }
     return headers;
   }
@@ -1491,7 +1500,7 @@
                 parsed.entityId ||
                 parsed.listingId ||
                 parsed.LISTING_ID;
-              if (id && String(id) !== "108") return String(id);
+              if (id) return String(id);
             } catch (e) {}
           } else if (typeof options === "object") {
             const id =
@@ -1501,7 +1510,7 @@
               options.entityId ||
               options.listingId ||
               options.LISTING_ID;
-            if (id && String(id) !== "108") return String(id);
+            if (id) return String(id);
           }
         }
       } catch (e) {}
@@ -1515,7 +1524,7 @@
       urlParams.get("listingId") ||
       urlParams.get("ENTITY_ID") ||
       urlParams.get("entityId");
-    if (directId && String(directId) !== "108") return String(directId);
+    if (directId) return String(directId);
 
     const placementParam =
       urlParams.get("PLACEMENT_OPTIONS") ||
@@ -1531,7 +1540,7 @@
           parsed.entityId ||
           parsed.listingId ||
           parsed.LISTING_ID;
-        if (id && String(id) !== "108") return String(id);
+        if (id) return String(id);
       } catch (e) {}
     }
 
@@ -1542,24 +1551,21 @@
           document.referrer.match(/\/crm\/type\/(?:1058|16)\/details\/(\d+)/i) ||
           document.referrer.match(/\/crm\/type\/\d+\/details\/(\d+)/i) ||
           document.referrer.match(/[?&](?:ID|id|listingId)=(\d+)/i);
-        if (refMatch && refMatch[1] && String(refMatch[1]) !== "108") {
+        if (refMatch && refMatch[1]) {
           return String(refMatch[1]);
         }
       }
     } catch (_) {}
 
     // 4. Server injected initial listing ID
-    if (
-      window.__INITIAL_LISTING_ID__ &&
-      String(window.__INITIAL_LISTING_ID__) !== "108"
-    ) {
+    if (window.__INITIAL_LISTING_ID__) {
       return String(window.__INITIAL_LISTING_ID__);
     }
 
     // 5. Session storage from recent view
     try {
       const stored = sessionStorage.getItem("b24_last_listing_id");
-      if (stored && String(stored) !== "108") return String(stored);
+      if (stored) return String(stored);
     } catch (_) {}
 
     return null;
@@ -1604,17 +1610,36 @@
       }
 
       const bxPromise = new Promise((resBx) => {
-        window.BX24.callMethod(
-          "crm.item.get",
-          {
-            entityTypeId: CONFIG.entityTypeId,
-            id: listingId,
-          },
-          (res) => {
-            if (!res.error()) resBx(res.data()?.item || res.data());
-            else resBx(null);
-          },
-        );
+        let done = false;
+        const timer = setTimeout(() => {
+          if (!done) {
+            done = true;
+            resBx(null);
+          }
+        }, 3500);
+        try {
+          window.BX24.callMethod(
+            "crm.item.get",
+            {
+              entityTypeId: CONFIG.entityTypeId,
+              id: listingId,
+            },
+            (res) => {
+              if (!done) {
+                done = true;
+                clearTimeout(timer);
+                if (!res.error()) resBx(res.data()?.item || res.data());
+                else resBx(null);
+              }
+            },
+          );
+        } catch (_) {
+          if (!done) {
+            done = true;
+            clearTimeout(timer);
+            resBx(null);
+          }
+        }
       });
 
       const apiPromise = fetch(`/api/listing/${listingId}`, {
@@ -1626,11 +1651,16 @@
 
       Promise.all([bxPromise, apiPromise])
         .then(([bxItem, apiItem]) => {
-          const item = bxItem || apiItem;
+          let item = bxItem || apiItem;
           if (!item) {
-            return reject(new Error("Failed to fetch listing"));
+            console.warn(`[LISTING] Both BX24 and API returned null for #${listingId}. Using local fallback shell.`);
+            item = {
+              id: String(listingId),
+              title: `Listing #${listingId}`,
+              categoryId: 0,
+            };
           }
-          if (apiItem) {
+          if (apiItem && item !== apiItem) {
             for (const [k, v] of Object.entries(apiItem)) {
               if (
                 Array.isArray(v) &&
@@ -1650,7 +1680,14 @@
           }
           resolve(item);
         })
-        .catch(reject);
+        .catch((err) => {
+          console.warn("[LISTING] fetchListing error, using fallback shell:", err.message);
+          resolve({
+            id: String(listingId),
+            title: `Listing #${listingId}`,
+            categoryId: 0,
+          });
+        });
     });
   }
 
@@ -1714,6 +1751,18 @@
         return;
       }
 
+      let resolved = false;
+      const safeResolve = (val) => {
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(stageTimer);
+          resolve(val);
+        }
+      };
+      const stageTimer = setTimeout(() => {
+        fetchFallbackStages(pId, safeResolve);
+      }, 3500);
+
       const targetEntityId = `DYNAMIC_1058_STAGE_${pId}`;
       const targetFallbackEntityId = `DYNAMIC_16_STAGE_${pId}`;
 
@@ -1749,7 +1798,7 @@
             }
             if (opts.length > 0) {
               stageOptionsByPipeline[cacheKey] = opts;
-              resolve(opts);
+              safeResolve(opts);
             } else {
               // Fallback to DYNAMIC_16_STAGE_{pId}
               window.BX24.callMethod(
@@ -1765,9 +1814,9 @@
                   }
                   if (opts2.length > 0) {
                     stageOptionsByPipeline[cacheKey] = opts2;
-                    resolve(opts2);
+                    safeResolve(opts2);
                   } else {
-                    fetchFallbackStages(pId, resolve);
+                    fetchFallbackStages(pId, safeResolve);
                   }
                 },
               );
@@ -1775,7 +1824,7 @@
           },
         );
       } else {
-        fetchFallbackStages(pId, resolve);
+        fetchFallbackStages(pId, safeResolve);
       }
     });
   }
@@ -1829,7 +1878,7 @@
       base = `https://${domain}${base.startsWith("/") ? "" : "/"}${base}`;
     }
 
-    const effectiveId = currentListingId || currentListing?.id;
+    const effectiveId = currentListingId || currentListing?.id || resolveListingId();
     if (base.includes("crm_show_file.php")) {
       if (effectiveId && !base.includes("ownerId=")) {
         base += `${base.includes("?") ? "&" : "?"}ownerTypeId=1058&ownerId=${encodeURIComponent(effectiveId)}`;
@@ -1854,6 +1903,12 @@
     }
     if (!token && window.__BITRIX_AUTH_TOKEN__) {
       token = window.__BITRIX_AUTH_TOKEN__;
+    }
+    if (!token && typeof sessionStorage !== "undefined") {
+      token = sessionStorage.getItem("b24_access_token") || "";
+    }
+    if (!domain && typeof sessionStorage !== "undefined") {
+      domain = sessionStorage.getItem("b24_domain") || "";
     }
 
     const params = new URLSearchParams();
@@ -2219,7 +2274,9 @@
         }
 
         // For HTTP(S) URLs, stream as ArrayBuffer to verify binary PDF content and bypass frame/CORS blockers
-        fetch(pdfUrl)
+        fetch(pdfUrl, {
+          headers: getCrmAuthHeaders()
+        })
           .then(async (res) => {
             if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
             const ct = res.headers.get("content-type") || "";

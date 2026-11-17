@@ -184,12 +184,28 @@ function verifyCrmAccess(req, res, next) {
 
   // If token is known or matches stored credentials, grant access
   if (isStoredToken || isActiveSession) {
+    if (token && token.length >= 20) {
+      try {
+        StorageManager.saveAuth({
+          access_token: token,
+          domain: (domain && domain !== 'latest') ? domain : (storedAuth?.domain || 'csl.bitrix24.com'),
+          member_id: req.body?.member_id || req.query?.member_id || 'active_crm_session'
+        });
+      } catch (_) {}
+    }
     return next();
   }
 
   // If client passed a Bitrix token format (alphanumeric >= 24 chars) with Bitrix CRM header
   if (token && token.length >= 20 && req.headers['x-requested-with'] === 'Bitrix24-CRM-App') {
     registerCrmSessionToken(token, domain);
+    try {
+      StorageManager.saveAuth({
+        access_token: token,
+        domain: (domain && domain !== 'latest') ? domain : (storedAuth?.domain || 'csl.bitrix24.com'),
+        member_id: req.body?.member_id || req.query?.member_id || 'active_crm_session'
+      });
+    } catch (_) {}
     return next();
   }
 
