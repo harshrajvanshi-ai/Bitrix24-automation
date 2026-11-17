@@ -843,6 +843,65 @@ app.options('/api/file/proxy', (req, res) => {
 });
 
 /**
+ * Resilient direct webhook file fetcher using crm.controller.item.getFile
+ */
+async function fetchFileFromWebhook(entityTypeId, recordId, fieldName, fileId, domain = null) {
+  if (!config.INBOUND_WEBHOOK_URL || !fileId || !recordId) return null;
+  const baseUrl = config.INBOUND_WEBHOOK_URL.replace(/\/+$/, '');
+
+  const rawCode = fieldName ? String(fieldName).trim() : '';
+  const candidateFieldNames = new Set();
+  if (rawCode) {
+    candidateFieldNames.add(rawCode);
+    candidateFieldNames.add(rawCode.toUpperCase());
+    const crmNormalized = rawCode
+      .replace(/^ufCrm(\d+)?_?/i, (m, p1) => (p1 ? `UF_CRM_${p1}_` : 'UF_CRM_'))
+      .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+      .toUpperCase();
+    candidateFieldNames.add(crmNormalized);
+    if (!crmNormalized.startsWith('UF_CRM_')) {
+      candidateFieldNames.add(`UF_CRM_${crmNormalized}`);
+    }
+  }
+
+  const pType = parseInt(entityTypeId, 10) || 1058;
+  const candidateTypeIds = [
+    pType,
+    pType === 1058 ? 16 : (pType === 16 ? 1058 : null),
+    pType === 1 ? 1058 : null
+  ].filter(Boolean);
+
+  for (const tid of candidateTypeIds) {
+    for (const fn of candidateFieldNames) {
+      try {
+        const res = await axios({
+          method: 'post',
+          url: `${baseUrl}/crm.controller.item.getFile`,
+          data: {
+            entityTypeId: tid,
+            id: recordId,
+            fieldName: fn,
+            fileId: fileId
+          },
+          responseType: 'stream',
+          timeout: 25000,
+          validateStatus: (status) => status < 400
+        });
+        if (
+          res &&
+          res.status === 200 &&
+          !res.headers['content-type']?.includes('text/html') &&
+          !res.headers['content-type']?.includes('application/json')
+        ) {
+          return res;
+        }
+      } catch (_) {}
+    }
+  }
+  return null;
+}
+
+/**
  * GET /api/file/proxy
  * Secure proxy endpoint to stream Bitrix24 media and file attachments.
  * Resolves browser 403 Forbidden issues caused by iframe cross-origin cookie restrictions.
@@ -1082,12 +1141,15 @@ app.get('/api/file/proxy', async (req, res) => {
       targetUrl = parsed.toString();
     }
 
+    const isSignedUrl = targetUrl.includes('token=') || targetUrl.includes('signature=') || targetUrl.includes('/rest/');
+
     const makeFetch = async (fetchUrl, token) => {
       const reqHeaders = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Accept': '*/*'
       };
-      if (token) {
+      // Never send Authorization: Bearer on signed or webhook URLs (causes 401 invalid_token)
+      if (token && !fetchUrl.includes('token=') && !fetchUrl.includes('signature=') && !fetchUrl.includes('/rest/')) {
         reqHeaders['Authorization'] = `Bearer ${token}`;
       }
       if (req.headers.range) {
@@ -1115,20 +1177,28 @@ app.get('/api/file/proxy', async (req, res) => {
 
     let response;
     try {
-      response = await makeFetch(targetUrl, auth?.accessToken);
+      response = await makeFetch(targetUrl, isSignedUrl ? null : auth?.accessToken);
     } catch (err) {
-      if ((err.response?.status === 401 || err.response?.status === 403) && auth?.refreshToken) {
+      if (fileId && recordId) {
         try {
-          console.log('[FILE PROXY] Bitrix returned auth error, refreshing token...');
-          auth = await BitrixClient.refreshAccessToken(auth);
-          parsed.searchParams.set('auth', auth.accessToken);
-          targetUrl = parsed.toString();
-          response = await makeFetch(targetUrl, auth.accessToken);
-        } catch (retryErr) {
+          const webhookRes = await fetchFileFromWebhook(entityTypeId, recordId, fieldName, fileId, domain);
+          if (webhookRes) response = webhookRes;
+        } catch (_) {}
+      }
+      if (!response) {
+        if ((err.response?.status === 401 || err.response?.status === 403) && auth?.refreshToken) {
+          try {
+            console.log('[FILE PROXY] Bitrix returned auth error, refreshing token...');
+            auth = await BitrixClient.refreshAccessToken(auth);
+            parsed.searchParams.set('auth', auth.accessToken);
+            targetUrl = parsed.toString();
+            response = await makeFetch(targetUrl, auth.accessToken);
+          } catch (retryErr) {
+            throw err;
+          }
+        } else {
           throw err;
         }
-      } else {
-        throw err;
       }
     }
 
@@ -1148,7 +1218,7 @@ app.get('/api/file/proxy', async (req, res) => {
           if (!resolvedNext.startsWith('http://') && !resolvedNext.startsWith('https://')) {
             resolvedNext = `https://${domain}${resolvedNext.startsWith('/') ? '' : '/'}${resolvedNext}`;
           }
-          response = await makeFetch(resolvedNext, auth?.accessToken);
+          response = await makeFetch(resolvedNext, resolvedNext.includes('token=') ? null : auth?.accessToken);
         }
       } catch (jsonErr) {
         console.warn('[FILE PROXY] Handled JSON file resolution:', jsonErr.message);
@@ -1161,7 +1231,14 @@ app.get('/api/file/proxy', async (req, res) => {
       (response.request?.res?.responseUrl && response.request.res.responseUrl.includes('/auth/'))
     );
 
-    if (isLoginRedirect && auth?.refreshToken) {
+    if (isLoginRedirect && fileId && recordId) {
+      try {
+        const webhookRes = await fetchFileFromWebhook(entityTypeId, recordId, fieldName, fileId, domain);
+        if (webhookRes) response = webhookRes;
+      } catch (_) {}
+    }
+
+    if (isLoginRedirect && response.headers['content-type']?.includes('text/html') && auth?.refreshToken) {
       console.log('[FILE PROXY] Detected HTML login redirect from Bitrix, refreshing token and retrying...');
       try {
         auth = await BitrixClient.refreshAccessToken(auth);

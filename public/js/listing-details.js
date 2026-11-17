@@ -1749,8 +1749,6 @@
         );
       }
 
-      const companionType = CONFIG.entityTypeId === 1058 ? 16 : (CONFIG.entityTypeId === 16 ? 1058 : null);
-
       const tryApiUpdate = (typeId) => {
         return fetch(`/api/listing/${listingId}/update`, {
           method: "POST",
@@ -1774,44 +1772,7 @@
           .catch(reject);
       };
 
-      if (!window.BX24) {
-        return tryApiUpdate(CONFIG.entityTypeId);
-      }
-
-      window.BX24.callMethod(
-        "crm.item.update",
-        {
-          entityTypeId: CONFIG.entityTypeId,
-          id: listingId,
-          fields: fieldsPayload,
-        },
-        (res) => {
-          if (res.error()) {
-            if (companionType) {
-              window.BX24.callMethod(
-                "crm.item.update",
-                {
-                  entityTypeId: companionType,
-                  id: listingId,
-                  fields: fieldsPayload,
-                },
-                (cRes) => {
-                  if (cRes.error()) {
-                    tryApiUpdate(CONFIG.entityTypeId);
-                  } else {
-                    CONFIG.entityTypeId = companionType;
-                    tryApiUpdate(companionType);
-                  }
-                }
-              );
-            } else {
-              tryApiUpdate(CONFIG.entityTypeId);
-            }
-          } else {
-            tryApiUpdate(CONFIG.entityTypeId);
-          }
-        },
-      );
+      tryApiUpdate(CONFIG.entityTypeId);
     });
   }
 
@@ -4132,6 +4093,24 @@ function findFieldConfig(key) {
 
 function getFieldValue(f, item) {
   if (!item) return undefined;
+
+  // If primary canonical field exists on item, check if it's explicitly cleared
+  if (f.key && item[f.key] !== undefined) {
+    const primaryVal = item[f.key];
+    if (f.type === "file") {
+      if (
+        primaryVal === 0 ||
+        primaryVal === "0" ||
+        primaryVal === false ||
+        primaryVal === null ||
+        primaryVal === "" ||
+        (Array.isArray(primaryVal) && primaryVal.length === 0)
+      ) {
+        return f.isMultiple ? [] : null;
+      }
+    }
+  }
+
   const candidates = [f.key, f.crmCode, ...(f.fallbackKeys || [])].filter(
     Boolean,
   );
