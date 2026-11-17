@@ -743,7 +743,6 @@
         lFields.currencyId,
         lFields.bedrooms,
         lFields.area,
-        lFields.community,
         lFields.subCommunity,
         lFields.furnished,
         lFields.status,
