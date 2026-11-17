@@ -81,20 +81,21 @@ class StorageManager {
     const data = readStorage();
     const domain = (auth.domain || '').toLowerCase().trim();
     const memberId = auth.member_id || auth.memberId || 'default';
+    const existing = data.auth[domain] || data.auth['latest'] || {};
 
     const authRecord = {
-      domain,
-      memberId,
-      accessToken: auth.access_token || auth.accessToken,
-      refreshToken: auth.refresh_token || auth.refreshToken,
-      clientEndpoint: auth.client_endpoint || auth.clientEndpoint || `https://${domain}/rest/`,
-      applicationToken: auth.application_token || auth.applicationToken || null,
-      expiresAt: auth.expires ? (Date.now() + (parseInt(auth.expires_in || auth.expires, 10) * 1000)) : null,
+      domain: domain || existing.domain || 'csl.bitrix24.com',
+      memberId: memberId !== 'default' ? memberId : (existing.memberId || 'default'),
+      accessToken: auth.access_token || auth.accessToken || existing.accessToken,
+      refreshToken: auth.refresh_token || auth.refreshToken || existing.refreshToken,
+      clientEndpoint: auth.client_endpoint || auth.clientEndpoint || existing.clientEndpoint || `https://${domain || existing.domain || 'csl.bitrix24.com'}/rest/`,
+      applicationToken: auth.application_token || auth.applicationToken || existing.applicationToken || null,
+      expiresAt: auth.expires ? (Date.now() + (parseInt(auth.expires_in || auth.expires, 10) * 1000)) : existing.expiresAt || null,
       updatedAt: new Date().toISOString()
     };
 
     if (domain) data.auth[domain] = authRecord;
-    if (memberId) data.auth[memberId] = authRecord;
+    if (memberId && memberId !== 'default') data.auth[memberId] = authRecord;
     data.auth['latest'] = authRecord; // fallback reference
 
     writeStorage(data);

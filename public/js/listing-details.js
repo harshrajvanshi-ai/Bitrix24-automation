@@ -1813,18 +1813,30 @@
   function getPreviewUrl(url) {
     if (!url || url.startsWith("data:")) return url;
     let base = url;
-    if (url.includes("/api/file/proxy?url=")) {
+    if (url.includes("/api/file/proxy")) {
       try {
-        base = decodeURIComponent(url.split("/api/file/proxy?url=")[1].split("&")[0]);
-      } catch (_) {}
+        const u = new URL(url, window.location.origin);
+        const extracted = u.searchParams.get("url");
+        if (extracted) base = extracted;
+      } catch (_) {
+        try {
+          base = decodeURIComponent(url.split("/api/file/proxy?url=")[1].split("&")[0]);
+        } catch (_) {}
+      }
     }
     if (!/^https?:\/\//i.test(base)) {
       const domain = (window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth()?.domain : null) || window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : "csl.bitrix24.com");
       base = `https://${domain}${base.startsWith("/") ? "" : "/"}${base}`;
     }
 
-    if (base.includes("crm_show_file.php") && currentListingId && !base.includes("ownerId=")) {
-      base += `${base.includes("?") ? "&" : "?"}ownerTypeId=1058&ownerId=${encodeURIComponent(currentListingId)}`;
+    const effectiveId = currentListingId || currentListing?.id;
+    if (base.includes("crm_show_file.php")) {
+      if (effectiveId && !base.includes("ownerId=")) {
+        base += `${base.includes("?") ? "&" : "?"}ownerTypeId=1058&ownerId=${encodeURIComponent(effectiveId)}`;
+      }
+      if (!base.includes("ownerTypeId=")) {
+        base += `${base.includes("?") ? "&" : "?"}ownerTypeId=1058`;
+      }
     }
 
     let token = "";
@@ -1855,14 +1867,23 @@
   }
 
   function getNativeFileUrl(url) {
-    const marker = "/api/file/proxy?url=";
-    if (!url || !url.includes(marker)) return url;
-    try {
-      const part = url.slice(url.indexOf(marker) + marker.length);
-      return decodeURIComponent(part.split("&")[0]);
-    } catch (_) {
-      return url;
+    if (!url) return "";
+    if (url.startsWith("data:")) return url;
+    if (url.includes("/api/file/proxy")) {
+      try {
+        const u = new URL(url, window.location.origin);
+        const extracted = u.searchParams.get("url");
+        if (extracted) return extracted;
+      } catch (_) {}
+      const marker = "/api/file/proxy?url=";
+      try {
+        const part = url.slice(url.indexOf(marker) + marker.length);
+        return decodeURIComponent(part.split("&")[0]);
+      } catch (_) {
+        return url;
+      }
     }
+    return url;
   }
 
   function openInBitrixViewer(url) {
@@ -2167,35 +2188,85 @@
       });
     }
 
+    function startRenderDoc(pdfLib, docSource) {
+      const task = pdfLib.getDocument(docSource);
+      task.promise.then((doc) => {
+        pdfDoc = doc;
+        if (totalPagesEl) totalPagesEl.textContent = doc.numPages;
+        if (isLightbox) {
+          renderAllLightboxPages();
+        } else {
+          renderPage(pageNum);
+        }
+      }).catch((err) => {
+        console.warn("PDF loadingTask error:", err);
+        showFallback(err.message);
+      });
+    }
+
     function initDoc(pdfLib) {
       try {
         pdfLib.GlobalWorkerOptions.workerSrc = "/js/vendor/pdf.worker.min.js";
-        let docSource;
-        if (pdfUrl.startsWith("data:application/pdf;base64,")) {
+        if (pdfUrl.startsWith("data:application/pdf;base64,"")) {
           const base64 = pdfUrl.split("base64,")[1];
           const binaryStr = atob(base64);
           const bytes = new Uint8Array(binaryStr.length);
           for (let i = 0; i < binaryStr.length; i++) {
             bytes[i] = binaryStr.charCodeAt(i);
           }
-          docSource = { data: bytes };
-        } else {
-          docSource = { url: pdfUrl, withCredentials: false };
+          startRenderDoc(pdfLib, { data: bytes });
+          return;
         }
 
-        const task = pdfLib.getDocument(docSource);
-        task.promise.then((doc) => {
-          pdfDoc = doc;
-          if (totalPagesEl) totalPagesEl.textContent = doc.numPages;
-          if (isLightbox) {
-            renderAllLightboxPages();
-          } else {
-            renderPage(pageNum);
-          }
-        }).catch((err) => {
-          console.warn("PDF loadingTask error:", err);
-          showFallback(err.message);
-        });
+        // For HTTP(S) URLs, stream as ArrayBuffer to verify binary PDF content and bypass frame/CORS blockers
+        fetch(pdfUrl)
+          .then(async (res) => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+            const ct = res.headers.get("content-type") || "";
+            if (ct.includes("text/html")) throw new Error("Received HTML login page instead of PDF");
+            return res.arrayBuffer();
+          })
+          .then((buf) => {
+            const bytes = new Uint8Array(buf);
+            if (bytes.length < 4 || bytes[0] !== 0x25 || bytes[1] !== 0x50 || bytes[2] !== 0x44 || bytes[3] !== 0x46) {
+              throw new Error("Invalid PDF header signature");
+            }
+            startRenderDoc(pdfLib, { data: bytes });
+          })
+          .catch(async (fetchErr) => {
+            console.warn("[PDF PREVIEW] Primary proxy stream failed:", fetchErr.message);
+            // Fallback 1: try fetching directly with fresh BX24 access token if inside Bitrix iframe
+            const nativeUrl = getNativeFileUrl(pdfUrl);
+            const freshAuth = window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth() : null;
+            if (nativeUrl && freshAuth && freshAuth.access_token) {
+              try {
+                const directUrl = nativeUrl + (nativeUrl.includes("?") ? "&" : "?") + `auth=${encodeURIComponent(freshAuth.access_token)}`;
+                const directRes = await fetch(directUrl);
+                if (directRes.ok) {
+                  const directBuf = await directRes.arrayBuffer();
+                  const directBytes = new Uint8Array(directBuf);
+                  if (directBytes.length >= 4 && directBytes[0] === 0x25 && directBytes[1] === 0x50) {
+                    startRenderDoc(pdfLib, { data: directBytes });
+                    return;
+                  }
+                }
+              } catch (_) {}
+            }
+            // Fallback 2: Direct PDF.js document loader
+            try {
+              const fallbackTask = pdfLib.getDocument({ url: pdfUrl, withCredentials: false });
+              fallbackTask.promise.then((doc) => {
+                pdfDoc = doc;
+                if (totalPagesEl) totalPagesEl.textContent = doc.numPages;
+                if (isLightbox) renderAllLightboxPages();
+                else renderPage(pageNum);
+              }).catch((err) => {
+                showFallback(err.message);
+              });
+            } catch (e) {
+              showFallback(e.message);
+            }
+          });
       } catch (e) {
         console.warn("initDoc error:", e);
         showFallback(e.message);
@@ -2425,24 +2496,19 @@
       img.src = getPreviewUrl(item.url);
       img.alt = item.name;
       img.onerror = () => {
-        if (!img.dataset.proxied) {
-          img.dataset.proxied = "1";
-          let target = item.url;
-          if (target.includes("/api/file/proxy?url=")) {
-            try {
-              target = decodeURIComponent(
-                target.split("/api/file/proxy?url=")[1],
-              );
-            } catch (_) {}
+        if (!img.dataset.triedDirect) {
+          img.dataset.triedDirect = "1";
+          const freshAuth = window.BX24 && typeof window.BX24.getAuth === "function" ? window.BX24.getAuth() : null;
+          const nativeUrl = getNativeFileUrl(item.url);
+          if (nativeUrl && freshAuth && freshAuth.access_token) {
+            img.src = nativeUrl + (nativeUrl.includes("?") ? "&" : "?") + `auth=${encodeURIComponent(freshAuth.access_token)}`;
+            return;
           }
-          img.src = `/api/file/proxy?url=${encodeURIComponent(target)}`;
-          return;
         }
         img.style.display = "none";
         const err = document.createElement("div");
         err.className = "lb-error-box";
         err.innerHTML = `
-          
           <span>Unable to preview image</span>
           <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab</a>
         `;
@@ -2873,8 +2939,10 @@
           fileItem.SRC ||
           "";
         fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
+        const fieldCode = field.crmCode || field.key || field.code || '';
+        const effectiveId = currentListingId || currentListing?.id || '';
         if (!fileUrl && fid) {
-          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${currentListingId || ''}&fieldName=${field.code || ''}`;
+          fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
         }
         fileName =
           fileItem.name ||
@@ -2901,7 +2969,9 @@
         (typeof fileItem === "string" && /^\d+$/.test(fileItem.trim()))
       ) {
         fid = String(fileItem).trim();
-        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${currentListingId || ''}&fieldName=${field.code || ''}`;
+        const fieldCode = field.crmCode || field.key || field.code || '';
+        const effectiveId = currentListingId || currentListing?.id || '';
+        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
         fileName = `${field.label} #${idx + 1}`;
       } else if (typeof fileItem === "string" && fileItem.startsWith("http")) {
         fileUrl = fileItem;
@@ -2920,6 +2990,20 @@
           fileUrl.match(/(?:fileId|file_id|id)=(\d+)/i) ||
           fileUrl.match(/\/file\/(\d+)/i);
         if (idMatch) fid = idMatch[1];
+      }
+
+      if (fileUrl.includes("crm_show_file.php")) {
+        const effectiveId = currentListingId || currentListing?.id || '';
+        const fieldCode = field.crmCode || field.key || field.code || '';
+        if (effectiveId && !fileUrl.includes("ownerId=")) {
+          fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerId=${encodeURIComponent(effectiveId)}`;
+        }
+        if (!fileUrl.includes("ownerTypeId=")) {
+          fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerTypeId=1058`;
+        }
+        if (fieldCode && !fileUrl.includes("fieldName=")) {
+          fileUrl += `${fileUrl.includes("?") ? "&" : "?"}fieldName=${encodeURIComponent(fieldCode)}`;
+        }
       }
 
       const domain =

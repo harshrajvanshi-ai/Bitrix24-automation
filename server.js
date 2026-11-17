@@ -760,23 +760,24 @@ app.get('/api/file/proxy', async (req, res) => {
     }
 
     // If URL is an internal Bitrix endpoint (ajax.php, crm_show_file.php, show_file.php),
-    // resolve the signed urlMachine via BitrixClient.call('crm.item.get') if record ID and fileId exist
+    // resolve the signed urlMachine or direct downloadUrl via BitrixClient if record ID and fileId exist
     const fileId = parsed.searchParams.get('fileId');
     const recordId = parsed.searchParams.get('id') || parsed.searchParams.get('ownerId');
     const entityTypeId = parsed.searchParams.get('entityTypeId') || parsed.searchParams.get('ownerTypeId') || (parsed.searchParams.has('dynamic') ? 1058 : 1);
-    const fieldName = parsed.searchParams.get('fieldName');
+    let fieldName = parsed.searchParams.get('fieldName');
 
     if (fileId && recordId && !parsed.searchParams.has('token')) {
       try {
         let item = null;
         if (String(entityTypeId) === '1') {
-          item = await BitrixClient.crmLeadGet(recordId);
+          item = await BitrixClient.crmLeadGet(recordId, domain);
         } else {
-          const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId });
+          const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId, id: recordId }, domain);
           item = itemRes?.item || itemRes;
         }
         if (item) {
           let found = null;
+          let foundField = null;
           if (fieldName) {
             let fileList = item[fieldName];
             if (!fileList) {
@@ -784,28 +785,48 @@ app.get('/api/file/proxy', async (req, res) => {
               for (const [k, v] of Object.entries(item)) {
                 if (k.replace(/_/g, '').toLowerCase() === cleanTarget) {
                   fileList = v;
+                  foundField = k;
                   break;
                 }
               }
+            } else {
+              foundField = fieldName;
             }
             const list = Array.isArray(fileList) ? fileList : [fileList];
             found = list.find(f => f && String(f.id) === String(fileId));
           }
           if (!found) {
             // Search across all properties for fileId
-            for (const val of Object.values(item)) {
+            for (const [k, val] of Object.entries(item)) {
               if (Array.isArray(val)) {
                 const match = val.find(f => f && typeof f === 'object' && String(f.id) === String(fileId));
-                if (match) { found = match; break; }
+                if (match) { found = match; foundField = k; break; }
               } else if (val && typeof val === 'object' && String(val.id) === String(fileId)) {
                 found = val;
+                foundField = k;
                 break;
               }
             }
           }
-          if (found && found.urlMachine) {
-            targetUrl = found.urlMachine;
-            parsed = new URL(targetUrl);
+          if (found) {
+            if (found.name && !String(found.name).startsWith('File #')) {
+              fileNameCache.set(String(fileId), String(found.name));
+            }
+            if (foundField && !fieldName) {
+              fieldName = foundField;
+              parsed.searchParams.set('fieldName', fieldName);
+            }
+            const candidate = found.urlMachine || found.downloadUrl || found.showUrl || found.url;
+            if (candidate && typeof candidate === 'string') {
+              let resolvedCandidate = candidate;
+              if (!resolvedCandidate.startsWith('http://') && !resolvedCandidate.startsWith('https://')) {
+                resolvedCandidate = `https://${domain}${resolvedCandidate.startsWith('/') ? '' : '/'}${resolvedCandidate}`;
+              }
+              try {
+                parsed = new URL(resolvedCandidate);
+                targetUrl = parsed.toString();
+              } catch (_) {}
+            }
           }
         }
       } catch (resolveErr) {
@@ -819,6 +840,9 @@ app.get('/api/file/proxy', async (req, res) => {
       }
       if (!parsed.searchParams.has('ownerId') && recordId) {
         parsed.searchParams.set('ownerId', recordId);
+      }
+      if (!parsed.searchParams.has('fieldName') && fieldName) {
+        parsed.searchParams.set('fieldName', fieldName);
       }
       targetUrl = parsed.toString();
     }
@@ -937,16 +961,11 @@ app.get('/api/file/proxy', async (req, res) => {
       res.setHeader('X-File-Name', encodeURIComponent(filename));
       res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition, X-File-Name');
     }
-    if (response.headers['content-length']) {
-      res.setHeader('Content-Length', response.headers['content-length']);
-    }
-
-    response.data.pipe(res);
-
-    if (response.headers['content-length']) {
-      res.setHeader('Content-Length', response.headers['content-length']);
-    }
     res.setHeader('Cache-Control', 'public, max-age=86400');
+    if (response.headers['content-length']) {
+      res.setHeader('Content-Length', response.headers['content-length']);
+    }
+
     response.data.pipe(res);
   } catch (err) {
     console.error('[FILE PROXY] Failed to stream file:', err.message);
