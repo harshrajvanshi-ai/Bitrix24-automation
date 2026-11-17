@@ -2678,10 +2678,20 @@ function _lbRenderCurrent() {
       img.style.display = "none";
       const err = document.createElement("div");
       err.className = "lb-error-box";
+      const nativeUrl = getNativeFileUrl(item.url);
       err.innerHTML = `
-          <span>Unable to preview image</span>
-          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab</a>
+          <span>Unable to preview image directly in frame</span>
+          <a href="${nativeUrl || item.url}" target="_blank" rel="noopener" class="lb-error-link">Open in Bitrix24</a>
         `;
+      const openLink = err.querySelector(".lb-error-link");
+      if (openLink) {
+        openLink.addEventListener("click", (ev) => {
+          if (typeof window !== "undefined" && window.BX24 && typeof window.BX24.openPath === "function") {
+            ev.preventDefault();
+            openInBitrixViewer(item.url);
+          }
+        });
+      }
       lightboxBody.appendChild(err);
     };
     lightboxBody.appendChild(img);
@@ -6204,37 +6214,53 @@ formEl.addEventListener("submit", async (e) => {
     }
 
     // Package pending file uploads & removals
+    const processedFieldKeys = new Set();
     const allFileFieldKeys = new Set([
       ...Object.keys(pendingFileUploads),
       ...Object.keys(removedFileIds),
     ]);
 
     for (const fieldKey of allFileFieldKeys) {
-      const fileList = pendingFileUploads[fieldKey] || [];
-      const removedSet = removedFileIds[fieldKey] || new Set();
-      if (fileList.length === 0 && removedSet.size === 0) continue;
-
       const fConfig = findFieldConfig(fieldKey);
-      const isMulti =
-        Boolean(
-          fConfig?.isMultiple ||
-          fConfig?.multiple ||
-          fieldKey.includes("1791881642219") ||
-          fieldKey.includes("1791881665252") ||
-          fieldKey.includes("1791544736052") ||
-          fieldKey.includes("PHOTOS") ||
-          fieldKey.includes("DOCUMENTS")
-        );
+      const canonicalKey = fConfig ? fConfig.key : fieldKey;
+      if (processedFieldKeys.has(canonicalKey)) continue;
+      processedFieldKeys.add(canonicalKey);
 
       const candKeys = fConfig
         ? [fConfig.key, fConfig.crmCode, ...(fConfig.fallbackKeys || [])].filter(Boolean)
         : [fieldKey];
 
+      let fileList = [];
+      const removedSet = new Set();
+      for (const ck of candKeys) {
+        if (pendingFileUploads[ck] && pendingFileUploads[ck].length > 0) {
+          fileList = fileList.concat(pendingFileUploads[ck]);
+        }
+        if (removedFileIds[ck]) {
+          for (const rid of removedFileIds[ck]) {
+            removedSet.add(rid);
+          }
+        }
+      }
+
+      if (fileList.length === 0 && removedSet.size === 0) continue;
+
+      const isMulti =
+        Boolean(
+          fConfig?.isMultiple ||
+          fConfig?.multiple ||
+          canonicalKey.includes("1791881642219") ||
+          canonicalKey.includes("1791881665252") ||
+          canonicalKey.includes("1791544736052") ||
+          canonicalKey.includes("PHOTOS") ||
+          canonicalKey.includes("DOCUMENTS")
+        );
+
       if (isMulti) {
-        // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
+        // Bitrix REST API multiple file upload requires array of file IDs to keep + new { fileData: [fileName, base64] } tuples.
         const existingRaw =
           (fConfig ? getFieldValue(fConfig, currentListing) : null) ||
-          currentListing?.[fieldKey] ||
+          currentListing?.[canonicalKey] ||
           (fConfig?.crmCode ? currentListing?.[fConfig.crmCode] : null);
         const existingList = Array.isArray(existingRaw)
           ? existingRaw
@@ -6255,31 +6281,37 @@ formEl.addEventListener("submit", async (e) => {
           ],
         }));
         const combined = [...keptIds, ...newTuples];
-        for (const ck of candKeys) {
-          payload[ck] = combined;
-          if (currentListing) currentListing[ck] = combined;
+        payload[canonicalKey] = combined.length > 0 ? combined : "";
+        if (currentListing) {
+          for (const ck of candKeys) {
+            currentListing[ck] = combined;
+          }
         }
       } else {
         // Single file field
         if (fileList.length > 0) {
           const item = fileList[0];
           const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
-          for (const ck of candKeys) {
-            payload[ck] = { fileData: [item.name, base64] };
+          payload[canonicalKey] = { fileData: [item.name, base64] };
+          if (currentListing) {
+            for (const ck of candKeys) {
+              currentListing[ck] = { fileData: [item.name, base64] };
+            }
           }
         } else if (removedSet.size > 0) {
           // Delete existing single file in Bitrix CRM SPA: must be empty string "" (NOT { del: "Y" })
-          for (const ck of candKeys) {
-            payload[ck] = "";
-            if (currentListing) currentListing[ck] = null;
+          payload[canonicalKey] = "";
+          if (currentListing) {
+            for (const ck of candKeys) {
+              currentListing[ck] = null;
+            }
           }
           // If removing QR code, also clear out QR link input if it holds raw hash or non-URL string
-          if (fieldKey.includes("QrCode") || fieldKey.includes("QR_CODE")) {
+          if (canonicalKey.includes("QrCode") || canonicalKey.includes("QR_CODE")) {
             const qrLinkEl = document.getElementById("field_ufCrm16QrCodeLink");
             if (qrLinkEl && !qrLinkEl.value.startsWith("http")) {
               qrLinkEl.value = "";
               payload["ufCrm16QrCodeLink"] = "";
-              payload["UF_CRM_16_QR_CODE_LINK"] = "";
             }
           }
         }

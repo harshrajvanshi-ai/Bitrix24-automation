@@ -518,9 +518,23 @@ async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, d
   let lastErr = null;
   // Sanitize fields: replace any `{ del: 'Y' }` with `""` so Bitrix SPA does not choke
   const sanitizedFields = { ...fields };
+  const invalidAliases = new Set([
+    'ufCrm16Photos', 'UF_CRM_16_PHOTOS',
+    'ufCrm16Documents', 'UF_CRM_16_DOCUMENTS',
+    'ufCrm16PrimaryImage', 'UF_CRM_16_PRIMARY_IMAGE',
+    'ufCrm16FormA', 'UF_CRM_16_FORM_A',
+    'ufCrm16FormADocument', 'UF_CRM_16_FORM_A_DOCUMENT',
+    'ufCrm16_1791544736052', 'ufCrm16_1791172957'
+  ]);
   for (const [k, v] of Object.entries(sanitizedFields)) {
+    if (invalidAliases.has(k)) {
+      delete sanitizedFields[k];
+      continue;
+    }
     if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
       sanitizedFields[k] = '';
+    } else if (Array.isArray(v)) {
+      sanitizedFields[k] = v.map(toFileData).filter(Boolean);
     }
   }
   for (const t of candidates) {

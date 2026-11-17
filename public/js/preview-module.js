@@ -983,10 +983,20 @@
         img.style.display = 'none';
         const err = document.createElement('div');
         err.className = 'lb-error-box';
+        const nativeUrl = getNativeFileUrl(item.url);
         err.innerHTML = `
-          <span>Unable to preview image</span>
-          <a href="${item.url}" target="_blank" class="lb-error-link">Open in new tab</a>
+          <span>Unable to preview image directly in frame</span>
+          <a href="${nativeUrl || item.url}" target="_blank" rel="noopener" class="lb-error-link">Open in Bitrix24</a>
         `;
+        const openLink = err.querySelector('.lb-error-link');
+        if (openLink) {
+          openLink.addEventListener('click', (ev) => {
+            if (typeof window !== 'undefined' && window.BX24 && typeof window.BX24.openPath === 'function') {
+              ev.preventDefault();
+              openInBitrixViewer(item.url);
+            }
+          });
+        }
         _bodyEl.appendChild(err);
       };
       _bodyEl.appendChild(img);
