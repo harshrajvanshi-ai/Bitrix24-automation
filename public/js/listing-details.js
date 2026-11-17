@@ -1480,6 +1480,13 @@
   }
 
   function resolveListingId() {
+    // 0. Detect entityTypeId from query parameter if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const qTypeId = urlParams.get("entityTypeId") || urlParams.get("typeId");
+    if (qTypeId && parseInt(qTypeId, 10) > 0) {
+      CONFIG.entityTypeId = parseInt(qTypeId, 10);
+    }
+
     // 1. BX24 placement info
     if (
       window.BX24 &&
@@ -1488,6 +1495,17 @@
     ) {
       try {
         const placementInfo = window.BX24.placement.info();
+        const pName = placementInfo?.placement || "";
+        if (pName) {
+          const mDynamic = pName.match(/CRM_DYNAMIC_(\d+)_DETAIL_TAB/i);
+          if (mDynamic && mDynamic[1]) {
+            const parsedType = parseInt(mDynamic[1], 10);
+            if (parsedType > 0) {
+              CONFIG.entityTypeId = parsedType;
+              CONFIG.placement = pName;
+            }
+          }
+        }
         const options = placementInfo?.options;
         if (options) {
           if (typeof options === "string") {
@@ -1517,7 +1535,6 @@
     }
 
     // 2. Explicit URL query parameter or PLACEMENT_OPTIONS in URL
-    const urlParams = new URLSearchParams(window.location.search);
     const directId =
       urlParams.get("ID") ||
       urlParams.get("id") ||
@@ -1547,6 +1564,11 @@
     // 3. Document Referrer (contains CRM dynamic 1058 / 16 detail card URL: /crm/type/1058/details/<id>/)
     try {
       if (document.referrer) {
+        const refTypeMatch = document.referrer.match(/\/crm\/type\/(\d+)\/details\//i);
+        if (refTypeMatch && refTypeMatch[1]) {
+          const parsedRefType = parseInt(refTypeMatch[1], 10);
+          if (parsedRefType > 0) CONFIG.entityTypeId = parsedRefType;
+        }
         const refMatch =
           document.referrer.match(/\/crm\/type\/(?:1058|16)\/details\/(\d+)/i) ||
           document.referrer.match(/\/crm\/type\/\d+\/details\/(\d+)/i) ||
@@ -1617,36 +1639,56 @@
             resBx(null);
           }
         }, 3500);
-        try {
-          window.BX24.callMethod(
-            "crm.item.get",
-            {
-              entityTypeId: CONFIG.entityTypeId,
-              id: listingId,
-            },
-            (res) => {
-              if (!done) {
-                done = true;
-                clearTimeout(timer);
-                if (!res.error()) resBx(res.data()?.item || res.data());
-                else resBx(null);
-              }
-            },
-          );
-        } catch (_) {
-          if (!done) {
-            done = true;
-            clearTimeout(timer);
-            resBx(null);
+
+        const tryGet = (typeId, onFail) => {
+          try {
+            window.BX24.callMethod(
+              "crm.item.get",
+              {
+                entityTypeId: typeId,
+                id: listingId,
+              },
+              (res) => {
+                if (done) return;
+                if (!res.error()) {
+                  done = true;
+                  clearTimeout(timer);
+                  CONFIG.entityTypeId = typeId;
+                  resBx(res.data()?.item || res.data());
+                } else if (onFail) {
+                  onFail();
+                } else {
+                  done = true;
+                  clearTimeout(timer);
+                  resBx(null);
+                }
+              },
+            );
+          } catch (_) {
+            if (onFail) onFail();
+            else if (!done) {
+              done = true;
+              clearTimeout(timer);
+              resBx(null);
+            }
           }
-        }
+        };
+
+        const companionType = CONFIG.entityTypeId === 1058 ? 16 : (CONFIG.entityTypeId === 16 ? 1058 : null);
+        tryGet(CONFIG.entityTypeId, companionType ? () => tryGet(companionType, null) : null);
       });
 
-      const apiPromise = fetch(`/api/listing/${listingId}`, {
+      const apiPromise = fetch(`/api/listing/${listingId}?entityTypeId=${CONFIG.entityTypeId}`, {
         headers: getCrmAuthHeaders(),
       })
         .then((r) => r.json())
-        .then((data) => (data.success && data.item ? data.item : null))
+        .then((data) => {
+          if (data.success && data.item) {
+            if (data.entityTypeId) CONFIG.entityTypeId = data.entityTypeId;
+            return data.item;
+          }
+          return null;
+        })
         .catch(() => null);
 
       Promise.all([bxPromise, apiPromise])
@@ -1700,22 +1742,31 @@
         );
       }
 
-      if (!window.BX24) {
-        fetch(`/api/listing/${listingId}/update`, {
+      const companionType = CONFIG.entityTypeId === 1058 ? 16 : (CONFIG.entityTypeId === 16 ? 1058 : null);
+
+      const tryApiUpdate = (typeId) => {
+        return fetch(`/api/listing/${listingId}/update`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             ...getCrmAuthHeaders(),
           },
-          body: JSON.stringify({ fields: fieldsPayload }),
+          body: JSON.stringify({ fields: fieldsPayload, entityTypeId: typeId }),
         })
           .then((r) => r.json())
           .then((data) => {
-            if (data.success) resolve(data.item);
-            else reject(new Error(data.error || "Update failed"));
+            if (data.success) {
+              if (data.entityTypeId) CONFIG.entityTypeId = data.entityTypeId;
+              resolve(data.item);
+            } else {
+              reject(new Error(data.error || "Update failed"));
+            }
           })
           .catch(reject);
-        return;
+      };
+
+      if (!window.BX24) {
+        return tryApiUpdate(CONFIG.entityTypeId);
       }
 
       window.BX24.callMethod(
@@ -1727,7 +1778,26 @@
         },
         (res) => {
           if (res.error()) {
-            reject(new Error(res.error().toString()));
+            if (companionType) {
+              window.BX24.callMethod(
+                "crm.item.update",
+                {
+                  entityTypeId: companionType,
+                  id: listingId,
+                  fields: fieldsPayload,
+                },
+                (cRes) => {
+                  if (cRes.error()) {
+                    tryApiUpdate(CONFIG.entityTypeId);
+                  } else {
+                    CONFIG.entityTypeId = companionType;
+                    resolve(cRes.data()?.item || cRes.data());
+                  }
+                }
+              );
+            } else {
+              tryApiUpdate(CONFIG.entityTypeId);
+            }
           } else {
             resolve(res.data()?.item || res.data());
           }
@@ -1880,11 +1950,12 @@
 
     const effectiveId = currentListingId || currentListing?.id || resolveListingId();
     if (base.includes("crm_show_file.php")) {
+      const typeId = CONFIG.entityTypeId || 1058;
       if (effectiveId && !base.includes("ownerId=")) {
-        base += `${base.includes("?") ? "&" : "?"}ownerTypeId=1058&ownerId=${encodeURIComponent(effectiveId)}`;
+        base += `${base.includes("?") ? "&" : "?"}ownerTypeId=${typeId}&ownerId=${encodeURIComponent(effectiveId)}`;
       }
       if (!base.includes("ownerTypeId=")) {
-        base += `${base.includes("?") ? "&" : "?"}ownerTypeId=1058`;
+        base += `${base.includes("?") ? "&" : "?"}ownerTypeId=${typeId}`;
       }
     }
 
@@ -3001,8 +3072,9 @@ function renderMediaField(field, rawValue, container) {
       fid = fileItem.id || fileItem.ID || fileItem.fileId || null;
       const fieldCode = field.crmCode || field.key || field.code || '';
       const effectiveId = currentListingId || currentListing?.id || '';
+      const typeId = CONFIG.entityTypeId || 1058;
       if (!fileUrl && fid) {
-        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
+        fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=${typeId}&ownerId=${effectiveId}&fieldName=${fieldCode}`;
       }
       fileName =
         fileItem.name ||
@@ -3031,7 +3103,8 @@ function renderMediaField(field, rawValue, container) {
       fid = String(fileItem).trim();
       const fieldCode = field.crmCode || field.key || field.code || '';
       const effectiveId = currentListingId || currentListing?.id || '';
-      fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=1058&ownerId=${effectiveId}&fieldName=${fieldCode}`;
+      const typeId = CONFIG.entityTypeId || 1058;
+      fileUrl = `/bitrix/tools/crm_show_file.php?fileId=${fid}&ownerTypeId=${typeId}&ownerId=${effectiveId}&fieldName=${fieldCode}`;
       fileName = `${field.label} #${idx + 1}`;
     } else if (typeof fileItem === "string" && fileItem.startsWith("http")) {
       fileUrl = fileItem;
@@ -3055,11 +3128,12 @@ function renderMediaField(field, rawValue, container) {
     if (fileUrl.includes("crm_show_file.php")) {
       const effectiveId = currentListingId || currentListing?.id || '';
       const fieldCode = field.crmCode || field.key || field.code || '';
+      const typeId = CONFIG.entityTypeId || 1058;
       if (effectiveId && !fileUrl.includes("ownerId=")) {
         fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerId=${encodeURIComponent(effectiveId)}`;
       }
       if (!fileUrl.includes("ownerTypeId=")) {
-        fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerTypeId=1058`;
+        fileUrl += `${fileUrl.includes("?") ? "&" : "?"}ownerTypeId=${typeId}`;
       }
       if (fieldCode && !fileUrl.includes("fieldName=")) {
         fileUrl += `${fileUrl.includes("?") ? "&" : "?"}fieldName=${encodeURIComponent(fieldCode)}`;

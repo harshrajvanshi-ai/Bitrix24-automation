@@ -446,7 +446,7 @@ async function resolveFileName(fileObj) {
     fileObj.name = fileNameCache.get(String(fid));
     return fileObj.name;
   }
-  const url = fileObj.urlMachine || fileObj.url;
+  const url = fileObj.urlMachine || fileObj.showUrl || fileObj.downloadUrl || fileObj.url;
   if (!url) return null;
   try {
     const res = await axios.get(url, {
@@ -488,6 +488,49 @@ async function enrichItemFileNames(item) {
 }
 
 /**
+ * Resilient SPA item getter supporting dynamic entityTypeId (e.g. 1058 <-> 16)
+ */
+async function getListingSpaItem(listingId, preferredTypeId = 1058, domain = null) {
+  const pId = parseInt(preferredTypeId, 10) || 1058;
+  const candidates = [pId, pId === 1058 ? 16 : 1058];
+  let lastErr = null;
+  for (const t of candidates) {
+    try {
+      const res = await BitrixClient.call('crm.item.get', { entityTypeId: t, id: listingId }, domain);
+      const item = res?.item || res;
+      if (item && item.id) {
+        item._resolvedEntityTypeId = t;
+        return { item, entityTypeId: t };
+      }
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error(`Listing #${listingId} not found`);
+}
+
+/**
+ * Resilient SPA item updater supporting dynamic entityTypeId (e.g. 1058 <-> 16)
+ */
+async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, domain = null) {
+  const pId = parseInt(preferredTypeId, 10) || 1058;
+  const candidates = [pId, pId === 1058 ? 16 : 1058];
+  let lastErr = null;
+  for (const t of candidates) {
+    try {
+      const res = await BitrixClient.call('crm.item.update', { entityTypeId: t, id: listingId, fields }, domain);
+      const item = res?.item || res;
+      if (item) {
+        return { item, entityTypeId: t };
+      }
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  throw lastErr || new Error(`Failed to update Listing #${listingId}`);
+}
+
+/**
  * GET /api/listing/:id
  * Fetches Listing SPA item by ID and enriches attached file objects with real file names
  */
@@ -506,15 +549,12 @@ app.get('/api/listing/:id', verifyCrmAccess, async (req, res) => {
         member_id: 'active_crm_session'
       });
     }
-    const result = await BitrixClient.call('crm.item.get', {
-      entityTypeId: 1058,
-      id: listingId
-    });
-    const item = result?.item || result;
+    const requestedType = parseInt(req.query.entityTypeId || req.headers['x-entity-type-id'], 10) || 1058;
+    const { item, entityTypeId } = await getListingSpaItem(listingId, requestedType);
     if (item) {
       await enrichItemFileNames(item);
     }
-    res.json({ success: true, item });
+    res.json({ success: true, item, entityTypeId });
   } catch (err) {
     console.error(`[API] Error fetching listing #${req.params.id}:`, err.message);
     res.status(500).json({ success: false, error: err.message });
@@ -532,6 +572,7 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid listing ID' });
     }
     const fields = req.body?.fields || req.body || {};
+    const requestedType = parseInt(req.body?.entityTypeId || req.query?.entityTypeId || req.headers['x-entity-type-id'], 10) || 1058;
 
     // Server-side publish-readiness enforcement (Section C3/C8)
     const isPublishAttempt = (
@@ -546,8 +587,8 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
     if (isPublishAttempt) {
       let currentItem = {};
       try {
-        const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: listingId });
-        currentItem = itemRes?.item || itemRes || {};
+        const fetchRes = await getListingSpaItem(listingId, requestedType);
+        currentItem = fetchRes?.item || {};
       } catch (fetchErr) {
         console.warn(`[API] Could not fetch current listing #${listingId} for readiness check:`, fetchErr.message);
       }
@@ -564,17 +605,13 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
       }
     }
 
-    const result = await BitrixClient.call('crm.item.update', {
-      entityTypeId: 1058,
-      id: listingId,
-      fields
-    });
+    const { item, entityTypeId } = await updateListingSpaItem(listingId, fields, requestedType);
     // Asynchronously synchronize linked Lead
     syncLeadFromListingSpa(listingId).catch(leadErr => {
       console.warn(`[SPA SYNC] Background sync to lead from listing #${listingId} failed:`, leadErr.message);
     });
 
-    res.json({ success: true, item: result?.item || result });
+    res.json({ success: true, item: item || null, entityTypeId });
   } catch (err) {
     console.error(`[API] Error updating listing #${req.params.id}:`, err.message);
     res.status(500).json({ success: false, error: err.message });
@@ -592,10 +629,11 @@ app.post('/api/listing/:id/publish', verifyCrmAccess, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Invalid listing ID' });
     }
     const incomingFields = req.body?.fields || req.body || {};
+    const requestedType = parseInt(req.body?.entityTypeId || req.query?.entityTypeId || req.headers['x-entity-type-id'], 10) || 1058;
     let currentItem = {};
     try {
-      const itemRes = await BitrixClient.call('crm.item.get', { entityTypeId: 1058, id: listingId });
-      currentItem = itemRes?.item || itemRes || {};
+      const fetchRes = await getListingSpaItem(listingId, requestedType);
+      currentItem = fetchRes?.item || {};
     } catch (fetchErr) {
       console.warn(`[API] Could not fetch current listing #${listingId} for readiness check:`, fetchErr.message);
     }
@@ -613,18 +651,15 @@ app.post('/api/listing/:id/publish', verifyCrmAccess, async (req, res) => {
     }
 
     const updateFields = { ...incomingFields, ufCrm16PublishPortals: 'Y' };
-    const result = await BitrixClient.call('crm.item.update', {
-      entityTypeId: 1058,
-      id: listingId,
-      fields: updateFields
-    });
+    const { item, entityTypeId } = await updateListingSpaItem(listingId, updateFields, requestedType);
     syncLeadFromListingSpa(listingId).catch(err => console.warn('[SPA SYNC] Publish sync failed:', err.message));
 
     res.json({
       success: true,
       message: 'Listing successfully verified and published to portals',
       score: readiness.score,
-      item: result?.item || result
+      item: item || null,
+      entityTypeId
     });
   } catch (err) {
     console.error(`[API] Error publishing listing #${req.params.id}:`, err.message);
@@ -827,13 +862,25 @@ app.get('/api/file/proxy', async (req, res) => {
             found = list.find(f => f && String(f.id) === String(fileId));
           }
           if (!found) {
-            // Search across all properties for fileId
+            // Search across all properties for fileId (support both object { id } and numeric arrays [ id ])
             for (const [k, val] of Object.entries(item)) {
               if (Array.isArray(val)) {
-                const match = val.find(f => f && typeof f === 'object' && String(f.id) === String(fileId));
-                if (match) { found = match; foundField = k; break; }
+                const match = val.find(f => {
+                  if (!f) return false;
+                  if (typeof f === 'object') return String(f.id) === String(fileId);
+                  return String(f) === String(fileId);
+                });
+                if (match) {
+                  found = typeof match === 'object' ? match : { id: fileId };
+                  foundField = k;
+                  break;
+                }
               } else if (val && typeof val === 'object' && String(val.id) === String(fileId)) {
                 found = val;
+                foundField = k;
+                break;
+              } else if (val && (typeof val === 'number' || typeof val === 'string') && String(val) === String(fileId)) {
+                found = { id: fileId };
                 foundField = k;
                 break;
               }
@@ -859,6 +906,19 @@ app.get('/api/file/proxy', async (req, res) => {
               } catch (_) {}
             }
           }
+        }
+        if ((!targetUrl || targetUrl.includes('crm_show_file.php')) && fileId && recordId) {
+          const effectiveType = entityTypeId || (item?._resolvedEntityTypeId) || 1058;
+          if (String(effectiveType) === '1' || effectiveType === 'lead') {
+            targetUrl = `https://${domain}/rest/crm.lead.getfile.json?id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
+          } else if (String(effectiveType) === '2' || effectiveType === 'deal') {
+            targetUrl = `https://${domain}/rest/crm.deal.getfile.json?id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
+          } else {
+            targetUrl = `https://${domain}/rest/crm.controller.item.getFile.json?entityTypeId=${effectiveType}&id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
+          }
+          try {
+            parsed = new URL(targetUrl);
+          } catch (_) {}
         }
         if ((!targetUrl || targetUrl.includes('crm_show_file.php')) && fileId) {
           try {
@@ -964,13 +1024,26 @@ app.get('/api/file/proxy', async (req, res) => {
       (response.headers['content-type']?.includes('text/html') || response.request?.res?.responseUrl?.includes('/auth/')) &&
       fileId
     ) {
-      try {
-        const diskFile = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
-        const dlUrl = diskFile?.DOWNLOAD_URL || diskFile?.downloadUrl;
-        if (dlUrl) {
-          response = await makeFetch(dlUrl, auth?.accessToken);
-        }
-      } catch (_) {}
+      // If direct or controller endpoint redirected, attempt companion SPA entityTypeId (16 <-> 1058)
+      if (recordId && (String(entityTypeId) === '1058' || String(entityTypeId) === '16')) {
+        const altType = String(entityTypeId) === '1058' ? 16 : 1058;
+        try {
+          const altRestUrl = `https://${domain}/rest/crm.controller.item.getFile.json?entityTypeId=${altType}&id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
+          const altRes = await makeFetch(altRestUrl, auth?.accessToken);
+          if (!altRes.headers['content-type']?.includes('text/html')) {
+            response = altRes;
+          }
+        } catch (_) {}
+      }
+      if (response.headers['content-type']?.includes('text/html') || response.request?.res?.responseUrl?.includes('/auth/')) {
+        try {
+          const diskFile = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+          const dlUrl = diskFile?.DOWNLOAD_URL || diskFile?.downloadUrl;
+          if (dlUrl) {
+            response = await makeFetch(dlUrl, auth?.accessToken);
+          }
+        } catch (_) {}
+      }
     }
 
     // If still returning HTML login page for a binary media file, do not stream HTML as image/pdf
