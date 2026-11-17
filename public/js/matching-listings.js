@@ -626,7 +626,7 @@
       autoFilledFilters = {
         propertyType: mapEnquiryPropTypeToListing(rawPropType),
         listingType: mapEnquiryListingTypeToFilter(rawListingType, item),
-        area: rawArea ? String(rawArea).split(';')[0].split(',')[0].trim() : '',
+        area: inputArea && rawArea ? String(rawArea).split(';')[0].split(',')[0].trim() : '',
         bedrooms: rawBeds ? parseInt(rawBeds, 10) : '',
         priceMin: rawPriceMin !== null ? rawPriceMin : '',
         priceMax: rawPriceMax !== null ? rawPriceMax : '',
