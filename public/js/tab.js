@@ -1386,6 +1386,10 @@
   }
 
   function getPreviewUrl(url, fieldCode, fileId) {
+    if (window.PreviewModule && typeof window.PreviewModule.getPreviewUrl === 'function') {
+      const effectiveLeadId = currentLeadId || currentLead?.id || resolveLeadId();
+      return window.PreviewModule.getPreviewUrl(url, fieldCode, fileId, effectiveLeadId, 1);
+    }
     if (!url || url.startsWith('data:')) return url;
     let base = url;
     let extractedField = fieldCode || '';
@@ -1463,6 +1467,9 @@
   }
 
   function getNativeFileUrl(url) {
+    if (window.PreviewModule && typeof window.PreviewModule.getNativeFileUrl === 'function') {
+      return window.PreviewModule.getNativeFileUrl(url);
+    }
     if (!url) return '';
     if (url.startsWith('data:')) return url;
     if (url.includes('/api/file/proxy')) {
@@ -1483,6 +1490,9 @@
   }
 
   function openInBitrixViewer(url) {
+    if (window.PreviewModule && typeof window.PreviewModule.openInBitrixViewer === 'function') {
+      return window.PreviewModule.openInBitrixViewer(url);
+    }
     const nativeUrl = getNativeFileUrl(url);
     if (!nativeUrl) return;
     if (window.BX24 && typeof window.BX24.openPath === 'function' && !nativeUrl.startsWith('data:')) {
@@ -1494,6 +1504,9 @@
 
   // HTML5 Canvas PDF Viewer (Eliminates Chrome nested iframe blocking & enables continuous multi-page scrolling)
   function renderPdfCanvasViewer(container, pdfUrl, title, isLightbox = false) {
+    if (window.PreviewModule && typeof window.PreviewModule.renderPdf === 'function') {
+      return window.PreviewModule.renderPdf(container, pdfUrl, title, isLightbox);
+    }
     if (!container) return;
     if (!isLightbox) {
       container.innerHTML = "";
@@ -2220,6 +2233,9 @@
   }
 
   function openLightbox(title, url, isPdf = false, gallery = null, startIdx = 0, sourceEl = null) {
+    if (window.PreviewModule && typeof window.PreviewModule.openLightbox === 'function') {
+      return window.PreviewModule.openLightbox(title, url, isPdf, gallery, startIdx, sourceEl);
+    }
     if (!lightboxModal) return;
     if (gallery && gallery.length > 1) {
       _lbGallery = gallery;
@@ -2261,6 +2277,9 @@
   }
 
   function closeLightbox() {
+    if (window.PreviewModule && typeof window.PreviewModule.closeLightbox === 'function') {
+      return window.PreviewModule.closeLightbox();
+    }
     if (!lightboxModal) return;
     if (lightboxCleanup) {
       lightboxCleanup();
@@ -4687,6 +4706,14 @@
 
       if (!currentLeadId) {
         throw new Error('No Lead ID detected. Open this tab from a Bitrix24 Lead card or pass ?ID=<leadId>');
+      }
+
+      if (window.PreviewModule && typeof window.PreviewModule.configure === 'function') {
+        window.PreviewModule.configure({
+          entityTypeId: 1,
+          ownerId: currentLeadId,
+          domain: window.__BITRIX_DOMAIN__
+        });
       }
 
       try {

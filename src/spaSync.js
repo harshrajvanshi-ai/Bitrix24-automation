@@ -546,7 +546,7 @@ const LISTING_FIELD_MAP = [
   { leadCode: 'UF_CRM_1791970864836', leadAltCodes: ['UF_CRM_RERA_PERMIT'], spaKey: 'ufCrm16ReraPermitNumber', spaCrmCode: 'UF_CRM_16_RERA_PERMIT_NUMBER', type: 'string', label: 'RERA Permit Number' },
   { leadCode: 'UF_CRM_TRAKHEESI_PERMIT_NO', leadAltCodes: ['UF_CRM_RERA_PERMIT', 'UF_CRM_1791970864836'], spaKey: 'ufCrm16_1791787455285', spaCrmCode: 'UF_CRM_16_1791787455285', spaAltKeys: ['UF_CRM_16_1791787455285', 'ufCrm16DtcmPermitNumber', 'UF_CRM_16_DTCM_PERMIT_NUMBER', 'ufCrm16ReraPermitNumber', 'UF_CRM_16_RERA_PERMIT_NUMBER'], type: 'string', label: 'Trakheesi Permit No' },
   { leadCode: 'UF_CRM_TRAKHEESI_EXPIRY', leadAltCodes: ['UF_CRM_TRAKHEESI_PERMIT_EXPIRY_DATE', 'UF_CRM_FORM_A_EXPIRY_DATE', 'UF_CRM_1791787502111'], spaKey: 'ufCrm16_1791787502111', spaCrmCode: 'UF_CRM_16_1791787502111', spaAltKeys: ['UF_CRM_16_1791787502111', 'ufCrm16FormAExpiryDate', 'UF_CRM_16_FORM_A_EXPIRY_DATE'], type: 'date', label: 'Trakheesi Permit Expiry Date' },
-  { leadCode: 'UF_CRM_QR_CODE_LINK', leadAltCodes: ['UF_CRM_QR_CODE'], spaKey: 'ufCrm16QrCodeLink', spaCrmCode: 'UF_CRM_16_QR_CODE_LINK', spaAltKeys: ['ufCrm16QrCode'], type: 'url', label: 'DLD QR / Permit URL' },
+  { leadCode: 'UF_CRM_QR_CODE_LINK', spaKey: 'ufCrm16QrCodeLink', spaCrmCode: 'UF_CRM_16_QR_CODE_LINK', type: 'url', label: 'DLD QR / Permit URL' },
   { leadCode: 'UF_CRM_BAYUT_ID', spaKey: 'ufCrm16_1790155092', spaCrmCode: 'UF_CRM_16_1790155092', type: 'string', label: 'Bayut Listing ID' },
   { leadCode: 'UF_CRM_PF_ID', leadAltCodes: ['UF_CRM_1792151466'], spaKey: 'ufCrm16PropertyFinderListingId', spaCrmCode: 'UF_CRM_16_PROPERTY_FINDER_LISTING_ID', type: 'string', label: 'Propertyfinder Listing ID' },
   { leadCode: 'UF_CRM_DUBIZZLE_REGION', leadAltCodes: ['UF_CRM_LOCATIONTEXT_DUBIZZLE', 'UF_CRM_BUILDING_DUBIZZLE'], spaKey: 'ufCrm16DubizzleRegion', spaCrmCode: 'UF_CRM_16_DUBIZZLE_REGION', spaAltKeys: ['ufCrm16LocationtextBayut', 'ufCrm16PropertyfinderRegion'], type: 'string', label: 'Dubizzle Listing ID / Region' },
@@ -811,6 +811,13 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
             break;
           }
         }
+      }
+      if (mapping.type === 'file' && (rawVal === undefined || rawVal === null || rawVal === '' || (Array.isArray(rawVal) && rawVal.length === 0))) {
+        leadUpdates[mapping.leadCode] = '';
+        if (mapping.leadAltCodes) {
+          for (const ac of mapping.leadAltCodes) leadUpdates[ac] = '';
+        }
+        continue;
       }
       if (rawVal === undefined || rawVal === null || rawVal === '' || (isDate && (rawVal === 'N' || rawVal === '0000-00-00' || rawVal === '0' || rawVal === '01.01.1970'))) continue;
 

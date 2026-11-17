@@ -750,7 +750,6 @@
           {
             key: "ufCrm16QrCodeLink",
             crmCode: "UF_CRM_16_QR_CODE_LINK",
-            fallbackKeys: ["ufCrm16QrCode"],
             label: "DLD Permit URL",
             type: "url",
             placeholder: "https://dubailand.gov.ae/en/eservices/licensing/...",
@@ -1131,6 +1130,7 @@
           {
             key: "ufCrm16_1791173118",
             crmCode: "UF_CRM_16_1791173118",
+            fallbackKeys: ["ufCrm16PrimaryImage", "UF_CRM_16_PRIMARY_IMAGE"],
             label: "Primary Image",
             type: "file",
             isImage: true,
@@ -1144,7 +1144,7 @@
           {
             key: "ufCrm16_1791881642219",
             crmCode: "UF_CRM_16_1791881642219",
-            fallbackKeys: ["ufCrm16_1791544736052"],
+            fallbackKeys: ["ufCrm16_1791544736052", "ufCrm16Photos", "UF_CRM_16_PHOTOS"],
             label: "Photos",
             type: "file",
             isImage: true,
@@ -1159,7 +1159,7 @@
           {
             key: "ufCrm16_1791881665252",
             crmCode: "UF_CRM_16_1791881665252",
-            fallbackKeys: ["ufCrm16_1791172957"],
+            fallbackKeys: ["ufCrm16_1791172957", "ufCrm16Documents", "UF_CRM_16_DOCUMENTS"],
             label: "Documents",
             type: "file",
             isDoc: true,
@@ -1187,6 +1187,7 @@
           {
             key: "ufCrm16_1791787381785",
             crmCode: "UF_CRM_16_1791787381785",
+            fallbackKeys: ["ufCrm16FormA", "UF_CRM_16_FORM_A", "ufCrm16FormADocument", "UF_CRM_16_FORM_A_DOCUMENT"],
             label: "Form A Document",
             type: "file",
             isDoc: true,
@@ -1710,13 +1711,19 @@
                 v[0] &&
                 (v[0].name || v[0].urlMachine)
               ) {
-                item[k] = v;
+                // Only enrich if the item actually has files in this property (never resurrect deleted files)
+                if (Array.isArray(item[k]) && item[k].length > 0) {
+                  item[k] = v;
+                }
               } else if (
                 v &&
                 typeof v === "object" &&
                 (v.name || v.urlMachine)
               ) {
-                item[k] = v;
+                // Only enrich if the item actually has an active file in this property
+                if (item[k] && typeof item[k] === "object" && (item[k].id || item[k].showUrl || item[k].url || item[k].urlMachine)) {
+                  item[k] = v;
+                }
               }
             }
           }
@@ -1930,6 +1937,10 @@
   // browser cookie/frame rules. Keep the original URL for Bitrix's native
   // viewer, but use our same-origin proxy for rendering and downloading.
   function getPreviewUrl(url, fieldCode, fileId) {
+    if (window.PreviewModule && typeof window.PreviewModule.getPreviewUrl === "function") {
+      const effectiveId = currentListingId || currentListing?.id || resolveListingId();
+      return window.PreviewModule.getPreviewUrl(url, fieldCode, fileId, effectiveId, CONFIG.entityTypeId || 1058);
+    }
     if (!url || url.startsWith("data:")) return url;
     let base = url;
     let extractedField = fieldCode || "";
@@ -2010,6 +2021,9 @@
   }
 
   function getNativeFileUrl(url) {
+    if (window.PreviewModule && typeof window.PreviewModule.getNativeFileUrl === "function") {
+      return window.PreviewModule.getNativeFileUrl(url);
+    }
     if (!url) return "";
     if (url.startsWith("data:")) return url;
     if (url.includes("/api/file/proxy")) {
@@ -2030,6 +2044,9 @@
   }
 
   function openInBitrixViewer(url) {
+    if (window.PreviewModule && typeof window.PreviewModule.openInBitrixViewer === "function") {
+      return window.PreviewModule.openInBitrixViewer(url);
+    }
     const nativeUrl = getNativeFileUrl(url);
     if (!nativeUrl) return;
     if (
@@ -2045,6 +2062,9 @@
 
   // HTML5 Canvas PDF Viewer (Eliminates Chrome nested iframe blocking & enables continuous multi-page scrolling)
   function renderPdfCanvasViewer(container, pdfUrl, title, isLightbox = false) {
+    if (window.PreviewModule && typeof window.PreviewModule.renderPdf === "function") {
+      return window.PreviewModule.renderPdf(container, pdfUrl, title, isLightbox);
+    }
     if (!container) return;
     if (!isLightbox) {
       container.innerHTML = "";
@@ -2806,6 +2826,9 @@ function openLightbox(
   startIdx = 0,
   sourceEl = null,
 ) {
+  if (window.PreviewModule && typeof window.PreviewModule.openLightbox === "function") {
+    return window.PreviewModule.openLightbox(title, url, isPdf, gallery, startIdx, sourceEl);
+  }
   if (gallery && gallery.length > 1) {
     _lbGallery = gallery;
     _lbIndex = startIdx;
@@ -2848,6 +2871,9 @@ function openLightbox(
 }
 
 function closeLightbox() {
+  if (window.PreviewModule && typeof window.PreviewModule.closeLightbox === "function") {
+    return window.PreviewModule.closeLightbox();
+  }
   if (lightboxCleanup) {
     lightboxCleanup();
     lightboxCleanup = null;
@@ -6189,6 +6215,10 @@ formEl.addEventListener("submit", async (e) => {
           fieldKey.includes("DOCUMENTS")
         );
 
+      const candKeys = fConfig
+        ? [fConfig.key, fConfig.crmCode, ...(fConfig.fallbackKeys || [])].filter(Boolean)
+        : [fieldKey];
+
       if (isMulti) {
         // Bitrix REST API multiple file upload requires array of file IDs to keep + new [fileName, base64] tuples.
         const existingRaw =
@@ -6212,24 +6242,32 @@ formEl.addEventListener("submit", async (e) => {
           (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
         ]);
         const combined = [...keptIds, ...newTuples];
-        payload[fieldKey] = combined;
-        if (fConfig?.crmCode && fConfig.crmCode !== fieldKey) {
-          payload[fConfig.crmCode] = combined;
+        for (const ck of candKeys) {
+          payload[ck] = combined;
+          if (currentListing) currentListing[ck] = combined;
         }
       } else {
         // Single file field
         if (fileList.length > 0) {
           const item = fileList[0];
           const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
-          payload[fieldKey] = { fileData: [item.name, base64] };
-          if (fConfig?.crmCode && fConfig.crmCode !== fieldKey) {
-            payload[fConfig.crmCode] = { fileData: [item.name, base64] };
+          for (const ck of candKeys) {
+            payload[ck] = { fileData: [item.name, base64] };
           }
         } else if (removedSet.size > 0) {
           // Delete existing single file in Bitrix CRM SPA: must be empty string "" (NOT { del: "Y" })
-          payload[fieldKey] = "";
-          if (fConfig?.crmCode && fConfig.crmCode !== fieldKey) {
-            payload[fConfig.crmCode] = "";
+          for (const ck of candKeys) {
+            payload[ck] = "";
+            if (currentListing) currentListing[ck] = null;
+          }
+          // If removing QR code, also clear out QR link input if it holds raw hash or non-URL string
+          if (fieldKey.includes("QrCode") || fieldKey.includes("QR_CODE")) {
+            const qrLinkEl = document.getElementById("field_ufCrm16QrCodeLink");
+            if (qrLinkEl && !qrLinkEl.value.startsWith("http")) {
+              qrLinkEl.value = "";
+              payload["ufCrm16QrCodeLink"] = "";
+              payload["UF_CRM_16_QR_CODE_LINK"] = "";
+            }
           }
         }
       }
@@ -6281,6 +6319,18 @@ async function loadListingDetails(showLoader = true) {
 
   try {
     currentListingId = resolveListingId();
+    if (window.PreviewModule && typeof window.PreviewModule.configure === "function") {
+      let bAuth = null;
+      if (window.BX24 && typeof window.BX24.getAuth === "function") {
+        bAuth = window.BX24.getAuth();
+      }
+      window.PreviewModule.configure({
+        entityTypeId: CONFIG.entityTypeId || 1058,
+        ownerId: currentListingId,
+        domain: window.__BITRIX_DOMAIN__ || bAuth?.domain || (window.location ? window.location.hostname : "csl.bitrix24.com"),
+        token: bAuth?.access_token || window.__BITRIX_AUTH_TOKEN__ || (typeof sessionStorage !== "undefined" ? sessionStorage.getItem("b24_access_token") : "")
+      });
+    }
     if (!currentListingId) {
       throw new Error(
         "No Listing ID detected. Open from Listing CRM detail card or pass ?ID=108",
