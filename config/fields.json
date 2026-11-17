@@ -70,7 +70,7 @@
             "leadAltCode": "UF_CRM_LISTING_TYPE",
             "spaKey": "ufCrm16_1790154808",
             "spaCrmCode": "UF_CRM_16_1790154808",
-            "label": "Listing Type (Layout Driver)",
+            "label": "Listing Type",
             "bitrixLabel": "Listing type",
             "type": "enumeration",
             "placeholder": "-- Select Listing Type --",
@@ -1821,7 +1821,7 @@
       "leadAltCode": "UF_CRM_LISTING_TYPE",
       "spaKey": "ufCrm16_1790154808",
       "spaCrmCode": "UF_CRM_16_1790154808",
-      "label": "Listing Type (Layout Driver)",
+      "label": "Listing Type",
       "bitrixLabel": "Listing type",
       "type": "enumeration",
       "placeholder": "-- Select Listing Type --",
@@ -4718,7 +4718,7 @@
           {
             "key": "ufCrm16_1790154808",
             "crmCode": "UF_CRM_16_1790154808",
-            "label": "Listing Type (Layout Driver)",
+            "label": "Listing Type",
             "type": "enumeration",
             "options": [
               {
