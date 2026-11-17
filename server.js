@@ -516,9 +516,16 @@ async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, d
   const pId = parseInt(preferredTypeId, 10) || 1058;
   const candidates = [pId, pId === 1058 ? 16 : 1058];
   let lastErr = null;
+  // Sanitize fields: replace any `{ del: 'Y' }` with `""` so Bitrix SPA does not choke
+  const sanitizedFields = { ...fields };
+  for (const [k, v] of Object.entries(sanitizedFields)) {
+    if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
+      sanitizedFields[k] = '';
+    }
+  }
   for (const t of candidates) {
     try {
-      const res = await BitrixClient.call('crm.item.update', { entityTypeId: t, id: listingId, fields }, domain);
+      const res = await BitrixClient.call('crm.item.update', { entityTypeId: t, id: listingId, fields: sanitizedFields }, domain);
       const item = res?.item || res;
       if (item) {
         return { item, entityTypeId: t };
@@ -811,10 +818,10 @@ app.get('/api/file/proxy', async (req, res) => {
 
     // If URL is an internal Bitrix endpoint (ajax.php, crm_show_file.php, show_file.php),
     // resolve the signed urlMachine or direct downloadUrl via BitrixClient if record ID and fileId exist
-    const fileId = parsed.searchParams.get('fileId');
-    const recordId = parsed.searchParams.get('id') || parsed.searchParams.get('ownerId');
-    const entityTypeId = parsed.searchParams.get('entityTypeId') || parsed.searchParams.get('ownerTypeId') || (parsed.searchParams.has('dynamic') ? 1058 : 1);
-    let fieldName = parsed.searchParams.get('fieldName');
+    const fileId = req.query.fileId || parsed.searchParams.get('fileId') || parsed.searchParams.get('file_id') || parsed.searchParams.get('id');
+    const recordId = req.query.ownerId || req.query.recordId || req.query.id || parsed.searchParams.get('id') || parsed.searchParams.get('ownerId');
+    const entityTypeId = req.query.ownerTypeId || req.query.entityTypeId || parsed.searchParams.get('entityTypeId') || parsed.searchParams.get('ownerTypeId') || (parsed.searchParams.has('dynamic') ? 1058 : 1);
+    let fieldName = req.query.fieldName || parsed.searchParams.get('fieldName');
 
     if (fileId && recordId && !parsed.searchParams.has('token')) {
       try {
@@ -907,7 +914,12 @@ app.get('/api/file/proxy', async (req, res) => {
             }
           }
         }
-        if ((!targetUrl || targetUrl.includes('crm_show_file.php')) && fileId && recordId) {
+        const isInternalPhpEndpoint = !targetUrl ||
+          targetUrl.includes('crm_show_file.php') ||
+          targetUrl.includes('show_file.php') ||
+          targetUrl.includes('ajax.php') ||
+          (!targetUrl.includes('token=') && !targetUrl.includes('signature='));
+        if (isInternalPhpEndpoint && fileId && recordId) {
           const effectiveType = entityTypeId || (item?._resolvedEntityTypeId) || 1058;
           if (String(effectiveType) === '1' || effectiveType === 'lead') {
             targetUrl = `https://${domain}/rest/crm.lead.getfile.json?id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
@@ -920,9 +932,12 @@ app.get('/api/file/proxy', async (req, res) => {
             parsed = new URL(targetUrl);
           } catch (_) {}
         }
-        if ((!targetUrl || targetUrl.includes('crm_show_file.php')) && fileId) {
+        if ((!targetUrl || targetUrl.includes('crm_show_file.php') || targetUrl.includes('show_file.php')) && fileId) {
           try {
-            const diskRes = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+            let diskRes = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+            if (!diskRes || !diskRes.DOWNLOAD_URL) {
+              diskRes = await BitrixClient.call('disk.attachedObject.get', { id: fileId }, domain);
+            }
             const diskUrl = diskRes?.DOWNLOAD_URL || diskRes?.downloadUrl;
             if (diskUrl && typeof diskUrl === 'string') {
               let resolvedDisk = diskUrl;
@@ -1002,6 +1017,29 @@ app.get('/api/file/proxy', async (req, res) => {
       }
     }
 
+    // If Bitrix returned JSON (e.g. REST method returns { result: { url: "..." } } or { result: "https://..." })
+    if (response.headers['content-type']?.includes('application/json')) {
+      try {
+        const streamData = await new Promise((resolve, reject) => {
+          const chunks = [];
+          response.data.on('data', chunk => chunks.push(chunk));
+          response.data.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+          response.data.on('error', reject);
+        });
+        const parsedJson = JSON.parse(streamData);
+        const nextUrl = parsedJson?.result?.url || parsedJson?.result?.downloadUrl || (typeof parsedJson?.result === 'string' && parsedJson.result.startsWith('http') ? parsedJson.result : null);
+        if (nextUrl) {
+          let resolvedNext = nextUrl;
+          if (!resolvedNext.startsWith('http://') && !resolvedNext.startsWith('https://')) {
+            resolvedNext = `https://${domain}${resolvedNext.startsWith('/') ? '' : '/'}${resolvedNext}`;
+          }
+          response = await makeFetch(resolvedNext, auth?.accessToken);
+        }
+      } catch (jsonErr) {
+        console.warn('[FILE PROXY] Handled JSON file resolution:', jsonErr.message);
+      }
+    }
+
     // Detect Bitrix login page redirect (text/html when non-html requested)
     const isLoginRedirect = (
       (response.headers['content-type']?.includes('text/html') && !targetUrl.toLowerCase().endsWith('.html') && !targetUrl.toLowerCase().endsWith('.htm')) ||
@@ -1037,7 +1075,10 @@ app.get('/api/file/proxy', async (req, res) => {
       }
       if (response.headers['content-type']?.includes('text/html') || response.request?.res?.responseUrl?.includes('/auth/')) {
         try {
-          const diskFile = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+          let diskFile = await BitrixClient.call('disk.file.get', { id: fileId }, domain);
+          if (!diskFile || !diskFile.DOWNLOAD_URL) {
+            diskFile = await BitrixClient.call('disk.attachedObject.get', { id: fileId }, domain);
+          }
           const dlUrl = diskFile?.DOWNLOAD_URL || diskFile?.downloadUrl;
           if (dlUrl) {
             response = await makeFetch(dlUrl, auth?.accessToken);

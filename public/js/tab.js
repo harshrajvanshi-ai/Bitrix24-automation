@@ -1385,14 +1385,18 @@
     return /\.pdf$/i.test(fileName || '');
   }
 
-  function getPreviewUrl(url) {
+  function getPreviewUrl(url, fieldCode, fileId) {
     if (!url || url.startsWith('data:')) return url;
     let base = url;
+    let extractedField = fieldCode || '';
+    let extractedFileId = fileId || '';
     if (url.includes('/api/file/proxy')) {
       try {
         const u = new URL(url, window.location.origin);
         const extracted = u.searchParams.get('url');
         if (extracted) base = extracted;
+        if (!extractedField && u.searchParams.get('fieldName')) extractedField = u.searchParams.get('fieldName');
+        if (!extractedFileId && u.searchParams.get('fileId')) extractedFileId = u.searchParams.get('fileId');
       } catch (_) {
         try {
           base = decodeURIComponent(url.split('/api/file/proxy?url=')[1].split('&')[0]);
@@ -1405,12 +1409,15 @@
     }
 
     const effectiveLeadId = currentLeadId || currentLead?.id || resolveLeadId();
-    if (base.includes('crm_show_file.php')) {
+    if (base.includes('crm_show_file.php') || base.includes('show_file.php')) {
       if (effectiveLeadId && !base.includes('ownerId=')) {
         base += `${base.includes('?') ? '&' : '?'}ownerTypeId=1&ownerId=${encodeURIComponent(effectiveLeadId)}`;
       }
       if (!base.includes('ownerTypeId=')) {
         base += `${base.includes('?') ? '&' : '?'}ownerTypeId=1`;
+      }
+      if (extractedField && !base.includes('fieldName=')) {
+        base += `${base.includes('?') ? '&' : '?'}fieldName=${encodeURIComponent(extractedField)}`;
       }
     }
 
@@ -1439,6 +1446,14 @@
 
     const params = new URLSearchParams();
     params.set('url', base);
+    if (effectiveLeadId) {
+      params.set('ownerId', String(effectiveLeadId));
+      params.set('id', String(effectiveLeadId));
+    }
+    params.set('ownerTypeId', '1');
+    params.set('entityTypeId', '1');
+    if (extractedField) params.set('fieldName', extractedField);
+    if (extractedFileId) params.set('fileId', String(extractedFileId));
     if (token) params.set('auth', token);
     if (domain) params.set('domain', domain);
     if (memberId) params.set('member_id', memberId);
@@ -2958,10 +2973,8 @@
         const handleRemoveItem = (ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          if (item.id) {
-            if (!removedFileIds[f.code]) removedFileIds[f.code] = new Set();
-            removedFileIds[f.code].add(String(item.id));
-          }
+          if (!removedFileIds[f.code]) removedFileIds[f.code] = new Set();
+          removedFileIds[f.code].add(item.id ? String(item.id) : '__ALL__');
           const gIdx = fieldGallery.indexOf(item);
           if (gIdx !== -1) fieldGallery.splice(gIdx, 1);
           thumb.remove();
@@ -4315,6 +4328,19 @@
             }
           });
           filePromises.push(p);
+        } else if (removedFileIds[f.code] && removedFileIds[f.code].size > 0) {
+          if (isMultiple) {
+            const existingRaw = currentLead?.[f.code];
+            const existingList = Array.isArray(existingRaw) ? existingRaw : (existingRaw ? [existingRaw] : []);
+            const remSet = removedFileIds[f.code];
+            const keptIds = existingList
+              .map(it => typeof it === 'object' ? (it.id || it.ID || it.fileId) : it)
+              .filter(Boolean)
+              .filter(id => !remSet.has(String(id)) && !remSet.has('__ALL__'));
+            payload[f.code] = keptIds.length ? keptIds : '';
+          } else {
+            payload[f.code] = '';
+          }
         }
       } else if (f.type === 'lookup' || isLookupField(f)) {
         payload[f.code] = input.dataset.selectedRef || input.dataset.selectedId || input.value.trim();

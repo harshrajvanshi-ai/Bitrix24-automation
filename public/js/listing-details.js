@@ -1929,14 +1929,18 @@
   // Bitrix attachment URLs are frequently protected from the app iframe by
   // browser cookie/frame rules. Keep the original URL for Bitrix's native
   // viewer, but use our same-origin proxy for rendering and downloading.
-  function getPreviewUrl(url) {
+  function getPreviewUrl(url, fieldCode, fileId) {
     if (!url || url.startsWith("data:")) return url;
     let base = url;
+    let extractedField = fieldCode || "";
+    let extractedFileId = fileId || "";
     if (url.includes("/api/file/proxy")) {
       try {
         const u = new URL(url, window.location.origin);
         const extracted = u.searchParams.get("url");
         if (extracted) base = extracted;
+        if (!extractedField && u.searchParams.get("fieldName")) extractedField = u.searchParams.get("fieldName");
+        if (!extractedFileId && u.searchParams.get("fileId")) extractedFileId = u.searchParams.get("fileId");
       } catch (_) {
         try {
           base = decodeURIComponent(url.split("/api/file/proxy?url=")[1].split("&")[0]);
@@ -1949,13 +1953,16 @@
     }
 
     const effectiveId = currentListingId || currentListing?.id || resolveListingId();
-    if (base.includes("crm_show_file.php")) {
-      const typeId = CONFIG.entityTypeId || 1058;
+    const typeId = CONFIG.entityTypeId || 1058;
+    if (base.includes("crm_show_file.php") || base.includes("show_file.php")) {
       if (effectiveId && !base.includes("ownerId=")) {
         base += `${base.includes("?") ? "&" : "?"}ownerTypeId=${typeId}&ownerId=${encodeURIComponent(effectiveId)}`;
       }
       if (!base.includes("ownerTypeId=")) {
         base += `${base.includes("?") ? "&" : "?"}ownerTypeId=${typeId}`;
+      }
+      if (extractedField && !base.includes("fieldName=")) {
+        base += `${base.includes("?") ? "&" : "?"}fieldName=${encodeURIComponent(extractedField)}`;
       }
     }
 
@@ -1984,6 +1991,16 @@
 
     const params = new URLSearchParams();
     params.set("url", base);
+    if (effectiveId) {
+      params.set("ownerId", String(effectiveId));
+      params.set("id", String(effectiveId));
+    }
+    if (typeId) {
+      params.set("ownerTypeId", String(typeId));
+      params.set("entityTypeId", String(typeId));
+    }
+    if (extractedField) params.set("fieldName", extractedField);
+    if (extractedFileId) params.set("fileId", String(extractedFileId));
     if (token) params.set("auth", token);
     if (domain) params.set("domain", domain);
     if (memberId) params.set("member_id", memberId);
@@ -3140,6 +3157,7 @@ function renderMediaField(field, rawValue, container) {
       }
     }
 
+    const fieldCode = field.crmCode || field.key || field.code || '';
     const domain =
       window.__BITRIX_DOMAIN__ ||
       (window.location ? window.location.hostname : "csl.bitrix24.com");
@@ -3147,7 +3165,7 @@ function renderMediaField(field, rawValue, container) {
       ? fileUrl
       : `https://${domain}${fileUrl.startsWith("/") ? "" : "/"}${fileUrl}`;
     if (!fullUrl.startsWith("data:") && !fullUrl.includes("/api/file/proxy")) {
-      fullUrl = getPreviewUrl(fullUrl);
+      fullUrl = getPreviewUrl(fullUrl, fieldCode, fid);
     }
 
     const isExplicitPdf =
@@ -3174,6 +3192,7 @@ function renderMediaField(field, rawValue, container) {
       isImage,
       isPdf,
       id: fid,
+      fieldCode: fieldCode,
     });
   });
 
@@ -3262,11 +3281,23 @@ function renderMediaField(field, rawValue, container) {
       ev.stopPropagation();
       ev.preventDefault();
 
-      if (item.id) {
+      const markFieldKey = field.key || field.crmCode;
+      if (!removedFileIds[markFieldKey]) {
+        removedFileIds[markFieldKey] = new Set();
+      }
+      removedFileIds[markFieldKey].add(item.id ? String(item.id) : "__ALL__");
+
+      if (field.crmCode && field.crmCode !== markFieldKey) {
+        if (!removedFileIds[field.crmCode]) {
+          removedFileIds[field.crmCode] = new Set();
+        }
+        removedFileIds[field.crmCode].add(item.id ? String(item.id) : "__ALL__");
+      }
+      if (field.key && field.key !== markFieldKey) {
         if (!removedFileIds[field.key]) {
           removedFileIds[field.key] = new Set();
         }
-        removedFileIds[field.key].add(String(item.id));
+        removedFileIds[field.key].add(item.id ? String(item.id) : "__ALL__");
       }
 
       const gIdx = fieldGallery.indexOf(item);
@@ -6174,23 +6205,32 @@ formEl.addEventListener("submit", async (e) => {
             typeof it === "object" ? it.id || it.ID || it.fileId : it,
           )
           .filter(Boolean)
-          .filter((id) => !removedSet.has(String(id)));
+          .filter((id) => !removedSet.has(String(id)) && !removedSet.has("__ALL__"));
 
         const newTuples = fileList.map((item) => [
           item.name,
           (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
         ]);
         const combined = [...keptIds, ...newTuples];
-        payload[fieldKey] = combined.length ? combined : [""];
+        payload[fieldKey] = combined;
+        if (fConfig?.crmCode && fConfig.crmCode !== fieldKey) {
+          payload[fConfig.crmCode] = combined;
+        }
       } else {
         // Single file field
         if (fileList.length > 0) {
           const item = fileList[0];
           const base64 = (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim();
           payload[fieldKey] = { fileData: [item.name, base64] };
+          if (fConfig?.crmCode && fConfig.crmCode !== fieldKey) {
+            payload[fConfig.crmCode] = { fileData: [item.name, base64] };
+          }
         } else if (removedSet.size > 0) {
-          // Delete existing single file in Bitrix CRM
-          payload[fieldKey] = { del: "Y" };
+          // Delete existing single file in Bitrix CRM SPA: must be empty string "" (NOT { del: "Y" })
+          payload[fieldKey] = "";
+          if (fConfig?.crmCode && fConfig.crmCode !== fieldKey) {
+            payload[fConfig.crmCode] = "";
+          }
         }
       }
     }
