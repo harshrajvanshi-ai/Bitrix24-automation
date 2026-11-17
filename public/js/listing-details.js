@@ -1798,6 +1798,7 @@
                     tryApiUpdate(CONFIG.entityTypeId);
                   } else {
                     CONFIG.entityTypeId = companionType;
+                    tryApiUpdate(companionType).catch(() => {});
                     resolve(cRes.data()?.item || cRes.data());
                   }
                 }
@@ -1806,6 +1807,7 @@
               tryApiUpdate(CONFIG.entityTypeId);
             }
           } else {
+            tryApiUpdate(CONFIG.entityTypeId).catch(() => {});
             resolve(res.data()?.item || res.data());
           }
         },
@@ -5976,7 +5978,12 @@ formEl.addEventListener("submit", async (e) => {
               el.name === "contactId" ||
               el.name === "assignedById"
             ) {
-              fieldVal = 0;
+              const numMatch = String(selectedId || "").match(/\d+/);
+              if (numMatch) {
+                fieldVal = parseInt(numMatch[0], 10);
+              } else {
+                fieldVal = 0;
+              }
             } else {
               fieldVal = selectedId || "";
             }
@@ -6181,15 +6188,19 @@ formEl.addEventListener("submit", async (e) => {
       payload["UF_CRM_16_1791787455285"] = payload["ufCrm16_1791787455285"];
     }
 
-    if (
-      payload["contactIds"] &&
-      typeof payload["contactIds"] === "string" &&
-      payload["contactIds"].includes(",")
-    ) {
-      payload["contactIds"] = payload["contactIds"]
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
+    if (payload["contactIds"]) {
+      const arr = Array.isArray(payload["contactIds"])
+        ? payload["contactIds"]
+        : String(payload["contactIds"]).split(",");
+      payload["contactIds"] = arr
+        .map((s) => parseInt(String(s).replace(/\D/g, ""), 10))
+        .filter((n) => !isNaN(n) && n > 0);
+    } else if (payload["contactId"]) {
+      const cid = parseInt(String(payload["contactId"]).replace(/\D/g, ""), 10);
+      if (!isNaN(cid) && cid > 0) {
+        payload["contactIds"] = [cid];
+        payload["contactId"] = cid;
+      }
     }
 
     // Package pending file uploads & removals
@@ -6237,10 +6248,12 @@ formEl.addEventListener("submit", async (e) => {
           .filter(Boolean)
           .filter((id) => !removedSet.has(String(id)) && !removedSet.has("__ALL__"));
 
-        const newTuples = fileList.map((item) => [
-          item.name,
-          (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
-        ]);
+        const newTuples = fileList.map((item) => ({
+          fileData: [
+            item.name,
+            (item.dataUrl || "").replace(/^data:[^;]+;base64,/, "").trim(),
+          ],
+        }));
         const combined = [...keptIds, ...newTuples];
         for (const ck of candKeys) {
           payload[ck] = combined;

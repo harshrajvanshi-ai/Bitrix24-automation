@@ -926,7 +926,8 @@ app.get('/api/file/proxy', async (req, res) => {
           } else if (String(effectiveType) === '2' || effectiveType === 'deal') {
             targetUrl = `https://${domain}/rest/crm.deal.getfile.json?id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
           } else {
-            targetUrl = `https://${domain}/rest/crm.controller.item.getFile.json?entityTypeId=${effectiveType}&id=${recordId}&fieldName=${fieldName || ''}&fileId=${fileId}&auth=${auth?.accessToken || ''}`;
+            // For CRM Smart Process Items, use authenticated crm_show_file endpoint
+            targetUrl = `https://${domain}/bitrix/tools/crm_show_file.php?fileId=${fileId}&ownerTypeId=${effectiveType}&ownerId=${recordId}&fieldName=${fieldName || ''}&auth=${auth?.accessToken || ''}`;
           }
           try {
             parsed = new URL(targetUrl);
