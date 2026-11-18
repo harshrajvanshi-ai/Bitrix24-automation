@@ -2857,7 +2857,11 @@
       });
 
       // Populate existing files
-      const filesList = Array.isArray(currentVal) ? currentVal : (currentVal ? [currentVal] : []);
+      let filesList = Array.isArray(currentVal) ? currentVal : (currentVal ? [currentVal] : []);
+      // For single-file fields, keep strictly only the latest valid item if multiple exist from history
+      if (!isMultiple && filesList.length > 1) {
+        filesList = filesList.slice(-1);
+      }
       const fieldGallery = [];
 
       filesList.forEach((fileItem, idx) => {

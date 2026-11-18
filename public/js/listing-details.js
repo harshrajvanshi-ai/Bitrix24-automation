@@ -3048,11 +3048,17 @@ function renderMediaField(field, rawValue, container) {
   });
 
   // Collect and normalize all existing files into a field gallery
-  const existingList = Array.isArray(rawValue)
+  let existingList = Array.isArray(rawValue)
     ? rawValue
     : (rawValue && rawValue !== "0" && rawValue !== 0)
       ? [rawValue]
       : [];
+
+  // For single-file fields (such as Primary Image, Title Deed, Form A, QR Code),
+  // if Bitrix has legacy multiple files stored, keep strictly only the latest valid item.
+  if (!isMulti && existingList.length > 1) {
+    existingList = existingList.slice(-1);
+  }
   const fieldGallery = [];
 
   existingList.forEach((fileItem, idx) => {

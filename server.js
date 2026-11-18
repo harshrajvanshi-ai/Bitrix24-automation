@@ -513,12 +513,17 @@ async function getCachedSpaItemFields(entityTypeId, domain = null) {
     const res = await BitrixClient.call('crm.item.fields', { entityTypeId }, domain);
     const rawFields = res?.fields || res || {};
     const fieldMap = new Map();
-    for (const k of Object.keys(rawFields)) {
+    const rawMap = new Map();
+    for (const [k, fieldDef] of Object.entries(rawFields)) {
       const lower = k.toLowerCase();
       const clean = lower.replace(/_/g, '');
       fieldMap.set(lower, k);
       fieldMap.set(clean, k);
+      rawMap.set(k, fieldDef);
+      rawMap.set(lower, fieldDef);
+      rawMap.set(clean, fieldDef);
     }
+    fieldMap.getRaw = (key) => rawMap.get(key) || rawMap.get(String(key).toLowerCase()) || null;
     spaItemFieldsCache.set(cacheKey, { fields: fieldMap, timestamp: Date.now() });
     return fieldMap;
   } catch (err) {
@@ -587,19 +592,32 @@ async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, d
       continue;
     }
 
+    const schemaInfo = schemaFieldMap?.getRaw ? schemaFieldMap.getRaw(targetKey) : null;
+    const isFieldMulti = Boolean(
+      schemaInfo?.isMultiple ||
+      targetKey.includes('1791173118') ||
+      targetKey.includes('1791881642219') ||
+      targetKey.includes('1791881665252') ||
+      targetKey.includes('1791544736052') ||
+      targetKey.toUpperCase().includes('PHOTOS') ||
+      targetKey.toUpperCase().includes('DOCUMENTS')
+    );
+
     if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
-      sanitizedFields[targetKey] = '';
+      sanitizedFields[targetKey] = isFieldMulti ? [] : '';
     } else if (v === '' || v === null) {
-      sanitizedFields[targetKey] = '';
+      sanitizedFields[targetKey] = isFieldMulti ? [] : '';
     } else if (Array.isArray(v) && v.length === 2 && typeof v[0] === 'string' && typeof v[1] === 'string' && (v[1].length > 50 || v[1].startsWith('data:'))) {
       // Single file tuple [fileName, base64]
-      sanitizedFields[targetKey] = toSpaFileData(v);
+      const fileData = toSpaFileData(v);
+      sanitizedFields[targetKey] = isFieldMulti ? [fileData] : fileData;
     } else if (Array.isArray(v)) {
       // Multiple file array [ id, [fileName, base64], ... ]
       sanitizedFields[targetKey] = v.map(toSpaFileData).filter(x => x !== null);
     } else if (v && typeof v === 'object' && v.fileData) {
       // Single file object { fileData: [fileName, base64] }
-      sanitizedFields[targetKey] = toSpaFileData(v);
+      const fileData = toSpaFileData(v);
+      sanitizedFields[targetKey] = isFieldMulti ? [fileData] : fileData;
     } else {
       sanitizedFields[targetKey] = v;
     }
