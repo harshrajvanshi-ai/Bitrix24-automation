@@ -488,25 +488,17 @@ async function enrichItemFileNames(item) {
 }
 
 /**
- * Resilient SPA item getter supporting dynamic entityTypeId (e.g. 1058 <-> 16)
+ * Resilient SPA item getter supporting dynamic entityTypeId (default 1058)
  */
 async function getListingSpaItem(listingId, preferredTypeId = 1058, domain = null) {
-  const pId = parseInt(preferredTypeId, 10) || 1058;
-  const candidates = [pId, pId === 1058 ? 16 : 1058];
-  let lastErr = null;
-  for (const t of candidates) {
-    try {
-      const res = await BitrixClient.call('crm.item.get', { entityTypeId: t, id: listingId }, domain);
-      const item = res?.item || res;
-      if (item && item.id) {
-        item._resolvedEntityTypeId = t;
-        return { item, entityTypeId: t };
-      }
-    } catch (err) {
-      lastErr = err;
-    }
+  const t = parseInt(preferredTypeId, 10) || 1058;
+  const res = await BitrixClient.call('crm.item.get', { entityTypeId: t, id: listingId }, domain);
+  const item = res?.item || res;
+  if (item && item.id) {
+    item._resolvedEntityTypeId = t;
+    return { item, entityTypeId: t };
   }
-  throw lastErr || new Error(`Listing #${listingId} not found`);
+  throw new Error(`Listing #${listingId} not found`);
 }
 
 const spaItemFieldsCache = new Map();
@@ -522,7 +514,10 @@ async function getCachedSpaItemFields(entityTypeId, domain = null) {
     const rawFields = res?.fields || res || {};
     const fieldMap = new Map();
     for (const k of Object.keys(rawFields)) {
-      fieldMap.set(k.toLowerCase(), k);
+      const lower = k.toLowerCase();
+      const clean = lower.replace(/_/g, '');
+      fieldMap.set(lower, k);
+      fieldMap.set(clean, k);
     }
     spaItemFieldsCache.set(cacheKey, { fields: fieldMap, timestamp: Date.now() });
     return fieldMap;
@@ -533,7 +528,7 @@ async function getCachedSpaItemFields(entityTypeId, domain = null) {
 }
 
 /**
- * Resilient SPA item updater supporting dynamic entityTypeId (e.g. 1058 <-> 16)
+ * Resilient SPA item updater supporting dynamic entityTypeId (default 1058)
  * with schema whitelisting, canonical key enforcement, and post-save re-fetch verification
  */
 function toSpaFileData(item) {
@@ -555,69 +550,68 @@ function toSpaFileData(item) {
 }
 
 async function updateListingSpaItem(listingId, fields, preferredTypeId = 1058, domain = null) {
-  const pId = parseInt(preferredTypeId, 10) || 1058;
-  const candidates = [pId, pId === 1058 ? 16 : 1058];
-  let lastErr = null;
+  const t = parseInt(preferredTypeId, 10) || 1058;
+  const schemaFieldMap = await getCachedSpaItemFields(t, domain);
+  const sanitizedFields = {};
 
-  for (const t of candidates) {
-    try {
-      const schemaFieldMap = await getCachedSpaItemFields(t, domain);
-      const sanitizedFields = {};
+  const invalidAliases = new Set([
+    'ufcrm16photos', 'uf_crm_16_photos',
+    'ufcrm16documents', 'uf_crm_16_documents',
+    'ufcrm16primaryimage', 'uf_crm_16_primary_image',
+    'ufcrm16forma', 'uf_crm_16_form_a',
+    'ufcrm16formadocument', 'uf_crm_16_form_a_document',
+    'ufcrm16_1791172957'
+  ]);
 
-      const invalidAliases = new Set([
-        'ufcrm16photos', 'uf_crm_16_photos',
-        'ufcrm16documents', 'uf_crm_16_documents',
-        'ufcrm16primaryimage', 'uf_crm_16_primary_image',
-        'ufcrm16forma', 'uf_crm_16_form_a',
-        'ufcrm16formadocument', 'uf_crm_16_form_a_document',
-        'ufcrm16_1791544736052', 'ufcrm16_1791172957'
-      ]);
+  for (const [k, v] of Object.entries(fields || {})) {
+    const lowerK = k.toLowerCase();
+    const cleanK = lowerK.replace(/_/g, '');
 
-      for (const [k, v] of Object.entries(fields || {})) {
-        const lowerK = k.toLowerCase();
-        if (invalidAliases.has(lowerK)) {
-          console.warn(`[SPA UPDATE] Dropping legacy alias '${k}' for entityTypeId ${t}`);
-          continue;
-        }
+    if (invalidAliases.has(lowerK) || invalidAliases.has(cleanK)) {
+      console.warn(`[SPA UPDATE] Dropping legacy alias '${k}' for entityTypeId ${t}`);
+      continue;
+    }
 
-        let targetKey = k;
-        if (schemaFieldMap && schemaFieldMap.size > 0) {
-          if (!schemaFieldMap.has(lowerK)) {
-            console.warn(`[SPA UPDATE] Dropping unknown field '${k}' not in crm.item.fields schema for entityTypeId ${t}`);
-            continue;
-          }
-          targetKey = schemaFieldMap.get(lowerK) || k;
-        }
-
-        if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
-          sanitizedFields[targetKey] = '';
-        } else if (v === '' || v === null) {
-          sanitizedFields[targetKey] = '';
-        } else if (Array.isArray(v) && v.length === 2 && typeof v[0] === 'string' && typeof v[1] === 'string' && (v[1].length > 50 || v[1].startsWith('data:'))) {
-          // Single file tuple [fileName, base64]
-          sanitizedFields[targetKey] = toSpaFileData(v);
-        } else if (Array.isArray(v)) {
-          // Multiple file array [ id, [fileName, base64], ... ]
-          sanitizedFields[targetKey] = v.map(toSpaFileData).filter(x => x !== null);
-        } else if (v && typeof v === 'object' && v.fileData) {
-          // Single file object { fileData: [fileName, base64] }
-          sanitizedFields[targetKey] = toSpaFileData(v);
-        } else {
-          sanitizedFields[targetKey] = v;
-        }
+    let targetKey = k;
+    if (schemaFieldMap && schemaFieldMap.size > 0) {
+      const matchedCanonical = schemaFieldMap.get(lowerK) || schemaFieldMap.get(cleanK);
+      if (!matchedCanonical) {
+        console.warn(`[SPA UPDATE] Dropping unknown field '${k}' not in crm.item.fields schema for entityTypeId ${t}`);
+        continue;
       }
+      targetKey = matchedCanonical;
+    }
 
-      const res = await BitrixClient.call('crm.item.update', { entityTypeId: t, id: listingId, fields: sanitizedFields }, domain);
-      if (res?.item || res) {
-        // Re-fetch item with fresh file field values to guarantee verification
-        const fresh = await getListingSpaItem(listingId, t, domain);
-        return { item: fresh.item, entityTypeId: t };
-      }
-    } catch (err) {
-      lastErr = err;
+    // Guard: if targetKey is already populated with a non-empty value, don't let an empty secondary alias overwrite it
+    if (sanitizedFields[targetKey] !== undefined && sanitizedFields[targetKey] !== '' && sanitizedFields[targetKey] !== null && (v === '' || v === null)) {
+      continue;
+    }
+
+    if (v && typeof v === 'object' && !Array.isArray(v) && v.del === 'Y') {
+      sanitizedFields[targetKey] = '';
+    } else if (v === '' || v === null) {
+      sanitizedFields[targetKey] = '';
+    } else if (Array.isArray(v) && v.length === 2 && typeof v[0] === 'string' && typeof v[1] === 'string' && (v[1].length > 50 || v[1].startsWith('data:'))) {
+      // Single file tuple [fileName, base64]
+      sanitizedFields[targetKey] = toSpaFileData(v);
+    } else if (Array.isArray(v)) {
+      // Multiple file array [ id, [fileName, base64], ... ]
+      sanitizedFields[targetKey] = v.map(toSpaFileData).filter(x => x !== null);
+    } else if (v && typeof v === 'object' && v.fileData) {
+      // Single file object { fileData: [fileName, base64] }
+      sanitizedFields[targetKey] = toSpaFileData(v);
+    } else {
+      sanitizedFields[targetKey] = v;
     }
   }
-  throw lastErr || new Error(`Failed to update Listing #${listingId}`);
+
+  const res = await BitrixClient.call('crm.item.update', { entityTypeId: t, id: listingId, fields: sanitizedFields }, domain);
+  if (res?.item || res) {
+    // Re-fetch item with fresh file field values to guarantee verification
+    const fresh = await getListingSpaItem(listingId, t, domain);
+    return { item: fresh.item, entityTypeId: t };
+  }
+  throw new Error(`Failed to update Listing #${listingId}`);
 }
 
 /**
