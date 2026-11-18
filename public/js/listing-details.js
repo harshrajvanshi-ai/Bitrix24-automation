@@ -158,12 +158,11 @@
             },
           },
           {
-            key: "ufCrm16ListingAgent",
+            key: "ufCrm16PortalListingAgent",
             crmCode: "UF_CRM_16_PORTAL_LISTING_AGENT",
             fallbackKeys: [
               "ufCrm16PortalListingAgent",
               "UF_CRM_16_PORTAL_LISTING_AGENT",
-              "UF_CRM_16_LISTING_AGENT",
               "UF_CRM_PORTAL_LISTING_AGENT",
               "UF_CRM_LISTINGAGENT",
               "UF_CRM_ASSIGNED_TO_BROKER",
@@ -847,20 +846,6 @@
               off_plan: "show",
               overseas_sale: "opt",
               rent: "show",
-            },
-          },
-          {
-            key: "ufCrm16Listing",
-            crmCode: "UF_CRM_16_LISTING",
-            label: "Linked Portal Listing",
-            type: "lookup",
-            lookupEntity: "listing",
-            placeholder: "Search Listing...",
-            rules: {
-              external_stock: "opt",
-              off_plan: "opt",
-              overseas_sale: "opt",
-              rent: "opt",
             },
           },
         ],
@@ -3786,8 +3771,7 @@ function isLookupField(f) {
     f.key === "ufCrm16_1791173000" ||
     f.key === "ufCrm16_1791173131" ||
     f.key === "ufCrm16Layout" ||
-    f.key === "ufCrm16Listing" ||
-    f.key === "ufCrm16ListingAgent" ||
+    f.key === "ufCrm16PortalListingAgent" ||
     f.key === "ufCrm16_1791172932"
   )
     return true;
@@ -4794,12 +4778,9 @@ function runListingAutomations(options = {}) {
     }
   }
 
-  // 7. AUTO-POPULATION: Country Code from Country Name (fallback to blank)
-  const countryName = getVal("ufCrm16_1791172854") || getVal("UF_CRM_16_1791172854");
-  if (trigger === "ufCrm16_1791172854" || trigger === "UF_CRM_16_1791172854" || isInitialLoad) {
-    const countryCode = resolveCountryCode(countryName);
-    setVal("ufCrm16CountryCode", countryCode, !isInitialLoad);
-  }
+  // 7. AUTO-POPULATION: Country Code from Country Name
+  // Note: ufCrm16CountryCode was removed from the schema; country code is no longer stored separately.
+  // The country name is stored in ufCrm16_1791172854 (UF_CRM_16_1791172854).
 }
 
 function renderLookupField(f, rawVal, group, displayLabel) {
@@ -6059,15 +6040,13 @@ formEl.addEventListener("submit", async (e) => {
     }
 
     // Synchronize Listing Agent / Broker native and camelCase field variants
-    const agentEl = document.getElementById("field_ufCrm16ListingAgent");
+    const agentEl = document.getElementById("field_ufCrm16PortalListingAgent") || document.getElementById("field_ufCrm16ListingAgent");
     if (agentEl) {
       const agentId = agentEl.dataset.selectedId || agentEl.dataset.id;
       if (agentId && /^\d+$/.test(agentId)) {
-        payload["ufCrm16ListingAgent"] = agentId;
         payload["ufCrm16PortalListingAgent"] = agentId;
         payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = agentId;
       } else if (!agentEl.value.trim()) {
-        payload["ufCrm16ListingAgent"] = 0;
         payload["ufCrm16PortalListingAgent"] = 0;
         payload["UF_CRM_16_PORTAL_LISTING_AGENT"] = 0;
       }
@@ -6140,15 +6119,11 @@ formEl.addEventListener("submit", async (e) => {
       }
     });
 
-    // Synchronize Country Code from Country Name (fallback to blank)
+    // Synchronize Country Name
     const countryEl = document.getElementById("field_ufCrm16_1791172854") || document.getElementById("field_UF_CRM_16_1791172854");
     const rawCountry = countryEl && countryEl.value !== undefined ? String(countryEl.value).trim() : (payload["ufCrm16_1791172854"] || payload["UF_CRM_16_1791172854"] || "");
-    const resolvedCode = resolveCountryCode(rawCountry);
-    payload["ufCrm16CountryCode"] = resolvedCode;
-    payload["UF_CRM_16_COUNTRY_CODE"] = resolvedCode;
     if (rawCountry) {
       payload["ufCrm16_1791172854"] = rawCountry;
-      payload["UF_CRM_16_1791172854"] = rawCountry;
     }
 
     // Synchronize Trakheesi Permit Expiry Date across all variants

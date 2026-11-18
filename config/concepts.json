@@ -85,7 +85,7 @@
       "description": "Listing broker / portal agent",
       "fields": {
         "lead": { "v1": "UF_CRM_LISTINGAGENT", "v2": "UF_CRM_LISTINGAGENT", "altCodes": ["UF_CRM_PORTAL_LISTING_AGENT", "UF_CRM_ASSIGNED_TO_BROKER"] },
-        "spa_1058": { "v1": "UF_CRM_16_PORTAL_LISTING_AGENT", "v2": "UF_CRM_16_PORTAL_LISTING_AGENT", "key": "ufCrm16ListingAgent", "altKeys": ["ufCrm16PortalListingAgent", "UF_CRM_16_LISTING_AGENT"] }
+        "spa_1058": { "v1": "UF_CRM_16_PORTAL_LISTING_AGENT", "v2": "UF_CRM_16_PORTAL_LISTING_AGENT", "key": "ufCrm16PortalListingAgent", "altKeys": ["UF_CRM_16_PORTAL_LISTING_AGENT"] }
       }
     },
     "property_unit": {

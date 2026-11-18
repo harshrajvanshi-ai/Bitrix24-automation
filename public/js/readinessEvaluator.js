@@ -388,7 +388,6 @@
       const country = getValue(item, 'country', [
         'ufCrm16_1791172854',
         'UF_CRM_16_1791172854',
-        'ufCrm16CountryCode',
         'UF_CRM_COUNTRY',
         'UF_CRM_1791952362575'
       ]);

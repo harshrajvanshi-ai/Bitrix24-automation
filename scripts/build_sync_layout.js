@@ -87,8 +87,8 @@ const synchronizedListingSections = [
       {
         code: 'UF_CRM_LISTINGAGENT',
         leadAltCode: 'UF_CRM_ASSIGNED_TO_BROKER',
-        spaKey: 'ufCrm16ListingAgent',
-        spaCrmCode: 'UF_CRM_16_LISTING_AGENT',
+        spaKey: 'ufCrm16PortalListingAgent',
+        spaCrmCode: 'UF_CRM_16_PORTAL_LISTING_AGENT',
         label: 'Listing Agent / Broker',
         bitrixLabel: 'Listing Agent',
         type: 'lookup',
@@ -754,17 +754,6 @@ const synchronizedListingSections = [
         type: 'string',
         placeholder: 'e.g. DBZ-558291',
         rules: { external_stock: 'opt', off_plan: 'show', overseas_sale: 'hide', rent: 'show' }
-      },
-      {
-        code: 'UF_CRM_LISTING',
-        spaKey: 'ufCrm16Listing',
-        spaCrmCode: 'UF_CRM_16_LISTING',
-        label: 'Linked Portal Listing',
-        bitrixLabel: 'Listing',
-        type: 'lookup',
-        placeholder: 'Search Listing...',
-        lookupEntity: 'listing',
-        rules: { external_stock: 'opt', off_plan: 'opt', overseas_sale: 'opt', rent: 'opt' }
       },
       {
         code: 'UF_CRM_SYSTEMALLOWEDFORPORTALS',
