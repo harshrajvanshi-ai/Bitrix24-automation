@@ -420,6 +420,18 @@ body {
   word-break: break-word;
 }
 
+.card-title-link {
+  color: var(--b24-link, #2067b0);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.card-title-link:hover {
+  color: #104680;
+  text-decoration: underline;
+}
+
 .card-id-tag {
   font-size: 11px;
   color: var(--b24-text-muted);
@@ -503,7 +515,7 @@ body {
   border-top: 1px solid var(--b24-border-subtle);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
 }
 
 .card-view-link {

@@ -270,11 +270,13 @@
    * Open CRM item in Bitrix24 slider
    */
   function openListingInBitrix(listingId) {
+    const domain = window.__BITRIX_DOMAIN__ || (window.location ? window.location.hostname : 'csl.bitrix24.com');
     const path = `/crm/type/${CONFIG.LISTING.entityTypeId}/details/${listingId}/`;
     if (window.BX24 && typeof window.BX24.openPath === 'function') {
       window.BX24.openPath(path);
     } else {
-      window.open(path, '_blank');
+      const fullUrl = path.startsWith('http') ? path : `https://${domain}${path}`;
+      window.open(fullUrl, '_blank');
     }
   }
 
@@ -956,7 +958,9 @@
           <input type="checkbox" class="card-select-checkbox" data-id="${item.id}" ${isSelected ? 'checked' : ''} aria-label="Select listing">
           <div class="card-title-group">
             <div class="card-title">
-              ${escapeHtml(item.title || `Listing #${item.id}`)}
+              <a href="javascript:void(0)" class="card-title-link" data-id="${item.id}" title="Open Listing #${item.id} in Bitrix24">
+                ${escapeHtml(item.title || `Listing #${item.id}`)}
+              </a>
               ${isAlreadyRecommended ? '<span class="badge badge-recommended" title="Already in Recommended Listing field">Recommended</span>' : ''}
             </div>
             <span class="card-id-tag">ID: #${item.id} - ${escapeHtml(propTypeLabel)} (${escapeHtml(listingTypeLabel)})</span>
@@ -990,10 +994,7 @@
         </div>
 
         <div class="card-footer">
-          <button type="button" class="btn btn-secondary btn-compact btn-view-listing" data-id="${item.id}">
-            Open in Bitrix24
-          </button>
-          <span style="font-size: 11px; color: var(--b24-text-muted);">
+          <span class="card-type-label" style="font-size: 11px; color: var(--b24-text-muted); font-weight: 500;">
             ${listingTypeLabel === 'Rent' ? 'Rental Property' : 'For Sale'}
           </span>
         </div>
@@ -1007,12 +1008,15 @@
         card.classList.toggle('selected', checkbox.checked);
       });
 
-      // Event listener for opening item
-      const viewBtn = card.querySelector('.btn-view-listing');
-      viewBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openListingInBitrix(item.id);
-      });
+      // Event listener for opening item via title link
+      const titleLink = card.querySelector('.card-title-link');
+      if (titleLink) {
+        titleLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openListingInBitrix(item.id);
+        });
+      }
 
       grid.appendChild(card);
     });
