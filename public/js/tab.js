@@ -2472,10 +2472,25 @@
 
     if (!isMultiple) {
       pendingFileUploads[fieldCode] = [];
-      stripWrap.querySelectorAll('.thumb-item.active').forEach(el => el.remove());
+      if (!removedFileIds[fieldCode]) removedFileIds[fieldCode] = new Set();
+      // For single-file fields, remove all existing thumbnails (both server-loaded and local)
+      stripWrap.querySelectorAll('.thumb-item').forEach(el => {
+        const fid = el.dataset.fid;
+        if (fid) {
+          removedFileIds[fieldCode].add(String(fid));
+        } else {
+          removedFileIds[fieldCode].add('__ALL__');
+        }
+        el.remove();
+      });
+      if (viewportBox) {
+        viewportBox.style.display = 'none';
+        viewportBox.innerHTML = '';
+      }
     }
 
-    Array.from(files).forEach(file => {
+    const fileList = !isMultiple ? Array.from(files).slice(0, 1) : Array.from(files);
+    fileList.forEach(file => {
       if (file.size > MAX_FILE_SIZE) {
         showToast(`File "${file.name}" exceeds 25 MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`, 'error');
         return;
@@ -2549,6 +2564,10 @@
           const idx = pendingFileUploads[fieldCode].indexOf(pendingItem);
           if (idx > -1) pendingFileUploads[fieldCode].splice(idx, 1);
           thumb.remove();
+          if (!isMultiple) {
+            if (!removedFileIds[fieldCode]) removedFileIds[fieldCode] = new Set();
+            removedFileIds[fieldCode].add('__ALL__');
+          }
           if (viewportBox) {
             viewportBox.style.display = 'none';
             viewportBox.innerHTML = '';
@@ -2933,6 +2952,7 @@
         const thumb = document.createElement('div');
         thumb.className = `thumb-item ${isImg ? 'preview-thumb-wrap' : 'preview-doc-wrap'} b24-file-tile`;
         thumb.title = `${fileName} - Click to preview`;
+        if (fid) thumb.dataset.fid = String(fid);
 
         if (isImg) {
           thumb.innerHTML = `

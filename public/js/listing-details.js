@@ -3013,13 +3013,14 @@ function renderMediaField(field, rawValue, container) {
         e.dataTransfer.files,
         viewportBox,
         stripWrap,
+        isMulti,
       );
     }
   });
 
   fileInput.addEventListener("change", () => {
     if (fileInput.files?.length) {
-      handleLocalFiles(field.key, fileInput.files, viewportBox, stripWrap);
+      handleLocalFiles(field.key, fileInput.files, viewportBox, stripWrap, isMulti);
     }
   });
 
@@ -3184,6 +3185,7 @@ function renderMediaField(field, rawValue, container) {
     const thumb = document.createElement("div");
     thumb.className = `thumb-item ${item.isImage ? "preview-thumb-wrap" : "preview-doc-wrap"} b24-file-tile`;
     thumb.title = `${item.name} - Click to preview`;
+    if (item.id) thumb.dataset.fid = String(item.id);
 
     if (item.isImage) {
       thumb.innerHTML = `
@@ -3460,14 +3462,34 @@ function showInWindowPdf(viewportBox, url, name, gallery = null, index = 0) {
 }
 
 // Handle local newly selected files with instant in-window FileReader preview
-function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
+function handleLocalFiles(fieldKey, files, viewportBox, stripWrap, isMultiple = true) {
   if (!pendingFileUploads[fieldKey]) {
     pendingFileUploads[fieldKey] = [];
   }
 
   const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB limit
 
-  Array.from(files).forEach((file) => {
+  if (!isMultiple) {
+    pendingFileUploads[fieldKey] = [];
+    if (!removedFileIds[fieldKey]) removedFileIds[fieldKey] = new Set();
+    // For single-file fields, remove all existing thumbnails (both server-loaded and local)
+    stripWrap.querySelectorAll(".thumb-item").forEach((el) => {
+      const fid = el.dataset.fid;
+      if (fid) {
+        removedFileIds[fieldKey].add(String(fid));
+      } else {
+        removedFileIds[fieldKey].add("__ALL__");
+      }
+      el.remove();
+    });
+    if (viewportBox) {
+      viewportBox.style.display = "none";
+      viewportBox.innerHTML = "";
+    }
+  }
+
+  const fileList = !isMultiple ? Array.from(files).slice(0, 1) : Array.from(files);
+  fileList.forEach((file) => {
     if (file.size > MAX_FILE_SIZE) {
       showToast(
         `File "${file.name}" exceeds 25 MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`,
@@ -3522,6 +3544,10 @@ function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
           const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
           if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
           thumb.remove();
+          if (!isMultiple) {
+            if (!removedFileIds[fieldKey]) removedFileIds[fieldKey] = new Set();
+            removedFileIds[fieldKey].add("__ALL__");
+          }
           viewportBox.style.display = "none";
           viewportBox.innerHTML = "";
           setDirty(true);
@@ -3593,6 +3619,10 @@ function handleLocalFiles(fieldKey, files, viewportBox, stripWrap) {
           const idx = pendingFileUploads[fieldKey].indexOf(pendingItem);
           if (idx > -1) pendingFileUploads[fieldKey].splice(idx, 1);
           docThumb.remove();
+          if (!isMultiple) {
+            if (!removedFileIds[fieldKey]) removedFileIds[fieldKey] = new Set();
+            removedFileIds[fieldKey].add("__ALL__");
+          }
           viewportBox.style.display = "none";
           viewportBox.innerHTML = "";
           setDirty(true);
