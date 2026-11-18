@@ -14,3 +14,4 @@ tests/
 *.xlsx
 *.xls
 Bitrix24_Complete_Database_Export.xlsx
+scripts/sync_database_from_sheet.js
