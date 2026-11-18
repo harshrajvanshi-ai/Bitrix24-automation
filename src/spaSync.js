@@ -791,11 +791,17 @@ async function syncLeadFromListingSpa(listingId, domain = 'latest') {
     const item = itemRes?.item;
     if (!item) return { status: 'listing_not_found', listingId: cleanListingId };
 
-    // Locate linked Lead
-    const leadId = item.xmlId;
-    if (!leadId) {
+    // Locate linked Lead (must be numeric Bitrix Lead ID)
+    const rawXmlId = item.xmlId;
+    if (!rawXmlId) {
       return { status: 'no_linked_lead', listingId: cleanListingId };
     }
+    const cleanLeadId = String(rawXmlId).trim();
+    if (!/^\d+$/.test(cleanLeadId)) {
+      // xmlId is an external listing reference (e.g. "LST-DXB-2024-101"), not a Bitrix Lead ID
+      return { status: 'non_lead_xml_id', listingId: cleanListingId, xmlId: rawXmlId };
+    }
+    const leadId = parseInt(cleanLeadId, 10);
 
     const leadUpdates = {};
     for (const mapping of LISTING_FIELD_MAP) {

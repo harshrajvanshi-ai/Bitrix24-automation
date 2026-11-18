@@ -655,6 +655,7 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
     if (!listingId) {
       return res.status(400).json({ success: false, error: 'Invalid listing ID' });
     }
+    const incomingDomain = req.headers['x-bitrix-domain'] || req.query?.domain || null;
     const fields = req.body?.fields || req.body || {};
     const requestedType = parseInt(req.body?.entityTypeId || req.query?.entityTypeId || req.headers['x-entity-type-id'], 10) || 1058;
 
@@ -671,7 +672,7 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
     if (isPublishAttempt) {
       let currentItem = {};
       try {
-        const fetchRes = await getListingSpaItem(listingId, requestedType);
+        const fetchRes = await getListingSpaItem(listingId, requestedType, incomingDomain);
         currentItem = fetchRes?.item || {};
       } catch (fetchErr) {
         console.warn(`[API] Could not fetch current listing #${listingId} for readiness check:`, fetchErr.message);
@@ -689,9 +690,9 @@ app.all('/api/listing/:id/update', verifyCrmAccess, async (req, res) => {
       }
     }
 
-    const { item, entityTypeId } = await updateListingSpaItem(listingId, fields, requestedType);
+    const { item, entityTypeId } = await updateListingSpaItem(listingId, fields, requestedType, incomingDomain);
     // Asynchronously synchronize linked Lead
-    syncLeadFromListingSpa(listingId).catch(leadErr => {
+    syncLeadFromListingSpa(listingId, incomingDomain || 'latest').catch(leadErr => {
       console.warn(`[SPA SYNC] Background sync to lead from listing #${listingId} failed:`, leadErr.message);
     });
 
@@ -1465,16 +1466,24 @@ async function fetchAllCompanies() {
   let all = [];
   let start = 0;
   while (true) {
-    const res = await BitrixClient.call('crm.company.list', {
-      select: ['ID', 'TITLE'],
-      order: { ID: 'DESC' },
-      start
-    }).catch(err => {
+    let res = null;
+    try {
+      res = await BitrixClient.call('crm.company.list', {
+        select: ['ID', 'TITLE'],
+        order: { ID: 'DESC' },
+        start
+      });
+    } catch (err) {
+      if (err.message && err.message.includes('ID is not defined or invalid')) {
+        // Portal has reached end of companies or start offset exceeds total records
+        break;
+      }
       console.warn(`[LOOKUP] Error fetching companies at start=${start}:`, err.message);
-      return [];
-    });
-    all.push(...(res || []).map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}`, crmRef: `CO_${i.ID}` })));
-    if (!res || res.length < 50) break;
+      break;
+    }
+    const items = Array.isArray(res) ? res : (res?.items || []);
+    all.push(...items.map(i => ({ id: i.ID, title: i.TITLE || `Company #${i.ID}`, crmRef: `CO_${i.ID}` })));
+    if (!items || items.length < 50) break;
     start += 50;
     if (all.length >= 1000) break;
   }
@@ -1485,20 +1494,27 @@ async function fetchAllContacts() {
   let all = [];
   let start = 0;
   while (true) {
-    const res = await BitrixClient.call('crm.contact.list', {
-      select: ['ID', 'NAME', 'LAST_NAME'],
-      order: { ID: 'DESC' },
-      start
-    }).catch(err => {
+    let res = null;
+    try {
+      res = await BitrixClient.call('crm.contact.list', {
+        select: ['ID', 'NAME', 'LAST_NAME'],
+        order: { ID: 'DESC' },
+        start
+      });
+    } catch (err) {
+      if (err.message && err.message.includes('ID is not defined or invalid')) {
+        break;
+      }
       console.warn(`[LOOKUP] Error fetching contacts at start=${start}:`, err.message);
-      return [];
-    });
-    all.push(...(res || []).map(i => ({
+      break;
+    }
+    const items = Array.isArray(res) ? res : (res?.items || []);
+    all.push(...items.map(i => ({
       id: i.ID,
       title: `${i.NAME || ''} ${i.LAST_NAME || ''}`.trim() || `Contact #${i.ID}`,
       crmRef: `C_${i.ID}`
     })));
-    if (!res || res.length < 50) break;
+    if (!items || items.length < 50) break;
     start += 50;
     if (all.length >= 1000) break;
   }
