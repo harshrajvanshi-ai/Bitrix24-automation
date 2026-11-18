@@ -1706,7 +1706,8 @@ const CRM_LOOKUP_CONFIG = {
   UF_CRM_LISTING: { entity: 'listing', prefix: '' },
   UF_CRM_ENQUIRY: { entity: 'enquiry', prefix: '' },
 
-  // Company userfields in Bitrix natively store CO_<id>
+  // Company userfields in Bitrix natively store CO_<id>, native Lead field COMPANY_ID is pure integer
+  COMPANY_ID: { entity: 'developer', prefix: '', isInteger: true },
   UF_CRM_DEVELOPER_1: { entity: 'developer', prefix: 'CO_' },
   UF_CRM_YOUR_COMPANY_DETAILS: { entity: 'company', prefix: 'CO_' },
 
@@ -1767,8 +1768,8 @@ async function normalizeLookupFields(fields) {
       } else if (cfg.prefix) {
         normalized[code] = `${cfg.prefix}${resolvedId}`;
       } else {
-        // Pure numeric ID string for Smart Process userfields
-        normalized[code] = resolvedId;
+        // Pure numeric ID string for Smart Process userfields, or integer for native fields
+        normalized[code] = cfg.isInteger ? parseInt(resolvedId, 10) : resolvedId;
       }
     }
   }
@@ -2128,6 +2129,62 @@ app.post('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
     fields.COMMENTS = fields.UF_CRM_COMMENTS_1;
   } else if (fields.COMMENTS !== undefined && !fields.UF_CRM_COMMENTS_1) {
     fields.UF_CRM_COMMENTS_1 = fields.COMMENTS;
+  }
+
+  // Sync Developer lookup fields (COMPANY_ID <-> UF_CRM_DEVELOPER_1 <-> UF_CRM_DEVELOPER_NAME)
+  const devRaw = fields.COMPANY_ID || fields.UF_CRM_DEVELOPER_1;
+  if (devRaw !== undefined && devRaw !== null && devRaw !== '') {
+    const dMatch = String(devRaw).match(/(?:CO_)?(\d+)/i);
+    if (dMatch && dMatch[1]) {
+      const devNum = parseInt(dMatch[1], 10);
+      fields.COMPANY_ID = devNum;
+      fields.UF_CRM_DEVELOPER_1 = `CO_${devNum}`;
+      if (!fields.UF_CRM_DEVELOPER_NAME) {
+        try {
+          const comp = await BitrixClient.call('crm.company.get', { id: devNum });
+          if (comp && comp.TITLE) fields.UF_CRM_DEVELOPER_NAME = comp.TITLE;
+        } catch (_) {}
+      }
+    }
+  } else if (fields.COMPANY_ID === '' || fields.UF_CRM_DEVELOPER_1 === '') {
+    fields.COMPANY_ID = '';
+    fields.UF_CRM_DEVELOPER_1 = '';
+    fields.UF_CRM_DEVELOPER_NAME = '';
+  }
+
+  // Sync Transaction Type / Listing Type (UF_CRM_TRANSACTION_TYPE <-> UF_CRM_1791952650167 <-> UF_CRM_RECORDTYPEID)
+  if (fields.UF_CRM_TRANSACTION_TYPE !== undefined && fields.UF_CRM_TRANSACTION_TYPE !== null && fields.UF_CRM_TRANSACTION_TYPE !== '') {
+    const tt = String(fields.UF_CRM_TRANSACTION_TYPE).trim().toLowerCase();
+    if (tt === '2' || tt === 'rent' || tt === '2578') {
+      fields.UF_CRM_1791952650167 = '2578'; // RENT
+      fields.UF_CRM_RECORDTYPEID = '2238'; // Rental
+    } else {
+      fields.UF_CRM_1791952650167 = (fields.UF_CRM_1791952650167 && ['2580', '2582', '2584'].includes(String(fields.UF_CRM_1791952650167))) ? fields.UF_CRM_1791952650167 : '2584'; // External Stock / Sale
+      fields.UF_CRM_RECORDTYPEID = '2230'; // Residential
+    }
+  } else if (fields.UF_CRM_1791952650167 && !fields.UF_CRM_TRANSACTION_TYPE) {
+    fields.UF_CRM_TRANSACTION_TYPE = String(fields.UF_CRM_1791952650167).trim() === '2578' ? '2' : '1';
+  }
+
+  // Sync Listing Price / Sale Price across aliases (UF_CRM_LISTING_PRICE <-> UF_CRM_LISTINGPRICE <-> UF_CRM_1791963299133 <-> OPPORTUNITY)
+  const priceVal = fields.UF_CRM_LISTING_PRICE || fields.UF_CRM_LISTINGPRICE || fields.UF_CRM_1791963299133;
+  if (priceVal !== undefined && priceVal !== null && priceVal !== '') {
+    const cleanNum = String(priceVal).split('|')[0].replace(/[^\d.-]/g, '');
+    const moneyStr = cleanNum ? `${cleanNum}|AED` : '';
+    fields.UF_CRM_LISTING_PRICE = moneyStr;
+    fields.UF_CRM_LISTINGPRICE = moneyStr;
+    fields.UF_CRM_1791963299133 = moneyStr;
+    if (cleanNum && !isNaN(parseFloat(cleanNum)) && parseFloat(cleanNum) > 0) {
+      fields.OPPORTUNITY = parseFloat(cleanNum);
+      fields.CURRENCY_ID = 'AED';
+    }
+  }
+
+  // Sync Bayut Listing ID (UF_CRM_BAYUT_ID <-> UF_CRM_PORTAL_LISTING_ID)
+  if (fields.UF_CRM_BAYUT_ID !== undefined && !fields.UF_CRM_PORTAL_LISTING_ID) {
+    fields.UF_CRM_PORTAL_LISTING_ID = fields.UF_CRM_BAYUT_ID;
+  } else if (fields.UF_CRM_PORTAL_LISTING_ID !== undefined && !fields.UF_CRM_BAYUT_ID) {
+    fields.UF_CRM_BAYUT_ID = fields.UF_CRM_PORTAL_LISTING_ID;
   }
 
   // Sync Deal Value / Budget / Price with native Bitrix OPPORTUNITY & CURRENCY_ID
@@ -2517,6 +2574,36 @@ app.get('/api/lead/:id', apiLimiter, verifyCrmAccess, async (req, res) => {
         lead.UF_CRM_PROJECT = lead.UF_CRM_1792558317;
       } else if (!lead.UF_CRM_1792558317 && lead.UF_CRM_PROJECT) {
         lead.UF_CRM_1792558317 = lead.UF_CRM_PROJECT;
+      }
+
+      // Resolve Developer fallbacks (COMPANY_ID <-> UF_CRM_DEVELOPER_1 <-> UF_CRM_DEVELOPER_NAME)
+      if (!lead.COMPANY_ID && lead.UF_CRM_DEVELOPER_1) {
+        const dMatch = String(lead.UF_CRM_DEVELOPER_1).match(/(?:CO_)?(\d+)/i);
+        if (dMatch && dMatch[1]) lead.COMPANY_ID = dMatch[1];
+      }
+      if (!lead.UF_CRM_DEVELOPER_1 && lead.COMPANY_ID) {
+        lead.UF_CRM_DEVELOPER_1 = `CO_${lead.COMPANY_ID}`;
+      }
+
+      // Resolve Transaction Type fallbacks (UF_CRM_TRANSACTION_TYPE <-> UF_CRM_1791952650167)
+      if (!lead.UF_CRM_TRANSACTION_TYPE && lead.UF_CRM_1791952650167) {
+        const sLt = String(lead.UF_CRM_1791952650167).trim();
+        lead.UF_CRM_TRANSACTION_TYPE = (sLt === '2578' || sLt === '2238') ? '2' : '1';
+      }
+
+      // Resolve Listing Price / Sale Price fallbacks (UF_CRM_LISTING_PRICE <-> UF_CRM_LISTINGPRICE <-> UF_CRM_1791963299133 <-> OPPORTUNITY)
+      if (!lead.UF_CRM_LISTING_PRICE) {
+        lead.UF_CRM_LISTING_PRICE = lead.UF_CRM_LISTINGPRICE || lead.UF_CRM_1791963299133 || (lead.OPPORTUNITY ? `${lead.OPPORTUNITY}|${lead.CURRENCY_ID || 'AED'}` : '');
+      }
+      if (!lead.UF_CRM_LISTINGPRICE && lead.UF_CRM_LISTING_PRICE) lead.UF_CRM_LISTINGPRICE = lead.UF_CRM_LISTING_PRICE;
+      if (!lead.UF_CRM_1791963299133 && lead.UF_CRM_LISTING_PRICE) lead.UF_CRM_1791963299133 = lead.UF_CRM_LISTING_PRICE;
+
+      // Resolve Bayut Listing ID fallbacks (UF_CRM_BAYUT_ID <-> UF_CRM_PORTAL_LISTING_ID)
+      if (!lead.UF_CRM_BAYUT_ID && lead.UF_CRM_PORTAL_LISTING_ID) {
+        lead.UF_CRM_BAYUT_ID = lead.UF_CRM_PORTAL_LISTING_ID;
+      }
+      if (!lead.UF_CRM_PORTAL_LISTING_ID && lead.UF_CRM_BAYUT_ID) {
+        lead.UF_CRM_PORTAL_LISTING_ID = lead.UF_CRM_BAYUT_ID;
       }
 
       // Resolve Property Layout fallback

@@ -3044,9 +3044,9 @@ function renderMediaField(field, rawValue, container) {
   viewportBox.id = `viewport_${field.key}`;
   viewportBox.style.display = "none";
 
-  // 4. Bitrix24 Files Container (Unified Preview Tiles Strip)
+  // 4. Bitrix24 Files Container (Unified Preview Tiles Strip, default to Tile)
   const stripWrap = document.createElement("div");
-  stripWrap.className = "thumbnail-strip b24-files-container";
+  stripWrap.className = "thumbnail-strip b24-files-container view-tile";
   stripWrap.id = `strip_${field.key}`;
 
   switcher.querySelectorAll(".b24-view-btn").forEach((btn) => {

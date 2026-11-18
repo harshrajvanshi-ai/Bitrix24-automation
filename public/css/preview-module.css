@@ -698,3 +698,104 @@
   font-size: 13px;
   cursor: pointer;
 }
+
+/* =========================================================================
+   BITRIX24 PHOTO & FILE TILES (Initial & Default Grid View)
+   ========================================================================= */
+.thumbnail-strip,
+.b24-files-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 4px 0 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.thumbnail-strip.view-tile,
+.b24-files-container.view-tile {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.b24-file-tile,
+.thumb-item,
+.preview-thumb-wrap,
+.preview-doc-wrap {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  min-height: 120px;
+  max-height: 120px;
+  background: #ffffff;
+  border: 1px solid #dbe2e8;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.b24-file-tile:hover,
+.thumb-item:hover,
+.preview-thumb-wrap:hover,
+.preview-doc-wrap:hover {
+  border-color: #2fc6f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.b24-file-tile.active,
+.thumb-item.active,
+.preview-thumb-wrap.active,
+.preview-doc-wrap.active {
+  border-color: #2fc6f6;
+  box-shadow: 0 0 0 1px #2fc6f6;
+}
+
+.b24-tile-thumb-wrap {
+  width: 100%;
+  height: 84px;
+  min-height: 84px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7f8;
+  position: relative;
+}
+
+.b24-tile-img,
+.thumb-item-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.b24-tile-footer {
+  width: 100%;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-top: 1px solid #eef2f5;
+  box-sizing: border-box;
+}
+
+.b24-tile-name {
+  font-size: 11px;
+  color: #333333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width: 100%;
+}

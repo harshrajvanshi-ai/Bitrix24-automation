@@ -1064,10 +1064,16 @@
                 else if (targetCode === 'UF_CRM_PROPERTY_LAYOUT') targetInput = document.getElementById('field_UF_CRM_LAYOUT');
                 else if (targetCode === 'UF_CRM_LAYOUT') targetInput = document.getElementById('field_UF_CRM_PROPERTY_LAYOUT');
                 else if (targetCode === 'UF_CRM_LISTINGAGENT') targetInput = document.getElementById('field_UF_CRM_ASSIGNED_TO_BROKER') || document.getElementById('field_UF_CRM_PORTAL_LISTING_AGENT');
+                else if (targetCode === 'UF_CRM_DEVELOPER_1') targetInput = document.getElementById('field_COMPANY_ID');
+                else if (targetCode === 'COMPANY_ID') targetInput = document.getElementById('field_UF_CRM_DEVELOPER_1');
               }
               if (!targetInput || !targetId) return;
               targetInput.dataset.selectedId = String(targetId);
-              targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : entityName === 'property' ? '1052' : entityName === 'broker' ? '1094' : '1058'}_${targetId}`;
+              if (entityName === 'developer' || entityName === 'company') {
+                targetInput.dataset.selectedRef = `CO_${targetId}`;
+              } else {
+                targetInput.dataset.selectedRef = `DYNAMIC_${entityName === 'master_project' ? '1040' : entityName === 'project' ? '1044' : entityName === 'layout' ? '1048' : entityName === 'property' ? '1052' : entityName === 'broker' ? '1094' : '1058'}_${targetId}`;
+              }
               if (targetData) {
                 try {
                   targetInput.dataset.itemData = typeof targetData === 'string' ? targetData : JSON.stringify(targetData);
@@ -2799,9 +2805,9 @@
       viewportBox.id = `viewport_${f.code}`;
       viewportBox.style.display = 'none';
 
-      // 4. Files strip
+      // 4. Files strip (defaults to Tile view)
       const stripWrap = document.createElement('div');
-      stripWrap.className = 'thumbnail-strip b24-files-container';
+      stripWrap.className = 'thumbnail-strip b24-files-container view-tile';
       stripWrap.id = `strip_${f.code}`;
 
       switcher.querySelectorAll('.b24-view-btn').forEach(btn => {
@@ -4022,6 +4028,28 @@
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_LISTING_NAME') {
           currentVal = lead['UF_CRM_1791952409183'] || '';
         }
+
+        // Specific fallbacks for Developer, Transaction Type, Listing Price, and Bayut Listing ID
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'COMPANY_ID' || f.code === 'UF_CRM_DEVELOPER_1')) {
+          currentVal = lead.COMPANY_ID || lead.UF_CRM_DEVELOPER_1 || lead.UF_CRM_DEVELOPER_NAME || '';
+        }
+
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_TRANSACTION_TYPE') {
+          const rawLt = lead.UF_CRM_1791952650167 || lead.UF_CRM_RECORDTYPEID;
+          if (rawLt) {
+            const sLt = String(rawLt).trim();
+            if (sLt === '2578' || sLt === '2238') currentVal = '2'; // Rent
+            else currentVal = '1'; // Sale
+          }
+        }
+
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_LISTING_PRICE' || f.code === 'UF_CRM_LISTINGPRICE')) {
+          currentVal = lead.UF_CRM_LISTING_PRICE || lead.UF_CRM_LISTINGPRICE || lead.UF_CRM_1791963299133 || (lead.OPPORTUNITY ? `${lead.OPPORTUNITY}|${lead.CURRENCY_ID || 'AED'}` : '');
+        }
+
+        if ((currentVal === undefined || currentVal === null || currentVal === '') && (f.code === 'UF_CRM_BAYUT_ID' || f.code === 'UF_CRM_PORTAL_LISTING_ID')) {
+          currentVal = lead.UF_CRM_PORTAL_LISTING_ID || lead.UF_CRM_BAYUT_ID || '';
+        }
         if ((currentVal === undefined || currentVal === null || currentVal === '') && f.code === 'UF_CRM_1792139023') {
           currentVal = lead['UF_CRM_CHEQUES_1'] || lead['UF_CRM_CHEQUES'] || '';
         }
@@ -4449,6 +4477,52 @@
         payload.UF_CRM_PROJECT_1 = pInput.dataset.selectedRef || pInput.dataset.selectedId;
       }
     }
+    // Synchronize Developer lookups (COMPANY_ID <-> UF_CRM_DEVELOPER_1 <-> UF_CRM_DEVELOPER_NAME)
+    const devRaw = payload.COMPANY_ID || payload.UF_CRM_DEVELOPER_1;
+    if (devRaw !== undefined && devRaw !== null && devRaw !== '') {
+      const dMatch = String(devRaw).match(/(?:CO_)?(\d+)/i);
+      if (dMatch && dMatch[1]) {
+        const devNum = parseInt(dMatch[1], 10);
+        payload.COMPANY_ID = devNum;
+        payload.UF_CRM_DEVELOPER_1 = `CO_${devNum}`;
+      }
+    }
+
+    // Synchronize Transaction Type across UF_CRM_TRANSACTION_TYPE and UF_CRM_1791952650167
+    if (payload.UF_CRM_TRANSACTION_TYPE !== undefined && payload.UF_CRM_TRANSACTION_TYPE !== null && payload.UF_CRM_TRANSACTION_TYPE !== '') {
+      const tt = String(payload.UF_CRM_TRANSACTION_TYPE).trim().toLowerCase();
+      if (tt === '2' || tt === 'rent' || tt === '2578') {
+        payload.UF_CRM_1791952650167 = '2578'; // RENT
+        payload.UF_CRM_RECORDTYPEID = '2238'; // Rental
+      } else {
+        payload.UF_CRM_1791952650167 = (payload.UF_CRM_1791952650167 && ['2580', '2582', '2584'].includes(String(payload.UF_CRM_1791952650167))) ? payload.UF_CRM_1791952650167 : '2584'; // External Stock / Sale
+        payload.UF_CRM_RECORDTYPEID = '2230'; // Residential
+      }
+    } else if (payload.UF_CRM_1791952650167 && !payload.UF_CRM_TRANSACTION_TYPE) {
+      payload.UF_CRM_TRANSACTION_TYPE = String(payload.UF_CRM_1791952650167).trim() === '2578' ? '2' : '1';
+    }
+
+    // Synchronize Listing Price / Sale Price across aliases (UF_CRM_LISTING_PRICE <-> UF_CRM_LISTINGPRICE <-> UF_CRM_1791963299133 <-> OPPORTUNITY)
+    const priceVal = payload.UF_CRM_LISTING_PRICE || payload.UF_CRM_LISTINGPRICE || payload.UF_CRM_1791963299133;
+    if (priceVal !== undefined && priceVal !== null && priceVal !== '') {
+      const cleanNum = String(priceVal).split('|')[0].replace(/[^\d.-]/g, '');
+      const moneyStr = cleanNum ? `${cleanNum}|AED` : '';
+      payload.UF_CRM_LISTING_PRICE = moneyStr;
+      payload.UF_CRM_LISTINGPRICE = moneyStr;
+      payload.UF_CRM_1791963299133 = moneyStr;
+      if (cleanNum && !isNaN(parseFloat(cleanNum)) && parseFloat(cleanNum) > 0) {
+        payload.OPPORTUNITY = parseFloat(cleanNum);
+        payload.CURRENCY_ID = 'AED';
+      }
+    }
+
+    // Synchronize Bayut Listing ID (UF_CRM_BAYUT_ID <-> UF_CRM_PORTAL_LISTING_ID)
+    if (payload.UF_CRM_BAYUT_ID !== undefined && !payload.UF_CRM_PORTAL_LISTING_ID) {
+      payload.UF_CRM_PORTAL_LISTING_ID = payload.UF_CRM_BAYUT_ID;
+    } else if (payload.UF_CRM_PORTAL_LISTING_ID !== undefined && !payload.UF_CRM_BAYUT_ID) {
+      payload.UF_CRM_BAYUT_ID = payload.UF_CRM_PORTAL_LISTING_ID;
+    }
+
     if ((payload.COMPANY_ID || payload.UF_CRM_DEVELOPER_1) && !payload.UF_CRM_DEVELOPER_NAME) {
       const dInput = document.getElementById('field_COMPANY_ID') || document.getElementById('field_UF_CRM_DEVELOPER_1');
       if (dInput?.value) payload.UF_CRM_DEVELOPER_NAME = dInput.value.trim();

@@ -156,6 +156,8 @@
         "fields": [
           {
             "code": "COMPANY_ID",
+            "leadAltCode": "UF_CRM_DEVELOPER_1",
+            "leadAltCodes": ["UF_CRM_DEVELOPER_1", "UF_CRM_DEVELOPER_NAME"],
             "spaKey": "companyId",
             "spaCrmCode": "COMPANY_ID",
             "label": "Developer",
@@ -499,6 +501,8 @@
         "fields": [
           {
             "code": "UF_CRM_TRANSACTION_TYPE",
+            "leadAltCode": "UF_CRM_1791952650167",
+            "leadAltCodes": ["UF_CRM_1791952650167", "UF_CRM_RECORDTYPEID"],
             "label": "Transaction Type",
             "bitrixLabel": "Transaction Type",
             "type": "enumeration",
@@ -523,6 +527,7 @@
           {
             "code": "UF_CRM_LISTING_PRICE",
             "leadAltCode": "UF_CRM_1791963299133",
+            "leadAltCodes": ["UF_CRM_LISTINGPRICE", "UF_CRM_1791963299133", "OPPORTUNITY"],
             "spaKey": "ufCrm16_1790154936",
             "spaCrmCode": "UF_CRM_16_1790154936",
             "label": "Listing Price (AED)",
@@ -993,6 +998,8 @@
           },
           {
             "code": "UF_CRM_BAYUT_ID",
+            "leadAltCode": "UF_CRM_PORTAL_LISTING_ID",
+            "leadAltCodes": ["UF_CRM_PORTAL_LISTING_ID", "UF_CRM_BROKER_S_LISTING_ID"],
             "spaKey": "ufCrm16_1790155092",
             "spaCrmCode": "UF_CRM_16_1790155092",
             "label": "Bayut Listing ID",
