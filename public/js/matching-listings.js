@@ -523,10 +523,130 @@
     if (typeof val === 'number') return val;
     if (typeof val === 'string') {
       const parts = val.split('|');
-      const num = parseFloat(parts[0]);
+      const num = parseFloat(parts[0].replace(/,/g, '').trim());
       return isNaN(num) ? null : num;
     }
+    if (typeof val === 'object' && val) {
+      const raw = val.amount ?? val.value ?? val.price ?? val.PRICE ?? val.AMOUNT ?? val.VALUE;
+      if (raw !== undefined && raw !== null && raw !== '') {
+        const num = typeof raw === 'number' ? raw : parseFloat(String(raw).replace(/,/g, '').trim());
+        return isNaN(num) ? null : num;
+      }
+    }
     return null;
+  }
+
+  function extractCurrency(val, fallback = 'AED') {
+    if (typeof val === 'string' && val.includes('|')) {
+      const cur = val.split('|')[1]?.trim();
+      if (cur) return cur;
+    }
+    if (typeof val === 'object' && val) {
+      const cur = val.currency || val.currencyId || val.CURRENCY || val.CURRENCY_ID;
+      if (cur) return cur;
+    }
+    return fallback;
+  }
+
+  /**
+   * Resolves price/rent according to listing type:
+   * When Rent: prioritized by rent fields (Monthly Rent, Monthly Rent Max, Yearly Rental, fallback to price)
+   * When Buy/Sale: prioritized by price fields (Price, Max Price, Listing Price, Opportunity, fallback to rent)
+   */
+  function resolveListingPrice(item) {
+    if (!item) return { amount: 0, currency: 'AED' };
+
+    const listingTypeVal = item[CONFIG.LISTING.fields.listingType] || item.ufCrm16_1790154808;
+    const typeLabel = mapListingTypeToLabel(listingTypeVal);
+    const isRent = (typeLabel === 'Rent') ||
+                   (String(listingTypeVal).trim() === '158') ||
+                   (String(item.ufCrm16ReTransaction || '').toUpperCase() === 'RENT') ||
+                   (String(item.UF_CRM_RE_TRANSACTION || '').toUpperCase() === 'RENT');
+
+    let rawVal = null;
+    let fallbackCur = item[CONFIG.LISTING.fields.currencyId] || item.currencyId || 'AED';
+
+    if (isRent) {
+      // Rent listing: check rent fields first (Monthly Rent, Max Rent, Yearly Rental)
+      const rentCandidates = [
+        item.ufCrm16MonthlyRent,
+        item.UF_CRM_16_MONTHLY_RENT,
+        item.UF_CRM_MONTHLYRENT,
+        item.ufCrm16MonthlyRentMax,
+        item.UF_CRM_16_MONTHLY_RENT_MAX,
+        item.UF_CRM_MONTHLYRENTMAX,
+        item.ufCrm16YearlyRental,
+        item.UF_CRM_16_YEARLY_RENTAL,
+        item.UF_CRM_YEARLY_RENTAL,
+        item[CONFIG.LISTING.fields.price],
+        item[CONFIG.LISTING.fields.listingPrice],
+        item.ufCrm16Price,
+        item.UF_CRM_16_PRICE,
+        item.UF_CRM_16_1790154936,
+        item.UF_CRM_LISTINGPRICE,
+        item[CONFIG.LISTING.fields.opportunity],
+        item.opportunity
+      ];
+      for (const cand of rentCandidates) {
+        const parsed = parseMoneyValue(cand);
+        if (parsed !== null && parsed > 0) {
+          rawVal = parsed;
+          if (!item[CONFIG.LISTING.fields.currencyId] || item[CONFIG.LISTING.fields.currencyId] === 'AED') {
+            fallbackCur = extractCurrency(cand, fallbackCur);
+          }
+          break;
+        }
+      }
+    } else {
+      // Buy / Sale listing: check sale price / price-max fields first
+      const saleCandidates = [
+        item[CONFIG.LISTING.fields.price],
+        item[CONFIG.LISTING.fields.listingPrice],
+        item.ufCrm16Price,
+        item.UF_CRM_16_PRICE,
+        item.ufCrm16PriceMax,
+        item.UF_CRM_16_PRICE_MAX,
+        item.UF_CRM_16_1790154936,
+        item.UF_CRM_LISTINGPRICE_MAX,
+        item.UF_CRM_LISTINGPRICE,
+        item[CONFIG.LISTING.fields.opportunity],
+        item.opportunity,
+        item.ufCrm16YearlyRental,
+        item.UF_CRM_16_YEARLY_RENTAL,
+        item.UF_CRM_YEARLY_RENTAL,
+        item.ufCrm16MonthlyRent,
+        item.UF_CRM_16_MONTHLY_RENT,
+        item.UF_CRM_MONTHLYRENT
+      ];
+      for (const cand of saleCandidates) {
+        const parsed = parseMoneyValue(cand);
+        if (parsed !== null && parsed > 0) {
+          rawVal = parsed;
+          if (!item[CONFIG.LISTING.fields.currencyId] || item[CONFIG.LISTING.fields.currencyId] === 'AED') {
+            fallbackCur = extractCurrency(cand, fallbackCur);
+          }
+          break;
+        }
+      }
+    }
+
+    if (rawVal === null) {
+      const anyCandidate = item[CONFIG.LISTING.fields.price] ||
+                           item.ufCrm16Price ||
+                           item.UF_CRM_16_1790154936 ||
+                           item[CONFIG.LISTING.fields.opportunity] ||
+                           item.opportunity ||
+                           0;
+      rawVal = parseMoneyValue(anyCandidate) || 0;
+      if (!item[CONFIG.LISTING.fields.currencyId] || item[CONFIG.LISTING.fields.currencyId] === 'AED') {
+        fallbackCur = extractCurrency(anyCandidate, fallbackCur);
+      }
+    }
+
+    return {
+      amount: rawVal,
+      currency: fallbackCur
+    };
   }
 
   // ============================================================================
@@ -621,8 +741,13 @@
       const rawPropType = item[eFields.propertyType];
       const rawListingType = item[eFields.listingType];
       const rawArea = item[eFields.area] || item[eFields.community] || '';
-      const rawPriceMin = parseMoneyValue(item[eFields.priceMin]) || parseMoneyValue(item[eFields.monthlyRentMin]);
-      const rawPriceMax = parseMoneyValue(item[eFields.priceMax]) || parseMoneyValue(item[eFields.monthlyRentMax]) || parseMoneyValue(item[eFields.opportunity]);
+      const isEnquiryRent = (String(rawListingType) === '1248' || String(rawListingType) === '1254' || String(rawListingType).toLowerCase().includes('rent'));
+      const rawPriceMin = isEnquiryRent
+        ? (parseMoneyValue(item[eFields.monthlyRentMin]) || parseMoneyValue(item.UF_CRM_MONTHLYRENTMIN) || parseMoneyValue(item[eFields.priceMin]))
+        : (parseMoneyValue(item[eFields.priceMin]) || parseMoneyValue(item.UF_CRM_LISTINGPRICE_MIN) || parseMoneyValue(item[eFields.monthlyRentMin]));
+      const rawPriceMax = isEnquiryRent
+        ? (parseMoneyValue(item[eFields.monthlyRentMax]) || parseMoneyValue(item.UF_CRM_MONTHLYRENTMAX) || parseMoneyValue(item[eFields.priceMax]) || parseMoneyValue(item[eFields.opportunity]))
+        : (parseMoneyValue(item[eFields.priceMax]) || parseMoneyValue(item.UF_CRM_LISTINGPRICE_MAX) || parseMoneyValue(item[eFields.monthlyRentMax]) || parseMoneyValue(item[eFields.opportunity]));
       const rawBeds = item[eFields.bedroomsMin] || item[eFields.bedroomsMax];
 
       autoFilledFilters = {
@@ -735,12 +860,23 @@
       entityTypeId: CONFIG.LISTING.entityTypeId,
       filter: restFilter,
       select: [
+        '*',
+        'UF_*',
         lFields.id,
         lFields.title,
         lFields.propertyType,
         lFields.listingType,
         lFields.price,
         lFields.listingPrice,
+        'ufCrm16Price',
+        'ufCrm16PriceMax',
+        'ufCrm16YearlyRental',
+        'ufCrm16MonthlyRent',
+        'ufCrm16MonthlyRentMax',
+        'UF_CRM_16_1790154936',
+        'UF_CRM_16_PRICE',
+        'UF_CRM_YEARLY_RENTAL',
+        'UF_CRM_MONTHLYRENT',
         lFields.opportunity,
         lFields.currencyId,
         lFields.bedrooms,
@@ -802,8 +938,9 @@
         }
 
         // Price / Budget check with foreign currency conversion to AED
-        const rawPrice = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
-        const cur = String(item[lFields.currencyId] || 'AED').toUpperCase();
+        const priceInfo = resolveListingPrice(item);
+        const rawPrice = priceInfo.amount;
+        const cur = String(priceInfo.currency || item[lFields.currencyId] || 'AED').toUpperCase();
         let itemPriceAed = rawPrice;
         if (cur === 'USD') itemPriceAed = rawPrice * 3.6725;
         else if (cur === 'EUR') itemPriceAed = rawPrice * 4.0;
@@ -943,8 +1080,9 @@
       card.className = `listing-card ${isSelected ? 'selected' : ''}`;
       card.dataset.id = item.id;
 
-      const priceVal = parseMoneyValue(item[lFields.price]) || parseMoneyValue(item[lFields.listingPrice]) || parseMoneyValue(item[lFields.opportunity]) || 0;
-      const currency = item[lFields.currencyId] || 'AED';
+      const priceInfo = resolveListingPrice(item);
+      const priceVal = priceInfo.amount;
+      const currency = priceInfo.currency;
       const propTypeLabel = mapListingPropTypeToLabel(item[lFields.propertyType]);
       const listingTypeLabel = mapListingTypeToLabel(item[lFields.listingType]);
       const beds = parseFloat(item[lFields.bedrooms]) || 0;
@@ -1351,7 +1489,9 @@
       isMatchingCompatible,
       mapEnquiryPropTypeToListing,
       mapListingPropTypeToLabel,
-      parseMoneyValue
+      parseMoneyValue,
+      extractCurrency,
+      resolveListingPrice
     };
   }
 

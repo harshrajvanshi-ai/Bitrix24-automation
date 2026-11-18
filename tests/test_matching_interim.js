@@ -131,6 +131,57 @@ assert.strictEqual(matchingModule.mapEnquiryListingTypeToFilter('1252'), 'SALE_A
 assert.strictEqual(matchingModule.mapEnquiryListingTypeToFilter('1250'), '162');
 console.log('  ✓ PASS: Auto-matched Enquiry filters translate directly to correct Listing filters');
 
+// 7. Resolve Listing Price by Listing Type (Rent vs Buy/Sale)
+console.log('\n--- Test 7: Resolve Listing Price by Listing Type ---');
+// Rent listing with monthly rent
+const rentItem1 = {
+  id: 101,
+  ufCrm16_1790154808: '158',
+  ufCrm16MonthlyRent: '18000|AED',
+  ufCrm16_1790154936: '220000|AED',
+  currencyId: 'AED'
+};
+const rentPrice1 = matchingModule.resolveListingPrice(rentItem1);
+assert.strictEqual(rentPrice1.amount, 18000, 'Rent listing resolves monthly rent first');
+assert.strictEqual(rentPrice1.currency, 'AED');
+
+// Rent listing with yearly rental
+const rentItem2 = {
+  id: 102,
+  ufCrm16_1790154808: 158,
+  ufCrm16YearlyRental: '250000|AED',
+  currencyId: 'AED'
+};
+const rentPrice2 = matchingModule.resolveListingPrice(rentItem2);
+assert.strictEqual(rentPrice2.amount, 250000, 'Rent listing resolves yearly rental when monthly rent missing');
+
+// Rent listing falling back to price
+const rentItem3 = {
+  id: 204,
+  ufCrm16_1790154808: 158,
+  ufCrm16_1790154936: '4250000|AED',
+  currencyId: 'AED'
+};
+const rentPrice3 = matchingModule.resolveListingPrice(rentItem3);
+assert.strictEqual(rentPrice3.amount, 4250000, 'Rent listing falls back to ufCrm16_1790154936 when specific rent missing');
+
+// Sale listing resolves price
+const saleItem1 = {
+  id: 103,
+  ufCrm16_1790154808: '162',
+  ufCrm16_1790154936: '1850000|AED',
+  ufCrm16MonthlyRent: '12000|AED',
+  currencyId: 'AED'
+};
+const salePrice1 = matchingModule.resolveListingPrice(saleItem1);
+assert.strictEqual(salePrice1.amount, 1850000, 'Sale listing resolves sale price first');
+
+// parseMoneyValue handling objects and comma formatted strings
+assert.strictEqual(matchingModule.parseMoneyValue('4,250,000|AED'), 4250000, 'parseMoneyValue handles commas in pipe string');
+assert.strictEqual(matchingModule.parseMoneyValue({ amount: '350000', currency: 'USD' }), 350000, 'parseMoneyValue handles object format');
+assert.strictEqual(matchingModule.parseMoneyValue(null), null);
+console.log('  ✓ PASS: Rent & Buy/Sale listing prices and money formats resolve accurately');
+
 console.log('\n===============================================================');
 console.log('✓ ALL SECTION C1 INTERIM MATCHING TESTS PASSED!');
 console.log('===============================================================\n');
