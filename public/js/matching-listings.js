@@ -87,7 +87,8 @@
       FURNISHED: [
         { label: 'Furnished', listingId: 736 },
         { label: 'Semi-Furnished', listingId: 738 },
-        { label: 'Unfurnished', listingId: 740 }
+        { label: 'Unfurnished', listingId: 740 },
+        { label: 'Furnished', listingId: 676 }
       ],
       AVAILABLE_STATUS_ID: 924 // Active status in Listing SPA
     }
@@ -454,6 +455,19 @@
   }
 
   /**
+   * Clean leading commas, double commas, and noise from listing titles
+   */
+  function cleanListingTitle(rawTitle) {
+    if (!rawTitle) return '';
+    return String(rawTitle)
+      .replace(/^[\s,]+/, '')
+      .replace(/\s*,\s*,\s*/g, ', ')
+      .replace(/\bin\s*,\s*/gi, 'in ')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  /**
    * Check whether an enquiry and listing are transaction-compatible.
    * NEVER match Sale enquiries to Rent listings or vice-versa!
    */
@@ -464,7 +478,7 @@
     if (filterListingType) {
       const flt = String(filterListingType).trim();
       if (flt === '158' || flt === 'RENT') {
-        return itemLtStr === '158' || listingTx === 'RENT';
+        return listingTx === 'RENT';
       }
       if (flt === '162' || flt === 'OFF_PLAN') {
         return itemLtStr === '162';
@@ -476,21 +490,17 @@
         return itemLtStr === '164';
       }
       if (flt === 'SALE_ALL' || flt === 'SALE') {
-        return listingTx !== 'RENT' && (itemLtStr !== '158' || listingTx === 'SALE');
+        return listingTx === 'SALE';
       }
     }
 
     // 2. Default/Automatic: strictly enforce enquiry transaction
     if (enquiryTx === 'RENT') {
-      if (listingTx === 'SALE') return false;
-      if (itemLtStr === '160' || itemLtStr === '162') return false;
-      return itemLtStr === '158' || listingTx === 'RENT';
+      return listingTx === 'RENT';
     }
 
     if (enquiryTx === 'SALE') {
-      if (listingTx === 'RENT') return false;
-      if (itemLtStr === '158' && listingTx !== 'SALE') return false;
-      return true;
+      return listingTx === 'SALE';
     }
 
     return true;
@@ -515,7 +525,7 @@
     if (!furnishedVal) return 'Not Specified';
     const num = parseInt(furnishedVal, 10);
     const matched = CONFIG.ENUMS.FURNISHED.find(f => f.listingId === num);
-    return matched ? matched.label : 'Specified';
+    return matched ? matched.label : 'Not Specified';
   }
 
   function parseMoneyValue(val) {
@@ -550,24 +560,23 @@
 
   /**
    * Resolves price/rent according to listing type:
-   * When Rent: prioritized by rent fields (Monthly Rent, Monthly Rent Max, Yearly Rental, fallback to price)
-   * When Buy/Sale: prioritized by price fields (Price, Max Price, Listing Price, Opportunity, fallback to rent)
+   * When Rent: prioritized strictly by rent fields (Monthly Rent, Monthly Rent Max, Yearly Rental)
+   * When Buy/Sale: prioritized strictly by sale price fields (Price, Max Price, Listing Price, Opportunity)
    */
   function resolveListingPrice(item) {
     if (!item) return { amount: 0, currency: 'AED' };
 
+    const tx = resolveTransactionFromListing(item);
     const listingTypeVal = item[CONFIG.LISTING.fields.listingType] || item.ufCrm16_1790154808;
     const typeLabel = mapListingTypeToLabel(listingTypeVal);
-    const isRent = (typeLabel === 'Rent') ||
-                   (String(listingTypeVal).trim() === '158') ||
-                   (String(item.ufCrm16ReTransaction || '').toUpperCase() === 'RENT') ||
-                   (String(item.UF_CRM_RE_TRANSACTION || '').toUpperCase() === 'RENT');
+    const isRent = (tx === 'RENT') ||
+                   (tx !== 'SALE' && (typeLabel === 'Rent' || String(listingTypeVal).trim() === '158'));
 
     let rawVal = null;
     let fallbackCur = item[CONFIG.LISTING.fields.currencyId] || item.currencyId || 'AED';
 
     if (isRent) {
-      // Rent listing: check rent fields first (Monthly Rent, Max Rent, Yearly Rental)
+      // Rent listing: check rent fields first (Monthly Rent, Max Rent, Yearly Rental), then fallback to price
       const rentCandidates = [
         item.ufCrm16MonthlyRent,
         item.UF_CRM_16_MONTHLY_RENT,
@@ -598,7 +607,7 @@
         }
       }
     } else {
-      // Buy / Sale listing: check sale price / price-max fields first
+      // Buy / Sale listing: check sale price / price-max fields strictly
       const saleCandidates = [
         item[CONFIG.LISTING.fields.price],
         item[CONFIG.LISTING.fields.listingPrice],
@@ -610,13 +619,7 @@
         item.UF_CRM_LISTINGPRICE_MAX,
         item.UF_CRM_LISTINGPRICE,
         item[CONFIG.LISTING.fields.opportunity],
-        item.opportunity,
-        item.ufCrm16YearlyRental,
-        item.UF_CRM_16_YEARLY_RENTAL,
-        item.UF_CRM_YEARLY_RENTAL,
-        item.ufCrm16MonthlyRent,
-        item.UF_CRM_16_MONTHLY_RENT,
-        item.UF_CRM_MONTHLYRENT
+        item.opportunity
       ];
       for (const cand of saleCandidates) {
         const parsed = parseMoneyValue(cand);
@@ -631,12 +634,9 @@
     }
 
     if (rawVal === null) {
-      const anyCandidate = item[CONFIG.LISTING.fields.price] ||
-                           item.ufCrm16Price ||
-                           item.UF_CRM_16_1790154936 ||
-                           item[CONFIG.LISTING.fields.opportunity] ||
-                           item.opportunity ||
-                           0;
+      const anyCandidate = isRent
+        ? (item.ufCrm16MonthlyRent || item.ufCrm16YearlyRental || 0)
+        : (item[CONFIG.LISTING.fields.price] || item.ufCrm16Price || item.UF_CRM_16_1790154936 || item[CONFIG.LISTING.fields.opportunity] || item.opportunity || 0);
       rawVal = parseMoneyValue(anyCandidate) || 0;
       if (!item[CONFIG.LISTING.fields.currencyId] || item[CONFIG.LISTING.fields.currencyId] === 'AED') {
         fallbackCur = extractCurrency(anyCandidate, fallbackCur);
@@ -823,6 +823,16 @@
     const filters = getFiltersFromForm();
     const lFields = CONFIG.LISTING.fields;
 
+    // Validate budget inputs
+    if (filters.priceMin !== null && filters.priceMax !== null && filters.priceMin > filters.priceMax) {
+      showToast('Min Budget cannot be greater than Max Budget', 'error');
+      renderErrorState('Invalid Budget Filter', 'The minimum budget cannot be greater than the maximum budget.');
+      return;
+    }
+    if (filters.priceMax !== null && filters.priceMax > 500000000) {
+      showToast('Notice: Extreme budget value (> 500M AED) may broaden matches', 'warning');
+    }
+
     // 1. Status: Filter available/active listings
     // Keep AVAILABLE_STATUS_ID in CONFIG and query active or unassigned listings
     const restFilter = {};
@@ -954,12 +964,14 @@
           if (pMax !== null && pMax > 0) pMax = pMax * 1.1;             // +10% tolerance
         }
 
-        if (pMin !== null && pMin > 0 && itemPriceAed > 0 && itemPriceAed < pMin) return false;
-        if (pMax !== null && pMax > 0 && itemPriceAed > 0 && itemPriceAed > pMax) return false;
+        if (pMin !== null && pMin > 0 && itemPriceAed < pMin) return false;
+        if (pMax !== null && pMax > 0 && itemPriceAed > pMax) return false;
 
         // Bedrooms check
         if (filters.bedrooms !== null) {
           const itemBeds = parseFloat(item[lFields.bedrooms]) || 0;
+          // Sanity check: Impossible bedroom values (> 20) are excluded from bedroom matching
+          if (itemBeds > 20) return false;
           if (filters.exactBeds) {
             if (itemBeds !== filters.bedrooms) return false;
           } else {
@@ -1080,16 +1092,32 @@
       card.className = `listing-card ${isSelected ? 'selected' : ''}`;
       card.dataset.id = item.id;
 
+      const itemTx = resolveTransactionFromListing(item);
       const priceInfo = resolveListingPrice(item);
       const priceVal = priceInfo.amount;
       const currency = priceInfo.currency;
       const propTypeLabel = mapListingPropTypeToLabel(item[lFields.propertyType]);
-      const listingTypeLabel = mapListingTypeToLabel(item[lFields.listingType]);
+
+      // Parity guarantee: card tag and footer label read the SAME Purpose field the filter uses
+      let listingTypeLabel = mapListingTypeToLabel(item[lFields.listingType]);
+      if (itemTx === 'SALE' && listingTypeLabel === 'Rent') {
+        listingTypeLabel = 'Sale';
+      } else if (itemTx === 'RENT' && listingTypeLabel !== 'Rent') {
+        listingTypeLabel = 'Rent';
+      }
+      const footerTypeLabel = (itemTx === 'RENT' || listingTypeLabel === 'Rent') ? 'Rental Property' : 'For Sale';
+
       const beds = parseFloat(item[lFields.bedrooms]) || 0;
+      const isImpossibleBeds = beds > 20;
+      const bedsDisplay = isImpossibleBeds
+        ? `<span style="color: var(--b24-danger, #d32f2f); font-weight: 600;" title="Impossible bedroom count (> 20)">${beds} (Flagged)</span>`
+        : (beds > 0 ? beds : 'Studio / Any');
+
       const area = item[lFields.area] || item[lFields.community] || 'Downtown Dubai';
       const furnishedLabel = mapListingFurnishedToLabel(item[lFields.furnished]);
       const recList = currentEnquiry?.[CONFIG.ENQUIRY.fields.recommendedListings] || currentEnquiry?.ufCrm18_1792649609 || [];
       const isAlreadyRecommended = Array.isArray(recList) && recList.map(String).includes(String(item.id));
+      const cleanTitle = cleanListingTitle(item.title || `Listing #${item.id}`);
 
       card.innerHTML = `
         <div class="card-top-bar">
@@ -1097,7 +1125,7 @@
           <div class="card-title-group">
             <div class="card-title">
               <a href="javascript:void(0)" class="card-title-link" data-id="${item.id}" title="Open Listing #${item.id} in Bitrix24">
-                ${escapeHtml(item.title || `Listing #${item.id}`)}
+                ${escapeHtml(cleanTitle)}
               </a>
               ${isAlreadyRecommended ? '<span class="badge badge-recommended" title="Already in Recommended Listing field">Recommended</span>' : ''}
             </div>
@@ -1115,7 +1143,7 @@
         <div class="card-specs-grid">
           <div class="spec-item">
             <span class="spec-label">Beds:</span>
-            <span class="spec-val">${beds > 0 ? beds : 'Studio / Any'}</span>
+            <span class="spec-val">${bedsDisplay}</span>
           </div>
           <div class="spec-item">
             <span class="spec-label">Area:</span>
@@ -1133,7 +1161,7 @@
 
         <div class="card-footer">
           <span class="card-type-label" style="font-size: 11px; color: var(--b24-text-muted); font-weight: 500;">
-            ${listingTypeLabel === 'Rent' ? 'Rental Property' : 'For Sale'}
+            ${footerTypeLabel}
           </span>
         </div>
       `;
@@ -1481,6 +1509,7 @@
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
       CONFIG,
+      cleanListingTitle,
       resolveTransactionFromEnquiry,
       resolveTransactionFromListing,
       mapEnquiryListingTypeToFilter,
@@ -1489,6 +1518,7 @@
       isMatchingCompatible,
       mapEnquiryPropTypeToListing,
       mapListingPropTypeToLabel,
+      mapListingFurnishedToLabel,
       parseMoneyValue,
       extractCurrency,
       resolveListingPrice
