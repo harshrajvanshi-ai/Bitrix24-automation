@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,13 +21,14 @@
         if (window.self === window.top && window.location.search.includes('enforce_lockout=1')) {
           document.documentElement.classList.add('crm-lockout-active');
         }
-      } catch (_) {}
+      } catch (_) { }
     })();
   </script>
   <!-- Stylesheet -->
   <link rel="stylesheet" href="/css/preview-module.css?v=20261117_v1">
   <link rel="stylesheet" href="/css/matching-listings.css?v=20261118_v1">
 </head>
+
 <body>
   <!-- ── 0. CRM Access Lockout Shield (Rendered when accessed outside CRM) ── -->
   <div id="crm-lockout-shield" class="crm-lockout-shield" style="display: none;">
@@ -38,7 +40,9 @@
       <h1 class="lockout-title">Access Restricted</h1>
       <p class="lockout-subtitle">Bitrix24 CRM Protected Application</p>
       <p class="lockout-desc">
-        This custom application and its records can only be accessed securely from within your <strong>Bitrix24 CRM</strong>. Direct URL navigation outside of Bitrix24 is blocked to ensure confidential real estate data privacy.
+        This custom application and its records can only be accessed securely from within your <strong>Bitrix24
+          CRM</strong>. Direct URL navigation outside of Bitrix24 is blocked to ensure confidential real estate data
+        privacy.
       </p>
       <div class="lockout-meta">
         <div class="lockout-item">
@@ -51,7 +55,10 @@
         </div>
       </div>
       <div class="lockout-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 16l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 16l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z" />
+        </svg>
         Enterprise CRM Privacy Enforced
       </div>
     </div>
@@ -108,13 +115,15 @@
           <!-- Min Budget -->
           <div class="form-group">
             <label class="form-label" for="filter-price-min">Min Budget (AED)</label>
-            <input type="number" id="filter-price-min" class="form-control" placeholder="Min Price" min="0" step="10000">
+            <input type="number" id="filter-price-min" class="form-control" placeholder="Min Price" min="0"
+              step="10000">
           </div>
 
           <!-- Max Budget -->
           <div class="form-group">
             <label class="form-label" for="filter-price-max">Max Budget (AED)</label>
-            <input type="number" id="filter-price-max" class="form-control" placeholder="Max Price" min="0" step="10000">
+            <input type="number" id="filter-price-max" class="form-control" placeholder="Max Price" min="0"
+              step="10000">
           </div>
 
           <!-- Furnished -->
@@ -172,7 +181,8 @@
         <button type="button" id="btn-save-recommendation" class="btn btn-success" disabled>
           Save as recommendation
         </button>
-        <button type="button" id="btn-send-timeline" class="btn btn-secondary btn-compact" style="display: none;" disabled>
+        <button type="button" id="btn-send-timeline" class="btn btn-secondary btn-compact" style="display: none;"
+          disabled>
           Send to Timeline
         </button>
       </div>
@@ -202,4 +212,5 @@
   <!-- Matching Logic Script -->
   <script src="/js/matching-listings.js?v=20261118_v4"></script>
 </body>
+
 </html>
