@@ -1447,12 +1447,14 @@
     if (!token && window.__BITRIX_AUTH_TOKEN__) {
       token = window.__BITRIX_AUTH_TOKEN__;
     }
-    if (!token && typeof sessionStorage !== 'undefined') {
-      token = sessionStorage.getItem('b24_access_token') || '';
-    }
-    if (!domain && typeof sessionStorage !== 'undefined') {
-      domain = sessionStorage.getItem('b24_domain') || '';
-    }
+    try {
+      if (!token && typeof sessionStorage !== 'undefined') {
+        token = sessionStorage.getItem('b24_access_token') || '';
+      }
+      if (!domain && typeof sessionStorage !== 'undefined') {
+        domain = sessionStorage.getItem('b24_domain') || '';
+      }
+    } catch (_) { }
 
     const params = new URLSearchParams();
     params.set('url', base);
